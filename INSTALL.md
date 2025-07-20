@@ -15,7 +15,7 @@
 
 ## 🚀 快速安装
 
-### 方法一：使用Git克隆
+### 使用Git克隆
 
 ```bash
 # 克隆项目
@@ -26,14 +26,6 @@ cd agentbox
 cp config/config.example.json config/config.json
 cp data/feishu_data.example.json data/feishu_data.json
 ```
-
-### 方法二：下载ZIP包
-
-1. 从GitHub下载项目ZIP包
-2. 解压到Web服务器目录
-3. 复制配置文件：
-   - `config/config.example.json` → `config/config.json`
-   - `data/feishu_data.example.json` → `data/feishu_data.json`
 
 ## ⚙️ 配置说明
 
@@ -254,7 +246,7 @@ cp data/feishu_data.json.backup data/feishu_data.json
 如果在安装过程中遇到问题：
 
 - 查看 [故障排除文档](CONTRIBUTING.md#故障排除)
-- 提交 [GitHub Issue](https://github.com/YOUR_USERNAME/agentbox/issues)
+- 提交 [GitHub Issue](https://github.com/mumulab-cn/agentbox/issues)
 - 查看 [项目文档](README.md)
 
 ---
