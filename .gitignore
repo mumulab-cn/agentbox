@@ -1,0 +1,42 @@
+# 敏感配置文件
+config/config.json
+
+# 数据文件
+data/feishu_data.json
+
+# 临时文件
+*.tmp
+*.log
+*.cache
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 依赖文件
+node_modules/
+vendor/
+
+# 构建输出
+build/
+dist/
+
+# 环境变量文件
+.env
+.env.local
+.env.production
+
+# 备份文件
+*.bak
+*.backup
+
+# 上传文件
+uploads/
+temp/
