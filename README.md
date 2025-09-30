@@ -27,6 +27,9 @@
 - 提交 [Issue](https://github.com/mumulab-cn/agentbox/issues)
 - 发送邮件至: cloud@mumulab.cn
 
+  微信联系，请备注“GitHub”
+<img width="443" height="440" alt="image" src="https://github.com/user-attachments/assets/9e4876f2-9080-4536-964c-b410feff9529" />
+
   
 ---
 
