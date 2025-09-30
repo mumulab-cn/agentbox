@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史学科创新应用</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <h1>历史学科创新应用</h1>
+            <p>探索历史长河，感受文明魅力</p>
+            <a href="index.php" class="back-btn">返回首页</a>
+        </div>
+
+        <!-- 历史时间线探索器 -->
+        <div class="app-section">
+            <h2>📅 历史时间线探索器</h2>
+            <p class="app-description">交互式历史时间线，让学生直观了解历史事件的时间顺序和相互关系。</p>
+            
+            <div class="timeline-explorer">
+                <div class="timeline-controls">
+                    <div class="control-group">
+                        <label for="timeline-period">选择历史时期：</label>
+                        <select id="timeline-period">
+                            <option value="ancient">古代史（公元前3000年-公元476年）</option>
+                            <option value="medieval">中世纪（476年-1453年）</option>
+                            <option value="modern">近代史（1453年-1789年）</option>
+                            <option value="contemporary">现代史（1789年-至今）</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="timeline-region">选择地区：</label>
+                        <select id="timeline-region">
+                            <option value="china">中国</option>
+                            <option value="europe">欧洲</option>
+                            <option value="asia">亚洲</option>
+                            <option value="world">世界</option>
+                        </select>
+                    </div>
+                    <button onclick="generateTimeline()" class="primary-btn">生成时间线</button>
+                </div>
+                
+                <div class="timeline-display" id="timeline-display">
+                    <div class="timeline-placeholder">
+                        <p>请选择历史时期和地区，然后点击"生成时间线"</p>
+                    </div>
+                </div>
+                
+                <div class="event-details" id="event-details">
+                    <h4>事件详情</h4>
+                    <p>点击时间线上的事件查看详细信息</p>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>可视化教学工具，提高课堂互动性</li>
+                        <li>多维度展示历史事件关联性</li>
+                        <li>支持个性化教学内容定制</li>
+                        <li>实时跟踪学生学习进度</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>直观理解历史事件时间顺序</li>
+                        <li>发现历史事件间的因果关系</li>
+                        <li>提升历史思维和分析能力</li>
+                        <li>增强对历史学习的兴趣</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>交互式时间轴</h5>
+                        <p>支持缩放、拖拽，多层级展示历史事件</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>多媒体整合</h5>
+                        <p>结合图片、视频、音频等多种媒体形式</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>关联分析</h5>
+                        <p>智能分析历史事件间的关联性和影响</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>个性化学习</h5>
+                        <p>根据学习进度推荐相关历史内容</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 古代文明比较工具 -->
+        <div class="app-section">
+            <h2>🏛️ 古代文明比较工具</h2>
+            <p class="app-description">对比分析不同古代文明的特点，帮助学生理解文明发展的多样性。</p>
+            
+            <div class="civilization-comparator">
+                <div class="civilization-selector">
+                    <div class="civilization-card">
+                        <h4>文明A</h4>
+                        <select id="civilization-a">
+                            <option value="">选择文明</option>
+                            <option value="ancient-china">古代中国</option>
+                            <option value="ancient-egypt">古埃及</option>
+                            <option value="ancient-greece">古希腊</option>
+                            <option value="ancient-rome">古罗马</option>
+                            <option value="mesopotamia">美索不达米亚</option>
+                            <option value="indus-valley">印度河文明</option>
+                        </select>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="civilization-card">
+                        <h4>文明B</h4>
+                        <select id="civilization-b">
+                            <option value="">选择文明</option>
+                            <option value="ancient-china">古代中国</option>
+                            <option value="ancient-egypt">古埃及</option>
+                            <option value="ancient-greece">古希腊</option>
+                            <option value="ancient-rome">古罗马</option>
+                            <option value="mesopotamia">美索不达米亚</option>
+                            <option value="indus-valley">印度河文明</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="compareCivilizations()" class="primary-btn">开始比较</button>
+                
+                <div class="comparison-result" id="comparison-result">
+                    <div class="comparison-placeholder">
+                        <p>请选择两个文明进行比较</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>系统化比较教学工具</li>
+                        <li>丰富的文明资料库</li>
+                        <li>支持多维度对比分析</li>
+                        <li>培养学生批判性思维</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>深入理解文明特色</li>
+                        <li>培养比较分析能力</li>
+                        <li>拓展国际视野</li>
+                        <li>增强文化认同感</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>多维度对比</h5>
+                        <p>从政治、经济、文化、科技等多角度比较</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>可视化展示</h5>
+                        <p>图表、地图、时间轴等多种可视化方式</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>互动探索</h5>
+                        <p>支持深入探索文明细节和特色</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>知识图谱</h5>
+                        <p>构建文明间的关联知识网络</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史事件模拟器 -->
+        <div class="app-section">
+            <h2>🎭 历史事件模拟器</h2>
+            <p class="app-description">模拟重要历史事件，让学生身临其境体验历史决策过程。</p>
+            
+            <div class="event-simulator">
+                <div class="event-selector">
+                    <div class="control-group">
+                        <label for="historical-event">选择历史事件：</label>
+                        <select id="historical-event">
+                            <option value="">选择事件</option>
+                            <option value="silk-road">丝绸之路贸易</option>
+                            <option value="great-wall">长城修建</option>
+                            <option value="industrial-revolution">工业革命</option>
+                            <option value="world-war">世界大战</option>
+                            <option value="renaissance">文艺复兴</option>
+                            <option value="exploration">大航海时代</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="player-role">选择角色：</label>
+                        <select id="player-role">
+                            <option value="">选择角色</option>
+                            <option value="ruler">统治者</option>
+                            <option value="merchant">商人</option>
+                            <option value="scholar">学者</option>
+                            <option value="citizen">普通民众</option>
+                        </select>
+                    </div>
+                    <button onclick="startSimulation()" class="primary-btn">开始模拟</button>
+                </div>
+                
+                <div class="simulation-area" id="simulation-area">
+                    <div class="simulation-placeholder">
+                        <p>选择历史事件和角色，开始你的历史之旅</p>
+                    </div>
+                </div>
+                
+                <div class="decision-panel" id="decision-panel" style="display: none;">
+                    <h4>决策面板</h4>
+                    <div class="scenario-description" id="scenario-description"></div>
+                    <div class="decision-options" id="decision-options"></div>
+                    <div class="consequences" id="consequences"></div>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>沉浸式历史教学体验</li>
+                        <li>培养学生历史思维</li>
+                        <li>提高课堂参与度</li>
+                        <li>评估学生决策能力</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>体验历史人物视角</li>
+                        <li>理解历史决策复杂性</li>
+                        <li>培养批判性思维</li>
+                        <li>增强历史同理心</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>角色扮演</h5>
+                        <p>多角色视角体验历史事件</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>决策树系统</h5>
+                        <p>复杂的决策分支和后果模拟</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>历史还原</h5>
+                        <p>基于史实的高度还原模拟</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>反思总结</h5>
+                        <p>模拟后的历史反思和学习总结</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="history_apps.js"></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学创新应用 - K12学科平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🔢 数学创新应用</h1>
+            <p>培养数学思维，提升计算能力</p>
+            <a href="index.php" class="back-btn">← 返回主页</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 几何图形绘制器 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>📐 几何图形绘制器</h2>
+                <div class="app-tags">
+                    <span class="tag primary">交互式</span>
+                    <span class="tag success">可视化</span>
+                    <span class="tag info">实时计算</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="geometry-canvas" id="geometryCanvas">
+                        <svg width="100%" height="300" viewBox="0 0 400 300">
+                            <defs>
+                                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grid)" />
+                            <circle cx="100" cy="100" r="50" fill="rgba(74, 144, 226, 0.3)" stroke="#4a90e2" stroke-width="2"/>
+                            <rect x="200" y="80" width="80" height="60" fill="rgba(46, 204, 113, 0.3)" stroke="#2ecc71" stroke-width="2"/>
+                            <polygon points="320,150 350,100 380,150" fill="rgba(231, 76, 60, 0.3)" stroke="#e74c3c" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="geometry-controls">
+                        <button class="btn btn-primary" onclick="drawShape('circle')">绘制圆形</button>
+                        <button class="btn btn-success" onclick="drawShape('rectangle')">绘制矩形</button>
+                        <button class="btn btn-danger" onclick="drawShape('triangle')">绘制三角形</button>
+                        <button class="btn btn-warning" onclick="calculateArea()">计算面积</button>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>直观展示几何概念，提高教学效果</li>
+                            <li>实时演示图形变化，增强课堂互动</li>
+                            <li>快速生成教学案例，节省备课时间</li>
+                            <li>量化学生理解程度，精准教学指导</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>动手操作加深几何图形理解</li>
+                            <li>培养空间想象和逻辑思维能力</li>
+                            <li>通过实践掌握面积周长计算</li>
+                            <li>提升数学学习兴趣和主动性</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎯</span>
+                            <h5>精准测量</h5>
+                            <p>支持像素级精确绘制和测量</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">⚡</span>
+                            <h5>实时计算</h5>
+                            <p>图形参数实时更新和计算</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🔄</span>
+                            <h5>动态变换</h5>
+                            <p>支持图形旋转、缩放、平移</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📊</span>
+                            <h5>数据可视</h5>
+                            <p>图形属性数据化展示</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分数计算练习 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>🧮 分数计算练习</h2>
+                <div class="app-tags">
+                    <span class="tag primary">智能出题</span>
+                    <span class="tag success">步骤解析</span>
+                    <span class="tag warning">难度自适应</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="fraction-exercise">
+                        <div class="exercise-display">
+                            <div class="fraction-problem">
+                                <span class="fraction">
+                                    <span class="numerator">2</span>
+                                    <span class="denominator">3</span>
+                                </span>
+                                <span class="operator">+</span>
+                                <span class="fraction">
+                                    <span class="numerator">1</span>
+                                    <span class="denominator">4</span>
+                                </span>
+                                <span class="equals">=</span>
+                                <span class="result">?</span>
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <input type="text" id="fractionAnswer" placeholder="请输入答案" class="answer-input">
+                            <button class="btn btn-primary" onclick="checkFractionAnswer()">检查答案</button>
+                            <button class="btn btn-info" onclick="showSteps()">查看步骤</button>
+                            <button class="btn btn-success" onclick="newProblem()">新题目</button>
+                        </div>
+                        <div class="steps-display" id="stepsDisplay" style="display:none;">
+                            <h5>解题步骤：</h5>
+                            <ol>
+                                <li>找到最小公倍数：3和4的最小公倍数是12</li>
+                                <li>通分：2/3 = 8/12，1/4 = 3/12</li>
+                                <li>分子相加：8 + 3 = 11</li>
+                                <li>结果：11/12</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>自动生成海量练习题，减轻出题负担</li>
+                            <li>详细的解题步骤，便于教学演示</li>
+                            <li>学生答题数据分析，了解学习情况</li>
+                            <li>个性化难度调节，因材施教</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>大量练习机会，熟练掌握分数运算</li>
+                            <li>步骤化学习，理解计算原理</li>
+                            <li>即时反馈，及时纠正错误</li>
+                            <li>自主学习，提高学习效率</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🤖</span>
+                            <h5>智能算法</h5>
+                            <p>AI自动生成题目，难度渐进</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📝</span>
+                            <h5>过程可视</h5>
+                            <p>每步计算过程清晰展示</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📈</span>
+                            <h5>进度跟踪</h5>
+                            <p>学习进度和错误统计分析</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎮</span>
+                            <h5>游戏化</h5>
+                            <p>积分奖励机制，提升学习兴趣</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 函数图像绘制 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>📈 函数图像绘制</h2>
+                <div class="app-tags">
+                    <span class="tag primary">动态图像</span>
+                    <span class="tag success">参数调节</span>
+                    <span class="tag info">性质分析</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="function-plotter">
+                        <div class="function-canvas">
+                            <canvas id="functionCanvas" width="400" height="300"></canvas>
+                        </div>
+                        <div class="function-controls">
+                            <div class="control-group">
+                                <label>函数类型：</label>
+                                <select id="functionType" onchange="updateFunction()">
+                                    <option value="linear">一次函数 y=ax+b</option>
+                                    <option value="quadratic">二次函数 y=ax²+bx+c</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>参数a：</label>
+                                <input type="range" id="paramA" min="-5" max="5" step="0.1" value="1" oninput="updateFunction()">
+                                <span id="valueA">1</span>
+                            </div>
+                            <div class="control-group">
+                                <label>参数b：</label>
+                                <input type="range" id="paramB" min="-5" max="5" step="0.1" value="0" oninput="updateFunction()">
+                                <span id="valueB">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>动态演示函数性质变化过程</li>
+                            <li>参数调节直观展示函数关系</li>
+                            <li>提高抽象概念的教学效果</li>
+                            <li>激发学生对数学的探索兴趣</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>直观理解函数图像与性质</li>
+                            <li>探索参数对图像的影响规律</li>
+                            <li>培养数形结合的数学思维</li>
+                            <li>提升函数概念的理解深度</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🔄</span>
+                            <h5>实时渲染</h5>
+                            <p>参数变化即时更新图像</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎛️</span>
+                            <h5>交互控制</h5>
+                            <p>滑块调节参数，操作简便</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📐</span>
+                            <h5>精确绘制</h5>
+                            <p>高精度数学函数绘制</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">💡</span>
+                            <h5>概念突破</h5>
+                            <p>抽象函数概念可视化</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 K12学科创新应用平台 - 数学让思维更敏锐</p>
+        </div>
+    </footer>
+
+    <script src="math_apps.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学学科创新应用 - K12教育平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>化学学科创新应用</h1>
+            <nav>
+                <a href="index.php" class="back-btn">← 返回主页</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 分子结构3D建模 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>分子结构3D建模</h2>
+                <span class="app-tag">分子化学</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="molecule-builder">
+                        <h3>分子构建器</h3>
+                        <div class="element-palette">
+                            <button onclick="selectElement('H')" class="element-btn hydrogen">H</button>
+                            <button onclick="selectElement('C')" class="element-btn carbon">C</button>
+                            <button onclick="selectElement('N')" class="element-btn nitrogen">N</button>
+                            <button onclick="selectElement('O')" class="element-btn oxygen">O</button>
+                            <button onclick="selectElement('S')" class="element-btn sulfur">S</button>
+                            <button onclick="selectElement('P')" class="element-btn phosphorus">P</button>
+                        </div>
+                        
+                        <div class="molecule-workspace" id="moleculeWorkspace">
+                            <div class="molecule-display" id="moleculeDisplay">
+                                <p>选择元素开始构建分子</p>
+                            </div>
+                        </div>
+                        
+                        <div class="molecule-controls">
+                            <button onclick="addBond()">添加化学键</button>
+                            <button onclick="analyzeMolecule()">分析分子</button>
+                            <button onclick="clearMolecule()">清空</button>
+                        </div>
+                        
+                        <div id="moleculeInfo" class="molecule-info"></div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>3D可视化分子结构</li>
+                            <li>直观展示化学键形成</li>
+                            <li>实时分子性质分析</li>
+                            <li>多角度观察分子模型</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>理解分子空间结构</li>
+                            <li>掌握化学键概念</li>
+                            <li>培养空间想象能力</li>
+                            <li>探索分子性质规律</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>3D分子建模</span>
+                        <span>实时结构分析</span>
+                        <span>化学键可视化</span>
+                        <span>分子性质预测</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 化学反应模拟器 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>化学反应模拟器</h2>
+                <span class="app-tag">反应机理</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="reaction-simulator">
+                        <h3>反应方程式配平</h3>
+                        <div class="reaction-input">
+                            <div class="reactants">
+                                <h4>反应物</h4>
+                                <select id="reactant1">
+                                    <option value="H2">H₂</option>
+                                    <option value="O2">O₂</option>
+                                    <option value="CH4">CH₄</option>
+                                    <option value="CO2">CO₂</option>
+                                </select>
+                                <span>+</span>
+                                <select id="reactant2">
+                                    <option value="O2">O₂</option>
+                                    <option value="H2">H₂</option>
+                                    <option value="Cl2">Cl₂</option>
+                                    <option value="H2O">H₂O</option>
+                                </select>
+                            </div>
+                            
+                            <div class="arrow">→</div>
+                            
+                            <div class="products">
+                                <h4>生成物</h4>
+                                <select id="product1">
+                                    <option value="H2O">H₂O</option>
+                                    <option value="CO2">CO₂</option>
+                                    <option value="HCl">HCl</option>
+                                    <option value="CH4">CH₄</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button onclick="balanceEquation()">配平方程式</button>
+                        <button onclick="simulateReaction()">模拟反应</button>
+                        
+                        <div id="equationResult" class="equation-result"></div>
+                        <div id="reactionAnimation" class="reaction-animation"></div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>自动方程式配平</li>
+                            <li>反应过程动画演示</li>
+                            <li>反应条件智能提示</li>
+                            <li>多种反应类型覆盖</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>掌握配平技巧</li>
+                            <li>理解反应机理</li>
+                            <li>观察反应过程</li>
+                            <li>培养化学思维</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>智能配平算法</span>
+                        <span>反应动画模拟</span>
+                        <span>能量变化图</span>
+                        <span>反应速率分析</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 元素周期表探索 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>元素周期表探索</h2>
+                <span class="app-tag">元素性质</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="periodic-table">
+                        <h3>交互式元素周期表</h3>
+                        <div class="table-controls">
+                            <button onclick="showProperty('atomic-radius')">原子半径</button>
+                            <button onclick="showProperty('electronegativity')">电负性</button>
+                            <button onclick="showProperty('ionization-energy')">电离能</button>
+                            <button onclick="showProperty('metallic')">金属性</button>
+                        </div>
+                        
+                        <div class="periodic-grid" id="periodicGrid">
+                            <!-- 元素周期表将通过JavaScript生成 -->
+                        </div>
+                        
+                        <div id="elementDetails" class="element-details">
+                            <p>点击元素查看详细信息</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>可视化元素性质规律</li>
+                            <li>交互式教学工具</li>
+                            <li>元素性质对比分析</li>
+                            <li>周期性规律演示</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>探索元素性质规律</li>
+                            <li>理解周期性变化</li>
+                            <li>记忆元素特性</li>
+                            <li>发现化学规律</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>交互式周期表</span>
+                        <span>性质可视化</span>
+                        <span>趋势分析图</span>
+                        <span>元素详情卡片</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="chemistry_apps.js"></script>
+</body>
+</html>

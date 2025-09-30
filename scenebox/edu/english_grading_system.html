@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学英语作文批改助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+        
+        .input-section {
+            padding: 30px;
+            border-right: 2px solid #f1f2f6;
+        }
+        
+        .output-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2d3436;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .textarea-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .essay-input {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: none;
+            transition: border-color 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .essay-input:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 10px rgba(116, 185, 255, 0.3);
+        }
+        
+        .word-count {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            background: #74b9ff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-container {
+            display: none;
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .score-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .feedback-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .feedback-title {
+            font-size: 18px;
+            color: #2d3436;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feedback-list {
+            list-style: none;
+        }
+        
+        .feedback-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f2f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .feedback-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feedback-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .positive {
+            background: #00b894;
+        }
+        
+        .improvement {
+            background: #fdcb6e;
+        }
+        
+        .error {
+            background: #e17055;
+        }
+        
+        .sample-texts {
+            margin-top: 20px;
+        }
+        
+        .sample-btn {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background: #74b9ff;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .sample-btn:hover {
+            background: #0984e3;
+            transform: translateY(-1px);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #74b9ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tips {
+            background: #e8f4fd;
+            border-left: 4px solid #74b9ff;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin-top: 20px;
+        }
+        
+        .tips h4 {
+            color: #0984e3;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .tips ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+        
+        .tips li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 2px solid #f1f2f6;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .essay-input {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 小学英语作文批改助手</h1>
+            <p>专为三年级小朋友设计的智能作文评分系统</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- 左侧输入区域 -->
+            <div class="input-section">
+                <h2 class="section-title">
+                    ✏️ 请输入你的英语作文
+                </h2>
+                
+                <div class="textarea-container">
+                    <textarea 
+                        id="essayInput" 
+                        class="essay-input" 
+                        placeholder="请在这里写下你的英语作文...\n\n例如：\nMy Family\nI have a happy family. There are three people in my family. My father is a teacher. My mother is a doctor. I am a student. I love my family very much."
+                    ></textarea>
+                    <div class="word-count" id="wordCount">0 words</div>
+                </div>
+                
+                <button class="submit-btn" id="submitBtn" onclick="gradeEssay()">
+                    🚀 开始批改作文
+                </button>
+                
+                <div class="sample-texts">
+                    <h4 style="margin-bottom: 10px; color: #2d3436;">📚 示例作文（点击使用）：</h4>
+                    <button class="sample-btn" onclick="loadSample(1)">我的家庭</button>
+                    <button class="sample-btn" onclick="loadSample(2)">我的学校</button>
+                    <button class="sample-btn" onclick="loadSample(3)">我的朋友</button>
+                    <button class="sample-btn" onclick="loadSample(4)">我的宠物</button>
+                </div>
+                
+                <div class="tips">
+                    <h4>💡 写作小贴士：</h4>
+                    <ul>
+                        <li>使用简单的句子结构</li>
+                        <li>注意大小写和标点符号</li>
+                        <li>尽量使用学过的单词</li>
+                        <li>每句话表达一个完整的意思</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 右侧输出区域 -->
+            <div class="output-section">
+                <h2 class="section-title">
+                    📊 批改结果
+                </h2>
+                
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <p>AI老师正在认真批改你的作文...</p>
+                </div>
+                
+                <div class="result-container" id="resultContainer">
+                    <div class="score-display">
+                        <div class="score-number" id="scoreNumber">85</div>
+                        <div class="score-label">分 / 100分</div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">✨ 做得很好的地方</h3>
+                        <ul class="feedback-list" id="positiveList">
+                            <li>
+                                <span class="feedback-icon positive">✓</span>
+                                <span>句子结构清晰，表达流畅</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">🔧 需要改进的地方</h3>
+                        <ul class="feedback-list" id="improvementList">
+                            <li>
+                                <span class="feedback-icon improvement">!</span>
+                                <span>注意单词拼写的准确性</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3 class="feedback-title">❌ 发现的错误</h3>
+                        <ul class="feedback-list" id="errorList">
+                            <li>
+                                <span class="feedback-icon error">×</span>
+                                <span>第2行："familys" 应该是 "families"</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="placeholder" style="text-align: center; padding: 60px 20px; color: #74b9ff;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🤖</div>
+                    <p style="font-size: 18px; margin-bottom: 10px;">AI老师在等待你的作文</p>
+                    <p style="font-size: 14px; color: #636e72;">请在左侧输入你的英语作文，然后点击批改按钮</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 示例作文数据
+        const sampleEssays = {
+            1: `My Family
+I have a happy family. There are four people in my family. My father is a teacher. He teaches English. My mother is a doctor. She helps sick people. I have a little sister. She is five years old. I am a student. I study in Grade 3. We love each other very much. I love my family.`,
+            
+            2: `My School
+I go to Sunshine Primary School. My school is very beautiful. There are many trees and flowers. I have many friends at school. My teacher is Miss Wang. She is very kind. I like English and Math. We have PE class on Tuesday. I like playing basketball. My school life is happy.`,
+            
+            3: `My Best Friend
+I have a best friend. Her name is Lucy. She is eight years old. She has long black hair and big eyes. She is very kind and funny. We play together every day. She likes reading books. I like drawing pictures. We help each other with homework. I am happy to have such a good friend.`,
+            
+            4: `My Pet Dog
+I have a pet dog. His name is Lucky. He is brown and white. He is very cute and smart. Lucky likes to play with balls. He can sit and shake hands. Every morning, I walk with Lucky in the park. He is my best friend. I love Lucky very much.`
+        };
+        
+        // 字数统计
+        document.getElementById('essayInput').addEventListener('input', function() {
+            const text = this.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('wordCount').textContent = words + ' words';
+        });
+        
+        // 加载示例作文
+        function loadSample(id) {
+            document.getElementById('essayInput').value = sampleEssays[id];
+            const words = sampleEssays[id].split(/\s+/).length;
+            document.getElementById('wordCount').textContent = words + ' words';
+        }
+        
+        // 模拟AI批改功能
+        function gradeEssay() {
+            const essay = document.getElementById('essayInput').value.trim();
+            
+            if (!essay) {
+                alert('请先输入你的英语作文！');
+                return;
+            }
+            
+            // 显示加载状态
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // 模拟AI处理时间
+            setTimeout(() => {
+                const result = analyzeEssay(essay);
+                displayResult(result);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resultContainer').style.display = 'block';
+                document.getElementById('submitBtn').disabled = false;
+            }, 2000);
+        }
+        
+        // 简单的作文分析算法
+        function analyzeEssay(essay) {
+            const words = essay.split(/\s+/);
+            const sentences = essay.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            const wordCount = words.length;
+            
+            let score = 60; // 基础分
+            const positive = [];
+            const improvements = [];
+            const errors = [];
+            
+            // 字数评分
+            if (wordCount >= 50) {
+                score += 15;
+                positive.push('作文长度适中，内容丰富');
+            } else if (wordCount >= 30) {
+                score += 10;
+                positive.push('作文长度合适');
+            } else {
+                improvements.push('可以尝试写得更长一些，增加更多细节');
+            }
+            
+            // 句子结构评分
+            if (sentences.length >= 5) {
+                score += 10;
+                positive.push('句子数量充足，表达完整');
+            }
+            
+            // 检查常见单词
+            const commonWords = ['I', 'my', 'is', 'are', 'have', 'like', 'very', 'good', 'happy'];
+            const usedCommonWords = commonWords.filter(word => 
+                essay.toLowerCase().includes(word.toLowerCase())
+            );
+            
+            if (usedCommonWords.length >= 5) {
+                score += 10;
+                positive.push('使用了丰富的基础词汇');
+            }
+            
+            // 检查大小写
+            if (/^[A-Z]/.test(essay)) {
+                score += 5;
+                positive.push('注意了句首大写');
+            } else {
+                errors.push('记得句子开头要大写哦');
+                score -= 5;
+            }
+            
+            // 检查标点符号
+            if (/[.!?]/.test(essay)) {
+                positive.push('正确使用了标点符号');
+            } else {
+                improvements.push('记得在句子结尾加上标点符号');
+                score -= 5;
+            }
+            
+            // 随机添加一些建议
+            const randomImprovements = [
+                '可以尝试使用更多的形容词来描述',
+                '试着连接句子，让文章更流畅',
+                '可以添加更多的细节描述',
+                '尝试使用不同的句式结构'
+            ];
+            
+            if (Math.random() > 0.5) {
+                improvements.push(randomImprovements[Math.floor(Math.random() * randomImprovements.length)]);
+            }
+            
+            // 确保分数在合理范围内
+            score = Math.max(50, Math.min(100, score));
+            
+            return {
+                score: score,
+                positive: positive,
+                improvements: improvements,
+                errors: errors
+            };
+        }
+        
+        // 显示批改结果
+        function displayResult(result) {
+            document.getElementById('scoreNumber').textContent = result.score;
+            
+            // 显示积极反馈
+            const positiveList = document.getElementById('positiveList');
+            positiveList.innerHTML = '';
+            result.positive.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="feedback-icon positive">✓</span>
+                    <span>${item}</span>
+                `;
+                positiveList.appendChild(li);
+            });
+            
+            // 显示改进建议
+            const improvementList = document.getElementById('improvementList');
+            improvementList.innerHTML = '';
+            if (result.improvements.length === 0) {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="feedback-icon positive">✓</span>
+                    <span>写得很棒，继续保持！</span>
+                `;
+                improvementList.appendChild(li);
+            } else {
+                result.improvements.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="feedback-icon improvement">!</span>
+                        <span>${item}</span>
+                    `;
+                    improvementList.appendChild(li);
+                });
+            }
+            
+            // 显示错误
+            const errorList = document.getElementById('errorList');
+            errorList.innerHTML = '';
+            if (result.errors.length === 0) {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="feedback-icon positive">✓</span>
+                    <span>没有发现明显错误，太棒了！</span>
+                `;
+                errorList.appendChild(li);
+            } else {
+                result.errors.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="feedback-icon error">×</span>
+                        <span>${item}</span>
+                    `;
+                    errorList.appendChild(li);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

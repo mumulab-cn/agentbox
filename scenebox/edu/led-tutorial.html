@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED电路连接教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tutorial-content {
+            display: flex;
+            min-height: 700px;
+        }
+        
+        .steps-panel {
+            width: 350px;
+            background: linear-gradient(135deg, #a8e6cf, #88d8c0);
+            padding: 20px;
+            border-right: 3px solid #ddd;
+            overflow-y: auto;
+        }
+        
+        .step {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+        }
+        
+        .step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .step.active {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .step.completed {
+            border-left-color: #27ae60;
+            background: #f0fff4;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+        
+        .step.active .step-number {
+            background: #e74c3c;
+        }
+        
+        .step.completed .step-number {
+            background: #27ae60;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .step-description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .demo-area {
+            flex: 1;
+            background: #2c3e50;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .circuit-board {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 400px;
+            background: #34495e;
+            border-radius: 15px;
+            border: 3px solid #95a5a6;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .component {
+            position: absolute;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        
+        .component.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .component.highlight {
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+            transform: scale(1.1);
+        }
+        
+        .battery {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            top: 50px;
+            left: 50px;
+        }
+        
+        .battery::after {
+            content: '+';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #a93226;
+            width: 6px;
+            height: 20px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .resistor {
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            top: 50px;
+            left: 250px;
+        }
+        
+        .resistor::before {
+            content: '';
+            position: absolute;
+            width: 70%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #d35400 0px,
+                #d35400 3px,
+                #e67e22 3px,
+                #e67e22 6px
+            );
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .led {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 50%;
+            top: 50px;
+            right: 50px;
+        }
+        
+        .led::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 10px solid #2980b9;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .connection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #f39c12;
+            border: 2px solid #333;
+            border-radius: 50%;
+            z-index: 20;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .connection-point.show {
+            opacity: 1;
+        }
+        
+        .connection-point.highlight {
+            background: #e74c3c;
+            transform: scale(1.5);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.8);
+        }
+        
+        .wire {
+            position: absolute;
+            height: 4px;
+            background: #f39c12;
+            border-radius: 2px;
+            z-index: 5;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .wire.show {
+            opacity: 1;
+        }
+        
+        .wire.active {
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        .instruction-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 300px;
+        }
+        
+        .instruction-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .instruction-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        
+        .celebration.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .tutorial-content {
+                flex-direction: column;
+            }
+            
+            .steps-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 3px solid #ddd;
+                max-height: 200px;
+            }
+            
+            .circuit-board {
+                width: 90%;
+                height: 300px;
+            }
+            
+            .instruction-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 20px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 LED电路连接教程 ⚡</h1>
+            <p>跟着步骤，一步一步学会连接LED电路！</p>
+        </div>
+        
+        <div class="tutorial-content">
+            <div class="steps-panel">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">📋 连接步骤</h3>
+                
+                <div class="step active" data-step="0">
+                    <span class="step-number">1</span>
+                    <div class="step-title">准备电子元件</div>
+                    <div class="step-description">认识电池、电阻和LED三个基本元件</div>
+                </div>
+                
+                <div class="step" data-step="1">
+                    <span class="step-number">2</span>
+                    <div class="step-title">放置电池</div>
+                    <div class="step-description">电池是电路的电源，提供电流</div>
+                </div>
+                
+                <div class="step" data-step="2">
+                    <span class="step-number">3</span>
+                    <div class="step-title">放置电阻</div>
+                    <div class="step-description">电阻用来限制电流，保护LED</div>
+                </div>
+                
+                <div class="step" data-step="3">
+                    <span class="step-number">4</span>
+                    <div class="step-title">放置LED</div>
+                    <div class="step-description">LED是发光二极管，通电后会发光</div>
+                </div>
+                
+                <div class="step" data-step="4">
+                    <span class="step-number">5</span>
+                    <div class="step-title">连接正极线路</div>
+                    <div class="step-description">从电池正极连接到电阻</div>
+                </div>
+                
+                <div class="step" data-step="5">
+                    <span class="step-number">6</span>
+                    <div class="step-title">连接到LED正极</div>
+                    <div class="step-description">从电阻连接到LED的正极</div>
+                </div>
+                
+                <div class="step" data-step="6">
+                    <span class="step-number">7</span>
+                    <div class="step-title">连接负极回路</div>
+                    <div class="step-description">从LED负极连接回电池负极</div>
+                </div>
+                
+                <div class="step" data-step="7">
+                    <span class="step-number">8</span>
+                    <div class="step-title">测试电路</div>
+                    <div class="step-description">检查电路是否正确，LED是否发光</div>
+                </div>
+            </div>
+            
+            <div class="demo-area">
+                <div class="circuit-board">
+                    <div class="grid-overlay"></div>
+                    
+                    <!-- 电子元件 -->
+                    <div class="component battery" id="battery">
+                        电池<br>3V
+                    </div>
+                    
+                    <div class="component resistor" id="resistor">
+                        电阻<br>220Ω
+                    </div>
+                    
+                    <div class="component led" id="led">
+                        LED
+                    </div>
+                    
+                    <!-- 连接点 -->
+                    <div class="connection-point" id="battery-pos" style="left: 136px; top: 64px;"></div>
+                    <div class="connection-point" id="battery-neg" style="left: 44px; top: 64px;"></div>
+                    <div class="connection-point" id="resistor-left" style="left: 244px; top: 59px;"></div>
+                    <div class="connection-point" id="resistor-right" style="left: 316px; top: 59px;"></div>
+                    <div class="connection-point" id="led-pos" style="right: 44px; top: 64px;"></div>
+                    <div class="connection-point" id="led-neg" style="right: 44px; top: 120px;"></div>
+                    
+                    <!-- 导线 -->
+                    <div class="wire" id="wire1" style="left: 148px; top: 68px; width: 108px;"></div>
+                    <div class="wire" id="wire2" style="left: 328px; top: 63px; width: 222px;"></div>
+                    <div class="wire" id="wire3" style="right: 50px; top: 132px; width: 4px; height: 200px;"></div>
+                    <div class="wire" id="wire4" style="left: 50px; top: 332px; width: 500px;"></div>
+                    <div class="wire" id="wire5" style="left: 50px; top: 76px; width: 4px; height: 260px;"></div>
+                </div>
+                
+                <div class="instruction-panel">
+                    <div class="instruction-title" id="instructionTitle">🎯 第1步：准备电子元件</div>
+                    <div class="instruction-text" id="instructionText">
+                        欢迎来到LED电路连接教程！我们将学习如何连接一个基本的LED电路。
+                        <br><br>
+                        <strong>需要的元件：</strong><br>
+                        • 电池（提供电源）<br>
+                        • 电阻（限制电流）<br>
+                        • LED（发光二极管）
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button class="btn btn-primary" onclick="nextStep()">下一步</button>
+                        <button class="btn btn-warning" onclick="prevStep()">上一步</button>
+                        <button class="btn btn-success" onclick="autoDemo()">自动演示</button>
+                        <button class="btn btn-danger" onclick="resetDemo()">重新开始</button>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="celebration" id="celebration">🎉</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 0;
+        let isAutoDemo = false;
+        let autoInterval;
+        
+        const steps = [
+            {
+                title: '🎯 第1步：准备电子元件',
+                text: `欢迎来到LED电路连接教程！我们将学习如何连接一个基本的LED电路。
+                <br><br>
+                <strong>需要的元件：</strong><br>
+                • 电池（提供电源）<br>
+                • 电阻（限制电流）<br>
+                • LED（发光二极管）`,
+                action: () => {
+                    // 显示所有元件
+                    document.getElementById('battery').classList.add('show');
+                    document.getElementById('resistor').classList.add('show');
+                    document.getElementById('led').classList.add('show');
+                }
+            },
+            {
+                title: '🔋 第2步：认识电池',
+                text: `电池是电路的心脏，它提供电流让电路工作。
+                <br><br>
+                <strong>重要知识：</strong><br>
+                • 电池有正极（+）和负极（-）<br>
+                • 电流从正极流向负极<br>
+                • 我们使用3V电池`,
+                action: () => {
+                    document.getElementById('battery').classList.add('highlight');
+                    document.getElementById('battery-pos').classList.add('show');
+                    document.getElementById('battery-neg').classList.add('show');
+                }
+            },
+            {
+                title: '⚡ 第3步：认识电阻',
+                text: `电阻用来限制电路中的电流大小，保护LED不被烧坏。
+                <br><br>
+                <strong>重要知识：</strong><br>
+                • 电阻值用欧姆（Ω）表示<br>
+                • 220Ω电阻适合3V电池和LED<br>
+                • 电阻没有正负极之分`,
+                action: () => {
+                    document.getElementById('battery').classList.remove('highlight');
+                    document.getElementById('resistor').classList.add('highlight');
+                    document.getElementById('resistor-left').classList.add('show');
+                    document.getElementById('resistor-right').classList.add('show');
+                }
+            },
+            {
+                title: '💡 第4步：认识LED',
+                text: `LED是发光二极管，通电后会发光。
+                <br><br>
+                <strong>重要知识：</strong><br>
+                • LED有正极（长脚）和负极（短脚）<br>
+                • 必须正确连接正负极才能发光<br>
+                • LED很节能，寿命很长`,
+                action: () => {
+                    document.getElementById('resistor').classList.remove('highlight');
+                    document.getElementById('led').classList.add('highlight');
+                    document.getElementById('led-pos').classList.add('show');
+                    document.getElementById('led-neg').classList.add('show');
+                }
+            },
+            {
+                title: '🔌 第5步：连接正极线路',
+                text: `现在开始连接电路！首先连接电池正极到电阻。
+                <br><br>
+                <strong>连接说明：</strong><br>
+                • 从电池正极（+）连接到电阻左端<br>
+                • 这条线路将电流从电池传递到电阻<br>
+                • 注意连接点的位置`,
+                action: () => {
+                    document.getElementById('led').classList.remove('highlight');
+                    document.getElementById('battery-pos').classList.add('highlight');
+                    document.getElementById('resistor-left').classList.add('highlight');
+                    document.getElementById('wire1').classList.add('show');
+                }
+            },
+            {
+                title: '➡️ 第6步：连接到LED正极',
+                text: `接下来连接电阻到LED的正极。
+                <br><br>
+                <strong>连接说明：</strong><br>
+                • 从电阻右端连接到LED正极<br>
+                • 电流经过电阻后流向LED<br>
+                • 电阻限制了电流大小，保护LED`,
+                action: () => {
+                    document.getElementById('battery-pos').classList.remove('highlight');
+                    document.getElementById('resistor-left').classList.remove('highlight');
+                    document.getElementById('resistor-right').classList.add('highlight');
+                    document.getElementById('led-pos').classList.add('highlight');
+                    document.getElementById('wire2').classList.add('show');
+                }
+            },
+            {
+                title: '🔄 第7步：连接负极回路',
+                text: `最后连接LED负极回到电池负极，形成完整回路。
+                <br><br>
+                <strong>连接说明：</strong><br>
+                • 从LED负极连接回电池负极<br>
+                • 形成完整的电流回路<br>
+                • 电流可以循环流动`,
+                action: () => {
+                    document.getElementById('resistor-right').classList.remove('highlight');
+                    document.getElementById('led-pos').classList.remove('highlight');
+                    document.getElementById('led-neg').classList.add('highlight');
+                    document.getElementById('battery-neg').classList.add('highlight');
+                    document.getElementById('wire3').classList.add('show');
+                    document.getElementById('wire4').classList.add('show');
+                    document.getElementById('wire5').classList.add('show');
+                }
+            },
+            {
+                title: '✅ 第8步：电路完成！',
+                text: `恭喜！你已经成功连接了LED电路！
+                <br><br>
+                <strong>电路工作原理：</strong><br>
+                • 电流从电池正极出发<br>
+                • 经过电阻限制电流大小<br>
+                • 流过LED使其发光<br>
+                • 最后回到电池负极形成回路`,
+                action: () => {
+                    document.getElementById('led-neg').classList.remove('highlight');
+                    document.getElementById('battery-neg').classList.remove('highlight');
+                    
+                    // 激活所有导线
+                    document.querySelectorAll('.wire').forEach(wire => {
+                        wire.classList.add('active');
+                    });
+                    
+                    // LED发光效果
+                    document.getElementById('led').style.boxShadow = '0 0 30px rgba(52, 152, 219, 0.8)';
+                    document.getElementById('led').style.background = 'radial-gradient(circle, #3498db, #2980b9)';
+                    
+                    // 显示庆祝动画
+                    document.getElementById('celebration').classList.add('show');
+                    setTimeout(() => {
+                        document.getElementById('celebration').classList.remove('show');
+                    }, 2000);
+                }
+            }
+        ];
+        
+        function updateStep() {
+            // 更新步骤面板
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // 更新指令面板
+            const step = steps[currentStep];
+            document.getElementById('instructionTitle').textContent = step.title;
+            document.getElementById('instructionText').innerHTML = step.text;
+            
+            // 执行步骤动作
+            step.action();
+            
+            // 更新进度条
+            const progress = ((currentStep + 1) / steps.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateStep();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateStep();
+            }
+        }
+        
+        function autoDemo() {
+            if (isAutoDemo) {
+                clearInterval(autoInterval);
+                isAutoDemo = false;
+                document.querySelector('.btn-success').textContent = '自动演示';
+            } else {
+                isAutoDemo = true;
+                document.querySelector('.btn-success').textContent = '停止演示';
+                autoInterval = setInterval(() => {
+                    if (currentStep < steps.length - 1) {
+                        nextStep();
+                    } else {
+                        clearInterval(autoInterval);
+                        isAutoDemo = false;
+                        document.querySelector('.btn-success').textContent = '自动演示';
+                    }
+                }, 3000);
+            }
+        }
+        
+        function resetDemo() {
+            if (isAutoDemo) {
+                clearInterval(autoInterval);
+                isAutoDemo = false;
+                document.querySelector('.btn-success').textContent = '自动演示';
+            }
+            
+            currentStep = 0;
+            
+            // 重置所有元素
+            document.querySelectorAll('.component').forEach(comp => {
+                comp.classList.remove('show', 'highlight');
+                comp.style.boxShadow = '';
+                comp.style.background = '';
+            });
+            
+            document.querySelectorAll('.connection-point').forEach(point => {
+                point.classList.remove('show', 'highlight');
+            });
+            
+            document.querySelectorAll('.wire').forEach(wire => {
+                wire.classList.remove('show', 'active');
+            });
+            
+            document.getElementById('celebration').classList.remove('show');
+            
+            updateStep();
+        }
+        
+        // 点击步骤跳转
+        document.querySelectorAll('.step').forEach((step, index) => {
+            step.addEventListener('click', () => {
+                currentStep = index;
+                updateStep();
+            });
+        });
+        
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextStep();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevStep();
+            } else if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                resetDemo();
+            }
+        });
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStep();
+        });
+    </script>
+</body>
+</html>

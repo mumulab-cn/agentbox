@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程分组小程序 - K12学科平台</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .grouping-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .grouping-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grouping-header h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .grouping-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 217, 61, 0.4);
+        }
+        
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .group-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .group-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--group-color, #667eea);
+        }
+        
+        .group-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .group-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+        
+        .group-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .group-members {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .member-number {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .member-number:hover {
+            border-color: var(--group-color, #667eea);
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            transform: scale(1.05);
+        }
+        
+        .stats-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .grouping-container {
+                padding: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+            
+            .group-members {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .animation-fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>K12学科创新应用平台</h1>
+            <p>面向中小学师生的学科创新应用集合</p>
+            <nav class="main-nav">
+                <a href="index.php" class="nav-link">🏠 学科应用</a>
+                <a href="ai_innovation.php" class="nav-link">🤖 AI创新展示</a>
+                <a href="rand.php" class="nav-link active">🎲 课程分组</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="grouping-container">
+        <div class="grouping-header">
+            <h1>🎲 课程分组小程序</h1>
+            <p>智能随机分组，让课堂更有趣！将42个学号随机分成7组，每组6人</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="generateGroups()">🎯 开始分组</button>
+            <button class="btn btn-success" onclick="regenerateGroups()">🔄 重新分组</button>
+            <button class="btn btn-warning" onclick="clearGroups()">🗑️ 清空分组</button>
+            <a href="index.php" class="btn" style="background: #6c757d; color: white;">← 返回主页</a>
+        </div>
+        
+        <div class="stats-container" id="statsContainer" style="display: none;">
+            <h3 style="text-align: center; color: #2c3e50; margin-bottom: 1rem;">📊 分组统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">42</div>
+                    <div class="stat-label">总人数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">分组数量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">每组人数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="groupingTime">0</div>
+                    <div class="stat-label">分组用时(秒)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="groupsContainer">
+            <div class="empty-state">
+                <div class="empty-state-icon">🎲</div>
+                <h3>还没有进行分组</h3>
+                <p>点击"开始分组"按钮来随机分配学生到各个小组</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 K12学科创新应用平台 - 让学习更有趣</p>
+        </div>
+    </footer>
+
+    <script>
+        // 分组颜色配置
+        const groupColors = [
+            '#FF6B6B', // 红色
+            '#4ECDC4', // 青色
+            '#45B7D1', // 蓝色
+            '#96CEB4', // 绿色
+            '#FECA57', // 黄色
+            '#FF9FF3', // 粉色
+            '#54A0FF'  // 紫色
+        ];
+        
+        // 分组图标配置
+        const groupIcons = ['🔴', '🟢', '🔵', '🟡', '🟠', '🟣', '🟤'];
+        
+        let currentGroups = [];
+        let startTime = 0;
+        
+        // 生成随机分组
+        function generateGroups() {
+            startTime = Date.now();
+            
+            // 创建1-42的数组
+            const numbers = Array.from({length: 42}, (_, i) => i + 1);
+            
+            // 洗牌算法
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+            }
+            
+            // 分成7组，每组6人
+            currentGroups = [];
+            for (let i = 0; i < 7; i++) {
+                const group = numbers.slice(i * 6, (i + 1) * 6);
+                currentGroups.push(group.sort((a, b) => a - b)); // 组内排序
+            }
+            
+            displayGroups();
+            showStats();
+        }
+        
+        // 重新分组
+        function regenerateGroups() {
+            if (currentGroups.length === 0) {
+                generateGroups();
+                return;
+            }
+            
+            // 添加重新分组动画
+            const container = document.getElementById('groupsContainer');
+            container.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                generateGroups();
+                container.style.opacity = '1';
+            }, 300);
+        }
+        
+        // 清空分组
+        function clearGroups() {
+            currentGroups = [];
+            document.getElementById('groupsContainer').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎲</div>
+                    <h3>还没有进行分组</h3>
+                    <p>点击"开始分组"按钮来随机分配学生到各个小组</p>
+                </div>
+            `;
+            document.getElementById('statsContainer').style.display = 'none';
+        }
+        
+        // 显示分组结果
+        function displayGroups() {
+            const container = document.getElementById('groupsContainer');
+            let html = '<div class="groups-container">';
+            
+            currentGroups.forEach((group, index) => {
+                const color = groupColors[index];
+                const icon = groupIcons[index];
+                
+                html += `
+                    <div class="group-card animation-fade-in" style="--group-color: ${color}; animation-delay: ${index * 0.1}s">
+                        <div class="group-header">
+                            <div class="group-icon">${icon}</div>
+                            <h3 class="group-title">第 ${index + 1} 组</h3>
+                        </div>
+                        <div class="group-members">
+                `;
+                
+                group.forEach(number => {
+                    html += `<div class="member-number" style="--group-color: ${color}">${number}</div>`;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // 显示统计信息
+        function showStats() {
+            const endTime = Date.now();
+            const duration = ((endTime - startTime) / 1000).toFixed(2);
+            
+            document.getElementById('groupingTime').textContent = duration;
+            document.getElementById('statsContainer').style.display = 'block';
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'g' || e.key === 'G') {
+                    generateGroups();
+                } else if (e.key === 'r' || e.key === 'R') {
+                    regenerateGroups();
+                } else if (e.key === 'c' || e.key === 'C') {
+                    clearGroups();
+                }
+            });
+            
+            // 添加提示信息
+            console.log('🎲 课程分组小程序已加载');
+            console.log('快捷键: G-开始分组, R-重新分组, C-清空分组');
+        });
+        
+        // 导出分组结果为文本
+        function exportGroups() {
+            if (currentGroups.length === 0) {
+                alert('请先进行分组！');
+                return;
+            }
+            
+            let text = '课程分组结果\n';
+            text += '==================\n\n';
+            
+            currentGroups.forEach((group, index) => {
+                text += `第 ${index + 1} 组: ${group.join(', ')}\n`;
+            });
+            
+            text += '\n==================\n';
+            text += `总计: 42人，分成7组，每组6人\n`;
+            text += `分组时间: ${new Date().toLocaleString()}\n`;
+            
+            // 创建下载链接
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `课程分组结果_${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 添加导出按钮到控制区域
+        window.addEventListener('load', function() {
+            const controls = document.querySelector('.controls');
+            const exportBtn = document.createElement('button');
+            exportBtn.className = 'btn';
+            exportBtn.style.background = '#17a2b8';
+            exportBtn.style.color = 'white';
+            exportBtn.innerHTML = '📄 导出结果';
+            exportBtn.onclick = exportGroups;
+            controls.insertBefore(exportBtn, controls.lastElementChild);
+        });
+    </script>
+</body>
+</html>

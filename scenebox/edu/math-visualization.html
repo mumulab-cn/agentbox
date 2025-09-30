@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学概念可视化 - AI课堂教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .concept-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .selector-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .selector-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .concept-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .concept-tab {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: #666;
+        }
+
+        .concept-tab.active {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+        }
+
+        .concept-tab:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .concept-tab.active:hover {
+            background: #2980b9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .visualization-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .visualization-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px solid #e0e0e0;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: bold;
+            color: #3498db;
+            margin-top: 5px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .success-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .warning-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .danger-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .explanation-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+        }
+
+        .explanation-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .explanation-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .explanation-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-family: 'Times New Roman', serif;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        /* 可视化元素样式 */
+        .shape {
+            transition: all 0.3s ease;
+        }
+
+        .number-line {
+            position: relative;
+            height: 60px;
+            margin: 20px 0;
+        }
+
+        .line {
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #2c3e50;
+        }
+
+        .tick {
+            position: absolute;
+            top: 25px;
+            width: 2px;
+            height: 10px;
+            background: #2c3e50;
+        }
+
+        .tick-label {
+            position: absolute;
+            top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+            transform: translateX(-50%);
+        }
+
+        .fraction-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .fraction-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #3498db;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fraction-part {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #3498db;
+            opacity: 0.3;
+            transform-origin: center;
+        }
+
+        .geometry-canvas {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .concept-tabs {
+                justify-content: center;
+            }
+
+            .control-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回主页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📊 数学概念可视化</h1>
+            <p>AI互动数学系统 - 让抽象概念变得生动直观</p>
+        </div>
+
+        <div class="concept-selector">
+            <div class="selector-title">
+                <span class="icon">🎯</span>
+                选择数学概念
+            </div>
+            
+            <div class="concept-tabs">
+                <div class="concept-tab active" onclick="switchConcept('addition')">加法运算</div>
+                <div class="concept-tab" onclick="switchConcept('fraction')">分数概念</div>
+                <div class="concept-tab" onclick="switchConcept('geometry')">几何图形</div>
+                <div class="concept-tab" onclick="switchConcept('multiplication')">乘法表</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="visualization-panel">
+                <div class="panel-title">
+                    <span class="icon">🎨</span>
+                    可视化展示
+                </div>
+                
+                <div class="visualization-area" id="visualizationArea">
+                    <!-- 可视化内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="panel-title">
+                    <span class="icon">🎛️</span>
+                    交互控制
+                </div>
+                
+                <div id="controlsContainer">
+                    <!-- 控制面板内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="explanation-panel">
+                <div class="panel-title">
+                    <span class="icon">💡</span>
+                    概念解释
+                </div>
+                
+                <div class="explanation-content" id="explanationContent">
+                    <!-- 解释内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentConcept = 'addition';
+        let animationId = null;
+
+        const concepts = {
+            addition: {
+                title: '加法运算',
+                explanation: {
+                    title: '加法的含义',
+                    text: '加法是把两个或多个数合并成一个数的运算。通过实物演示，我们可以直观地理解加法的过程。',
+                    formula: '被加数 + 加数 = 和'
+                },
+                controls: [
+                    { type: 'number', id: 'addend1', label: '第一个加数', min: 1, max: 10, value: 3 },
+                    { type: 'number', id: 'addend2', label: '第二个加数', min: 1, max: 10, value: 2 },
+                    { type: 'button', id: 'animateBtn', label: '演示过程', class: 'primary-btn' },
+                    { type: 'button', id: 'resetBtn', label: '重置', class: 'warning-btn' }
+                ]
+            },
+            fraction: {
+                title: '分数概念',
+                explanation: {
+                    title: '分数的含义',
+                    text: '分数表示把一个整体平均分成若干份，取其中的几份。分子表示取的份数，分母表示总份数。',
+                    formula: '分数 = 分子 / 分母'
+                },
+                controls: [
+                    { type: 'range', id: 'numerator', label: '分子', min: 1, max: 8, value: 3 },
+                    { type: 'range', id: 'denominator', label: '分母', min: 2, max: 8, value: 4 },
+                    { type: 'button', id: 'showDecimal', label: '显示小数', class: 'success-btn' },
+                    { type: 'button', id: 'compareBtn', label: '比较分数', class: 'primary-btn' }
+                ]
+            },
+            geometry: {
+                title: '几何图形',
+                explanation: {
+                    title: '基本几何图形',
+                    text: '几何图形是数学中研究形状、大小、位置关系的基础。通过观察和操作，我们可以理解各种图形的特征。',
+                    formula: '周长 = 各边长度之和'
+                },
+                controls: [
+                    { type: 'select', id: 'shapeType', label: '选择图形', options: ['正方形', '长方形', '三角形', '圆形'] },
+                    { type: 'range', id: 'shapeSize', label: '大小', min: 50, max: 150, value: 100 },
+                    { type: 'button', id: 'calculateBtn', label: '计算周长', class: 'primary-btn' },
+                    { type: 'button', id: 'rotateBtn', label: '旋转图形', class: 'success-btn' }
+                ]
+            },
+            multiplication: {
+                title: '乘法表',
+                explanation: {
+                    title: '乘法的含义',
+                    text: '乘法是求几个相同加数和的简便运算。通过数组排列，我们可以直观地理解乘法的含义。',
+                    formula: '被乘数 × 乘数 = 积'
+                },
+                controls: [
+                    { type: 'range', id: 'multiplier', label: '被乘数', min: 1, max: 9, value: 3 },
+                    { type: 'range', id: 'multiplicand', label: '乘数', min: 1, max: 9, value: 4 },
+                    { type: 'button', id: 'showTable', label: '显示乘法表', class: 'primary-btn' },
+                    { type: 'button', id: 'animateMultiply', label: '动画演示', class: 'success-btn' }
+                ]
+            }
+        };
+
+        function switchConcept(conceptKey) {
+            currentConcept = conceptKey;
+            
+            // 更新标签页状态
+            document.querySelectorAll('.concept-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 停止当前动画
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            // 更新内容
+            updateControls();
+            updateExplanation();
+            updateVisualization();
+        }
+
+        function updateControls() {
+            const concept = concepts[currentConcept];
+            const container = document.getElementById('controlsContainer');
+            
+            container.innerHTML = '';
+            
+            concept.controls.forEach(control => {
+                const controlGroup = document.createElement('div');
+                controlGroup.className = 'control-group';
+                
+                if (control.type === 'number' || control.type === 'range') {
+                    controlGroup.innerHTML = `
+                        <label class="control-label" for="${control.id}">${control.label}:</label>
+                        <input type="${control.type}" id="${control.id}" class="control-input ${control.type === 'range' ? 'control-slider' : ''}" 
+                               min="${control.min}" max="${control.max}" value="${control.value}" 
+                               oninput="handleControlChange('${control.id}', this.value)">
+                        ${control.type === 'range' ? `<div class="slider-value" id="${control.id}Value">${control.value}</div>` : ''}
+                    `;
+                } else if (control.type === 'select') {
+                    controlGroup.innerHTML = `
+                        <label class="control-label" for="${control.id}">${control.label}:</label>
+                        <select id="${control.id}" class="control-input" onchange="handleControlChange('${control.id}', this.value)">
+                            ${control.options.map((option, index) => `<option value="${index}">${option}</option>`).join('')}
+                        </select>
+                    `;
+                } else if (control.type === 'button') {
+                    controlGroup.innerHTML = `
+                        <button id="${control.id}" class="control-btn ${control.class}" onclick="handleButtonClick('${control.id}')">
+                            ${control.label}
+                        </button>
+                    `;
+                }
+                
+                container.appendChild(controlGroup);
+            });
+        }
+
+        function updateExplanation() {
+            const concept = concepts[currentConcept];
+            const container = document.getElementById('explanationContent');
+            
+            container.innerHTML = `
+                <div class="explanation-title">${concept.explanation.title}</div>
+                <div class="explanation-text">${concept.explanation.text}</div>
+                <div class="formula">${concept.explanation.formula}</div>
+            `;
+        }
+
+        function updateVisualization() {
+            const container = document.getElementById('visualizationArea');
+            
+            switch (currentConcept) {
+                case 'addition':
+                    renderAddition(container);
+                    break;
+                case 'fraction':
+                    renderFraction(container);
+                    break;
+                case 'geometry':
+                    renderGeometry(container);
+                    break;
+                case 'multiplication':
+                    renderMultiplication(container);
+                    break;
+            }
+        }
+
+        function renderAddition(container) {
+            const addend1 = parseInt(document.getElementById('addend1')?.value || 3);
+            const addend2 = parseInt(document.getElementById('addend2')?.value || 2);
+            
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px; color: #2c3e50;">第一组</div>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; max-width: 150px;">
+                            ${Array(addend1).fill().map((_, i) => `<div style="width: 25px; height: 25px; background: #3498db; border-radius: 50%; margin: 2px;"></div>`).join('')}
+                        </div>
+                        <div style="font-size: 1.5rem; margin-top: 10px; color: #3498db; font-weight: bold;">${addend1}</div>
+                    </div>
+                    <div style="font-size: 2rem; color: #2c3e50;">+</div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px; color: #2c3e50;">第二组</div>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; max-width: 150px;">
+                            ${Array(addend2).fill().map((_, i) => `<div style="width: 25px; height: 25px; background: #e74c3c; border-radius: 50%; margin: 2px;"></div>`).join('')}
+                        </div>
+                        <div style="font-size: 1.5rem; margin-top: 10px; color: #e74c3c; font-weight: bold;">${addend2}</div>
+                    </div>
+                    <div style="font-size: 2rem; color: #2c3e50;">=</div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px; color: #2c3e50;">总数</div>
+                        <div style="font-size: 2rem; color: #2ecc71; font-weight: bold;">${addend1 + addend2}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFraction(container) {
+            const numerator = parseInt(document.getElementById('numerator')?.value || 3);
+            const denominator = parseInt(document.getElementById('denominator')?.value || 4);
+            
+            const percentage = (numerator / denominator) * 100;
+            
+            container.innerHTML = `
+                <div class="fraction-visual">
+                    <div style="font-size: 2rem; color: #2c3e50; margin-bottom: 20px;">
+                        <span style="color: #e74c3c;">${numerator}</span> / <span style="color: #3498db;">${denominator}</span>
+                    </div>
+                    <div class="fraction-circle">
+                        <div class="fraction-part" style="clip-path: polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos(2 * Math.PI * numerator / denominator)}% ${50 - 50 * Math.sin(2 * Math.PI * numerator / denominator)}%, 50% 50%);"></div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        ${Array(denominator).fill().map((_, i) => `
+                            <div style="width: 30px; height: 30px; border: 2px solid #3498db; background: ${i < numerator ? '#3498db' : 'white'}; margin: 2px;"></div>
+                        `).join('')}
+                    </div>
+                    <div style="font-size: 1.2rem; color: #666; margin-top: 15px;">
+                        = ${(numerator / denominator).toFixed(2)} = ${percentage.toFixed(1)}%
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGeometry(container) {
+            const shapeType = parseInt(document.getElementById('shapeType')?.value || 0);
+            const size = parseInt(document.getElementById('shapeSize')?.value || 100);
+            const shapes = ['正方形', '长方形', '三角形', '圆形'];
+            
+            let shapeHTML = '';
+            let perimeter = 0;
+            
+            switch (shapeType) {
+                case 0: // 正方形
+                    perimeter = size * 4 / 10;
+                    shapeHTML = `<div style="width: ${size}px; height: ${size}px; background: #3498db; border: 3px solid #2980b9; opacity: 0.8;"></div>`;
+                    break;
+                case 1: // 长方形
+                    perimeter = (size + size * 0.6) * 2 / 10;
+                    shapeHTML = `<div style="width: ${size}px; height: ${size * 0.6}px; background: #e74c3c; border: 3px solid #c0392b; opacity: 0.8;"></div>`;
+                    break;
+                case 2: // 三角形
+                    perimeter = size * 3 / 10;
+                    shapeHTML = `<div style="width: 0; height: 0; border-left: ${size/2}px solid transparent; border-right: ${size/2}px solid transparent; border-bottom: ${size}px solid #f39c12; opacity: 0.8;"></div>`;
+                    break;
+                case 3: // 圆形
+                    perimeter = Math.PI * size / 10;
+                    shapeHTML = `<div style="width: ${size}px; height: ${size}px; background: #9b59b6; border-radius: 50%; border: 3px solid #8e44ad; opacity: 0.8;"></div>`;
+                    break;
+            }
+            
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                    <div style="font-size: 1.3rem; color: #2c3e50; font-weight: bold;">${shapes[shapeType]}</div>
+                    <div style="display: flex; align-items: center; justify-content: center; min-height: 150px;">
+                        ${shapeHTML}
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; border: 2px solid #e0e0e0;">
+                        <div style="font-size: 1.1rem; color: #2c3e50; margin-bottom: 5px;">周长: <span style="color: #e74c3c; font-weight: bold;">${perimeter.toFixed(1)} 单位</span></div>
+                        <div style="font-size: 1.1rem; color: #2c3e50;">大小: <span style="color: #3498db; font-weight: bold;">${size} 像素</span></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMultiplication(container) {
+            const multiplier = parseInt(document.getElementById('multiplier')?.value || 3);
+            const multiplicand = parseInt(document.getElementById('multiplicand')?.value || 4);
+            
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                    <div style="font-size: 1.5rem; color: #2c3e50; margin-bottom: 10px;">
+                        ${multiplier} × ${multiplicand} = ${multiplier * multiplicand}
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(${multiplicand}, 1fr); gap: 5px; padding: 20px; background: white; border-radius: 10px; border: 2px solid #e0e0e0;">
+                        ${Array(multiplier * multiplicand).fill().map((_, i) => `
+                            <div style="width: 25px; height: 25px; background: ${Math.floor(i / multiplicand) % 2 === 0 ? '#3498db' : '#e74c3c'}; border-radius: 3px; margin: 1px;"></div>
+                        `).join('')}
+                    </div>
+                    <div style="font-size: 1.1rem; color: #666; text-align: center;">
+                        ${multiplier} 行 × ${multiplicand} 列 = ${multiplier * multiplicand} 个小方块
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleControlChange(controlId, value) {
+            // 更新滑块显示值
+            const valueDisplay = document.getElementById(controlId + 'Value');
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            // 更新可视化
+            updateVisualization();
+        }
+
+        function handleButtonClick(buttonId) {
+            switch (buttonId) {
+                case 'animateBtn':
+                    animateAddition();
+                    break;
+                case 'resetBtn':
+                    resetAddition();
+                    break;
+                case 'showDecimal':
+                    showDecimalEquivalent();
+                    break;
+                case 'compareBtn':
+                    compareFractions();
+                    break;
+                case 'calculateBtn':
+                    calculatePerimeter();
+                    break;
+                case 'rotateBtn':
+                    rotateShape();
+                    break;
+                case 'showTable':
+                    showMultiplicationTable();
+                    break;
+                case 'animateMultiply':
+                    animateMultiplication();
+                    break;
+            }
+        }
+
+        function animateAddition() {
+            // 简单的动画效果
+            const container = document.getElementById('visualizationArea');
+            container.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+            }, 300);
+        }
+
+        function resetAddition() {
+            document.getElementById('addend1').value = 3;
+            document.getElementById('addend2').value = 2;
+            updateVisualization();
+        }
+
+        function showDecimalEquivalent() {
+            const numerator = parseInt(document.getElementById('numerator').value);
+            const denominator = parseInt(document.getElementById('denominator').value);
+            const decimal = (numerator / denominator).toFixed(3);
+            alert(`分数 ${numerator}/${denominator} 的小数形式是 ${decimal}`);
+        }
+
+        function compareFractions() {
+            alert('比较功能：可以添加另一个分数进行大小比较');
+        }
+
+        function calculatePerimeter() {
+            const shapeType = parseInt(document.getElementById('shapeType').value);
+            const size = parseInt(document.getElementById('shapeSize').value);
+            const shapes = ['正方形', '长方形', '三角形', '圆形'];
+            
+            let formula = '';
+            switch (shapeType) {
+                case 0:
+                    formula = `周长 = 4 × 边长 = 4 × ${size/10} = ${size*4/10}`;
+                    break;
+                case 1:
+                    formula = `周长 = 2 × (长 + 宽) = 2 × (${size/10} + ${size*0.6/10}) = ${(size + size*0.6)*2/10}`;
+                    break;
+                case 2:
+                    formula = `周长 = 3 × 边长 = 3 × ${size/10} = ${size*3/10}`;
+                    break;
+                case 3:
+                    formula = `周长 = π × 直径 = π × ${size/10} ≈ ${(Math.PI * size/10).toFixed(2)}`;
+                    break;
+            }
+            
+            alert(`${shapes[shapeType]}的周长计算：\n${formula}`);
+        }
+
+        function rotateShape() {
+            const container = document.getElementById('visualizationArea');
+            container.style.transform = 'rotate(45deg)';
+            setTimeout(() => {
+                container.style.transform = 'rotate(0deg)';
+            }, 1000);
+        }
+
+        function showMultiplicationTable() {
+            const multiplier = parseInt(document.getElementById('multiplier').value);
+            let table = `${multiplier} 的乘法表：\n`;
+            for (let i = 1; i <= 9; i++) {
+                table += `${multiplier} × ${i} = ${multiplier * i}\n`;
+            }
+            alert(table);
+        }
+
+        function animateMultiplication() {
+            // 简单的动画效果
+            const container = document.getElementById('visualizationArea');
+            let scale = 1;
+            const animate = () => {
+                scale += 0.02;
+                container.style.transform = `scale(${scale})`;
+                if (scale < 1.1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    container.style.transform = 'scale(1)';
+                }
+            };
+            animate();
+        }
+
+        // 初始化
+        window.onload = function() {
+            updateControls();
+            updateExplanation();
+            updateVisualization();
+        };
+    </script>
+</body>
+</html>

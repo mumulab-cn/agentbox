@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学科学实践课 - LED灯探索</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-left: 5px solid #4ecdc4;
+            padding-left: 15px;
+        }
+        
+        .knowledge-section {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+        }
+        
+        .experiment-section {
+            background: linear-gradient(135deg, #a8e6cf, #88d8c0);
+        }
+        
+        .interactive-section {
+            background: linear-gradient(135deg, #ffd3e1, #fd79a8);
+        }
+        
+        .led-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .led-bulb {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #333;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .led-bulb.red {
+            background: #ff4757;
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+        }
+        
+        .led-bulb.green {
+            background: #2ed573;
+            box-shadow: 0 0 20px rgba(46, 213, 115, 0.5);
+        }
+        
+        .led-bulb.blue {
+            background: #3742fa;
+            box-shadow: 0 0 20px rgba(55, 66, 250, 0.5);
+            color: white;
+        }
+        
+        .led-bulb.yellow {
+            background: #ffa502;
+            box-shadow: 0 0 20px rgba(255, 165, 2, 0.5);
+        }
+        
+        .led-bulb.off {
+            background: #ddd;
+            box-shadow: none;
+        }
+        
+        .led-bulb:hover {
+            transform: scale(1.1);
+        }
+        
+        .circuit-demo {
+            background: #2c3e50;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .battery {
+            width: 60px;
+            height: 30px;
+            background: #e74c3c;
+            border-radius: 5px;
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .battery::after {
+            content: '+';
+            position: absolute;
+            right: -10px;
+            background: #c0392b;
+            width: 8px;
+            height: 15px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .wire {
+            position: absolute;
+            background: #f39c12;
+            border-radius: 2px;
+        }
+        
+        .wire.horizontal {
+            height: 4px;
+        }
+        
+        .wire.vertical {
+            width: 4px;
+        }
+        
+        .circuit-led {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            right: 50px;
+            top: 55px;
+            transition: all 0.5s ease;
+        }
+        
+        .switch {
+            width: 30px;
+            height: 20px;
+            background: #95a5a6;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch.on {
+            background: #27ae60;
+        }
+        
+        .switch::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .switch.on::after {
+            left: 12px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn-red {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn-green {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .btn-blue {
+            background: #3742fa;
+            color: white;
+        }
+        
+        .btn-yellow {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .btn-off {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #3742fa;
+        }
+        
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .info-card p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .quiz-section {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .quiz-question {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .quiz-option:hover {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .quiz-option.correct {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .quiz-option.wrong {
+            background: #f44336;
+            color: white;
+        }
+        
+        .fun-fact {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .fun-fact h3 {
+            color: #d81b60;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .led-demo {
+                gap: 15px;
+            }
+            
+            .led-bulb {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 LED灯科学探索 💡</h1>
+            <p>让我们一起探索神奇的LED世界！</p>
+        </div>
+        
+        <div class="content">
+            <!-- 知识介绍部分 -->
+            <div class="section knowledge-section">
+                <h2>🧠 什么是LED？</h2>
+                <div class="info-card">
+                    <h3>LED的全称</h3>
+                    <p>LED是"Light Emitting Diode"的缩写，中文叫做"发光二极管"。它是一种能够将电能直接转换为光能的半导体器件。</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>LED的特点</h3>
+                    <p>• 节能环保：比传统灯泡省电90%<br>
+                    • 寿命长：可以使用5-10万小时<br>
+                    • 发热少：不会像白炽灯那样发烫<br>
+                    • 颜色丰富：可以发出各种颜色的光</p>
+                </div>
+                
+                <div class="fun-fact">
+                    <h3>🎉 有趣的事实</h3>
+                    <p>你知道吗？第一个LED是在1962年发明的，当时只能发出红光！现在的LED可以发出彩虹的所有颜色呢！</p>
+                </div>
+            </div>
+            
+            <!-- 互动实验部分 -->
+            <div class="section experiment-section">
+                <h2>🔬 LED实验室</h2>
+                <p style="text-align: center; font-size: 1.1em; margin-bottom: 20px;">点击下面的LED灯，看看它们是如何工作的！</p>
+                
+                <div class="led-demo">
+                    <div class="led-bulb red off" data-color="red" onclick="toggleLED(this)">红</div>
+                    <div class="led-bulb green off" data-color="green" onclick="toggleLED(this)">绿</div>
+                    <div class="led-bulb blue off" data-color="blue" onclick="toggleLED(this)">蓝</div>
+                    <div class="led-bulb yellow off" data-color="yellow" onclick="toggleLED(this)">黄</div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-red" onclick="setAllLEDs('red')">全部红色</button>
+                    <button class="btn btn-green" onclick="setAllLEDs('green')">全部绿色</button>
+                    <button class="btn btn-blue" onclick="setAllLEDs('blue')">全部蓝色</button>
+                    <button class="btn btn-yellow" onclick="setAllLEDs('yellow')">全部黄色</button>
+                    <button class="btn btn-off" onclick="setAllLEDs('off')">全部关闭</button>
+                </div>
+            </div>
+            
+            <!-- 电路演示部分 -->
+            <div class="section interactive-section">
+                <h2>⚡ LED电路演示</h2>
+                <p style="text-align: center; margin-bottom: 20px;">点击开关，看看LED是如何在电路中工作的！</p>
+                
+                <div class="circuit-demo">
+                    <div class="battery">电池</div>
+                    <div class="wire horizontal" style="left: 110px; top: 65px; width: 200px;"></div>
+                    <div class="wire vertical" style="right: 65px; top: 95px; height: 100px;"></div>
+                    <div class="wire horizontal" style="left: 110px; bottom: 65px; width: 200px;"></div>
+                    <div class="wire vertical" style="left: 65px; bottom: 65px; height: 100px;"></div>
+                    <div class="circuit-led off" id="circuitLED"></div>
+                    <div class="switch" id="circuitSwitch" onclick="toggleCircuit()"></div>
+                </div>
+                
+                <div class="info-card">
+                    <h3>电路工作原理</h3>
+                    <p>当开关闭合时，电流从电池的正极出发，经过导线流向LED，再通过导线回到电池的负极，形成一个完整的回路。LED就会发光！</p>
+                </div>
+            </div>
+            
+            <!-- 知识问答部分 -->
+            <div class="section">
+                <h2>🤔 知识小测试</h2>
+                <div class="quiz-section">
+                    <div class="quiz-question">问题1：LED相比传统灯泡有什么优点？</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">节能环保，寿命长</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">更便宜</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">更亮</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">更重</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-section">
+                    <div class="quiz-question">问题2：LED需要什么才能发光？</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">阳光</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">电流</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">热量</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">声音</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-section">
+                    <div class="quiz-question">问题3：第一个LED是什么颜色的？</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">蓝色</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">红色</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">绿色</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">白色</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用介绍部分 -->
+            <div class="section knowledge-section">
+                <h2>🌟 LED在生活中的应用</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div class="info-card">
+                        <h3>🏠 家庭照明</h3>
+                        <p>LED灯泡、LED灯带、台灯等，让我们的家更明亮更节能。</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🚗 交通信号</h3>
+                        <p>红绿灯、汽车大灯、刹车灯都使用LED，更安全更可靠。</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>📱 电子设备</h3>
+                        <p>手机屏幕、电脑显示器、电视机都离不开LED技术。</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🎪 装饰照明</h3>
+                        <p>节日彩灯、舞台灯光、建筑装饰都用LED创造美丽效果。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // LED灯控制函数
+        function toggleLED(element) {
+            const color = element.dataset.color;
+            if (element.classList.contains('off')) {
+                element.classList.remove('off');
+                element.classList.add(color);
+            } else {
+                element.classList.remove(color);
+                element.classList.add('off');
+            }
+        }
+        
+        // 设置所有LED状态
+        function setAllLEDs(state) {
+            const leds = document.querySelectorAll('.led-bulb');
+            leds.forEach(led => {
+                const color = led.dataset.color;
+                led.classList.remove('red', 'green', 'blue', 'yellow', 'off');
+                if (state === 'off') {
+                    led.classList.add('off');
+                } else {
+                    led.classList.add(state);
+                }
+            });
+        }
+        
+        // 电路开关控制
+        let circuitOn = false;
+        function toggleCircuit() {
+            const switchElement = document.getElementById('circuitSwitch');
+            const ledElement = document.getElementById('circuitLED');
+            
+            circuitOn = !circuitOn;
+            
+            if (circuitOn) {
+                switchElement.classList.add('on');
+                ledElement.classList.remove('off');
+                ledElement.style.background = '#ffa502';
+                ledElement.style.boxShadow = '0 0 20px rgba(255, 165, 2, 0.8)';
+            } else {
+                switchElement.classList.remove('on');
+                ledElement.classList.add('off');
+                ledElement.style.background = '#ddd';
+                ledElement.style.boxShadow = 'none';
+            }
+        }
+        
+        // 问答检查函数
+        function checkAnswer(element, isCorrect) {
+            // 重置所有选项
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'wrong');
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 显示结果
+            if (isCorrect) {
+                element.classList.add('correct');
+                setTimeout(() => {
+                    alert('🎉 答对了！你真棒！');
+                    resetQuiz(element.parentElement);
+                }, 500);
+            } else {
+                element.classList.add('wrong');
+                // 显示正确答案
+                options.forEach(option => {
+                    if (option.onclick.toString().includes('true')) {
+                        option.classList.add('correct');
+                    }
+                });
+                setTimeout(() => {
+                    alert('😊 答错了，不过没关系，继续学习吧！');
+                    resetQuiz(element.parentElement);
+                }, 1500);
+            }
+        }
+        
+        // 重置问答
+        function resetQuiz(quizElement) {
+            const options = quizElement.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'wrong');
+                option.style.pointerEvents = 'auto';
+            });
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加一些动画效果
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+            
+            // LED闪烁演示
+            setTimeout(() => {
+                const leds = document.querySelectorAll('.led-bulb');
+                let currentLed = 0;
+                const colors = ['red', 'green', 'blue', 'yellow'];
+                
+                const flashDemo = setInterval(() => {
+                    // 关闭所有LED
+                    leds.forEach(led => {
+                        const color = led.dataset.color;
+                        led.classList.remove(color);
+                        led.classList.add('off');
+                    });
+                    
+                    // 点亮当前LED
+                    const led = leds[currentLed];
+                    const color = led.dataset.color;
+                    led.classList.remove('off');
+                    led.classList.add(color);
+                    
+                    currentLed = (currentLed + 1) % leds.length;
+                    
+                    // 演示3轮后停止
+                    if (currentLed === 0) {
+                        setTimeout(() => {
+                            clearInterval(flashDemo);
+                            setAllLEDs('off');
+                        }, 1000);
+                    }
+                }, 500);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

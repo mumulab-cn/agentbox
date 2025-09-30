@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理学科创新应用 - K12教育平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>物理学科创新应用</h1>
+            <nav>
+                <a href="index.php" class="back-btn">← 返回主页</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 虚拟物理实验室 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>虚拟物理实验室</h2>
+                <span class="app-tag">实验模拟</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="experiment-controls">
+                        <h3>力学实验</h3>
+                        <div class="control-group">
+                            <label>质量 (kg):</label>
+                            <input type="range" id="mass" min="1" max="10" value="5">
+                            <span id="massValue">5</span>
+                        </div>
+                        <div class="control-group">
+                            <label>重力加速度 (m/s²):</label>
+                            <input type="range" id="gravity" min="8" max="12" value="9.8" step="0.1">
+                            <span id="gravityValue">9.8</span>
+                        </div>
+                        <button onclick="runExperiment()">开始实验</button>
+                        <div id="experimentResult" class="result-display"></div>
+                    </div>
+                    
+                    <div class="simulation-area">
+                        <canvas id="physicsCanvas" width="400" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>安全进行危险实验演示</li>
+                            <li>重复实验，观察不同参数效果</li>
+                            <li>节省实验器材成本</li>
+                            <li>实时数据分析和记录</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>直观理解物理现象</li>
+                            <li>自主探索实验参数</li>
+                            <li>培养科学实验思维</li>
+                            <li>提高动手操作能力</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>3D物理引擎</span>
+                        <span>实时数据可视化</span>
+                        <span>多种实验场景</span>
+                        <span>安全无风险</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 电路设计工具 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>电路设计工具</h2>
+                <span class="app-tag">电学应用</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="circuit-builder">
+                        <h3>电路构建器</h3>
+                        <div class="component-palette">
+                            <button onclick="addComponent('battery')">电池</button>
+                            <button onclick="addComponent('resistor')">电阻</button>
+                            <button onclick="addComponent('led')">LED灯</button>
+                            <button onclick="addComponent('switch')">开关</button>
+                        </div>
+                        <div class="circuit-workspace" id="circuitWorkspace">
+                            <p>点击上方按钮添加电路元件</p>
+                        </div>
+                        <div class="circuit-controls">
+                            <button onclick="simulateCircuit()">模拟电路</button>
+                            <button onclick="clearCircuit()">清空电路</button>
+                        </div>
+                        <div id="circuitAnalysis" class="analysis-result"></div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>可视化电路教学</li>
+                            <li>实时电路分析结果</li>
+                            <li>避免电路短路风险</li>
+                            <li>多样化教学案例</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>理解电路工作原理</li>
+                            <li>培养逻辑思维能力</li>
+                            <li>掌握电路设计技能</li>
+                            <li>激发创新设计兴趣</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>拖拽式设计</span>
+                        <span>实时电路仿真</span>
+                        <span>欧姆定律计算</span>
+                        <span>故障诊断功能</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 波动现象模拟器 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>波动现象模拟器</h2>
+                <span class="app-tag">波动光学</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="wave-simulator">
+                        <h3>声波与光波模拟</h3>
+                        <div class="wave-controls">
+                            <div class="control-group">
+                                <label>频率 (Hz):</label>
+                                <input type="range" id="frequency" min="1" max="20" value="5">
+                                <span id="frequencyValue">5</span>
+                            </div>
+                            <div class="control-group">
+                                <label>振幅:</label>
+                                <input type="range" id="amplitude" min="10" max="50" value="30">
+                                <span id="amplitudeValue">30</span>
+                            </div>
+                            <div class="control-group">
+                                <label>波类型:</label>
+                                <select id="waveType">
+                                    <option value="sine">正弦波</option>
+                                    <option value="square">方波</option>
+                                    <option value="triangle">三角波</option>
+                                </select>
+                            </div>
+                        </div>
+                        <canvas id="waveCanvas" width="600" height="200"></canvas>
+                        <div class="wave-info" id="waveInfo"></div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>动态展示波动特性</li>
+                            <li>参数变化实时可见</li>
+                            <li>抽象概念具象化</li>
+                            <li>多种波形对比教学</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>直观理解波动概念</li>
+                            <li>探索频率振幅关系</li>
+                            <li>培养观察分析能力</li>
+                            <li>加深物理现象理解</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>实时波形生成</span>
+                        <span>参数动态调节</span>
+                        <span>多波形叠加</span>
+                        <span>频谱分析</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="physics_apps.js"></script>
+</body>
+</html>

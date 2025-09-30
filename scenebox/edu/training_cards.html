@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI培训活动卡片</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        
+        .card {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .card-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card-subtitle {
+            font-size: 18px;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .card-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .main-image {
+            width: 400px;
+            height: 300px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .comparison-container {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            flex: 1;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .before {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        
+        .after {
+            background: #e8f5e8;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin: 20px 0;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .feature h4 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+            font-size: 16px;
+        }
+        
+        .dialogue-box {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .dialogue-box::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 30px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        
+        .poem-container {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .poem-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 15px;
+        }
+        
+        .poem-content {
+            font-size: 18px;
+            line-height: 2;
+            color: #654321;
+            font-family: '楷体', serif;
+        }
+        
+        .safety-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            margin: 20px auto;
+        }
+        
+        .principles {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .principle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .card {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 卡片1: Prompt提示词卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Prompt 提示词优化</h1>
+            <p class="card-subtitle">让AI更好地理解你的需求</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🎯 智能提示词生成器
+            </div>
+            <div class="comparison-container">
+                <div class="comparison-item before">
+                    <h3>❌ 优化前</h3>
+                    <p>"帮我写个文章"</p>
+                    <small>结果：模糊、不准确、需要多次修改</small>
+                </div>
+                <div class="comparison-item after">
+                    <h3>✅ 优化后</h3>
+                    <p>"请为小学三年级学生写一篇500字的科普文章，主题是'为什么天空是蓝色的'，要求语言简单易懂，包含生动的比喻"</p>
+                    <small>结果：精准、专业、一次到位</small>
+                </div>
+            </div>
+            <p class="description">好的Prompt = 明确目标 + 具体要求 + 清晰语境</p>
+        </div>
+    </div>
+
+    <!-- 卡片2: 智能体卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 智能体 (Agent)</h1>
+            <p class="card-subtitle">你的专属AI助手</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🤖 智能助手生态系统
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>🎯 专业定制</h4>
+                    <p>针对特定领域和任务进行专门训练</p>
+                </div>
+                <div class="feature">
+                    <h4>🔄 持续学习</h4>
+                    <p>根据用户反馈不断优化和改进</p>
+                </div>
+                <div class="feature">
+                    <h4>💬 自然交互</h4>
+                    <p>支持多轮对话，理解上下文语境</p>
+                </div>
+                <div class="feature">
+                    <h4>⚡ 高效执行</h4>
+                    <p>快速响应，准确完成各类任务</p>
+                </div>
+            </div>
+            <p class="description">智能体是具备特定技能和知识的AI助手，能够在特定场景下提供专业、个性化的服务，让AI真正成为你的得力助手。</p>
+        </div>
+    </div>
+
+    <!-- 卡片3: 小学语文场景Agent卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">小学语文 AI 助教</h1>
+            <p class="card-subtitle">让古诗词学习更生动有趣</p>
+        </div>
+        <div class="card-content">
+            <div class="poem-container">
+                <div class="poem-title">静夜思</div>
+                <div class="poem-content">
+                    床前明月光，疑是地上霜。<br>
+                    举头望明月，低头思故乡。
+                </div>
+            </div>
+            <div class="dialogue-box">
+                <strong>AI助教：</strong>"这首诗描绘了诗人在安静的夜晚思念家乡的情景。你能想象一下，如果你离开家很久，看到月亮时会想到什么呢？"
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>📚 诗词解析</h4>
+                    <p>深入浅出解释古诗词含义</p>
+                </div>
+                <div class="feature">
+                    <h4>🎨 情境创设</h4>
+                    <p>通过故事和画面帮助理解</p>
+                </div>
+                <div class="feature">
+                    <h4>💭 启发思考</h4>
+                    <p>引导学生联系生活经验</p>
+                </div>
+                <div class="feature">
+                    <h4>🗣️ 互动问答</h4>
+                    <p>通过对话加深理解记忆</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 卡片4: 小学数学场景Agent卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">小学数学 AI 导师</h1>
+            <p class="card-subtitle">让数学学习变得简单有趣</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🧮 智能数学解题助手
+            </div>
+            <div class="dialogue-box">
+                <strong>AI导师：</strong>"小明有12个苹果，分给3个朋友，每人分到几个？我们可以用除法来解决：12 ÷ 3 = 4，所以每人分到4个苹果！"
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>🔢 步骤分解</h4>
+                    <p>将复杂问题分解为简单步骤</p>
+                </div>
+                <div class="feature">
+                    <h4>🎯 个性化练习</h4>
+                    <p>根据学习进度调整题目难度</p>
+                </div>
+                <div class="feature">
+                    <h4>🏆 游戏化学习</h4>
+                    <p>通过趣味游戏巩固数学概念</p>
+                </div>
+                <div class="feature">
+                    <h4>📊 学习分析</h4>
+                    <p>实时跟踪学习进度和薄弱环节</p>
+                </div>
+            </div>
+            <p class="description">通过生活化的例子和互动式教学，让抽象的数学概念变得具体可感，培养学生的数学思维能力。</p>
+        </div>
+    </div>
+
+    <!-- 卡片5: 小学英语场景Agent卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">小学英语 AI 伙伴</h1>
+            <p class="card-subtitle">Your English Learning Companion</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🌍 English Adventure World
+            </div>
+            <div class="dialogue-box">
+                <strong>AI Teacher:</strong>"Hello! Let's learn about animals today. Can you tell me what sound a cat makes? That's right - 'Meow!' Now let's practice: 'The cat says meow.'"
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>🗣️ 口语练习</h4>
+                    <p>智能语音识别，纠正发音</p>
+                </div>
+                <div class="feature">
+                    <h4>📖 情景对话</h4>
+                    <p>模拟真实生活场景练习英语</p>
+                </div>
+                <div class="feature">
+                    <h4>🎵 歌谣学习</h4>
+                    <p>通过英文儿歌学习词汇语法</p>
+                </div>
+                <div class="feature">
+                    <h4>🎮 互动游戏</h4>
+                    <p>在游戏中自然习得英语知识</p>
+                </div>
+            </div>
+            <p class="description">创造沉浸式英语学习环境，让孩子在轻松愉快的氛围中自然习得英语，培养语感和交流能力。</p>
+        </div>
+    </div>
+
+    <!-- 卡片6: AI安全伦理 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 安全与伦理</h1>
+            <p class="card-subtitle">负责任地使用人工智能</p>
+        </div>
+        <div class="card-content">
+            <div class="safety-icon">
+                🛡️
+            </div>
+            <div class="principles">
+                <div class="principle">🔒 隐私保护：严格保护用户个人信息和数据安全</div>
+                <div class="principle">⚖️ 公平公正：避免算法偏见，确保AI系统公平对待所有用户</div>
+                <div class="principle">🎯 透明可解释：AI决策过程应当透明，结果可以解释</div>
+                <div class="principle">👥 人机协作：AI应当辅助而非替代人类判断</div>
+                <div class="principle">🌱 可持续发展：考虑AI对社会和环境的长远影响</div>
+            </div>
+            <p class="description">在享受AI带来便利的同时，我们必须确保技术的发展符合人类价值观，保护每个人的权益，创造更美好的未来。</p>
+        </div>
+    </div>
+
+    <!-- 卡片7: AI创作助手 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 创作助手</h1>
+            <p class="card-subtitle">激发无限创意灵感</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🎨 创意工作室
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>✍️ 文案创作</h4>
+                    <p>广告文案、营销内容、社交媒体文本</p>
+                </div>
+                <div class="feature">
+                    <h4>🖼️ 视觉设计</h4>
+                    <p>Logo设计、海报制作、插图绘制</p>
+                </div>
+                <div class="feature">
+                    <h4>🎵 音乐创作</h4>
+                    <p>旋律生成、歌词创作、音效制作</p>
+                </div>
+                <div class="feature">
+                    <h4>📝 内容策划</h4>
+                    <p>主题策划、结构设计、素材整理</p>
+                </div>
+            </div>
+            <p class="description">AI创作助手能够在各个创意领域提供灵感和技术支持，帮助创作者突破思维局限，实现更多可能性。</p>
+        </div>
+    </div>
+
+    <!-- 卡片8: AI数据分析师 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 数据分析师</h1>
+            <p class="card-subtitle">让数据说话，洞察商业价值</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                📊 智能数据洞察平台
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>📈 趋势预测</h4>
+                    <p>基于历史数据预测未来发展趋势</p>
+                </div>
+                <div class="feature">
+                    <h4>🔍 异常检测</h4>
+                    <p>自动识别数据中的异常模式</p>
+                </div>
+                <div class="feature">
+                    <h4>📋 报告生成</h4>
+                    <p>自动生成专业的数据分析报告</p>
+                </div>
+                <div class="feature">
+                    <h4>💡 决策建议</h4>
+                    <p>基于数据分析提供商业决策建议</p>
+                </div>
+            </div>
+            <p class="description">通过AI技术处理和分析大量数据，发现隐藏的模式和规律，为企业决策提供科学依据，提升运营效率。</p>
+        </div>
+    </div>
+
+    <!-- 卡片9: AI健康顾问 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 健康顾问</h1>
+            <p class="card-subtitle">个性化健康管理专家</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🏥 智能健康管理中心
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>📱 健康监测</h4>
+                    <p>实时监测生理指标和健康状态</p>
+                </div>
+                <div class="feature">
+                    <h4>🍎 营养建议</h4>
+                    <p>个性化饮食方案和营养搭配</p>
+                </div>
+                <div class="feature">
+                    <h4>🏃 运动指导</h4>
+                    <p>定制化运动计划和健身建议</p>
+                </div>
+                <div class="feature">
+                    <h4>⚕️ 健康预警</h4>
+                    <p>早期风险识别和预防建议</p>
+                </div>
+            </div>
+            <p class="description">结合个人健康数据和医学知识，提供24小时健康监护和个性化健康管理方案，让每个人都能拥有专属的健康顾问。</p>
+        </div>
+    </div>
+
+    <!-- 卡片10: AI未来展望 -->
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">AI 未来展望</h1>
+            <p class="card-subtitle">共创智能化美好未来</p>
+        </div>
+        <div class="card-content">
+            <div class="main-image">
+                🚀 未来科技愿景
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <h4>🌐 万物互联</h4>
+                    <p>AI连接一切，构建智能生态系统</p>
+                </div>
+                <div class="feature">
+                    <h4>🧠 增强智能</h4>
+                    <p>人机协作，放大人类智慧潜能</p>
+                </div>
+                <div class="feature">
+                    <h4>🌍 可持续发展</h4>
+                    <p>AI助力解决全球性挑战</p>
+                </div>
+                <div class="feature">
+                    <h4>👨‍👩‍👧‍👦 普惠AI</h4>
+                    <p>让每个人都能享受AI带来的便利</p>
+                </div>
+            </div>
+            <p class="description">AI技术将继续快速发展，在教育、医疗、环保、科研等各个领域发挥重要作用。我们要积极拥抱变化，学会与AI协作，共同创造更加智能、高效、美好的未来社会。</p>
+        </div>
+    </div>
+</body>
+</html>

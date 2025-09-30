@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 游戏使用说明书 - 二年级小朋友专用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #FFE5B4 0%, #FFCCCB 50%, #E6E6FA 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #FF6B9D;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .welcome-box {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .game-section {
+            background: white;
+            margin-bottom: 30px;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FF6B9D, #4ECDC4, #FFE066);
+        }
+
+        .game-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .game-icon {
+            font-size: 1.2em;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .memory-icon {
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+        }
+
+        .math-icon {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+        }
+
+        .puzzle-icon {
+            background: linear-gradient(135deg, #FFE066, #FF9A56);
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            border: 3px solid #e9ecef;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #4ECDC4;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .step-emoji {
+            font-size: 2.5em;
+            margin: 10px 0;
+        }
+
+        .step-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 1em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #FFE066, #FF9A56);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .tip-box h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .rules-list {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .rules-list h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            border-left: 5px solid #4ECDC4;
+        }
+
+        .rule-emoji {
+            font-size: 1.5em;
+            margin-right: 15px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .rule-text {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #E8F5E8, #F0F8F0);
+            border: 2px solid #4ECDC4;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .example-content {
+            font-size: 1.1em;
+            color: #333;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .encouragement-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .encouragement-box h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .encouragement-box p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .start-button {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-title {
+                font-size: 1.6em;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 游戏使用说明书</h1>
+            <p>专为二年级小朋友设计的超好玩游戏！</p>
+            <div class="welcome-box">
+                <strong>🌟 欢迎来到游戏世界！🌟</strong><br>
+                这里有三个超级有趣的游戏等着你来挑战！<br>
+                让我们一起学习怎么玩吧！
+            </div>
+        </div>
+
+        <!-- 记忆配对游戏说明 -->
+        <div class="game-section">
+            <div class="game-title">
+                <div class="game-icon memory-icon">🧠</div>
+                记忆配对游戏
+            </div>
+            
+            <div class="example-box">
+                <div class="example-title">🎯 游戏目标</div>
+                <div class="example-content">
+                    找到所有相同的小动物卡片！就像玩记忆翻牌游戏一样简单！
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-emoji">👆</div>
+                    <div class="step-title">点击卡片</div>
+                    <div class="step-description">用小手指点击任意一张卡片，看看里面藏着什么小动物</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-emoji">🔍</div>
+                    <div class="step-title">记住动物</div>
+                    <div class="step-description">仔细看看是什么小动物，然后记在心里</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-emoji">🎯</div>
+                    <div class="step-title">找到配对</div>
+                    <div class="step-description">再点击另一张卡片，看看能不能找到一样的小动物</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-emoji">🎉</div>
+                    <div class="step-title">成功配对</div>
+                    <div class="step-description">如果两张卡片的动物一样，它们就会变成绿色，表示成功了！</div>
+                </div>
+            </div>
+
+            <div class="rules-list">
+                <h3>🏆 游戏规则</h3>
+                <div class="rule-item">
+                    <div class="rule-emoji">🐶</div>
+                    <div class="rule-text">总共有16张卡片，8对可爱的小动物</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">👀</div>
+                    <div class="rule-text">每次只能翻开2张卡片</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">💚</div>
+                    <div class="rule-text">找到相同的动物，卡片就会变绿色</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">🔄</div>
+                    <div class="rule-text">如果不一样，卡片会重新翻回去</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h3>💡 小贴士</h3>
+                用你的小脑袋记住每张卡片的位置，这样就能更快找到配对啦！
+            </div>
+        </div>
+
+        <!-- 数学游戏说明 -->
+        <div class="game-section">
+            <div class="game-title">
+                <div class="game-icon math-icon">🔢</div>
+                趣味数学游戏
+            </div>
+            
+            <div class="example-box">
+                <div class="example-title">🎯 游戏目标</div>
+                <div class="example-content">
+                    解答简单的加法和减法题目！就像在课堂上学数学一样，但更有趣！
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-emoji">📖</div>
+                    <div class="step-title">看题目</div>
+                    <div class="step-description">仔细看屏幕上的数学题，比如：3 + 2 = ?</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-emoji">🤔</div>
+                    <div class="step-title">动脑筋</div>
+                    <div class="step-description">用你学过的加法或减法知识来计算答案</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-emoji">👆</div>
+                    <div class="step-title">选答案</div>
+                    <div class="step-description">从4个选项中点击你认为正确的答案</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-emoji">⭐</div>
+                    <div class="step-title">看结果</div>
+                    <div class="step-description">答对了会变绿色，答错了会变红色，然后显示正确答案</div>
+                </div>
+            </div>
+
+            <div class="rules-list">
+                <h3>🏆 游戏规则</h3>
+                <div class="rule-item">
+                    <div class="rule-emoji">➕</div>
+                    <div class="rule-text">有加法题：比如 2 + 3 = ?</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">➖</div>
+                    <div class="rule-text">有减法题：比如 5 - 2 = ?</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">🔢</div>
+                    <div class="rule-text">数字都在1到10之间，很简单的</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">🎯</div>
+                    <div class="rule-text">每答对5题就会有特别的庆祝</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h3>💡 小贴士</h3>
+                可以用手指头来帮助数数哦！比如3+2，先伸出3根手指，再伸出2根，一共5根！
+            </div>
+        </div>
+
+        <!-- 拼图游戏说明 -->
+        <div class="game-section">
+            <div class="game-title">
+                <div class="game-icon puzzle-icon">🧩</div>
+                数字拼图游戏
+            </div>
+            
+            <div class="example-box">
+                <div class="example-title">🎯 游戏目标</div>
+                <div class="example-content">
+                    把打乱的数字按顺序排好：1、2、3、4、5、6、7、8！就像整理玩具一样！
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-emoji">👀</div>
+                    <div class="step-title">观察拼图</div>
+                    <div class="step-description">看看9个格子里的数字，找到空白的格子在哪里</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-emoji">👆</div>
+                    <div class="step-title">点击数字</div>
+                    <div class="step-description">点击空白格子旁边的数字，它就会移动到空白处</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-emoji">🔄</div>
+                    <div class="step-title">继续移动</div>
+                    <div class="step-description">一步一步地移动数字，让它们按顺序排列</div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-emoji">🏆</div>
+                    <div class="step-title">完成拼图</div>
+                    <div class="step-description">当数字变成1、2、3、4、5、6、7、8的顺序时，你就赢了！</div>
+                </div>
+            </div>
+
+            <div class="rules-list">
+                <h3>🏆 游戏规则</h3>
+                <div class="rule-item">
+                    <div class="rule-emoji">📱</div>
+                    <div class="rule-text">拼图是3×3的格子，有8个数字和1个空格</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">↔️</div>
+                    <div class="rule-text">只能移动紧挨着空格的数字</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">🎯</div>
+                    <div class="rule-text">目标是按顺序排列：1、2、3、4、5、6、7、8</div>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">📊</div>
+                    <div class="rule-text">游戏会记录你移动了多少步</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h3>💡 小贴士</h3>
+                先试着把1、2、3放到正确位置，然后再整理其他数字。慢慢来，不着急！
+            </div>
+        </div>
+
+        <!-- 鼓励话语 -->
+        <div class="encouragement-box">
+            <h2>🌟 你是最棒的小朋友！</h2>
+            <p>
+                记住，游戏的目的是让你开心和学习！<br>
+                不要担心做错，每个人都是从不会到会的。<br>
+                慢慢来，享受游戏的乐趣吧！<br>
+                相信你一定能成为游戏小达人！💪
+            </p>
+        </div>
+
+        <!-- 开始游戏按钮 -->
+        <a href="儿童益智游戏.html" class="start-button">
+            🚀 开始游戏冒险！
+        </a>
+
+        <div class="footer">
+            <p>🎈 祝你游戏愉快，学习进步！记得要保护眼睛，适当休息哦！ 🎈</p>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些有趣的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为步骤卡片添加点击音效提示
+            const stepCards = document.querySelectorAll('.step-card');
+            stepCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-5px) scale(1.02)';
+                    }, 100);
+                });
+            });
+
+            // 为规则项添加悬停效果
+            const ruleItems = document.querySelectorAll('.rule-item');
+            ruleItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#e8f5e8';
+                    this.style.transform = 'translateX(10px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'white';
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            // 添加滚动动画
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 观察所有游戏部分
+            const gameSections = document.querySelectorAll('.game-section');
+            gameSections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

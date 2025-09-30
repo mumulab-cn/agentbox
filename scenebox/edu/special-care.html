@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特殊关爱学习中心 - 上海沐沐学校</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-left: 30px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            color: white;
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .feature-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .feature-description {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            text-align: center;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .learning-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .subject-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .subject-tab {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .subject-tab.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subject-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .subject-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #28a745;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: white;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .question-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-input:focus {
+            border-color: #28a745;
+        }
+
+        .send-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-questions {
+            margin-bottom: 20px;
+        }
+
+        .quick-questions h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .quick-btn {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #495057;
+            font-size: 0.9em;
+        }
+
+        .quick-btn:hover {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .learning-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .tool-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .features-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .subject-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航菜单 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span>🎓 杭州世外学校</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="a.html" class="nav-link">吉祥物展示</a>
+                </li>
+                <li class="nav-item">
+                    <a href="special-care.html" class="nav-link active">特殊关爱</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌟 特殊关爱学习中心</h1>
+            <p>为每一位需要特殊照顾的同学提供个性化学习支持</p>
+        </div>
+
+        <div class="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">🤗</div>
+                <div class="feature-title">个性化问答</div>
+                <div class="feature-description">
+                    根据每位同学的特殊需求，提供耐心、细致的问答服务。我们理解每个孩子都是独特的，需要不同的关爱方式。
+                </div>
+                <a href="#qa-section" class="feature-btn">开始问答</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">学科辅导</div>
+                <div class="feature-description">
+                    针对不同学科提供专门的学习支持，包括数学、语文、英语等，采用更加温和和鼓励的教学方式。
+                </div>
+                <a href="#learning-section" class="feature-btn">学科学习</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">能力训练</div>
+                <div class="feature-description">
+                    通过游戏化的方式训练注意力、记忆力、逻辑思维等基础能力，让学习变得更加有趣和有效。
+                </div>
+                <a href="#training-section" class="feature-btn">能力训练</a>
+            </div>
+        </div>
+
+        <!-- 问答区域 -->
+        <div class="learning-section" id="qa-section">
+            <h2 class="section-title">💬 温馨问答助手</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #666;">小爱老师随时为你解答问题，不用担心，慢慢来就好</p>
+            
+            <div class="chat-container" id="qaContainer">
+                <div class="message bot-message">
+                    <div class="bot-avatar">爱</div>
+                    <div>
+                        <strong>小爱老师：</strong>你好，亲爱的同学！我是小爱老师，很高兴认识你。如果你有任何问题或者需要帮助，都可以告诉我。我会很耐心地帮助你的！😊
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <input type="text" class="question-input" id="qaInput" placeholder="请输入你的问题..." onkeypress="handleQAKeyPress(event)">
+                <button class="send-btn" onclick="sendQAQuestion()">发送</button>
+            </div>
+
+            <div class="quick-questions">
+                <h3>🌈 常见问题</h3>
+                <span class="quick-btn" onclick="askQAQuestion('我不懂这道题怎么办？')">不懂题目</span>
+                <span class="quick-btn" onclick="askQAQuestion('我觉得学习很困难')">学习困难</span>
+                <span class="quick-btn" onclick="askQAQuestion('我需要更多时间思考')">需要时间</span>
+                <span class="quick-btn" onclick="askQAQuestion('我想要鼓励和表扬')">需要鼓励</span>
+                <span class="quick-btn" onclick="askQAQuestion('我想了解学习方法')">学习方法</span>
+            </div>
+        </div>
+
+        <!-- 学科学习区域 -->
+        <div class="learning-section" id="learning-section">
+            <h2 class="section-title">📖 学科学习助手</h2>
+            
+            <div class="subject-tabs">
+                <div class="subject-tab active" onclick="switchSubject('math')">数学</div>
+                <div class="subject-tab" onclick="switchSubject('chinese')">语文</div>
+                <div class="subject-tab" onclick="switchSubject('english')">英语</div>
+                <div class="subject-tab" onclick="switchSubject('science')">科学</div>
+            </div>
+
+            <!-- 数学学习 -->
+            <div class="subject-content active" id="math-content">
+                <div class="chat-container" id="mathContainer">
+                    <div class="message bot-message">
+                        <div class="bot-avatar">数</div>
+                        <div>
+                            <strong>数学小助手：</strong>欢迎来到数学学习园地！我会用最简单的方法帮你理解数学。记住，数学就像搭积木一样，一步一步来就好！
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <input type="text" class="question-input" id="mathInput" placeholder="请输入数学问题..." onkeypress="handleSubjectKeyPress(event, 'math')">
+                    <button class="send-btn" onclick="sendSubjectQuestion('math')">发送</button>
+                </div>
+                
+                <div class="quick-questions">
+                    <h3>🔢 数学帮助</h3>
+                    <span class="quick-btn" onclick="askSubjectQuestion('math', '1+1等于几？')">简单加法</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('math', '如何数数？')">学习数数</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('math', '什么是形状？')">认识形状</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('math', '比较大小')">比较大小</span>
+                </div>
+                
+                <div class="learning-tools">
+                    <div class="tool-card" onclick="startMathGame('counting')">
+                        <div class="tool-icon">🔢</div>
+                        <div>数数游戏</div>
+                    </div>
+                    <div class="tool-card" onclick="startMathGame('shapes')">
+                        <div class="tool-icon">🔷</div>
+                        <div>形状认知</div>
+                    </div>
+                    <div class="tool-card" onclick="startMathGame('addition')">
+                        <div class="tool-icon">➕</div>
+                        <div>加法练习</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 语文学习 -->
+            <div class="subject-content" id="chinese-content">
+                <div class="chat-container" id="chineseContainer">
+                    <div class="message bot-message">
+                        <div class="bot-avatar">文</div>
+                        <div>
+                            <strong>语文小助手：</strong>你好！我是语文小助手。我们一起来学习汉字、词语和阅读吧！每个字都有它的故事，我们慢慢来发现它们的秘密。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <input type="text" class="question-input" id="chineseInput" placeholder="请输入语文问题..." onkeypress="handleSubjectKeyPress(event, 'chinese')">
+                    <button class="send-btn" onclick="sendSubjectQuestion('chinese')">发送</button>
+                </div>
+                
+                <div class="quick-questions">
+                    <h3>📝 语文帮助</h3>
+                    <span class="quick-btn" onclick="askSubjectQuestion('chinese', '这个字怎么读？')">字音学习</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('chinese', '这个词什么意思？')">词义理解</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('chinese', '如何写好字？')">写字练习</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('chinese', '读故事')">故事阅读</span>
+                </div>
+                
+                <div class="learning-tools">
+                    <div class="tool-card" onclick="startChineseGame('pinyin')">
+                        <div class="tool-icon">🔤</div>
+                        <div>拼音学习</div>
+                    </div>
+                    <div class="tool-card" onclick="startChineseGame('characters')">
+                        <div class="tool-icon">汉</div>
+                        <div>汉字认知</div>
+                    </div>
+                    <div class="tool-card" onclick="startChineseGame('reading')">
+                        <div class="tool-icon">📖</div>
+                        <div>阅读理解</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 英语学习 -->
+            <div class="subject-content" id="english-content">
+                <div class="chat-container" id="englishContainer">
+                    <div class="message bot-message">
+                        <div class="bot-avatar">E</div>
+                        <div>
+                            <strong>English Helper：</strong>Hello! 我是英语小助手。让我们一起学习英语吧！从简单的单词开始，慢慢地你就能说出漂亮的英语了！
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <input type="text" class="question-input" id="englishInput" placeholder="请输入英语问题..." onkeypress="handleSubjectKeyPress(event, 'english')">
+                    <button class="send-btn" onclick="sendSubjectQuestion('english')">发送</button>
+                </div>
+                
+                <div class="quick-questions">
+                    <h3>🌍 英语帮助</h3>
+                    <span class="quick-btn" onclick="askSubjectQuestion('english', 'Hello怎么说？')">基础问候</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('english', '颜色英语怎么说？')">颜色单词</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('english', '数字英语')">数字英语</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('english', '简单对话')">日常对话</span>
+                </div>
+                
+                <div class="learning-tools">
+                    <div class="tool-card" onclick="startEnglishGame('words')">
+                        <div class="tool-icon">📝</div>
+                        <div>单词学习</div>
+                    </div>
+                    <div class="tool-card" onclick="startEnglishGame('pronunciation')">
+                        <div class="tool-icon">🗣️</div>
+                        <div>发音练习</div>
+                    </div>
+                    <div class="tool-card" onclick="startEnglishGame('conversation')">
+                        <div class="tool-icon">💬</div>
+                        <div>对话练习</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 科学学习 -->
+            <div class="subject-content" id="science-content">
+                <div class="chat-container" id="scienceContainer">
+                    <div class="message bot-message">
+                        <div class="bot-avatar">科</div>
+                        <div>
+                            <strong>科学小助手：</strong>欢迎来到神奇的科学世界！这里有很多有趣的现象等着我们去发现。让我们一起做小小科学家吧！
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <input type="text" class="question-input" id="scienceInput" placeholder="请输入科学问题..." onkeypress="handleSubjectKeyPress(event, 'science')">
+                    <button class="send-btn" onclick="sendSubjectQuestion('science')">发送</button>
+                </div>
+                
+                <div class="quick-questions">
+                    <h3>🔬 科学帮助</h3>
+                    <span class="quick-btn" onclick="askSubjectQuestion('science', '为什么天空是蓝色的？')">自然现象</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('science', '动物怎么生活？')">动物世界</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('science', '植物怎么长大？')">植物生长</span>
+                    <span class="quick-btn" onclick="askSubjectQuestion('science', '简单实验')">科学实验</span>
+                </div>
+                
+                <div class="learning-tools">
+                    <div class="tool-card" onclick="startScienceGame('nature')">
+                        <div class="tool-icon">🌱</div>
+                        <div>自然观察</div>
+                    </div>
+                    <div class="tool-card" onclick="startScienceGame('animals')">
+                        <div class="tool-icon">🐾</div>
+                        <div>动物认知</div>
+                    </div>
+                    <div class="tool-card" onclick="startScienceGame('experiments')">
+                        <div class="tool-icon">🧪</div>
+                        <div>简单实验</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 上海沐沐学校 | 用爱心和耐心，陪伴每一个孩子成长</p>
+        </div>
+    </div>
+
+    <script>
+        // 问答数据库
+        const qaDatabase = {
+            '不懂题目': {
+                answer: '没关系的，亲爱的同学！不懂题目是很正常的事情。我们可以一步一步来：1）先仔细读题目，不认识的字可以问我；2）找出题目要求我们做什么；3）想想我们学过的哪些知识可以用上。记住，慢慢来，不着急！'
+            },
+            '学习困难': {
+                answer: '我理解你的感受，学习确实有时候会觉得困难。但是你要知道，每个人学习的速度都不一样，这很正常！我们可以：1）把大的问题分成小的问题；2）多练习几遍；3）用你喜欢的方式来学习。记住，你已经很棒了！'
+            },
+            '需要时间': {
+                answer: '当然可以！每个人思考的速度都不一样，需要更多时间思考说明你很认真！慢慢想是好习惯，这样能想得更清楚。老师和同学们都会等你的，不用担心。深呼吸，放松一下，慢慢来就好。'
+            },
+            '需要鼓励': {
+                answer: '你真的很棒！🌟 能够主动学习、提出问题，这就已经很了不起了！每一个小进步都值得庆祝。记住，你是独一无二的，有自己的闪光点。继续加油，我相信你一定可以的！给你一个大大的拥抱！🤗'
+            },
+            '学习方法': {
+                answer: '好问题！每个人都有适合自己的学习方法。你可以试试：1）用图画来帮助记忆；2）大声读出来；3）做手势或动作；4）用故事来记住知识；5）和朋友一起学习。找到你最喜欢的方式，学习就会变得更有趣！'
+            }
+        };
+
+        // 学科问答数据库
+        const subjectDatabase = {
+            math: {
+                '加法': '加法就像是把东西放在一起数！比如你有1个苹果，我再给你1个苹果，你就有2个苹果了。1+1=2！我们可以用手指来帮助计算，或者用小玩具来练习。',
+                '数数': '数数很有趣！我们从1开始：1、2、3、4、5...就像爬楼梯一样，一步一步往上走。你可以数数你的玩具、数数你的手指，或者数数天上的云朵！',
+                '形状': '形状在我们身边到处都有！圆形像太阳🌞，方形像窗户⬜，三角形像屋顶🔺。我们可以在教室里找找这些形状，这样就能更好地记住它们！',
+                '大小': '比较大小就像比较谁更高一样！大象比老鼠大，苹果比葡萄大。我们可以用"大于>"、"小于<"、"等于="这些符号。记住，大的嘴巴总是朝向大的数字！'
+            },
+            chinese: {
+                '字音': '每个汉字都有自己的声音！我们可以用拼音来帮助记忆。比如"妈妈"读作"mā ma"。如果不确定读音，我们可以查字典，或者问老师和同学。多读几遍就能记住了！',
+                '词义': '理解词语的意思很重要！我们可以：1）看看词语在句子里是怎么用的；2）想想生活中的例子；3）用自己的话来解释。比如"快乐"就是心情很好、很开心的意思！',
+                '写字': '写好字需要多练习！记住：1）坐姿要端正；2）握笔要正确；3）一笔一画慢慢写；4）注意字的结构。就像画画一样，慢慢来，你的字会越写越漂亮！',
+                '故事': '读故事很有趣！我们可以：1）先看图片猜猜故事内容；2）慢慢读，不认识的字可以问；3）想想故事告诉我们什么道理；4）把故事讲给家人听。这样能更好地理解故事！'
+            },
+            english: {
+                '问候': 'Hello是英语里的"你好"！还有Good morning（早上好）、Good afternoon（下午好）、Good evening（晚上好）。见到朋友时说Hello，他们会很开心的！',
+                '颜色': '颜色的英语很有趣！Red（红色）像苹果🍎，Blue（蓝色）像天空🌌，Green（绿色）像草地🌱，Yellow（黄色）像太阳☀️。我们可以指着身边的东西来练习！',
+                '数字': '英语数字：One（1）、Two（2）、Three（3）、Four（4）、Five（5）...我们可以用手指来帮助记忆，或者数数教室里的东西来练习！',
+                '对话': '简单的英语对话很有用！"How are you?"（你好吗？）"I\'m fine, thank you!"（我很好，谢谢！）多练习几遍，你就能和外国朋友聊天了！'
+            },
+            science: {
+                '天空': '天空看起来是蓝色的，是因为阳光的秘密！阳光其实包含很多颜色，就像彩虹一样。当阳光穿过空气时，蓝色的光更容易散开，所以我们看到天空是蓝色的！',
+                '动物': '动物们有很多有趣的生活方式！鸟儿会飞，鱼儿会游泳，兔子会跳跃。每种动物都有适合自己的家和食物。我们要爱护小动物，它们是我们的朋友！',
+                '植物': '植物需要阳光、水和空气才能长大！就像我们需要食物一样。种子先发芽，然后长出叶子，最后开花结果。我们可以种一些小植物来观察它们的成长！',
+                '实验': '科学实验很有趣！我们可以做一些简单安全的实验，比如观察水的变化、看看磁铁的神奇力量。记住，做实验时要小心，最好有大人陪伴！'
+            }
+        };
+
+        // 当前活跃的学科
+        let currentSubject = 'math';
+
+        // 问答功能
+        function handleQAKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendQAQuestion();
+            }
+        }
+
+        function askQAQuestion(question) {
+            document.getElementById('qaInput').value = question;
+            sendQAQuestion();
+        }
+
+        function sendQAQuestion() {
+            const input = document.getElementById('qaInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+
+            addQAMessage(question, 'user');
+            input.value = '';
+            
+            setTimeout(() => {
+                const answer = getQAAnswer(question);
+                addQAMessage(answer, 'bot');
+            }, 1000);
+        }
+
+        function addQAMessage(text, type) {
+            const container = document.getElementById('qaContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'user') {
+                messageDiv.textContent = text;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">爱</div>
+                    <div><strong>小爱老师：</strong>${text}</div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getQAAnswer(question) {
+            for (const [key, value] of Object.entries(qaDatabase)) {
+                if (question.includes(key) || question.includes(key.substring(0, 2))) {
+                    return value.answer;
+                }
+            }
+            
+            return '谢谢你的问题！虽然我可能没有完全理解，但我想告诉你：每个问题都很重要，每个想法都很珍贵。如果你需要更多帮助，可以告诉老师或家长，他们会很乐意帮助你的！记住，你很棒！✨';
+        }
+
+        // 学科切换功能
+        function switchSubject(subject) {
+            // 更新标签状态
+            document.querySelectorAll('.subject-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新内容显示
+            document.querySelectorAll('.subject-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(subject + '-content').classList.add('active');
+            
+            currentSubject = subject;
+        }
+
+        // 学科问答功能
+        function handleSubjectKeyPress(event, subject) {
+            if (event.key === 'Enter') {
+                sendSubjectQuestion(subject);
+            }
+        }
+
+        function askSubjectQuestion(subject, question) {
+            document.getElementById(subject + 'Input').value = question;
+            sendSubjectQuestion(subject);
+        }
+
+        function sendSubjectQuestion(subject) {
+            const input = document.getElementById(subject + 'Input');
+            const question = input.value.trim();
+            
+            if (!question) return;
+
+            addSubjectMessage(subject, question, 'user');
+            input.value = '';
+            
+            setTimeout(() => {
+                const answer = getSubjectAnswer(subject, question);
+                addSubjectMessage(subject, answer, 'bot');
+            }, 1000);
+        }
+
+        function addSubjectMessage(subject, text, type) {
+            const container = document.getElementById(subject + 'Container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'user') {
+                messageDiv.textContent = text;
+            } else {
+                const avatars = {
+                    math: '数',
+                    chinese: '文', 
+                    english: 'E',
+                    science: '科'
+                };
+                const names = {
+                    math: '数学小助手',
+                    chinese: '语文小助手',
+                    english: 'English Helper',
+                    science: '科学小助手'
+                };
+                
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">${avatars[subject]}</div>
+                    <div><strong>${names[subject]}：</strong>${text}</div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getSubjectAnswer(subject, question) {
+            const database = subjectDatabase[subject];
+            
+            for (const [key, value] of Object.entries(database)) {
+                if (question.includes(key) || question.includes(key.substring(0, 2))) {
+                    return value;
+                }
+            }
+            
+            const defaultAnswers = {
+                math: '这是一个很好的数学问题！数学就像解谜游戏一样有趣。如果你需要更详细的解释，我们可以一步一步来分析。记住，每个人学数学的速度都不一样，慢慢来就好！',
+                chinese: '中文学习需要多练习！每个汉字都有它的故事和意义。如果你遇到不懂的地方，我们可以一起查字典，或者用更简单的方式来理解。你已经做得很好了！',
+                english: 'Learning English is fun! 学英语很有趣！不要担心说错，每个人刚开始学习时都会犯错误。多听、多说、多练习，你的英语会越来越好的！',
+                science: '科学世界充满了神奇的现象！每个"为什么"都可能带来新的发现。如果你对某个现象好奇，我们可以一起观察、思考，甚至做一些简单的实验来找答案！'
+            };
+            
+            return defaultAnswers[subject];
+        }
+
+        // 游戏启动功能（示例）
+        function startMathGame(type) {
+            const games = {
+                counting: '让我们一起数数吧！从1开始：1、2、3...你能数到10吗？',
+                shapes: '形状游戏开始！看看周围，你能找到圆形⭕、方形⬜、三角形🔺吗？',
+                addition: '加法游戏！如果你有2个苹果🍎🍎，我再给你1个🍎，你总共有几个苹果呢？'
+            };
+            addSubjectMessage('math', games[type], 'bot');
+        }
+
+        function startChineseGame(type) {
+            const games = {
+                pinyin: '拼音学习开始！"a o e i u ü"，这些是韵母，让我们一起读一读吧！',
+                characters: '汉字认知游戏！"人"字像一个人在走路，"山"字像三座山峰。你能想到其他像图画的汉字吗？',
+                reading: '阅读时间！让我们一起读一个小故事："小猫咪喜欢晒太阳，它躺在草地上，感觉很温暖。"'
+            };
+            addSubjectMessage('chinese', games[type], 'bot');
+        }
+
+        function startEnglishGame(type) {
+            const games = {
+                words: 'Word game! 单词游戏！Cat🐱, Dog🐶, Bird🐦. 你能说出这些动物的英文名字吗？',
+                pronunciation: 'Pronunciation practice! 发音练习！重复我说的："Hello, how are you?" 慢慢说，不着急！',
+                conversation: 'Let\'s talk! 我们来对话！我说"Hello!"，你可以回答"Hello!"或"Hi!"'
+            };
+            addSubjectMessage('english', games[type], 'bot');
+        }
+
+        function startScienceGame(type) {
+            const games = {
+                nature: '自然观察游戏！看看窗外，你能看到什么？树叶🍃、花朵🌸、还是小鸟🐦？',
+                animals: '动物认知游戏！小狗汪汪叫🐕，小猫喵喵叫🐱，小鸟叽叽叫🐦。你还知道其他动物的叫声吗？',
+                experiments: '简单实验！把一张纸放在水里会怎样？它会浮起来还是沉下去？我们可以试试看！'
+            };
+            addSubjectMessage('science', games[type], 'bot');
+        }
+
+        // 页面加载完成后的欢迎消息
+        window.onload = function() {
+            setTimeout(() => {
+                addQAMessage('记住，学习没有对错，只有进步！每一个小小的努力都值得赞扬。如果你感到困惑或需要帮助，随时告诉我，我会一直陪伴着你！🌈', 'bot');
+            }, 2000);
+        };
+    </script>
+</body>
+</html>

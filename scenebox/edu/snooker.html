@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>康乐球游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        #gameCanvas {
+            border: 12px solid #654321;
+            border-radius: 15px;
+            background: #0f5132;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+            cursor: crosshair;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .score-board {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 0 10px;
+        }
+        
+        .power-bar {
+            width: 200px;
+            height: 20px;
+            background: #333;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            margin: 10px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .power-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            color: white;
+        }
+        
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #c0392b;
+        }
+        
+        .target-ball {
+            color: #f39c12;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎱 康乐球游戏 (Snooker)</h1>
+        <canvas id="gameCanvas" width="900" height="450"></canvas>
+        
+        <div class="game-info">
+            <div class="score-board">
+                <div>玩家得分: <span id="playerScore">0</span></div>
+                <div>目标球: <span id="targetBall" class="target-ball">红球</span></div>
+            </div>
+            <div class="score-board">
+                <div>红球剩余: <span id="redBalls">15</span></div>
+                <div>回合: <span id="currentPlayer">玩家</span></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <p>点击并拖拽白球来瞄准，松开鼠标击球</p>
+            <div class="power-bar">
+                <div class="power-fill" id="powerFill"></div>
+            </div>
+            <p>力度: <span id="powerText">0</span>%</p>
+            <button onclick="resetGame()">重新开始</button>
+            <button onclick="showRules()">游戏规则</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const powerFill = document.getElementById('powerFill');
+        const powerText = document.getElementById('powerText');
+        
+        // 游戏状态
+        let isAiming = false;
+        let aimStartX = 0;
+        let aimStartY = 0;
+        let power = 0;
+        let playerScore = 0;
+        let targetBall = 'red'; // 'red' or color name
+        let gamePhase = 'red'; // 'red' or 'color'
+        
+        // 球的类
+        class Ball {
+            constructor(x, y, radius, color, points = 0, type = 'colored') {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = radius;
+                this.color = color;
+                this.points = points;
+                this.type = type; // 'cue', 'red', 'colored'
+                this.friction = 0.985;
+                this.active = true;
+            }
+            
+            update() {
+                if (!this.active) return;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                
+                // 边界碰撞
+                if (this.x - this.radius <= 0 || this.x + this.radius >= canvas.width) {
+                    this.vx = -this.vx * 0.8;
+                    this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+                }
+                if (this.y - this.radius <= 0 || this.y + this.radius >= canvas.height) {
+                    this.vy = -this.vy * 0.8;
+                    this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+                }
+                
+                // 停止微小运动
+                if (Math.abs(this.vx) < 0.1) this.vx = 0;
+                if (Math.abs(this.vy) < 0.1) this.vy = 0;
+            }
+            
+            draw() {
+                if (!this.active) return;
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = this.type === 'cue' ? '#333' : '#000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 白球特殊标记
+                if (this.type === 'cue') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#333';
+                    ctx.fill();
+                }
+            }
+            
+            isMoving() {
+                return Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1;
+            }
+        }
+        
+        // 初始化球
+        let balls = [];
+        let cueBall;
+        
+        function initBalls() {
+            balls = [];
+            
+            // 白球（主球）
+            cueBall = new Ball(200, 225, 12, 'white', 0, 'cue');
+            balls.push(cueBall);
+            
+            // 15个红球（三角形排列）
+            let redIndex = 0;
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col <= row && redIndex < 15; col++) {
+                    const x = 650 + row * 20;
+                    const y = 225 + (col - row/2) * 24;
+                    balls.push(new Ball(x, y, 12, '#dc143c', 1, 'red'));
+                    redIndex++;
+                }
+            }
+            
+            // 6个彩球
+            const coloredBalls = [
+                {x: 750, y: 225, color: '#000000', points: 7, name: '黑球'}, // 黑球
+                {x: 720, y: 225, color: '#ff69b4', points: 6, name: '粉球'}, // 粉球
+                {x: 690, y: 225, color: '#0000ff', points: 5, name: '蓝球'}, // 蓝球
+                {x: 450, y: 225, color: '#8b4513', points: 4, name: '棕球'}, // 棕球
+                {x: 450, y: 180, color: '#008000', points: 3, name: '绿球'}, // 绿球
+                {x: 450, y: 270, color: '#ffff00', points: 2, name: '黄球'}  // 黄球
+            ];
+            
+            coloredBalls.forEach(ball => {
+                balls.push(new Ball(ball.x, ball.y, 12, ball.color, ball.points, 'colored'));
+            });
+        }
+        
+        // 球与球碰撞检测
+        function checkCollisions() {
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    const ball1 = balls[i];
+                    const ball2 = balls[j];
+                    
+                    if (!ball1.active || !ball2.active) continue;
+                    
+                    const dx = ball2.x - ball1.x;
+                    const dy = ball2.y - ball1.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < ball1.radius + ball2.radius) {
+                        // 检查是否是有效击球
+                        if (ball1.type === 'cue' && ball1.isMoving()) {
+                            checkValidShot(ball2);
+                        } else if (ball2.type === 'cue' && ball2.isMoving()) {
+                            checkValidShot(ball1);
+                        }
+                        
+                        // 碰撞处理
+                        const angle = Math.atan2(dy, dx);
+                        const sin = Math.sin(angle);
+                        const cos = Math.cos(angle);
+                        
+                        // 分离球
+                        const overlap = ball1.radius + ball2.radius - distance;
+                        ball1.x -= overlap * 0.5 * cos;
+                        ball1.y -= overlap * 0.5 * sin;
+                        ball2.x += overlap * 0.5 * cos;
+                        ball2.y += overlap * 0.5 * sin;
+                        
+                        // 交换速度分量
+                        const vx1 = ball1.vx * cos + ball1.vy * sin;
+                        const vy1 = ball1.vy * cos - ball1.vx * sin;
+                        const vx2 = ball2.vx * cos + ball2.vy * sin;
+                        const vy2 = ball2.vy * cos - ball2.vx * sin;
+                        
+                        ball1.vx = vx2 * cos - vy1 * sin;
+                        ball1.vy = vy1 * cos + vx2 * sin;
+                        ball2.vx = vx1 * cos - vy2 * sin;
+                        ball2.vy = vy2 * cos + vx1 * sin;
+                        
+                        // 减少能量
+                        ball1.vx *= 0.9;
+                        ball1.vy *= 0.9;
+                        ball2.vx *= 0.9;
+                        ball2.vy *= 0.9;
+                    }
+                }
+            }
+        }
+        
+        // 检查有效击球
+        function checkValidShot(hitBall) {
+            if (gamePhase === 'red' && hitBall.type === 'red') {
+                // 击中红球
+                setTimeout(() => {
+                    if (!hitBall.isMoving()) {
+                        hitBall.active = false;
+                        playerScore += hitBall.points;
+                        updateScore();
+                        
+                        // 检查是否还有红球
+                        const redBallsLeft = balls.filter(b => b.type === 'red' && b.active).length;
+                        if (redBallsLeft === 0) {
+                            gamePhase = 'color';
+                            targetBall = '黄球';
+                        } else {
+                            targetBall = '彩球';
+                        }
+                        updateTargetBall();
+                    }
+                }, 1000);
+            } else if (gamePhase === 'red' && hitBall.type === 'colored') {
+                // 红球阶段击中彩球
+                setTimeout(() => {
+                    if (!hitBall.isMoving()) {
+                        playerScore += hitBall.points;
+                        updateScore();
+                        targetBall = '红球';
+                        updateTargetBall();
+                        // 彩球回到原位（简化处理）
+                    }
+                }, 1000);
+            } else if (gamePhase === 'color' && hitBall.type === 'colored') {
+                // 彩球阶段按顺序击球
+                setTimeout(() => {
+                    if (!hitBall.isMoving()) {
+                        hitBall.active = false;
+                        playerScore += hitBall.points;
+                        updateScore();
+                        updateNextColorTarget();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // 更新下一个彩球目标
+        function updateNextColorTarget() {
+            const colorOrder = ['黄球', '绿球', '棕球', '蓝球', '粉球', '黑球'];
+            const currentIndex = colorOrder.indexOf(targetBall);
+            if (currentIndex < colorOrder.length - 1) {
+                targetBall = colorOrder[currentIndex + 1];
+            } else {
+                targetBall = '游戏结束';
+            }
+            updateTargetBall();
+        }
+        
+        // 更新分数显示
+        function updateScore() {
+            document.getElementById('playerScore').textContent = playerScore;
+            const redBallsLeft = balls.filter(b => b.type === 'red' && b.active).length;
+            document.getElementById('redBalls').textContent = redBallsLeft;
+        }
+        
+        // 更新目标球显示
+        function updateTargetBall() {
+            document.getElementById('targetBall').textContent = targetBall;
+        }
+        
+        // 绘制瞄准线
+        function drawAimLine() {
+            if (isAiming) {
+                ctx.beginPath();
+                ctx.moveTo(cueBall.x, cueBall.y);
+                ctx.lineTo(aimStartX, aimStartY);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 更新力度显示
+                const dx = aimStartX - cueBall.x;
+                const dy = aimStartY - cueBall.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                power = Math.min(100, (distance / 120) * 100);
+                powerFill.style.width = power + '%';
+                powerText.textContent = Math.round(power);
+            }
+        }
+        
+        // 绘制球台标记
+        function drawTableMarks() {
+            // D区（发球区）
+            ctx.beginPath();
+            ctx.arc(200, 225, 80, -Math.PI/2, Math.PI/2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 中线
+            ctx.beginPath();
+            ctx.moveTo(450, 0);
+            ctx.lineTo(450, canvas.height);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        
+        // 游戏循环
+        function gameLoop() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制桌面
+            ctx.fillStyle = '#0f5132';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制球台标记
+            drawTableMarks();
+            
+            // 更新和绘制球
+            balls.forEach(ball => {
+                ball.update();
+                ball.draw();
+            });
+            
+            // 检测碰撞
+            checkCollisions();
+            
+            // 绘制瞄准线
+            drawAimLine();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 鼠标事件
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const dx = mouseX - cueBall.x;
+            const dy = mouseY - cueBall.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // 检查是否所有球都停止了
+            const allStopped = balls.every(ball => !ball.isMoving());
+            
+            if (distance <= cueBall.radius + 30 && allStopped && cueBall.active) {
+                isAiming = true;
+                aimStartX = mouseX;
+                aimStartY = mouseY;
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (isAiming) {
+                const rect = canvas.getBoundingClientRect();
+                aimStartX = e.clientX - rect.left;
+                aimStartY = e.clientY - rect.top;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            if (isAiming) {
+                const dx = aimStartX - cueBall.x;
+                const dy = aimStartY - cueBall.y;
+                const force = Math.min(power / 100, 1) * 12;
+                
+                cueBall.vx = (dx / 120) * force;
+                cueBall.vy = (dy / 120) * force;
+                
+                isAiming = false;
+                power = 0;
+                powerFill.style.width = '0%';
+                powerText.textContent = '0';
+            }
+        });
+        
+        // 重置游戏
+        function resetGame() {
+            initBalls();
+            playerScore = 0;
+            gamePhase = 'red';
+            targetBall = '红球';
+            isAiming = false;
+            power = 0;
+            powerFill.style.width = '0%';
+            powerText.textContent = '0';
+            updateScore();
+            updateTargetBall();
+        }
+        
+        // 显示规则
+        function showRules() {
+            alert('康乐球游戏规则：\n\n1. 先击红球（1分），再击彩球（2-7分）\n2. 红球击入后不再回到台面\n3. 彩球击入后回到原位（红球阶段）\n4. 红球全部击完后，按分值顺序击彩球\n5. 彩球顺序：黄(2)→绿(3)→棕(4)→蓝(5)→粉(6)→黑(7)\n6. 目标是获得最高分数');
+        }
+        
+        // 初始化游戏
+        initBalls();
+        updateScore();
+        updateTargetBall();
+        gameLoop();
+    </script>
+</body>
+</html>

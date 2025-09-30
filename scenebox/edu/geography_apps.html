@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理学科创新应用</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <h1>地理学科创新应用</h1>
+            <p>探索地球奥秘，理解自然规律</p>
+            <a href="index.php" class="back-btn">返回首页</a>
+        </div>
+
+        <!-- 地理信息系统 -->
+        <div class="app-section">
+            <h2>🗺️ 地理信息系统（GIS）</h2>
+            <p class="app-description">交互式地理信息系统，帮助学生理解地理数据的收集、分析和可视化。</p>
+            
+            <div class="gis-explorer">
+                <div class="gis-controls">
+                    <div class="control-group">
+                        <label for="map-type">地图类型：</label>
+                        <select id="map-type">
+                            <option value="physical">地形图</option>
+                            <option value="political">政治图</option>
+                            <option value="climate">气候图</option>
+                            <option value="population">人口密度图</option>
+                            <option value="economic">经济分布图</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="region-select">选择区域：</label>
+                        <select id="region-select">
+                            <option value="world">世界</option>
+                            <option value="china">中国</option>
+                            <option value="asia">亚洲</option>
+                            <option value="europe">欧洲</option>
+                            <option value="africa">非洲</option>
+                            <option value="america">美洲</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="data-layer">数据图层：</label>
+                        <div class="layer-controls">
+                            <label><input type="checkbox" id="cities" checked> 城市</label>
+                            <label><input type="checkbox" id="rivers"> 河流</label>
+                            <label><input type="checkbox" id="mountains"> 山脉</label>
+                            <label><input type="checkbox" id="borders"> 边界</label>
+                        </div>
+                    </div>
+                    <button onclick="updateMap()" class="primary-btn">更新地图</button>
+                </div>
+                
+                <div class="map-display" id="map-display">
+                    <div class="map-placeholder">
+                        <p>🌍 地图加载中...</p>
+                        <div class="map-info">
+                            <h4>当前显示：世界地形图</h4>
+                            <p>点击地图上的任意位置获取详细信息</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-analysis" id="map-analysis">
+                    <h4>地理分析</h4>
+                    <div class="analysis-tools">
+                        <button onclick="measureDistance()" class="tool-btn">距离测量</button>
+                        <button onclick="calculateArea()" class="tool-btn">面积计算</button>
+                        <button onclick="elevationProfile()" class="tool-btn">高程剖面</button>
+                        <button onclick="spatialAnalysis()" class="tool-btn">空间分析</button>
+                    </div>
+                    <div class="analysis-result" id="analysis-result">
+                        <p>选择分析工具开始地理数据分析</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>直观展示地理概念和现象</li>
+                        <li>支持多层次地理数据分析</li>
+                        <li>培养学生空间思维能力</li>
+                        <li>实时更新地理信息数据</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>掌握GIS基本操作技能</li>
+                        <li>理解地理数据的重要性</li>
+                        <li>培养地理信息素养</li>
+                        <li>提升空间分析能力</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>多源数据融合</h5>
+                        <p>整合卫星影像、统计数据、实地调查等多种数据源</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>实时数据更新</h5>
+                        <p>连接实时数据源，展示最新的地理信息</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>三维可视化</h5>
+                        <p>支持三维地形和建筑物的立体展示</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>协作分析</h5>
+                        <p>支持多人协作进行地理数据分析和讨论</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 气候变化模拟器 -->
+        <div class="app-section">
+            <h2>🌡️ 气候变化模拟器</h2>
+            <p class="app-description">模拟不同因素对气候的影响，帮助学生理解气候变化的原因和后果。</p>
+            
+            <div class="climate-simulator">
+                <div class="climate-controls">
+                    <div class="parameter-group">
+                        <h4>大气参数</h4>
+                        <div class="control-group">
+                            <label for="co2-level">CO₂浓度 (ppm)：</label>
+                            <input type="range" id="co2-level" min="280" max="500" value="410" oninput="updateClimate()">
+                            <span id="co2-value">410</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="solar-radiation">太阳辐射强度：</label>
+                            <input type="range" id="solar-radiation" min="0.8" max="1.2" step="0.1" value="1.0" oninput="updateClimate()">
+                            <span id="solar-value">1.0</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="cloud-cover">云量覆盖率 (%)：</label>
+                            <input type="range" id="cloud-cover" min="0" max="100" value="60" oninput="updateClimate()">
+                            <span id="cloud-value">60</span>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter-group">
+                        <h4>地表参数</h4>
+                        <div class="control-group">
+                            <label for="forest-cover">森林覆盖率 (%)：</label>
+                            <input type="range" id="forest-cover" min="0" max="100" value="30" oninput="updateClimate()">
+                            <span id="forest-value">30</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="ice-cover">冰川覆盖率 (%)：</label>
+                            <input type="range" id="ice-cover" min="0" max="20" value="10" oninput="updateClimate()">
+                            <span id="ice-value">10</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="ocean-temp">海洋温度变化 (°C)：</label>
+                            <input type="range" id="ocean-temp" min="-2" max="5" step="0.1" value="0" oninput="updateClimate()">
+                            <span id="ocean-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="climate-visualization">
+                    <div class="climate-display" id="climate-display">
+                        <div class="earth-model">
+                            <div class="atmosphere-layer"></div>
+                            <div class="earth-surface"></div>
+                            <div class="temperature-indicator">
+                                <span id="global-temp">15.0°C</span>
+                                <p>全球平均温度</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="climate-effects" id="climate-effects">
+                        <h4>气候影响</h4>
+                        <div class="effect-indicators">
+                            <div class="effect-item">
+                                <span class="effect-icon">🌊</span>
+                                <span class="effect-label">海平面</span>
+                                <span class="effect-value" id="sea-level">+0.0m</span>
+                            </div>
+                            <div class="effect-item">
+                                <span class="effect-icon">🌧️</span>
+                                <span class="effect-label">降水量</span>
+                                <span class="effect-value" id="precipitation">正常</span>
+                            </div>
+                            <div class="effect-item">
+                                <span class="effect-icon">🌪️</span>
+                                <span class="effect-label">极端天气</span>
+                                <span class="effect-value" id="extreme-weather">低</span>
+                            </div>
+                            <div class="effect-item">
+                                <span class="effect-icon">🐧</span>
+                                <span class="effect-label">生态影响</span>
+                                <span class="effect-value" id="ecosystem">稳定</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scenario-selector">
+                    <h4>预设情景</h4>
+                    <div class="scenario-buttons">
+                        <button onclick="loadScenario('current')" class="scenario-btn">当前状态</button>
+                        <button onclick="loadScenario('industrial')" class="scenario-btn">工业革命前</button>
+                        <button onclick="loadScenario('future-low')" class="scenario-btn">未来低排放</button>
+                        <button onclick="loadScenario('future-high')" class="scenario-btn">未来高排放</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>可视化气候系统复杂性</li>
+                        <li>演示人类活动对气候影响</li>
+                        <li>培养环保意识和责任感</li>
+                        <li>支持跨学科教学整合</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>理解气候系统运作机制</li>
+                        <li>认识气候变化的严重性</li>
+                        <li>培养科学思维和分析能力</li>
+                        <li>增强环境保护意识</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>系统性建模</h5>
+                        <p>综合考虑大气、海洋、陆地等多个子系统</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>实时反馈</h5>
+                        <p>参数调整后立即显示气候变化结果</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>情景对比</h5>
+                        <p>支持多种气候情景的对比分析</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>数据驱动</h5>
+                        <p>基于真实气候数据和科学模型</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 地形地貌探索器 -->
+        <div class="app-section">
+            <h2>🏔️ 地形地貌探索器</h2>
+            <p class="app-description">三维地形可视化工具，帮助学生理解地形形成过程和地貌特征。</p>
+            
+            <div class="terrain-explorer">
+                <div class="terrain-controls">
+                    <div class="control-group">
+                        <label for="terrain-type">地形类型：</label>
+                        <select id="terrain-type" onchange="loadTerrain()">
+                            <option value="mountain">山地</option>
+                            <option value="plateau">高原</option>
+                            <option value="plain">平原</option>
+                            <option value="basin">盆地</option>
+                            <option value="valley">峡谷</option>
+                            <option value="coastal">海岸</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="view-angle">视角：</label>
+                        <input type="range" id="view-angle" min="0" max="360" value="45" oninput="rotateView()">
+                        <span id="angle-value">45°</span>
+                    </div>
+                    <div class="control-group">
+                        <label for="elevation-scale">高程缩放：</label>
+                        <input type="range" id="elevation-scale" min="0.5" max="3" step="0.1" value="1" oninput="scaleElevation()">
+                        <span id="scale-value">1.0x</span>
+                    </div>
+                    <div class="control-group">
+                        <label>显示选项：</label>
+                        <div class="display-options">
+                            <label><input type="checkbox" id="contour-lines" onchange="toggleContours()"> 等高线</label>
+                            <label><input type="checkbox" id="water-bodies" onchange="toggleWater()"> 水体</label>
+                            <label><input type="checkbox" id="vegetation" onchange="toggleVegetation()"> 植被</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="terrain-display" id="terrain-display">
+                    <div class="terrain-3d">
+                        <div class="terrain-model" id="terrain-model">
+                            <div class="mountain-range">
+                                <div class="peak"></div>
+                                <div class="slope"></div>
+                                <div class="valley"></div>
+                            </div>
+                        </div>
+                        <div class="terrain-info" id="terrain-info">
+                            <h4>山地地形</h4>
+                            <p><strong>海拔范围：</strong>1000-5000米</p>
+                            <p><strong>形成原因：</strong>地壳运动、板块碰撞</p>
+                            <p><strong>主要特征：</strong>地势起伏大，坡度陡峭</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formation-process">
+                    <h4>地形形成过程</h4>
+                    <div class="process-controls">
+                        <button onclick="startFormation()" class="primary-btn">开始演示</button>
+                        <button onclick="pauseFormation()" class="secondary-btn">暂停</button>
+                        <button onclick="resetFormation()" class="secondary-btn">重置</button>
+                    </div>
+                    <div class="process-display" id="process-display">
+                        <div class="timeline-slider">
+                            <input type="range" id="time-slider" min="0" max="100" value="0" oninput="updateFormation()">
+                            <div class="time-labels">
+                                <span>0年</span>
+                                <span>100万年</span>
+                                <span>1000万年</span>
+                            </div>
+                        </div>
+                        <div class="formation-stages" id="formation-stages">
+                            <p>拖动时间轴查看地形形成的不同阶段</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <div class="benefit-card">
+                    <h4>👨‍🏫 教师收益</h4>
+                    <ul>
+                        <li>三维立体展示地形特征</li>
+                        <li>动态演示地形形成过程</li>
+                        <li>增强地理教学直观性</li>
+                        <li>支持虚拟实地考察</li>
+                    </ul>
+                </div>
+                <div class="benefit-card">
+                    <h4>👨‍🎓 学生收益</h4>
+                    <ul>
+                        <li>直观理解地形地貌概念</li>
+                        <li>掌握地形形成机理</li>
+                        <li>培养空间想象能力</li>
+                        <li>提升地理观察技能</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlights-section">
+                <h4>🌟 亮点与突破</h4>
+                <div class="highlight-grid">
+                    <div class="highlight-item">
+                        <h5>真实地形数据</h5>
+                        <p>基于卫星测高和地形图数据构建</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>时间维度</h5>
+                        <p>展示地形在地质时间尺度上的变化</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>交互探索</h5>
+                        <p>支持多角度、多层次的地形探索</p>
+                    </div>
+                    <div class="highlight-item">
+                        <h5>跨平台支持</h5>
+                        <p>支持VR/AR设备的沉浸式体验</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="geography_apps.js"></script>
+</body>
+</html>

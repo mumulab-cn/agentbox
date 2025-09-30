@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学二年级道德与法治课程工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: #4ECDC4;
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.2);
+        }
+
+        .tool-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-icon {
+            font-size: 1.8em;
+            color: #4ECDC4;
+        }
+
+        .tool-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .tool-demo {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .character-display {
+            font-size: 4em;
+            margin: 20px 0;
+            color: #ff6b6b;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .story-content {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-option:hover {
+            border-color: #4ECDC4;
+            background: #f0f8ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .quiz-option.wrong {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .emotion-face {
+            font-size: 3em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+
+        .emotion-face:hover {
+            transform: scale(1.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-display {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 小学二年级道德与法治课程工具 🌟</h1>
+            <p>培养品德，学习规则，快乐成长</p>
+        </div>
+
+        <div class="main-content">
+            <div class="tool-grid">
+                <!-- 品德故事屋 -->
+                <div class="tool-card" onclick="showTool('story-tool')">
+                    <h3><span class="tool-icon">📚</span>品德故事屋</h3>
+                    <p class="tool-description">通过生动有趣的故事，学习诚实、友善、勇敢等品德品质</p>
+                    <div class="tool-demo" id="story-tool">
+                        <div class="character-display">🐰</div>
+                        <button class="btn" onclick="showStory()">开始故事</button>
+                        <div id="story-content" class="hidden">
+                            <div class="story-content">
+                                <h4>小兔子的诚实</h4>
+                                <p>小兔子不小心打破了妈妈最喜欢的花瓶。它很害怕，但是想起老师说过要做诚实的孩子。于是小兔子主动向妈妈承认了错误。妈妈虽然有点难过，但是夸奖小兔子是个诚实的好孩子。</p>
+                            </div>
+                            <button class="btn" onclick="nextStory()">下一个故事</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 情绪小管家 -->
+                <div class="tool-card" onclick="showTool('emotion-tool')">
+                    <h3><span class="tool-icon">😊</span>情绪小管家</h3>
+                    <p class="tool-description">认识不同的情绪，学会表达和管理自己的情绪</p>
+                    <div class="tool-demo" id="emotion-tool">
+                        <p>点击表情，说说什么时候会有这种情绪：</p>
+                        <div>
+                            <span class="emotion-face" onclick="selectEmotion('开心')">😊</span>
+                            <span class="emotion-face" onclick="selectEmotion('生气')">😠</span>
+                            <span class="emotion-face" onclick="selectEmotion('难过')">😢</span>
+                            <span class="emotion-face" onclick="selectEmotion('害怕')">😨</span>
+                        </div>
+                        <div id="emotion-result" class="result-display hidden"></div>
+                    </div>
+                </div>
+
+                <!-- 规则小卫士 -->
+                <div class="tool-card" onclick="showTool('rule-tool')">
+                    <h3><span class="tool-icon">🛡️</span>规则小卫士</h3>
+                    <p class="tool-description">学习生活中的各种规则，做遵守规则的好学生</p>
+                    <div class="tool-demo" id="rule-tool">
+                        <p>选择正确的行为：</p>
+                        <div id="rule-question">
+                            <p><strong>在图书馆应该怎么做？</strong></p>
+                            <div class="quiz-option" onclick="checkRule(this, false)">📢 大声说话</div>
+                            <div class="quiz-option" onclick="checkRule(this, true)">🤫 安静阅读</div>
+                            <div class="quiz-option" onclick="checkRule(this, false)">🏃 到处跑动</div>
+                        </div>
+                        <button class="btn hidden" id="next-rule" onclick="nextRule()">下一题</button>
+                    </div>
+                </div>
+
+                <!-- 友谊花园 -->
+                <div class="tool-card" onclick="showTool('friendship-tool')">
+                    <h3><span class="tool-icon">🌸</span>友谊花园</h3>
+                    <p class="tool-description">学习如何与同学友好相处，建立美好的友谊</p>
+                    <div class="tool-demo" id="friendship-tool">
+                        <p>种下友谊的种子：</p>
+                        <div>
+                            <button class="btn" onclick="plantSeed('分享')">🤝 分享玩具</button>
+                            <button class="btn" onclick="plantSeed('帮助')">🆘 帮助同学</button>
+                            <button class="btn" onclick="plantSeed('道歉')">🙏 主动道歉</button>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="friendship-progress" style="width: 0%">友谊值: 0%</div>
+                        </div>
+                        <div id="friendship-garden"></div>
+                    </div>
+                </div>
+
+                <!-- 安全小专家 -->
+                <div class="tool-card" onclick="showTool('safety-tool')">
+                    <h3><span class="tool-icon">🚦</span>安全小专家</h3>
+                    <p class="tool-description">学习日常生活中的安全知识，保护自己和他人</p>
+                    <div class="tool-demo" id="safety-tool">
+                        <p>选择安全的做法：</p>
+                        <div id="safety-scenario">
+                            <p><strong>过马路时应该：</strong></p>
+                            <div class="quiz-option" onclick="checkSafety(this, true)">🚦 看红绿灯</div>
+                            <div class="quiz-option" onclick="checkSafety(this, false)">🏃 快速跑过</div>
+                            <div class="quiz-option" onclick="checkSafety(this, false)">📱 边走边玩手机</div>
+                        </div>
+                        <button class="btn hidden" id="next-safety" onclick="nextSafety()">下一个场景</button>
+                    </div>
+                </div>
+
+                <!-- 感恩小天使 -->
+                <div class="tool-card" onclick="showTool('gratitude-tool')">
+                    <h3><span class="tool-icon">💝</span>感恩小天使</h3>
+                    <p class="tool-description">学会感恩，珍惜身边的人和事</p>
+                    <div class="tool-demo" id="gratitude-tool">
+                        <p>想想要感谢谁：</p>
+                        <div>
+                            <button class="btn" onclick="showGratitude('爸爸妈妈')">👨‍👩‍👧‍👦 爸爸妈妈</button>
+                            <button class="btn" onclick="showGratitude('老师')">👩‍🏫 老师</button>
+                            <button class="btn" onclick="showGratitude('同学')">👫 同学</button>
+                            <button class="btn" onclick="showGratitude('清洁工')">🧹 清洁工</button>
+                        </div>
+                        <div id="gratitude-message" class="result-display hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentStoryIndex = 0;
+        let friendshipValue = 0;
+        let currentRuleIndex = 0;
+        let currentSafetyIndex = 0;
+
+        // 故事数据
+        const stories = [
+            {
+                title: "小兔子的诚实",
+                content: "小兔子不小心打破了妈妈最喜欢的花瓶。它很害怕，但是想起老师说过要做诚实的孩子。于是小兔子主动向妈妈承认了错误。妈妈虽然有点难过，但是夸奖小兔子是个诚实的好孩子。",
+                character: "🐰"
+            },
+            {
+                title: "小熊的分享",
+                content: "小熊带了很多好吃的蜂蜜到学校。看到同学们羡慕的眼神，小熊决定和大家一起分享。大家都很开心，小熊也交到了更多朋友。",
+                character: "🐻"
+            },
+            {
+                title: "小鸟的勇敢",
+                content: "小鸟看到小猫被困在树上下不来，虽然有点害怕，但还是勇敢地飞去告诉了大人。最后小猫得救了，大家都夸小鸟很勇敢。",
+                character: "🐦"
+            }
+        ];
+
+        // 规则题目
+        const ruleQuestions = [
+            {
+                question: "在图书馆应该怎么做？",
+                options: [
+                    { text: "📢 大声说话", correct: false },
+                    { text: "🤫 安静阅读", correct: true },
+                    { text: "🏃 到处跑动", correct: false }
+                ]
+            },
+            {
+                question: "在教室里应该怎么做？",
+                options: [
+                    { text: "✋ 举手发言", correct: true },
+                    { text: "📢 随便说话", correct: false },
+                    { text: "🎮 玩游戏", correct: false }
+                ]
+            },
+            {
+                question: "排队时应该怎么做？",
+                options: [
+                    { text: "🏃 插队", correct: false },
+                    { text: "👥 按顺序排队", correct: true },
+                    { text: "😤 推挤别人", correct: false }
+                ]
+            }
+        ];
+
+        // 安全场景
+        const safetyScenarios = [
+            {
+                question: "过马路时应该：",
+                options: [
+                    { text: "🚦 看红绿灯", correct: true },
+                    { text: "🏃 快速跑过", correct: false },
+                    { text: "📱 边走边玩手机", correct: false }
+                ]
+            },
+            {
+                question: "遇到陌生人给糖果时：",
+                options: [
+                    { text: "🍭 马上接受", correct: false },
+                    { text: "🙅‍♀️ 礼貌拒绝", correct: true },
+                    { text: "🏃 跟陌生人走", correct: false }
+                ]
+            },
+            {
+                question: "在楼梯上应该：",
+                options: [
+                    { text: "🏃 快速奔跑", correct: false },
+                    { text: "🚶‍♀️ 慢慢走", correct: true },
+                    { text: "🤸‍♀️ 跳着下楼", correct: false }
+                ]
+            }
+        ];
+
+        function showTool(toolId) {
+            // 这里可以添加工具激活逻辑
+            console.log('激活工具:', toolId);
+        }
+
+        function showStory() {
+            const storyContent = document.getElementById('story-content');
+            const characterDisplay = document.querySelector('.character-display');
+            
+            const story = stories[currentStoryIndex];
+            characterDisplay.textContent = story.character;
+            
+            const storyDiv = storyContent.querySelector('.story-content');
+            storyDiv.innerHTML = `
+                <h4>${story.title}</h4>
+                <p>${story.content}</p>
+            `;
+            
+            storyContent.classList.remove('hidden');
+        }
+
+        function nextStory() {
+            currentStoryIndex = (currentStoryIndex + 1) % stories.length;
+            showStory();
+        }
+
+        function selectEmotion(emotion) {
+            const resultDiv = document.getElementById('emotion-result');
+            const messages = {
+                '开心': '当我们得到表扬、和朋友一起玩、收到礼物时会开心！😊',
+                '生气': '当别人不听话、被欺负、东西被弄坏时会生气。生气时要深呼吸！😠',
+                '难过': '当失去东西、被批评、朋友不理我们时会难过。难过时可以找人聊聊！😢',
+                '害怕': '当遇到危险、听到巨响、看恐怖电影时会害怕。害怕时要找大人帮忙！😨'
+            };
+            
+            resultDiv.innerHTML = `<p><strong>${emotion}的时候：</strong></p><p>${messages[emotion]}</p>`;
+            resultDiv.classList.remove('hidden');
+        }
+
+        function checkRule(element, isCorrect) {
+            const options = document.querySelectorAll('#rule-question .quiz-option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+                if (option === element) {
+                    option.classList.add(isCorrect ? 'correct' : 'wrong');
+                } else if (option.onclick.toString().includes('true')) {
+                    option.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('next-rule').classList.remove('hidden');
+        }
+
+        function nextRule() {
+            currentRuleIndex = (currentRuleIndex + 1) % ruleQuestions.length;
+            const question = ruleQuestions[currentRuleIndex];
+            
+            const questionDiv = document.getElementById('rule-question');
+            questionDiv.innerHTML = `
+                <p><strong>${question.question}</strong></p>
+                ${question.options.map(option => 
+                    `<div class="quiz-option" onclick="checkRule(this, ${option.correct})">${option.text}</div>`
+                ).join('')}
+            `;
+            
+            document.getElementById('next-rule').classList.add('hidden');
+        }
+
+        function plantSeed(action) {
+            friendshipValue = Math.min(friendshipValue + 33.33, 100);
+            const progressFill = document.getElementById('friendship-progress');
+            progressFill.style.width = friendshipValue + '%';
+            progressFill.textContent = `友谊值: ${Math.round(friendshipValue)}%`;
+            
+            const garden = document.getElementById('friendship-garden');
+            const flower = document.createElement('span');
+            flower.textContent = '🌸';
+            flower.style.fontSize = '2em';
+            flower.style.animation = 'bounce 1s ease-in-out';
+            garden.appendChild(flower);
+            
+            if (friendshipValue >= 100) {
+                garden.innerHTML += '<p style="color: #28a745; font-weight: bold; margin-top: 10px;">🎉 友谊花园盛开了！你是交友小能手！</p>';
+            }
+        }
+
+        function checkSafety(element, isCorrect) {
+            const options = document.querySelectorAll('#safety-scenario .quiz-option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+                if (option === element) {
+                    option.classList.add(isCorrect ? 'correct' : 'wrong');
+                } else if (option.onclick.toString().includes('true')) {
+                    option.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('next-safety').classList.remove('hidden');
+        }
+
+        function nextSafety() {
+            currentSafetyIndex = (currentSafetyIndex + 1) % safetyScenarios.length;
+            const scenario = safetyScenarios[currentSafetyIndex];
+            
+            const scenarioDiv = document.getElementById('safety-scenario');
+            scenarioDiv.innerHTML = `
+                <p><strong>${scenario.question}</strong></p>
+                ${scenario.options.map(option => 
+                    `<div class="quiz-option" onclick="checkSafety(this, ${option.correct})">${option.text}</div>`
+                ).join('')}
+            `;
+            
+            document.getElementById('next-safety').classList.add('hidden');
+        }
+
+        function showGratitude(person) {
+            const messageDiv = document.getElementById('gratitude-message');
+            const messages = {
+                '爸爸妈妈': '感谢爸爸妈妈给我们生命，照顾我们成长，给我们温暖的家！👨‍👩‍👧‍👦💕',
+                '老师': '感谢老师教给我们知识，耐心地回答我们的问题，帮助我们成长！👩‍🏫📚',
+                '同学': '感谢同学们和我们一起学习玩耍，在困难时互相帮助！👫🤝',
+                '清洁工': '感谢清洁工叔叔阿姨让我们的环境变得干净整洁！🧹✨'
+            };
+            
+            messageDiv.innerHTML = `<p>${messages[person]}</p><p style="margin-top: 10px;">💝 记得要经常说"谢谢"哦！</p>`;
+            messageDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

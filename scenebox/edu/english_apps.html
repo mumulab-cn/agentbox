@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语创新应用 - K12学科平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🌍 英语创新应用</h1>
+            <p>提升英语能力，拓展国际视野</p>
+            <a href="index.php" class="back-btn">← 返回主页</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 单词记忆卡片 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>📚 智能单词记忆卡片</h2>
+                <div class="app-tags">
+                    <span class="tag primary">遗忘曲线</span>
+                    <span class="tag success">智能复习</span>
+                    <span class="tag info">记忆追踪</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="word-card-container">
+                        <div class="word-card" id="wordCard">
+                            <div class="card-front">
+                                <div class="word-text">beautiful</div>
+                                <div class="phonetic">/ˈbjuːtɪfl/</div>
+                                <button class="btn btn-primary" onclick="flipCard()">查看释义</button>
+                            </div>
+                            <div class="card-back" style="display:none;">
+                                <div class="word-meaning">
+                                    <h4>释义</h4>
+                                    <p><strong>adj.</strong> 美丽的，漂亮的</p>
+                                    <h4>例句</h4>
+                                    <p>She has a <em>beautiful</em> voice.</p>
+                                    <p>她有一副美妙的嗓音。</p>
+                                </div>
+                                <div class="memory-buttons">
+                                    <button class="btn btn-success" onclick="markKnown()">认识 ✓</button>
+                                    <button class="btn btn-warning" onclick="markUnsure()">模糊 ?</button>
+                                    <button class="btn btn-danger" onclick="markUnknown()">不认识 ✗</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="word-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <p>今日进度: 13/20 个单词</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>科学的词汇教学方法，提高教学效率</li>
+                            <li>学生词汇掌握情况实时监控</li>
+                            <li>个性化词汇推荐，因材施教</li>
+                            <li>减轻词汇教学负担，专注语言运用</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>科学记忆方法，提高词汇记忆效率</li>
+                            <li>个性化学习节奏，避免遗忘</li>
+                            <li>游戏化学习体验，增强学习动力</li>
+                            <li>词汇量稳步提升，增强语言信心</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🧠</span>
+                            <h5>遗忘曲线算法</h5>
+                            <p>基于艾宾浩斯遗忘曲线的智能复习</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📊</span>
+                            <h5>学习数据分析</h5>
+                            <p>详细的学习进度和效果统计</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎯</span>
+                            <h5>精准推荐</h5>
+                            <p>AI分析学习情况，推荐合适词汇</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🔊</span>
+                            <h5>多感官学习</h5>
+                            <p>视觉、听觉、触觉多维度记忆</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 英语口语练习 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>🎤 AI英语口语练习</h2>
+                <div class="app-tags">
+                    <span class="tag primary">语音识别</span>
+                    <span class="tag success">发音纠正</span>
+                    <span class="tag warning">实时评分</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="speaking-practice">
+                        <div class="practice-scenario">
+                            <h4>📖 情景对话：在餐厅点餐</h4>
+                            <div class="dialogue-box">
+                                <div class="ai-message">
+                                    <span class="speaker">🤖 AI服务员:</span>
+                                    <p>"Good evening! Welcome to our restaurant. What would you like to order?"</p>
+                                    <button class="btn btn-info btn-sm" onclick="playAudio()">🔊 播放</button>
+                                </div>
+                                <div class="user-response">
+                                    <span class="speaker">👤 你的回答:</span>
+                                    <div class="recording-area">
+                                        <button class="btn btn-danger record-btn" onclick="startRecording()" id="recordBtn">
+                                            🎤 开始录音
+                                        </button>
+                                        <div class="recording-status" id="recordingStatus"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="suggested-response">
+                                <h5>💡 参考回答:</h5>
+                                <p>"Good evening! I'd like to order a chicken salad and a glass of orange juice, please."</p>
+                            </div>
+                        </div>
+                        
+                        <div class="pronunciation-feedback" id="pronunciationFeedback" style="display:none;">
+                            <h5>📊 发音评估结果</h5>
+                            <div class="score-display">
+                                <div class="score-circle">
+                                    <span class="score-number">85</span>
+                                    <span class="score-label">分</span>
+                                </div>
+                                <div class="score-details">
+                                    <div class="score-item">
+                                        <span class="label">流利度:</span>
+                                        <div class="score-bar">
+                                            <div class="score-fill" style="width: 80%;"></div>
+                                        </div>
+                                        <span class="score-value">80%</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span class="label">准确度:</span>
+                                        <div class="score-bar">
+                                            <div class="score-fill" style="width: 90%;"></div>
+                                        </div>
+                                        <span class="score-value">90%</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span class="label">语调:</span>
+                                        <div class="score-bar">
+                                            <div class="score-fill" style="width: 85%;"></div>
+                                        </div>
+                                        <span class="score-value">85%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>标准化口语教学，提供统一评估标准</li>
+                            <li>减轻口语测评工作量，提高效率</li>
+                            <li>学生口语进步数据可视化追踪</li>
+                            <li>丰富的情景对话素材库</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>随时随地练习口语，不受时间限制</li>
+                            <li>克服开口恐惧，建立口语自信</li>
+                            <li>精准的发音纠正，快速提升</li>
+                            <li>多样化情景练习，实用性强</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎯</span>
+                            <h5>精准识别</h5>
+                            <p>先进语音识别技术，准确率95%+</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🔄</span>
+                            <h5>实时反馈</h5>
+                            <p>即时发音评估和改进建议</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🌐</span>
+                            <h5>情景丰富</h5>
+                            <p>涵盖日常生活各种交流场景</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📱</span>
+                            <h5>移动便携</h5>
+                            <p>支持手机端，随时随地练习</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 英语阅读理解 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>📖 智能阅读理解训练</h2>
+                <div class="app-tags">
+                    <span class="tag primary">分级阅读</span>
+                    <span class="tag success">理解分析</span>
+                    <span class="tag info">词汇扩展</span>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="app-demo">
+                    <div class="reading-comprehension">
+                        <div class="reading-passage">
+                            <h4>📚 阅读材料：The Magic of Books</h4>
+                            <div class="passage-text">
+                                <p>Books have always been magical to me. When I was young, I would spend hours in the library, <span class="highlight-word" onclick="showWordInfo('discover')">discovering</span> new worlds and adventures. Reading opened my mind to different cultures, ideas, and possibilities.</p>
+                                <p>Today, even with all the technology around us, books remain <span class="highlight-word" onclick="showWordInfo('essential')">essential</span>. They help us develop our imagination, improve our vocabulary, and enhance our critical thinking skills.</p>
+                            </div>
+                            <div class="reading-tools">
+                                <button class="btn btn-info" onclick="toggleTranslation()">🌐 显示翻译</button>
+                                <button class="btn btn-success" onclick="highlightKeyWords()">✨ 标记重点</button>
+                                <button class="btn btn-warning" onclick="playReading()">🔊 朗读</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension-questions">
+                            <h5>💭 理解问题</h5>
+                            <div class="question-item">
+                                <p><strong>1.</strong> According to the passage, what did the author do in the library when young?</p>
+                                <div class="answer-options">
+                                    <label><input type="radio" name="q1" value="a"> A) Study for exams</label>
+                                    <label><input type="radio" name="q1" value="b"> B) Discover new worlds and adventures</label>
+                                    <label><input type="radio" name="q1" value="c"> C) Meet friends</label>
+                                    <label><input type="radio" name="q1" value="d"> D) Use computers</label>
+                                </div>
+                            </div>
+                            <div class="question-item">
+                                <p><strong>2.</strong> What benefits of reading are mentioned in the passage?</p>
+                                <div class="answer-options">
+                                    <label><input type="checkbox" name="q2" value="imagination"> Develop imagination</label>
+                                    <label><input type="checkbox" name="q2" value="vocabulary"> Improve vocabulary</label>
+                                    <label><input type="checkbox" name="q2" value="thinking"> Enhance critical thinking</label>
+                                    <label><input type="checkbox" name="q2" value="memory"> Improve memory</label>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="checkAnswers()">提交答案</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-benefits">
+                    <div class="benefit-card teacher">
+                        <h4>👩‍🏫 教师收获</h4>
+                        <ul>
+                            <li>丰富的分级阅读材料库，节省备课时间</li>
+                            <li>自动化理解能力测评，精准掌握学情</li>
+                            <li>词汇难度智能标注，辅助教学设计</li>
+                            <li>学生阅读进度和理解水平数据分析</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>👨‍🎓 学生收获</h4>
+                        <ul>
+                            <li>个性化阅读难度，循序渐进提升</li>
+                            <li>即时词汇解释，扫除阅读障碍</li>
+                            <li>多维度理解训练，提升思维能力</li>
+                            <li>阅读兴趣培养，养成良好习惯</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="app-highlights">
+                    <h4>🌟 应用亮点与突破</h4>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📊</span>
+                            <h5>智能分级</h5>
+                            <p>AI评估阅读水平，推荐合适材料</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">💡</span>
+                            <h5>互动学习</h5>
+                            <p>点击查词、翻译、朗读多功能</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">🎯</span>
+                            <h5>理解深化</h5>
+                            <p>多层次问题设计，培养批判思维</p>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-icon">📈</span>
+                            <h5>进步追踪</h5>
+                            <p>阅读速度和理解力提升可视化</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 K12学科创新应用平台 - 英语让世界更精彩</p>
+        </div>
+    </footer>
+
+    <script src="english_apps.js"></script>
+</body>
+</html>

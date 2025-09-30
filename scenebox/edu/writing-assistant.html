@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能作文批改助手 - AI课堂教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .writing-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .topic-selector {
+            margin-bottom: 20px;
+        }
+
+        .topic-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .topic-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .writing-area {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .writing-area:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .word-count {
+            text-align: right;
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .feedback-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .score-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .overall-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .score-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .score-item .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .score-item .label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .feedback-section {
+            margin-bottom: 20px;
+        }
+
+        .feedback-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-title .icon {
+            margin-right: 8px;
+        }
+
+        .feedback-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-item {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .error-type {
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .error-text {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .suggestion-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestion-item {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-item:before {
+            content: '💡';
+            margin-right: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回主页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>✍️ 智能作文批改助手</h1>
+            <p>AI写作指导系统 - 实时批改与个性化建议</p>
+        </div>
+
+        <div class="main-content">
+            <div class="writing-panel">
+                <div class="panel-title">
+                    <span class="icon">📝</span>
+                    写作区域
+                </div>
+                
+                <div class="topic-selector">
+                    <label for="topic">选择作文题目：</label>
+                    <select id="topic">
+                        <option value="我的家乡">我的家乡</option>
+                        <option value="我最喜欢的动物">我最喜欢的动物</option>
+                        <option value="难忘的一天">难忘的一天</option>
+                        <option value="我的好朋友">我的好朋友</option>
+                        <option value="春天来了">春天来了</option>
+                        <option value="我的梦想">我的梦想</option>
+                        <option value="自定义">自定义题目</option>
+                    </select>
+                </div>
+
+                <textarea 
+                    class="writing-area" 
+                    id="essayText" 
+                    placeholder="请在这里开始写作...\n\n提示：\n1. 注意段落分明，每段表达一个主要意思\n2. 使用生动的词汇和句子\n3. 注意标点符号的正确使用\n4. 字数建议：200-400字"
+                    oninput="updateWordCount()"></textarea>
+                
+                <div class="word-count" id="wordCount">字数：0</div>
+                
+                <button class="analyze-btn" onclick="analyzeEssay()">🔍 开始批改</button>
+            </div>
+
+            <div class="feedback-panel">
+                <div class="panel-title">
+                    <span class="icon">📊</span>
+                    批改结果
+                </div>
+                
+                <div id="feedbackContent">
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
+                        <p>请在左侧写作区域完成作文，然后点击"开始批改"按钮</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateWordCount() {
+            const text = document.getElementById('essayText').value;
+            const count = text.length;
+            document.getElementById('wordCount').textContent = `字数：${count}`;
+        }
+
+        function analyzeEssay() {
+            const text = document.getElementById('essayText').value.trim();
+            
+            if (text.length < 50) {
+                alert('作文内容太少，请至少写50个字再进行批改。');
+                return;
+            }
+
+            // 显示加载状态
+            showLoading();
+
+            // 模拟AI分析过程
+            setTimeout(() => {
+                const analysis = performAnalysis(text);
+                displayFeedback(analysis);
+            }, 2000);
+        }
+
+        function showLoading() {
+            document.getElementById('feedbackContent').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>AI正在分析您的作文，请稍候...</p>
+                </div>
+            `;
+        }
+
+        function performAnalysis(text) {
+            // 模拟AI分析结果
+            const wordCount = text.length;
+            const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 0);
+            const paragraphs = text.split('\n').filter(p => p.trim().length > 0);
+            
+            // 计算各项得分
+            const contentScore = Math.min(95, Math.max(60, 70 + Math.random() * 20));
+            const structureScore = Math.min(95, Math.max(65, 75 + Math.random() * 15));
+            const languageScore = Math.min(95, Math.max(70, 80 + Math.random() * 10));
+            const creativityScore = Math.min(95, Math.max(60, 75 + Math.random() * 20));
+            
+            const overallScore = Math.round((contentScore + structureScore + languageScore + creativityScore) / 4);
+
+            // 生成错误和建议
+            const errors = generateErrors(text);
+            const suggestions = generateSuggestions(text, overallScore);
+
+            return {
+                overallScore,
+                contentScore: Math.round(contentScore),
+                structureScore: Math.round(structureScore),
+                languageScore: Math.round(languageScore),
+                creativityScore: Math.round(creativityScore),
+                wordCount,
+                sentenceCount: sentences.length,
+                paragraphCount: paragraphs.length,
+                errors,
+                suggestions
+            };
+        }
+
+        function generateErrors(text) {
+            const errors = [];
+            
+            // 检查常见错误
+            if (text.includes('的的')) {
+                errors.push({ type: '重复用词', text: '发现"的的"重复，建议修改为单个"的"' });
+            }
+            
+            if (text.includes('然后然后')) {
+                errors.push({ type: '重复用词', text: '发现"然后"重复使用，建议使用其他连接词' });
+            }
+            
+            if (!text.includes('。') && !text.includes('！') && !text.includes('？')) {
+                errors.push({ type: '标点符号', text: '缺少句号、感叹号或问号，请注意句子结尾的标点' });
+            }
+            
+            if (text.length < 100) {
+                errors.push({ type: '内容长度', text: '作文内容较短，建议增加更多细节描述' });
+            }
+            
+            // 随机添加一些建议性错误
+            const randomErrors = [
+                { type: '词汇选择', text: '建议使用更生动的形容词来描述' },
+                { type: '句式变化', text: '可以尝试使用不同的句式，让文章更有节奏感' },
+                { type: '段落结构', text: '建议每段开头有明确的主题句' }
+            ];
+            
+            if (Math.random() > 0.5) {
+                errors.push(randomErrors[Math.floor(Math.random() * randomErrors.length)]);
+            }
+            
+            return errors;
+        }
+
+        function generateSuggestions(text, score) {
+            const suggestions = [];
+            
+            if (score < 80) {
+                suggestions.push('尝试添加更多具体的例子和细节描述，让文章更生动');
+                suggestions.push('注意段落之间的逻辑关系，使用适当的过渡词');
+            }
+            
+            if (score < 70) {
+                suggestions.push('建议多使用比喻、拟人等修辞手法');
+                suggestions.push('可以增加对话或心理描写，让文章更有趣');
+            }
+            
+            suggestions.push('继续保持良好的写作习惯，多读优秀作文');
+            suggestions.push('可以尝试从不同角度来描述同一个事物');
+            
+            return suggestions;
+        }
+
+        function displayFeedback(analysis) {
+            const content = `
+                <div class="score-section">
+                    <div class="overall-score">${analysis.overallScore}</div>
+                    <div class="score-label">综合得分</div>
+                    
+                    <div class="score-breakdown">
+                        <div class="score-item">
+                            <div class="score">${analysis.contentScore}</div>
+                            <div class="label">内容</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score">${analysis.structureScore}</div>
+                            <div class="label">结构</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score">${analysis.languageScore}</div>
+                            <div class="label">语言</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score">${analysis.creativityScore}</div>
+                            <div class="label">创意</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-section">
+                    <div class="feedback-title">
+                        <span class="icon">📈</span>
+                        文章统计
+                    </div>
+                    <div class="feedback-content">
+                        字数：${analysis.wordCount} | 句子：${analysis.sentenceCount} | 段落：${analysis.paragraphCount}
+                    </div>
+                </div>
+
+                ${analysis.errors.length > 0 ? `
+                <div class="feedback-section">
+                    <div class="feedback-title">
+                        <span class="icon">⚠️</span>
+                        需要改进的地方
+                    </div>
+                    <ul class="error-list">
+                        ${analysis.errors.map(error => `
+                            <li class="error-item">
+                                <div class="error-type">${error.type}</div>
+                                <div class="error-text">${error.text}</div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                <div class="feedback-section">
+                    <div class="feedback-title">
+                        <span class="icon">💡</span>
+                        写作建议
+                    </div>
+                    <ul class="suggestion-list">
+                        ${analysis.suggestions.map(suggestion => `
+                            <li class="suggestion-item">${suggestion}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('feedbackContent').innerHTML = content;
+        }
+
+        // 示例作文
+        const sampleEssays = {
+            '我的家乡': '我的家乡是一个美丽的小城市。那里有清澈的河水，绿色的山峦，还有勤劳善良的人们。\n\n春天的时候，家乡的桃花开得特别美，粉红色的花朵像小朋友的笑脸一样可爱。夏天，我们可以在河里游泳，在树荫下乘凉。秋天，果园里结满了红苹果和黄梨子，农民伯伯的脸上露出了丰收的喜悦。冬天虽然寒冷，但是雪花飞舞的景象让人感到很浪漫。\n\n我爱我的家乡，那里有我最美好的童年回忆。',
+            '我最喜欢的动物': '我最喜欢的动物是小狗。我家有一只金毛犬，名字叫"豆豆"。\n\n豆豆有一身金黄色的毛发，像阳光一样温暖。它的眼睛又大又亮，总是充满好奇地看着周围的一切。每当我放学回家，豆豆总是第一个跑来迎接我，摇着尾巴，好像在说："小主人，你回来了！"\n\n豆豆很聪明，会坐下、握手，还会帮我拿拖鞋。有时候我不开心，它就会安静地陪在我身边，用它温暖的身体靠着我。豆豆不仅是我的宠物，更是我最好的朋友。'
+        };
+
+        // 当选择示例题目时，可以填入示例内容
+        document.getElementById('topic').addEventListener('change', function() {
+            const topic = this.value;
+            if (sampleEssays[topic]) {
+                if (confirm('是否要加载这个题目的示例作文？')) {
+                    document.getElementById('essayText').value = sampleEssays[topic];
+                    updateWordCount();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

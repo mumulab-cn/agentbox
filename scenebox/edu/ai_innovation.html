@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI创新应用展示 - K12学科平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+    <style>
+        .ai-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23ffffff" opacity="0.1"/><circle cx="80" cy="40" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="40" cy="80" r="1.5" fill="%23ffffff" opacity="0.1"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-100px); }
+        }
+        
+        .ai-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ai-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subject-ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .subject-ai-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .subject-ai-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .subject-ai-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--subject-color, #667eea);
+        }
+        
+        .subject-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .subject-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+        
+        .subject-name {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .ai-applications {
+            margin-bottom: 1.5rem;
+        }
+        
+        .ai-app-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--subject-color, #667eea);
+            transition: all 0.3s ease;
+        }
+        
+        .ai-app-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .ai-app-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ai-tech-badge {
+            background: var(--subject-color, #667eea);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+        
+        .ai-app-desc {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .innovation-highlights {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        
+        .innovation-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .innovation-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .innovation-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .innovation-list li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+        }
+        
+        .tech-stack {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .tech-stack-title {
+            font-weight: bold;
+            color: #2d5a2d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tech-tag {
+            background: #4ECDC4;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-hero">
+        <div class="container">
+            <h1 class="ai-title">🤖 AI驱动的学科创新应用</h1>
+            <p class="ai-subtitle">探索人工智能如何革新中小学教育，创造前所未有的学习体验</p>
+            <a href="index.php" class="back-btn">← 返回主页</a>
+        </div>
+    </div>
+
+    <main class="container">
+        <div class="subject-ai-grid">
+            <!-- 语文学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #ff6b6b">
+                <div class="subject-header">
+                    <div class="subject-icon">📚</div>
+                    <h2 class="subject-name">语文</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            智能作文批改系统
+                            <span class="ai-tech-badge">NLP</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用自然语言处理技术，实时分析学生作文的语法、逻辑、修辞手法，提供个性化修改建议和评分
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            古诗词智能创作助手
+                            <span class="ai-tech-badge">生成式AI</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于深度学习模型，帮助学生理解古诗词格律，辅助创作符合平仄要求的诗词作品
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            语音朗读智能评测
+                            <span class="ai-tech-badge">语音识别</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            利用语音识别和语音合成技术，对学生朗读进行实时评分，纠正发音和语调问题
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>首创多维度作文评价体系</li>
+                        <li>实现古典文学与现代AI的完美融合</li>
+                        <li>突破传统语文教学的时空限制</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">BERT</span>
+                        <span class="tech-tag">GPT</span>
+                        <span class="tech-tag">语音识别</span>
+                        <span class="tech-tag">情感分析</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数学学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #4ecdc4">
+                <div class="subject-header">
+                    <div class="subject-icon">🔢</div>
+                    <h2 class="subject-name">数学</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            智能解题步骤生成器
+                            <span class="ai-tech-badge">符号计算</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用符号计算和推理引擎，自动生成数学题目的详细解题步骤，支持代数、几何、微积分等多个领域
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            个性化习题推荐系统
+                            <span class="ai-tech-badge">机器学习</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于学生答题历史和知识掌握情况，智能推荐最适合的练习题目，实现精准化学习
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            手写数学公式识别
+                            <span class="ai-tech-badge">计算机视觉</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            利用深度学习识别手写数学公式，自动转换为可编辑的数字格式，支持复杂的数学符号
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>实现数学知识图谱的智能构建</li>
+                        <li>开创性的错误模式识别算法</li>
+                        <li>多模态数学表达式理解技术</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">CNN</span>
+                        <span class="tech-tag">RNN</span>
+                        <span class="tech-tag">知识图谱</span>
+                        <span class="tech-tag">符号推理</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 英语学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #45b7d1">
+                <div class="subject-header">
+                    <div class="subject-icon">🌍</div>
+                    <h2 class="subject-name">英语</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            AI口语对话伙伴
+                            <span class="ai-tech-badge">对话系统</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于大语言模型的智能对话系统，提供24/7英语口语练习环境，支持多种场景对话
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            智能语法纠错助手
+                            <span class="ai-tech-badge">序列标注</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用序列标注和语法分析技术，实时检测并纠正英语写作中的语法错误，提供改进建议
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            个性化词汇学习系统
+                            <span class="ai-tech-badge">推荐算法</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于遗忘曲线和学习行为分析，智能安排词汇复习计划，提高记忆效率
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>首创情境化英语学习环境</li>
+                        <li>突破传统语法教学模式</li>
+                        <li>实现个性化学习路径规划</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Transformer</span>
+                        <span class="tech-tag">LSTM</span>
+                        <span class="tech-tag">语音合成</span>
+                        <span class="tech-tag">协同过滤</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 科学学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #96ceb4">
+                <div class="subject-header">
+                    <div class="subject-icon">🔬</div>
+                    <h2 class="subject-name">科学</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            虚拟实验室AI助手
+                            <span class="ai-tech-badge">仿真模拟</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            结合物理引擎和AI算法，创建高度真实的虚拟实验环境，支持化学反应、物理实验的安全模拟
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            智能实验数据分析
+                            <span class="ai-tech-badge">数据挖掘</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用机器学习算法分析实验数据，自动识别规律和异常，帮助学生理解科学原理
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            分子结构AI预测
+                            <span class="ai-tech-badge">深度学习</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于图神经网络预测分子性质和化学反应结果，为化学学习提供理论支撑
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>开创虚拟与现实结合的实验模式</li>
+                        <li>实现复杂科学现象的可视化</li>
+                        <li>突破实验条件和安全限制</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">GNN</span>
+                        <span class="tech-tag">物理引擎</span>
+                        <span class="tech-tag">3D渲染</span>
+                        <span class="tech-tag">时序分析</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #feca57">
+                <div class="subject-header">
+                    <div class="subject-icon">🏛️</div>
+                    <h2 class="subject-name">历史</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            历史事件智能重现
+                            <span class="ai-tech-badge">VR/AR</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            结合AI和虚拟现实技术，重现历史场景，让学生身临其境地体验历史事件
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            古文献智能解读
+                            <span class="ai-tech-badge">OCR+NLP</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用光学字符识别和自然语言处理技术，自动识别和翻译古代文献，辅助历史研究
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            历史人物AI对话
+                            <span class="ai-tech-badge">角色扮演AI</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于历史资料训练的AI模型，模拟历史人物进行对话，增强历史学习的趣味性
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>首创沉浸式历史学习体验</li>
+                        <li>实现古今文化的智能桥接</li>
+                        <li>开创性的历史人物复活技术</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Unity3D</span>
+                        <span class="tech-tag">OCR</span>
+                        <span class="tech-tag">角色AI</span>
+                        <span class="tech-tag">知识库</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地理学科AI应用 -->
+            <div class="subject-ai-card" style="--subject-color: #ff9ff3">
+                <div class="subject-header">
+                    <div class="subject-icon">🌏</div>
+                    <h2 class="subject-name">地理</h2>
+                </div>
+                
+                <div class="ai-applications">
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            智能气候预测模型
+                            <span class="ai-tech-badge">时序预测</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            运用深度学习分析气象数据，预测气候变化趋势，帮助学生理解地理环境的动态变化
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            卫星图像智能分析
+                            <span class="ai-tech-badge">遥感AI</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            利用计算机视觉技术分析卫星图像，自动识别地形地貌、城市规划等地理要素
+                        </div>
+                    </div>
+                    
+                    <div class="ai-app-item">
+                        <div class="ai-app-title">
+                            3D地球探索系统
+                            <span class="ai-tech-badge">3D建模</span>
+                        </div>
+                        <div class="ai-app-desc">
+                            基于真实地理数据构建3D地球模型，支持多尺度地理现象的交互式探索
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="innovation-highlights">
+                    <div class="innovation-title">🚀 创新突破</div>
+                    <ul class="innovation-list">
+                        <li>实现全球地理数据的实时可视化</li>
+                        <li>开创性的多维度地理分析方法</li>
+                        <li>突破传统地图的表达限制</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-stack">
+                    <div class="tech-stack-title">核心技术栈</div>
+                    <div class="tech-tags">
+                        <span class="tech-tag">GIS</span>
+                        <span class="tech-tag">遥感</span>
+                        <span class="tech-tag">WebGL</span>
+                        <span class="tech-tag">时空分析</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI技术总览 -->
+        <section class="app-section" style="margin-top: 3rem;">
+            <div style="padding: 2rem;">
+                <h2 style="text-align: center; color: #2c3e50; margin-bottom: 2rem;">🧠 AI技术在教育中的应用架构</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px;">
+                        <h3>🎯 核心AI技术</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>• 自然语言处理 (NLP)</li>
+                            <li>• 计算机视觉 (CV)</li>
+                            <li>• 机器学习 (ML)</li>
+                            <li>• 深度学习 (DL)</li>
+                            <li>• 知识图谱 (KG)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 12px;">
+                        <h3>🚀 创新应用场景</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>• 个性化学习推荐</li>
+                            <li>• 智能内容生成</li>
+                            <li>• 自动化评估反馈</li>
+                            <li>• 沉浸式学习体验</li>
+                            <li>• 数据驱动教学优化</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 12px;">
+                        <h3>📈 教育价值体现</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>• 提升学习效率</li>
+                            <li>• 增强学习兴趣</li>
+                            <li>• 减轻教师负担</li>
+                            <li>• 促进教育公平</li>
+                            <li>• 培养创新思维</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 K12学科创新应用平台 - AI赋能教育，创造无限可能</p>
+        </div>
+    </footer>
+
+    <script>
+        // 添加页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.subject-ai-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+        
+        // 添加卡片悬停效果
+        document.querySelectorAll('.ai-app-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

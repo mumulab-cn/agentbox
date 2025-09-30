@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能汉字书写纠正 - AI课堂教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .writing-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .character-selector {
+            margin-bottom: 20px;
+        }
+
+        .character-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .character-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .character-display {
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .target-character {
+            font-size: 6rem;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: 'KaiTi', '楷体', serif;
+        }
+
+        .character-info {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .stroke-order {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .stroke-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .stroke-steps {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stroke-step {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-family: 'KaiTi', '楷体', serif;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stroke-step:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .stroke-step.active {
+            border-color: #e74c3c;
+            background: #ffe6e6;
+        }
+
+        .writing-area {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .canvas-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .writing-canvas {
+            display: block;
+            cursor: crosshair;
+            border-radius: 10px;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .writing-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .analyze-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .demo-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .feedback-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .feedback-panel.show {
+            display: block;
+        }
+
+        .feedback-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .score-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .feedback-details {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .feedback-category {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .feedback-content {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .suggestions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .suggestions-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestion-item {
+            color: #856404;
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .suggestion-item:before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .target-character {
+                font-size: 4rem;
+            }
+
+            .writing-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回主页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>✍️ 智能汉字书写纠正</h1>
+            <p>AI书写分析系统 - 笔画顺序与字形结构智能指导</p>
+        </div>
+
+        <div class="main-content">
+            <div class="writing-panel">
+                <div class="panel-title">
+                    <span class="icon">📝</span>
+                    汉字学习
+                </div>
+                
+                <div class="character-selector">
+                    <label for="characterSelect">选择要练习的汉字：</label>
+                    <select id="characterSelect" onchange="loadCharacter()">
+                        <option value="春">春</option>
+                        <option value="花">花</option>
+                        <option value="鸟">鸟</option>
+                        <option value="山">山</option>
+                        <option value="水">水</option>
+                        <option value="人">人</option>
+                        <option value="大">大</option>
+                        <option value="小">小</option>
+                    </select>
+                </div>
+
+                <div class="character-display">
+                    <div class="target-character" id="targetCharacter">春</div>
+                    <div class="character-info" id="characterInfo">
+                        拼音: chūn<br>
+                        部首: 日<br>
+                        笔画数: 9画<br>
+                        释义: 一年的第一个季节
+                    </div>
+                </div>
+
+                <div class="stroke-order">
+                    <div class="stroke-title">笔画顺序演示：</div>
+                    <div class="stroke-steps" id="strokeSteps">
+                        <!-- 笔画步骤将通过JavaScript生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="writing-area">
+                <div class="panel-title">
+                    <span class="icon">🖊️</span>
+                    书写练习
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="writingCanvas" class="writing-canvas" width="400" height="400"></canvas>
+                    <canvas id="gridOverlay" class="grid-overlay" width="400" height="400"></canvas>
+                </div>
+
+                <div class="writing-controls">
+                    <button class="control-btn clear-btn" onclick="clearCanvas()">
+                        🗑️ 清除
+                    </button>
+                    <button class="control-btn analyze-btn" onclick="analyzeWriting()">
+                        🔍 分析书写
+                    </button>
+                    <button class="control-btn demo-btn" onclick="showDemo()">
+                        👁️ 示范书写
+                    </button>
+                </div>
+
+                <div class="feedback-panel" id="feedbackPanel">
+                    <div class="feedback-title">
+                        <span>📊 AI分析结果</span>
+                    </div>
+                    
+                    <div class="score-section">
+                        <div class="score-item">
+                            <div class="score-value" id="overallScore">85</div>
+                            <div class="score-label">总体评分</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-value" id="strokeScore">90</div>
+                            <div class="score-label">笔画准确度</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-value" id="structureScore">80</div>
+                            <div class="score-label">结构匀称度</div>
+                        </div>
+                    </div>
+
+                    <div class="feedback-details">
+                        <div class="feedback-category">✅ 优点：</div>
+                        <div class="feedback-content" id="positivePoints">
+                            笔画书写较为规范，整体字形端正。
+                        </div>
+                    </div>
+
+                    <div class="feedback-details">
+                        <div class="feedback-category">⚠️ 需要改进：</div>
+                        <div class="feedback-content" id="improvementPoints">
+                            部分笔画连接不够自然，建议注意笔画间的呼应关系。
+                        </div>
+                    </div>
+
+                    <div class="suggestions">
+                        <div class="suggestions-title">💡 改进建议：</div>
+                        <ul class="suggestion-list" id="suggestionList">
+                            <li class="suggestion-item">注意"日"字部分的比例，不宜过大</li>
+                            <li class="suggestion-item">"三"的三横要有长短变化</li>
+                            <li class="suggestion-item">整体结构要上紧下松</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="panel-title">
+                <span class="icon">📈</span>
+                学习进度
+            </div>
+            
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="practiceCount">12</div>
+                    <div class="stat-label">练习次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="averageScore">82</div>
+                    <div class="stat-label">平均得分</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="masteredChars">6</div>
+                    <div class="stat-label">掌握汉字</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="practiceTime">25</div>
+                    <div class="stat-label">练习时长(分钟)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCharacter = '春';
+        let isDrawing = false;
+        let canvas, ctx, gridCanvas, gridCtx;
+        let practiceStats = {
+            count: 12,
+            averageScore: 82,
+            masteredChars: 6,
+            practiceTime: 25
+        };
+
+        const characters = {
+            '春': {
+                pinyin: 'chūn',
+                radical: '日',
+                strokes: 9,
+                meaning: '一年的第一个季节',
+                strokeOrder: ['一', '一一', '一一丨', '一一丨一', '一一丨一丨', '一一丨一丨𠃍', '一一丨一丨𠃍一', '一一丨一丨𠃍一丿', '春']
+            },
+            '花': {
+                pinyin: 'huā',
+                radical: '艹',
+                strokes: 7,
+                meaning: '植物的繁殖器官',
+                strokeOrder: ['丶', '丶丨', '艹', '艹丿', '艹丿乀', '艹丿乀丨', '花']
+            },
+            '鸟': {
+                pinyin: 'niǎo',
+                radical: '鸟',
+                strokes: 5,
+                meaning: '有羽毛会飞的动物',
+                strokeOrder: ['丿', '丿𠃍', '丿𠃍一', '丿𠃍一丶', '鸟']
+            },
+            '山': {
+                pinyin: 'shān',
+                radical: '山',
+                strokes: 3,
+                meaning: '地面形成的高耸部分',
+                strokeOrder: ['丨', '丨𠃍', '山']
+            },
+            '水': {
+                pinyin: 'shuǐ',
+                radical: '水',
+                strokes: 4,
+                meaning: '无色无味的液体',
+                strokeOrder: ['丨', '丨𠃍', '丨𠃍丿', '水']
+            },
+            '人': {
+                pinyin: 'rén',
+                radical: '人',
+                strokes: 2,
+                meaning: '能制造工具并使用工具进行劳动的高等动物',
+                strokeOrder: ['丿', '人']
+            },
+            '大': {
+                pinyin: 'dà',
+                radical: '大',
+                strokes: 3,
+                meaning: '指面积、体积、容量、数量、强度、力量超过一般',
+                strokeOrder: ['一', '一丿', '大']
+            },
+            '小': {
+                pinyin: 'xiǎo',
+                radical: '小',
+                strokes: 3,
+                meaning: '指面积、体积、容量、数量、强度、力量不及一般',
+                strokeOrder: ['丨', '丨丿', '小']
+            }
+        };
+
+        function initCanvas() {
+            canvas = document.getElementById('writingCanvas');
+            ctx = canvas.getContext('2d');
+            gridCanvas = document.getElementById('gridOverlay');
+            gridCtx = gridCanvas.getContext('2d');
+            
+            // 设置画笔样式
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // 绘制网格
+            drawGrid();
+            
+            // 添加鼠标事件
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // 添加触摸事件（移动设备支持）
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function drawGrid() {
+            gridCtx.strokeStyle = '#ddd';
+            gridCtx.lineWidth = 1;
+            
+            const size = 400;
+            const step = size / 4;
+            
+            // 绘制网格线
+            for (let i = 0; i <= 4; i++) {
+                // 垂直线
+                gridCtx.beginPath();
+                gridCtx.moveTo(i * step, 0);
+                gridCtx.lineTo(i * step, size);
+                gridCtx.stroke();
+                
+                // 水平线
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, i * step);
+                gridCtx.lineTo(size, i * step);
+                gridCtx.stroke();
+            }
+            
+            // 绘制对角线
+            gridCtx.strokeStyle = '#eee';
+            gridCtx.beginPath();
+            gridCtx.moveTo(0, 0);
+            gridCtx.lineTo(size, size);
+            gridCtx.stroke();
+            
+            gridCtx.beginPath();
+            gridCtx.moveTo(size, 0);
+            gridCtx.lineTo(0, size);
+            gridCtx.stroke();
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                            e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('feedbackPanel').classList.remove('show');
+        }
+
+        function loadCharacter() {
+            const select = document.getElementById('characterSelect');
+            currentCharacter = select.value;
+            const char = characters[currentCharacter];
+            
+            document.getElementById('targetCharacter').textContent = currentCharacter;
+            document.getElementById('characterInfo').innerHTML = `
+                拼音: ${char.pinyin}<br>
+                部首: ${char.radical}<br>
+                笔画数: ${char.strokes}画<br>
+                释义: ${char.meaning}
+            `;
+            
+            // 生成笔画顺序
+            generateStrokeOrder();
+            
+            // 清除画布
+            clearCanvas();
+        }
+
+        function generateStrokeOrder() {
+            const char = characters[currentCharacter];
+            const container = document.getElementById('strokeSteps');
+            
+            container.innerHTML = '';
+            
+            char.strokeOrder.forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'stroke-step';
+                stepDiv.textContent = step;
+                stepDiv.onclick = () => highlightStroke(index);
+                container.appendChild(stepDiv);
+            });
+        }
+
+        function highlightStroke(index) {
+            const steps = document.querySelectorAll('.stroke-step');
+            steps.forEach((step, i) => {
+                step.classList.toggle('active', i === index);
+            });
+        }
+
+        function analyzeWriting() {
+            // 模拟AI分析
+            const scores = {
+                overall: Math.floor(Math.random() * 20) + 75,
+                stroke: Math.floor(Math.random() * 20) + 80,
+                structure: Math.floor(Math.random() * 25) + 70
+            };
+            
+            document.getElementById('overallScore').textContent = scores.overall;
+            document.getElementById('strokeScore').textContent = scores.stroke;
+            document.getElementById('structureScore').textContent = scores.structure;
+            
+            // 生成反馈内容
+            generateFeedback(scores);
+            
+            // 显示反馈面板
+            document.getElementById('feedbackPanel').classList.add('show');
+            
+            // 更新统计数据
+            updateStats(scores.overall);
+        }
+
+        function generateFeedback(scores) {
+            const positivePoints = document.getElementById('positivePoints');
+            const improvementPoints = document.getElementById('improvementPoints');
+            const suggestionList = document.getElementById('suggestionList');
+            
+            // 根据分数生成不同的反馈
+            if (scores.overall >= 90) {
+                positivePoints.textContent = '书写非常规范，笔画准确，结构匀称，是一个很好的作品！';
+                improvementPoints.textContent = '继续保持这种书写水平，可以尝试练习更复杂的汉字。';
+            } else if (scores.overall >= 80) {
+                positivePoints.textContent = '整体书写较好，基本笔画掌握得不错。';
+                improvementPoints.textContent = '部分笔画的角度和长度还需要调整，注意字形的整体平衡。';
+            } else {
+                positivePoints.textContent = '能够完成基本的字形书写，有一定的基础。';
+                improvementPoints.textContent = '需要多加练习基本笔画，注意笔画顺序和字形结构。';
+            }
+            
+            // 生成建议
+            const suggestions = [
+                '多观察字帖，注意笔画的起笔和收笔',
+                '保持正确的握笔姿势和坐姿',
+                '练习时要慢写，注重质量而非速度',
+                '可以先练习基本笔画，再练习完整汉字'
+            ];
+            
+            suggestionList.innerHTML = '';
+            suggestions.slice(0, 3).forEach(suggestion => {
+                const li = document.createElement('li');
+                li.className = 'suggestion-item';
+                li.textContent = suggestion;
+                suggestionList.appendChild(li);
+            });
+        }
+
+        function showDemo() {
+            // 模拟示范书写动画
+            clearCanvas();
+            
+            // 简单的示范动画（实际应用中会更复杂）
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 4;
+            
+            // 这里只是一个简单的示例，实际应用中会根据具体汉字绘制
+            setTimeout(() => {
+                ctx.beginPath();
+                ctx.moveTo(100, 100);
+                ctx.lineTo(300, 100);
+                ctx.stroke();
+            }, 500);
+            
+            setTimeout(() => {
+                ctx.beginPath();
+                ctx.moveTo(200, 80);
+                ctx.lineTo(200, 320);
+                ctx.stroke();
+            }, 1000);
+            
+            setTimeout(() => {
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+            }, 2000);
+        }
+
+        function updateStats(score) {
+            practiceStats.count++;
+            practiceStats.averageScore = Math.floor((practiceStats.averageScore * (practiceStats.count - 1) + score) / practiceStats.count);
+            practiceStats.practiceTime += Math.floor(Math.random() * 3) + 1;
+            
+            if (score >= 85) {
+                practiceStats.masteredChars++;
+            }
+            
+            document.getElementById('practiceCount').textContent = practiceStats.count;
+            document.getElementById('averageScore').textContent = practiceStats.averageScore;
+            document.getElementById('masteredChars').textContent = practiceStats.masteredChars;
+            document.getElementById('practiceTime').textContent = practiceStats.practiceTime;
+        }
+
+        // 初始化
+        window.onload = function() {
+            initCanvas();
+            generateStrokeOrder();
+        };
+    </script>
+</body>
+</html>

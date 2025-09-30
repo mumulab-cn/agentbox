@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合作学习互动小游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .game-card h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-icon {
+            font-size: 1.8em;
+        }
+
+        .game-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .game-area {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .close-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-piece {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .puzzle-piece:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .puzzle-piece.filled {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .discussion-topic {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .role-card {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: scale(1.05);
+        }
+
+        .peer-help-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .help-request, .help-offer {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+        }
+
+        .competition-team {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+
+        .timer {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .peer-help-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 合作学习互动小游戏</h1>
+            <p>通过游戏化的方式体验不同的合作学习方法</p>
+        </div>
+
+        <div class="games-grid">
+            <!-- 拼图法游戏 -->
+            <div class="game-card" onclick="startGame('jigsaw')">
+                <h3><span class="game-icon">🧩</span>拼图法学习</h3>
+                <p class="game-description">每个小组成员负责学习材料的一部分，然后教授给其他成员，最终拼成完整的知识图谱。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+
+            <!-- 小组讨论游戏 -->
+            <div class="game-card" onclick="startGame('discussion')">
+                <h3><span class="game-icon">💬</span>小组讨论</h3>
+                <p class="game-description">围绕特定话题进行深入讨论，培养批判性思维和表达能力。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+
+            <!-- 角色扮演游戏 -->
+            <div class="game-card" onclick="startGame('roleplay')">
+                <h3><span class="game-icon">🎭</span>角色扮演</h3>
+                <p class="game-description">通过扮演不同角色来理解多元观点，增强同理心和理解能力。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+
+            <!-- 同伴互助游戏 -->
+            <div class="game-card" onclick="startGame('peerhelp')">
+                <h3><span class="game-icon">🤝</span>同伴互助</h3>
+                <p class="game-description">学生之间相互帮助解决问题，共同进步，建立互助学习网络。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+
+            <!-- 竞赛合作游戏 -->
+            <div class="game-card" onclick="startGame('competition')">
+                <h3><span class="game-icon">🏆</span>竞赛合作</h3>
+                <p class="game-description">小组内合作，小组间竞争，激发学习动机和团队精神。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+
+            <!-- 思维导图协作 -->
+            <div class="game-card" onclick="startGame('mindmap')">
+                <h3><span class="game-icon">🧠</span>思维导图协作</h3>
+                <p class="game-description">团队协作创建思维导图，整理和分享知识结构。</p>
+                <button class="start-btn">开始游戏</button>
+            </div>
+        </div>
+
+        <!-- 拼图法游戏区域 -->
+        <div id="jigsaw-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>🧩 拼图法学习游戏</h2>
+            <p>每个成员选择一个知识片段进行深入学习，然后分享给团队：</p>
+            <div id="puzzle-container">
+                <div class="puzzle-piece" onclick="selectPuzzle(this, '历史背景')">
+                    <strong>历史背景</strong><br>研究事件的历史背景和起因
+                </div>
+                <div class="puzzle-piece" onclick="selectPuzzle(this, '关键人物')">
+                    <strong>关键人物</strong><br>分析重要人物及其作用
+                </div>
+                <div class="puzzle-piece" onclick="selectPuzzle(this, '发展过程')">
+                    <strong>发展过程</strong><br>梳理事件的发展脉络
+                </div>
+                <div class="puzzle-piece" onclick="selectPuzzle(this, '影响结果')">
+                    <strong>影响结果</strong><br>评估事件的影响和意义
+                </div>
+            </div>
+            <div id="sharing-area" style="margin-top: 20px; display: none;">
+                <h3>分享你的研究成果：</h3>
+                <textarea class="input-field" placeholder="在这里分享你对所选主题的研究..." rows="4"></textarea>
+                <button class="submit-btn" onclick="shareKnowledge()">分享知识</button>
+            </div>
+        </div>
+
+        <!-- 小组讨论游戏区域 -->
+        <div id="discussion-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>💬 小组讨论游戏</h2>
+            <div class="timer" id="discussion-timer">讨论时间: 10:00</div>
+            <div class="discussion-topic">
+                <h3>讨论话题：人工智能对教育的影响</h3>
+                <p>请从以下角度进行讨论：</p>
+                <ul>
+                    <li>AI如何改变传统教学方式？</li>
+                    <li>AI教育工具的优势和挑战是什么？</li>
+                    <li>学生如何适应AI时代的学习需求？</li>
+                    <li>教师角色在AI时代如何转变？</li>
+                </ul>
+            </div>
+            <div>
+                <h3>发表你的观点：</h3>
+                <textarea class="input-field" placeholder="分享你的观点和见解..." rows="3"></textarea>
+                <button class="submit-btn" onclick="submitDiscussion()">发表观点</button>
+            </div>
+            <div id="discussion-board" style="margin-top: 20px;">
+                <h3>讨论记录：</h3>
+            </div>
+        </div>
+
+        <!-- 角色扮演游戏区域 -->
+        <div id="roleplay-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>🎭 角色扮演游戏</h2>
+            <p>选择一个角色，从该角色的视角分析问题：</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="role-card" onclick="selectRole('学生')">
+                    <h4>👨‍🎓 学生</h4>
+                    <p>关注学习体验和成长需求</p>
+                </div>
+                <div class="role-card" onclick="selectRole('教师')">
+                    <h4>👩‍🏫 教师</h4>
+                    <p>关注教学效果和学生发展</p>
+                </div>
+                <div class="role-card" onclick="selectRole('家长')">
+                    <h4>👨‍👩‍👧‍👦 家长</h4>
+                    <p>关注孩子的全面发展</p>
+                </div>
+                <div class="role-card" onclick="selectRole('校长')">
+                    <h4>🏫 校长</h4>
+                    <p>关注学校整体发展战略</p>
+                </div>
+            </div>
+            <div id="role-scenario" style="margin-top: 20px; display: none;">
+                <h3>情景：学校是否应该全面推行在线教育？</h3>
+                <p id="role-perspective"></p>
+                <textarea class="input-field" placeholder="从你的角色视角分析这个问题..." rows="4"></textarea>
+                <button class="submit-btn" onclick="submitRoleplay()">提交分析</button>
+            </div>
+        </div>
+
+        <!-- 同伴互助游戏区域 -->
+        <div id="peerhelp-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>🤝 同伴互助游戏</h2>
+            <div class="peer-help-area">
+                <div class="help-request">
+                    <h3>🆘 求助区</h3>
+                    <p>遇到困难？向同伴求助：</p>
+                    <input type="text" class="input-field" placeholder="你遇到的问题...">
+                    <button class="submit-btn" onclick="requestHelp()">发布求助</button>
+                    <div id="help-requests"></div>
+                </div>
+                <div class="help-offer">
+                    <h3>💡 帮助区</h3>
+                    <p>愿意帮助他人？提供你的专长：</p>
+                    <input type="text" class="input-field" placeholder="你擅长的领域...">
+                    <button class="submit-btn" onclick="offerHelp()">提供帮助</button>
+                    <div id="help-offers"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 竞赛合作游戏区域 -->
+        <div id="competition-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>🏆 竞赛合作游戏</h2>
+            <div class="timer" id="competition-timer">比赛时间: 05:00</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div class="competition-team">
+                    <h3>🔵 蓝队</h3>
+                    <div class="score" id="blue-score">0</div>
+                    <button class="submit-btn" onclick="addScore('blue')">答对加分</button>
+                </div>
+                <div class="competition-team">
+                    <h3>🔴 红队</h3>
+                    <div class="score" id="red-score">0</div>
+                    <button class="submit-btn" onclick="addScore('red')">答对加分</button>
+                </div>
+                <div class="competition-team">
+                    <h3>🟢 绿队</h3>
+                    <div class="score" id="green-score">0</div>
+                    <button class="submit-btn" onclick="addScore('green')">答对加分</button>
+                </div>
+            </div>
+            <div>
+                <h3>当前题目：</h3>
+                <div class="discussion-topic">
+                    <p><strong>数学题：</strong>一个班级有30名学生，如果分成5个小组进行合作学习，每组应该有多少人？如果有一组多一个人，其他组应该如何分配？</p>
+                </div>
+                <input type="text" class="input-field" placeholder="团队讨论后的答案...">
+                <button class="submit-btn" onclick="submitAnswer()">提交答案</button>
+            </div>
+        </div>
+
+        <!-- 思维导图协作游戏区域 -->
+        <div id="mindmap-game" class="game-area">
+            <button class="close-btn" onclick="closeGame()">关闭</button>
+            <h2>🧠 思维导图协作游戏</h2>
+            <p>与团队成员一起创建关于"可持续发展"的思维导图：</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="background: #667eea; color: white; padding: 15px; border-radius: 50%; display: inline-block; margin: 10px;">
+                    <strong>可持续发展</strong>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="text-align: center;">
+                    <input type="text" class="input-field" placeholder="环境保护方面...">
+                    <button class="submit-btn" onclick="addMindmapNode('environment')">添加节点</button>
+                    <div id="environment-nodes"></div>
+                </div>
+                <div style="text-align: center;">
+                    <input type="text" class="input-field" placeholder="经济发展方面...">
+                    <button class="submit-btn" onclick="addMindmapNode('economy')">添加节点</button>
+                    <div id="economy-nodes"></div>
+                </div>
+                <div style="text-align: center;">
+                    <input type="text" class="input-field" placeholder="社会责任方面...">
+                    <button class="submit-btn" onclick="addMindmapNode('society')">添加节点</button>
+                    <div id="society-nodes"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentGame = null;
+        let timers = {};
+
+        function startGame(gameType) {
+            closeGame();
+            currentGame = gameType;
+            document.getElementById(gameType + '-game').classList.add('active');
+            
+            // 启动特定游戏的计时器
+            if (gameType === 'discussion') {
+                startTimer('discussion', 600); // 10分钟
+            } else if (gameType === 'competition') {
+                startTimer('competition', 300); // 5分钟
+            }
+        }
+
+        function closeGame() {
+            if (currentGame) {
+                document.getElementById(currentGame + '-game').classList.remove('active');
+                stopTimer(currentGame);
+                currentGame = null;
+            }
+        }
+
+        function startTimer(type, seconds) {
+            const timerElement = document.getElementById(type + '-timer');
+            timers[type] = setInterval(() => {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timerElement.textContent = `${type === 'discussion' ? '讨论' : '比赛'}时间: ${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (seconds <= 0) {
+                    clearInterval(timers[type]);
+                    alert(`${type === 'discussion' ? '讨论' : '比赛'}时间结束！`);
+                    return;
+                }
+                seconds--;
+            }, 1000);
+        }
+
+        function stopTimer(type) {
+            if (timers[type]) {
+                clearInterval(timers[type]);
+                delete timers[type];
+            }
+        }
+
+        function selectPuzzle(element, topic) {
+            // 重置所有拼图块
+            document.querySelectorAll('.puzzle-piece').forEach(piece => {
+                piece.classList.remove('filled');
+            });
+            
+            // 选中当前拼图块
+            element.classList.add('filled');
+            
+            // 显示分享区域
+            document.getElementById('sharing-area').style.display = 'block';
+        }
+
+        function shareKnowledge() {
+            const textarea = document.querySelector('#sharing-area textarea');
+            if (textarea.value.trim()) {
+                alert('知识分享成功！团队成员可以看到你的研究成果。');
+                textarea.value = '';
+            } else {
+                alert('请先输入你的研究成果！');
+            }
+        }
+
+        function submitDiscussion() {
+            const textarea = document.querySelector('#discussion-game textarea');
+            const board = document.getElementById('discussion-board');
+            
+            if (textarea.value.trim()) {
+                const discussion = document.createElement('div');
+                discussion.style.cssText = 'background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 3px solid #667eea;';
+                discussion.innerHTML = `<strong>匿名同学：</strong> ${textarea.value}`;
+                board.appendChild(discussion);
+                textarea.value = '';
+            } else {
+                alert('请先输入你的观点！');
+            }
+        }
+
+        function selectRole(role) {
+            const perspectives = {
+                '学生': '作为学生，你需要考虑在线教育对学习体验、同伴交流、实践机会等方面的影响。',
+                '教师': '作为教师，你需要思考在线教育对教学方法、师生互动、教学效果评估等方面的挑战和机遇。',
+                '家长': '作为家长，你关心孩子的学习质量、身心健康、社交能力发展等问题。',
+                '校长': '作为校长，你需要从学校管理、资源配置、教育质量、未来发展等角度考虑问题。'
+            };
+            
+            document.getElementById('role-perspective').textContent = perspectives[role];
+            document.getElementById('role-scenario').style.display = 'block';
+        }
+
+        function submitRoleplay() {
+            const textarea = document.querySelector('#roleplay-game textarea');
+            if (textarea.value.trim()) {
+                alert('角色分析提交成功！其他角色的观点也很有价值。');
+                textarea.value = '';
+            } else {
+                alert('请先输入你的角色分析！');
+            }
+        }
+
+        function requestHelp() {
+            const input = document.querySelector('#peerhelp-game .help-request input');
+            const container = document.getElementById('help-requests');
+            
+            if (input.value.trim()) {
+                const request = document.createElement('div');
+                request.style.cssText = 'background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ffeaa7;';
+                request.innerHTML = `<strong>求助：</strong> ${input.value} <button onclick="this.parentElement.remove()" style="float: right; background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">已解决</button>`;
+                container.appendChild(request);
+                input.value = '';
+            }
+        }
+
+        function offerHelp() {
+            const input = document.querySelector('#peerhelp-game .help-offer input');
+            const container = document.getElementById('help-offers');
+            
+            if (input.value.trim()) {
+                const offer = document.createElement('div');
+                offer.style.cssText = 'background: #d1ecf1; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #bee5eb;';
+                offer.innerHTML = `<strong>可以帮助：</strong> ${input.value}`;
+                container.appendChild(offer);
+                input.value = '';
+            }
+        }
+
+        function addScore(team) {
+            const scoreElement = document.getElementById(team + '-score');
+            let currentScore = parseInt(scoreElement.textContent);
+            scoreElement.textContent = currentScore + 10;
+        }
+
+        function submitAnswer() {
+            const input = document.querySelector('#competition-game input');
+            if (input.value.trim()) {
+                alert('答案提交成功！等待其他队伍完成...');
+                input.value = '';
+            }
+        }
+
+        function addMindmapNode(category) {
+            const input = document.querySelector(`#mindmap-game input[placeholder*="${category === 'environment' ? '环境保护' : category === 'economy' ? '经济发展' : '社会责任'}"]`);
+            const container = document.getElementById(category + '-nodes');
+            
+            if (input.value.trim()) {
+                const node = document.createElement('div');
+                node.style.cssText = 'background: #e9ecef; padding: 8px; margin: 5px 0; border-radius: 15px; font-size: 0.9em;';
+                node.textContent = input.value;
+                container.appendChild(node);
+                input.value = '';
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('合作学习互动小游戏已加载完成！');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学错误分析 - AI课堂教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .problem-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .problem-selector {
+            margin-bottom: 20px;
+        }
+
+        .problem-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .problem-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .problem-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .problem-text {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .student-work {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .work-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .work-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .error-highlight {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            border-radius: 4px;
+            padding: 2px 4px;
+            color: #d32f2f;
+        }
+
+        .correct-highlight {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 4px;
+            padding: 2px 4px;
+            color: #2e7d32;
+        }
+
+        .analysis-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .analyze-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .analysis-result {
+            display: none;
+        }
+
+        .analysis-result.show {
+            display: block;
+        }
+
+        .error-summary {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .error-type {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error-type .icon {
+            margin-right: 8px;
+        }
+
+        .error-description {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .step-analysis {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .student-step {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .correct-step {
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .student-label {
+            color: #d32f2f;
+        }
+
+        .correct-label {
+            color: #2e7d32;
+        }
+
+        .suggestions {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .suggestions-title {
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .suggestions-title .icon {
+            margin-right: 8px;
+        }
+
+        .suggestion-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestion-item {
+            color: #1976d2;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .suggestion-item:before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+
+        .practice-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+        }
+
+        .practice-problems {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .practice-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .practice-item:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .practice-problem {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .practice-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .check-practice-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .check-practice-btn:hover {
+            background: #27ae60;
+        }
+
+        .statistics-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+            margin-top: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .step-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回主页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔍 数学错误分析</h1>
+            <p>AI智能诊断系统 - 精准识别错误类型，提供个性化指导</p>
+        </div>
+
+        <div class="main-content">
+            <div class="problem-panel">
+                <div class="panel-title">
+                    <span class="icon">📝</span>
+                    学生作业
+                </div>
+                
+                <div class="problem-selector">
+                    <label for="problemSelect">选择题目类型：</label>
+                    <select id="problemSelect" onchange="loadProblem()">
+                        <option value="addition">加法运算</option>
+                        <option value="subtraction">减法运算</option>
+                        <option value="multiplication">乘法运算</option>
+                        <option value="division">除法运算</option>
+                        <option value="fraction">分数运算</option>
+                        <option value="word_problem">应用题</option>
+                    </select>
+                </div>
+
+                <div class="problem-display" id="problemDisplay">
+                    <!-- 题目内容将通过JavaScript动态生成 -->
+                </div>
+
+                <div class="student-work">
+                    <div class="work-title">学生解答过程：</div>
+                    <div class="work-content" id="studentWork">
+                        <!-- 学生作业内容将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-panel">
+                <div class="panel-title">
+                    <span class="icon">🤖</span>
+                    AI分析
+                </div>
+                
+                <button class="analyze-btn" onclick="analyzeError()">
+                    🔍 开始智能分析
+                </button>
+
+                <div class="analysis-result" id="analysisResult">
+                    <!-- 分析结果将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="practice-section">
+                <div class="panel-title">
+                    <span class="icon">💪</span>
+                    针对性练习
+                </div>
+                
+                <div class="practice-problems" id="practiceProblems">
+                    <!-- 练习题目将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="statistics-panel">
+                <div class="panel-title">
+                    <span class="icon">📊</span>
+                    错误统计分析
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalErrors">23</div>
+                        <div class="stat-label">总错误数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="commonError">计算错误</div>
+                        <div class="stat-label">最常见错误</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="improvementRate">78%</div>
+                        <div class="stat-label">改进率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="practiceCount">15</div>
+                        <div class="stat-label">练习次数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProblemType = 'addition';
+        let analysisComplete = false;
+
+        const problems = {
+            addition: {
+                question: '计算：245 + 178 = ?',
+                studentWork: `245 + 178
+= 245 + 170 + 8
+= 415 + 8
+= 423`,
+                correctAnswer: 423,
+                studentAnswer: 423,
+                errors: [],
+                errorType: '无错误',
+                isCorrect: true
+            },
+            subtraction: {
+                question: '计算：503 - 267 = ?',
+                studentWork: `503 - 267
+= 503 - 200 - 67
+= 303 - 67
+= 246`,
+                correctAnswer: 236,
+                studentAnswer: 246,
+                errors: ['借位错误'],
+                errorType: '计算错误',
+                isCorrect: false
+            },
+            multiplication: {
+                question: '计算：24 × 15 = ?',
+                studentWork: `  24
+× 15
+----
+ 120  (24 × 5)
+240   (24 × 10)
+----
+360`,
+                correctAnswer: 360,
+                studentAnswer: 360,
+                errors: [],
+                errorType: '无错误',
+                isCorrect: true
+            },
+            division: {
+                question: '计算：144 ÷ 12 = ?',
+                studentWork: `144 ÷ 12
+= 144 ÷ 10 ÷ 2
+= 14.4 ÷ 2
+= 7.2`,
+                correctAnswer: 12,
+                studentAnswer: 7.2,
+                errors: ['除法分解错误'],
+                errorType: '概念错误',
+                isCorrect: false
+            },
+            fraction: {
+                question: '计算：2/3 + 1/4 = ?',
+                studentWork: `2/3 + 1/4
+= (2+1)/(3+4)
+= 3/7`,
+                correctAnswer: '11/12',
+                studentAnswer: '3/7',
+                errors: ['分数加法规则错误'],
+                errorType: '概念错误',
+                isCorrect: false
+            },
+            word_problem: {
+                question: '小明有24个苹果，分给3个朋友，每人分得几个？',
+                studentWork: `总共：24个苹果
+人数：3个朋友
+每人分得：24 ÷ 3 = 8个`,
+                correctAnswer: 8,
+                studentAnswer: 8,
+                errors: [],
+                errorType: '无错误',
+                isCorrect: true
+            }
+        };
+
+        const errorAnalysis = {
+            addition: {
+                errorType: '无错误',
+                description: '学生正确掌握了加法的分解计算方法，步骤清晰，答案正确。',
+                suggestions: [
+                    '继续保持良好的计算习惯',
+                    '可以尝试更大数字的加法运算',
+                    '学习竖式加法的标准格式'
+                ]
+            },
+            subtraction: {
+                errorType: '借位计算错误',
+                description: '学生在减法借位过程中出现错误，没有正确处理借位后的数字变化。',
+                suggestions: [
+                    '重点练习借位减法的步骤',
+                    '使用竖式计算确保借位正确',
+                    '多做类似的借位练习题'
+                ]
+            },
+            multiplication: {
+                errorType: '无错误',
+                description: '学生正确使用了竖式乘法，理解了位值概念，计算准确。',
+                suggestions: [
+                    '继续练习两位数乘法',
+                    '学习三位数乘法',
+                    '掌握乘法的验算方法'
+                ]
+            },
+            division: {
+                errorType: '除法概念理解错误',
+                description: '学生错误地将除法分解，不理解除法的基本运算规则。',
+                suggestions: [
+                    '重新学习除法的基本概念',
+                    '练习简单的除法口诀',
+                    '使用实物演示除法的含义'
+                ]
+            },
+            fraction: {
+                errorType: '分数运算规则错误',
+                description: '学生错误地将分数加法理解为分子分母分别相加，缺乏通分概念。',
+                suggestions: [
+                    '学习分数加法的通分方法',
+                    '理解分母表示的含义',
+                    '多练习同分母分数加法'
+                ]
+            },
+            word_problem: {
+                errorType: '无错误',
+                description: '学生正确理解了题意，选择了合适的运算方法，解答完整。',
+                suggestions: [
+                    '继续练习更复杂的应用题',
+                    '学习多步骤应用题',
+                    '培养检验答案的习惯'
+                ]
+            }
+        };
+
+        function loadProblem() {
+            const select = document.getElementById('problemSelect');
+            currentProblemType = select.value;
+            const problem = problems[currentProblemType];
+            
+            document.getElementById('problemDisplay').innerHTML = `
+                <div class="problem-text">${problem.question}</div>
+            `;
+            
+            // 高亮显示错误部分
+            let workContent = problem.studentWork;
+            if (!problem.isCorrect && problem.errors.length > 0) {
+                // 这里可以根据具体错误类型高亮显示
+                if (currentProblemType === 'subtraction') {
+                    workContent = workContent.replace('246', '<span class="error-highlight">246</span>');
+                } else if (currentProblemType === 'division') {
+                    workContent = workContent.replace('= 144 ÷ 10 ÷ 2', '<span class="error-highlight">= 144 ÷ 10 ÷ 2</span>');
+                    workContent = workContent.replace('7.2', '<span class="error-highlight">7.2</span>');
+                } else if (currentProblemType === 'fraction') {
+                    workContent = workContent.replace('= (2+1)/(3+4)', '<span class="error-highlight">= (2+1)/(3+4)</span>');
+                    workContent = workContent.replace('3/7', '<span class="error-highlight">3/7</span>');
+                }
+            }
+            
+            document.getElementById('studentWork').innerHTML = workContent;
+            
+            // 重置分析结果
+            document.getElementById('analysisResult').classList.remove('show');
+            analysisComplete = false;
+        }
+
+        function analyzeError() {
+            const problem = problems[currentProblemType];
+            const analysis = errorAnalysis[currentProblemType];
+            const resultContainer = document.getElementById('analysisResult');
+            
+            let analysisHTML = '';
+            
+            if (problem.isCorrect) {
+                analysisHTML = `
+                    <div class="error-summary" style="background: #d4edda; border-color: #c3e6cb;">
+                        <div class="error-type" style="color: #155724;">
+                            <span class="icon">✅</span>
+                            解答正确
+                        </div>
+                        <div class="error-description" style="color: #155724;">
+                            ${analysis.description}
+                        </div>
+                    </div>
+                `;
+            } else {
+                analysisHTML = `
+                    <div class="error-summary">
+                        <div class="error-type">
+                            <span class="icon">⚠️</span>
+                            错误类型：${analysis.errorType}
+                        </div>
+                        <div class="error-description">
+                            ${analysis.description}
+                        </div>
+                    </div>
+                    
+                    <div class="step-analysis">
+                        <div class="step-title">步骤对比分析：</div>
+                        <div class="step-content">
+                            <div class="student-step">
+                                <div class="step-label student-label">学生解答</div>
+                                <div>${problem.studentAnswer}</div>
+                            </div>
+                            <div class="correct-step">
+                                <div class="step-label correct-label">正确答案</div>
+                                <div>${problem.correctAnswer}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            analysisHTML += `
+                <div class="suggestions">
+                    <div class="suggestions-title">
+                        <span class="icon">💡</span>
+                        改进建议
+                    </div>
+                    <ul class="suggestion-list">
+                        ${analysis.suggestions.map(suggestion => `<li class="suggestion-item">${suggestion}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            resultContainer.innerHTML = analysisHTML;
+            resultContainer.classList.add('show');
+            
+            // 生成针对性练习
+            generatePracticeProblems();
+            
+            analysisComplete = true;
+        }
+
+        function generatePracticeProblems() {
+            const container = document.getElementById('practiceProblems');
+            let practiceHTML = '';
+            
+            switch (currentProblemType) {
+                case 'subtraction':
+                    practiceHTML = `
+                        <div class="practice-item">
+                            <div class="practice-problem">练习1：402 - 158 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 244)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习2：600 - 234 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 366)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习3：705 - 289 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 416)">检查</button>
+                        </div>
+                    `;
+                    break;
+                case 'division':
+                    practiceHTML = `
+                        <div class="practice-item">
+                            <div class="practice-problem">练习1：96 ÷ 8 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 12)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习2：84 ÷ 7 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 12)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习3：108 ÷ 9 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 12)">检查</button>
+                        </div>
+                    `;
+                    break;
+                case 'fraction':
+                    practiceHTML = `
+                        <div class="practice-item">
+                            <div class="practice-problem">练习1：1/2 + 1/3 = ?</div>
+                            <input type="text" class="practice-input" placeholder="请输入分数形式">
+                            <button class="check-practice-btn" onclick="checkPracticeFraction(this, '5/6')">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习2：3/4 + 1/8 = ?</div>
+                            <input type="text" class="practice-input" placeholder="请输入分数形式">
+                            <button class="check-practice-btn" onclick="checkPracticeFraction(this, '7/8')">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习3：2/5 + 1/10 = ?</div>
+                            <input type="text" class="practice-input" placeholder="请输入分数形式">
+                            <button class="check-practice-btn" onclick="checkPracticeFraction(this, '1/2')">检查</button>
+                        </div>
+                    `;
+                    break;
+                default:
+                    practiceHTML = `
+                        <div class="practice-item">
+                            <div class="practice-problem">练习1：156 + 289 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 445)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习2：234 + 567 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 801)">检查</button>
+                        </div>
+                        <div class="practice-item">
+                            <div class="practice-problem">练习3：378 + 456 = ?</div>
+                            <input type="number" class="practice-input" placeholder="请输入答案">
+                            <button class="check-practice-btn" onclick="checkPractice(this, 834)">检查</button>
+                        </div>
+                    `;
+            }
+            
+            container.innerHTML = practiceHTML;
+        }
+
+        function checkPractice(button, correctAnswer) {
+            const input = button.previousElementSibling;
+            const userAnswer = parseInt(input.value);
+            
+            if (userAnswer === correctAnswer) {
+                button.textContent = '✅ 正确';
+                button.style.background = '#2ecc71';
+                input.style.borderColor = '#2ecc71';
+            } else {
+                button.textContent = '❌ 错误';
+                button.style.background = '#e74c3c';
+                input.style.borderColor = '#e74c3c';
+                setTimeout(() => {
+                    alert(`正确答案是：${correctAnswer}`);
+                }, 100);
+            }
+            
+            button.disabled = true;
+        }
+
+        function checkPracticeFraction(button, correctAnswer) {
+            const input = button.previousElementSibling;
+            const userAnswer = input.value.trim();
+            
+            if (userAnswer === correctAnswer) {
+                button.textContent = '✅ 正确';
+                button.style.background = '#2ecc71';
+                input.style.borderColor = '#2ecc71';
+            } else {
+                button.textContent = '❌ 错误';
+                button.style.background = '#e74c3c';
+                input.style.borderColor = '#e74c3c';
+                setTimeout(() => {
+                    alert(`正确答案是：${correctAnswer}`);
+                }, 100);
+            }
+            
+            button.disabled = true;
+        }
+
+        // 初始化
+        window.onload = function() {
+            loadProblem();
+        };
+    </script>
+</body>
+</html>

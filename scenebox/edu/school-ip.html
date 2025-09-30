@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海沐沐学校 - 吉祥物IP展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .mascots-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .mascot-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .mascot-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .mascot-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            cursor: grab;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mascot-avatar:active {
+            cursor: grabbing;
+        }
+
+        .mascot-3d {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            animation: autoRotate 8s linear infinite;
+            transition: animation-play-state 0.3s ease;
+        }
+
+        .mascot-3d:hover {
+            animation-play-state: paused;
+        }
+
+        .mascot-3d.dragging {
+            animation-play-state: paused;
+        }
+
+        @keyframes autoRotate {
+            from { transform: rotateY(0deg) rotateX(5deg); }
+            to { transform: rotateY(360deg) rotateX(5deg); }
+        }
+
+        .mascot-face {
+            font-size: 1em;
+            transform: translateZ(20px);
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* 农场样式 */
+        .farm-section {
+            background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .farm-subtitle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .farm-subtitle .chinese {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .farm-subtitle .pinyin {
+            color: #e74c3c;
+            font-style: italic;
+            background: rgba(255,255,255,0.8);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .farm-subtitle .english {
+            color: #3498db;
+            font-weight: 600;
+            background: rgba(255,255,255,0.8);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .farm-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .farm-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #f39c12;
+        }
+
+        .farm-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .farm-card h3 {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .farm-card h3 .chinese {
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .farm-card h3 .pinyin {
+            color: #e74c3c;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .farm-card h3 .english {
+            color: #3498db;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .farm-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .farm-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .farm-features .feature-tag {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .farm-activities-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .farm-activities-section h3 {
+            text-align: center;
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        .farm-activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .farm-activity-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #27ae60;
+        }
+
+        .farm-activity-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* 体育馆样式 */
+        .sports-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .sports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .sports-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .sports-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #007bff;
+        }
+
+        .sports-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .sports-card h3 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .sports-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .sports-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .feature-tag {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .activities-section {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .activities-section h3 {
+            text-align: center;
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .activity-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .activity-time {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .activity-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .activity-desc {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .mascot1 .mascot-avatar {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .mascot2 .mascot-avatar {
+            background: linear-gradient(135deg, #4834d4, #686de0);
+        }
+
+        .mascot-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .mascot-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .mascot-traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .trait-tag {
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #495057;
+            border: 2px solid #e9ecef;
+        }
+
+        /* 农场学习助手样式 */
+        .farm-chat-section {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            border: 3px solid #f39c12;
+        }
+
+        .learning-recommendations {
+            margin-bottom: 30px;
+        }
+
+        .learning-recommendations h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .recommendation-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: #f39c12;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .rec-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .rec-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .rec-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .farm-chat-section .chat-container {
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #f39c12;
+        }
+
+        .farm-chat-section .bot-avatar {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .farm-chat-section .send-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .farm-chat-section .quick-btn:hover {
+            background: #f39c12;
+            border-color: #f39c12;
+        }
+
+        .chat-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chat-header h2 {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: white;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #4834d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .question-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-input:focus {
+            border-color: #007bff;
+        }
+
+        .send-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-questions {
+            margin-top: 20px;
+        }
+
+        .quick-questions h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .quick-btn {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #495057;
+        }
+
+        .quick-btn:hover {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-left: 30px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .mascots-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航菜单 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span>🎓 上海沐沐学校</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="a.html" class="nav-link active">吉祥物展示</a>
+                </li>
+                <li class="nav-item">
+                    <a href="special-care.html" class="nav-link">特殊关爱</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎓 上海沐沐学校</h1>
+            <p>遇见我们的吉祥物朋友，了解精彩校园生活</p>
+        </div>
+
+        <div class="mascots-section">
+            <div class="mascot-card mascot1">
+                <div class="mascot-avatar" id="mascot1">
+                    <div class="mascot-3d">
+                        <div class="mascot-face">🦊</div>
+                    </div>
+                </div>
+                <div class="mascot-name">小甲</div>
+                <div class="mascot-description">
+                    我是小甲，代表着世界眼光和国际视野。我热爱学习，善于思考，总是充满好奇心去探索世界的奥秘。我最喜欢和同学们一起讨论学术问题，分享不同文化的精彩故事。
+                </div>
+                <div class="mascot-traits">
+                    <span class="trait-tag">🌍 国际视野</span>
+                    <span class="trait-tag">📚 学术专精</span>
+                    <span class="trait-tag">🤔 善于思考</span>
+                    <span class="trait-tag">🔍 探索精神</span>
+                </div>
+            </div>
+
+            <div class="mascot-card mascot2">
+                <div class="mascot-avatar" id="mascot2">
+                    <div class="mascot-3d">
+                        <div class="mascot-face">🐼</div>
+                    </div>
+                </div>
+                <div class="mascot-name">小乙</div>
+                <div class="mascot-description">
+                    我是小乙，象征着开放包容和友善交流。我擅长语言沟通，热爱艺术创作，总是能在不同的文化间架起友谊的桥梁。我喜欢组织各种活动，让校园生活更加丰富多彩。
+                </div>
+                <div class="mascot-traits">
+                    <span class="trait-tag">🗣️ 语言天赋</span>
+                    <span class="trait-tag">🎨 艺术创作</span>
+                    <span class="trait-tag">🤝 友善交流</span>
+                    <span class="trait-tag">🌈 文化桥梁</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 农场区域介绍部分 -->
+        <div class="farm-section">
+            <div class="section-header">
+                <h2>🚜 世外小农场</h2>
+                <p class="farm-subtitle">
+                    <span class="chinese">农场</span>
+                    <span class="pinyin">nóng chǎng</span>
+                    <span class="english">Farm</span>
+                </p>
+                <p>和小动物们一起学习，在快乐中成长</p>
+            </div>
+            
+            <div class="farm-grid">
+                <div class="farm-card">
+                    <div class="farm-icon">🐷</div>
+                    <h3>
+                        <span class="chinese">小猪</span>
+                        <span class="pinyin">xiǎo zhū</span>
+                        <span class="english">Pig</span>
+                    </h3>
+                    <p>粉红色的小猪喜欢在泥巴里打滚，它们很聪明哦！</p>
+                    <div class="farm-features">
+                        <span class="feature-tag">可爱</span>
+                        <span class="feature-tag">聪明</span>
+                        <span class="feature-tag">友善</span>
+                    </div>
+                </div>
+                
+                <div class="farm-card">
+                    <div class="farm-icon">🐄</div>
+                    <h3>
+                        <span class="chinese">奶牛</span>
+                        <span class="pinyin">nǎi niú</span>
+                        <span class="english">Cow</span>
+                    </h3>
+                    <p>黑白相间的奶牛每天给我们提供新鲜的牛奶！</p>
+                    <div class="farm-features">
+                        <span class="feature-tag">温顺</span>
+                        <span class="feature-tag">有用</span>
+                        <span class="feature-tag">大个子</span>
+                    </div>
+                </div>
+                
+                <div class="farm-card">
+                    <div class="farm-icon">🐔</div>
+                    <h3>
+                        <span class="chinese">小鸡</span>
+                        <span class="pinyin">xiǎo jī</span>
+                        <span class="english">Chicken</span>
+                    </h3>
+                    <p>毛茸茸的小鸡会下蛋，还会咯咯咯地叫呢！</p>
+                    <div class="farm-features">
+                        <span class="feature-tag">毛茸茸</span>
+                        <span class="feature-tag">会下蛋</span>
+                        <span class="feature-tag">活泼</span>
+                    </div>
+                </div>
+                
+                <div class="farm-card">
+                    <div class="farm-icon">🐑</div>
+                    <h3>
+                        <span class="chinese">绵羊</span>
+                        <span class="pinyin">mián yáng</span>
+                        <span class="english">Sheep</span>
+                    </h3>
+                    <p>白白的绵羊身上长着软软的羊毛，可以做衣服！</p>
+                    <div class="farm-features">
+                        <span class="feature-tag">软绵绵</span>
+                        <span class="feature-tag">白色</span>
+                        <span class="feature-tag">温和</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="farm-activities-section">
+                <h3>🌱 农场活动安排</h3>
+                <div class="farm-activities-grid">
+                    <div class="farm-activity-item">
+                        <div class="activity-time">每天早上</div>
+                        <div class="activity-name">喂小动物</div>
+                        <div class="activity-desc">学会照顾小动物，培养爱心</div>
+                    </div>
+                    <div class="farm-activity-item">
+                        <div class="activity-time">周二周四</div>
+                        <div class="activity-name">种植体验</div>
+                        <div class="activity-desc">亲手种菜种花，观察植物成长</div>
+                    </div>
+                    <div class="farm-activity-item">
+                        <div class="activity-time">周五下午</div>
+                        <div class="activity-name">农场探索</div>
+                        <div class="activity-desc">寻找农场的小秘密，学习自然知识</div>
+                    </div>
+                    <div class="farm-activity-item">
+                        <div class="activity-time">周末</div>
+                        <div class="activity-name">亲子农场</div>
+                        <div class="activity-desc">和爸爸妈妈一起体验农场生活</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 体育馆介绍部分 -->
+        <div class="sports-section">
+            <div class="section-header">
+                <h2>🏟️ 世外体育馆</h2>
+                <p>现代化的体育设施，丰富多彩的运动项目</p>
+            </div>
+            
+            <div class="sports-grid">
+                <div class="sports-card">
+                    <div class="sports-icon">🏀</div>
+                    <h3>篮球馆</h3>
+                    <p>标准篮球场地，专业木地板，可容纳500人观赛</p>
+                    <div class="sports-features">
+                        <span class="feature-tag">专业场地</span>
+                        <span class="feature-tag">LED照明</span>
+                        <span class="feature-tag">空调系统</span>
+                    </div>
+                </div>
+                
+                <div class="sports-card">
+                    <div class="sports-icon">🏊‍♀️</div>
+                    <h3>游泳馆</h3>
+                    <p>25米标准泳池，恒温水质，专业救生设备</p>
+                    <div class="sports-features">
+                        <span class="feature-tag">恒温泳池</span>
+                        <span class="feature-tag">水质净化</span>
+                        <span class="feature-tag">安全保障</span>
+                    </div>
+                </div>
+                
+                <div class="sports-card">
+                    <div class="sports-icon">🤸‍♀️</div>
+                    <h3>体操馆</h3>
+                    <p>专业体操器械，柔软防护垫，适合各年龄段</p>
+                    <div class="sports-features">
+                        <span class="feature-tag">专业器械</span>
+                        <span class="feature-tag">安全防护</span>
+                        <span class="feature-tag">分级训练</span>
+                    </div>
+                </div>
+                
+                <div class="sports-card">
+                    <div class="sports-icon">🏓</div>
+                    <h3>乒乓球馆</h3>
+                    <p>12张标准球台，专业地胶，良好通风系统</p>
+                    <div class="sports-features">
+                        <span class="feature-tag">多台同时</span>
+                        <span class="feature-tag">专业地面</span>
+                        <span class="feature-tag">通风良好</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="activities-section">
+                <h3>🎯 体育活动安排</h3>
+                <div class="activities-grid">
+                    <div class="activity-item">
+                        <div class="activity-time">周一-周三</div>
+                        <div class="activity-name">篮球训练营</div>
+                        <div class="activity-desc">专业教练指导，分年级训练</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">周二-周四</div>
+                        <div class="activity-name">游泳课程</div>
+                        <div class="activity-desc">从基础到提高，安全第一</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">周五</div>
+                        <div class="activity-name">体育竞赛</div>
+                        <div class="activity-desc">班级间友谊赛，增进团结</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">周末</div>
+                        <div class="activity-name">家庭运动日</div>
+                        <div class="activity-desc">亲子运动，共享快乐时光</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 农场学习助手 -->
+        <div class="farm-chat-section">
+            <div class="chat-header">
+                <h2>🐷 农场学习助手</h2>
+                <p>和小甲、小乙一起探索农场，学习知识！</p>
+            </div>
+
+            <div class="learning-recommendations">
+                <h3>📚 今日学习推荐</h3>
+                <div class="recommendation-grid">
+                    <div class="recommendation-card" onclick="showRecommendation('poetry')">
+                        <div class="rec-icon">📜</div>
+                        <div class="rec-title">古诗词</div>
+                        <div class="rec-desc">学习农场主题古诗</div>
+                    </div>
+                    <div class="recommendation-card" onclick="showRecommendation('english')">
+                        <div class="rec-icon">🔤</div>
+                        <div class="rec-title">英语单词</div>
+                        <div class="rec-desc">动物英语词汇</div>
+                    </div>
+                    <div class="recommendation-card" onclick="showRecommendation('math')">
+                        <div class="rec-icon">🔢</div>
+                        <div class="rec-title">数学练习</div>
+                        <div class="rec-desc">农场数学题目</div>
+                    </div>
+                    <div class="recommendation-card" onclick="showRecommendation('books')">
+                        <div class="rec-icon">📖</div>
+                        <div class="rec-title">绘本推荐</div>
+                        <div class="rec-desc">农场主题绘本</div>
+                    </div>
+                    <div class="recommendation-card" onclick="showRecommendation('videos')">
+                        <div class="rec-icon">📺</div>
+                        <div class="rec-title">动画片</div>
+                        <div class="rec-desc">教育动画推荐</div>
+                    </div>
+                    <div class="recommendation-card" onclick="showRecommendation('games')">
+                        <div class="rec-icon">🎮</div>
+                        <div class="rec-title">互动游戏</div>
+                        <div class="rec-desc">农场知识游戏</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-container" id="farmChatContainer">
+                <div class="message bot-message">
+                    <div class="bot-avatar">🐷</div>
+                    <div>
+                        <strong>农场小助手：</strong>欢迎来到世外小农场！我是你们的学习小助手。点击上面的推荐卡片，或者问我任何关于农场学习的问题吧！
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <input type="text" class="question-input" id="farmQuestionInput" placeholder="问问农场小助手..." onkeypress="handleFarmKeyPress(event)">
+                <button class="send-btn" onclick="sendFarmQuestion()">🚀</button>
+            </div>
+
+            <div class="quick-questions">
+                <h3>🌟 快速提问</h3>
+                <span class="quick-btn" onclick="askFarmQuestion('农场里有什么动物？')">农场动物</span>
+                <span class="quick-btn" onclick="askFarmQuestion('教我一首关于动物的古诗')">古诗学习</span>
+                <span class="quick-btn" onclick="askFarmQuestion('动物的英语单词怎么说？')">英语单词</span>
+                <span class="quick-btn" onclick="askFarmQuestion('给我出个农场数学题')">数学题目</span>
+                <span class="quick-btn" onclick="askFarmQuestion('推荐农场绘本')">绘本推荐</span>
+                <span class="quick-btn" onclick="askFarmQuestion('有什么好看的动画片？')">动画推荐</span>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <h2>💬 招生咨询助手</h2>
+                <p>小甲和小乙随时为您解答关于学校的任何问题</p>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="message bot-message">
+                    <div class="bot-avatar">沐</div>
+                    <div>
+                        <strong>沐沐：</strong>你好！欢迎来到上海沐沐学校！我是沐沐，很高兴为您介绍我们美丽的校园。请问您想了解什么呢？
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <input type="text" class="question-input" id="questionInput" placeholder="请输入您的问题..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendQuestion()">发送</button>
+            </div>
+
+            <div class="quick-questions">
+                <h3>🔥 热门问题</h3>
+                <span class="quick-btn" onclick="askQuestion('学校的办学特色是什么？')">办学特色</span>
+                <span class="quick-btn" onclick="askQuestion('招生条件和流程是怎样的？')">招生流程</span>
+                <span class="quick-btn" onclick="askQuestion('学费和奖学金政策如何？')">费用政策</span>
+                <span class="quick-btn" onclick="askQuestion('学校的课程设置如何？')">课程设置</span>
+                <span class="quick-btn" onclick="askQuestion('校园设施和环境怎么样？')">校园环境</span>
+                <span class="quick-btn" onclick="askQuestion('学生的升学情况如何？')">升学情况</span>
+                <span class="quick-btn" onclick="askQuestion('体育设施怎么样？')">体育设施</span>
+                <span class="quick-btn" onclick="askQuestion('有哪些体育活动？')">体育活动</span>
+                <span class="quick-btn" onclick="askQuestion('开设哪些运动项目？')">运动项目</span>
+                <span class="quick-btn" onclick="askQuestion('体育成绩如何？')">体育成绩</span>
+                <span class="quick-btn" onclick="askQuestion('农场里有什么动物？')">农场动物</span>
+                <span class="quick-btn" onclick="askQuestion('农场有哪些活动？')">农场活动</span>
+                <span class="quick-btn" onclick="askQuestion('推荐一些古诗词')">古诗词</span>
+                <span class="quick-btn" onclick="askQuestion('如何学习英语？')">英语学习</span>
+                <span class="quick-btn" onclick="askQuestion('农场里的数学')">数学练习</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 上海沐沐学校 | 培养具有中国心、世界眼光的现代人</p>
+        </div>
+    </div>
+
+    <script>
+        // 招生问答数据库
+        const qaDatabase = {
+            '办学特色': {
+                mascot: '小甲',
+                answer: '我们学校的办学特色主要体现在"中西融合、文理并重"的教育理念上。我们采用双语教学，开设IB课程和中国国家课程，培养学生的国际视野和中华文化底蕴。学校注重个性化教育，小班化教学，师生比例约1:8。'
+            },
+            '招生流程': {
+                mascot: '小乙',
+                answer: '招生流程分为几个步骤：1）网上报名和材料提交；2）参加入学测试（包括笔试和面试）；3）家长面谈；4）录取通知。我们全年滚动招生，建议提前3-6个月申请。具体时间可关注学校官网或致电招生办。'
+            },
+            '费用政策': {
+                mascot: '小甲',
+                answer: '学费根据年级不同有所差异，小学部约15-18万/年，中学部约18-22万/年。我们设有多种奖学金：学术优秀奖学金、特长生奖学金、以及需要帮助的优秀学生助学金。具体费用和奖学金申请条件请咨询招生办。'
+            },
+            '课程设置': {
+                mascot: '小乙',
+                answer: '我们提供丰富多样的课程：核心学术课程（中英文、数学、科学、社会学等）、艺术课程（音乐、美术、戏剧）、体育课程、以及100+门选修课和社团活动。高中部还提供AP课程和IB文凭课程，为学生升学做好充分准备。'
+            },
+            '校园环境': {
+                mascot: '小甲',
+                answer: '我们的校园占地约200亩，环境优美，设施先进。拥有现代化的教学楼、实验室、图书馆、体育馆、游泳池、艺术中心等。每间教室都配备智能白板和空气净化系统。校园绿化率达60%以上，为学生提供舒适的学习环境。'
+            },
+            '升学情况': {
+                mascot: '小乙',
+                answer: '我们的毕业生升学成果优异！近三年来，90%以上的毕业生被世界前100名大学录取，其中包括哈佛、斯坦福、牛津、剑桥等顶尖名校。国内升学方面，也有很多学生进入清华、北大、复旦等一流大学。'
+            },
+            '体育设施': {
+                mascot: '小甲',
+                answer: '我们的体育馆设施非常完善！包括标准篮球馆、25米恒温游泳池、专业体操馆和乒乓球馆。所有场馆都配备了现代化设备，如LED照明、空调系统、专业地面等。我们还有室外足球场、网球场和田径跑道。'
+            },
+            '体育活动': {
+                mascot: '小乙',
+                answer: '我们每周都有丰富的体育活动！周一到周三是篮球训练营，周二到周四有游泳课程，周五举办班级体育竞赛，周末还有家庭运动日。我们还有各种体育社团，如足球队、网球队、羽毛球队等，学生可以根据兴趣选择参加。'
+            },
+            '运动项目': {
+                mascot: '小甲',
+                answer: '学校开设了20多种运动项目：球类运动（篮球、足球、网球、乒乓球、羽毛球、排球）、水上运动（游泳、水球）、体操、田径、武术、瑜伽等。我们有专业教练团队，为不同水平的学生提供个性化指导。'
+            },
+            '体育成绩': {
+                mascot: '小乙',
+                answer: '我们的体育成绩非常优秀！学校篮球队连续三年获得杭州市中学生篮球赛冠军，游泳队多次在省级比赛中获奖。我们还培养了多名国家二级运动员，有些学生通过体育特长被知名大学录取。体育不仅强身健体，更培养了学生的团队精神和意志品质！'
+            },
+            '农场动物': {
+                mascot: '小甲',
+                answer: '我们的小农场里有很多可爱的动物朋友！有粉红色的小猪、黑白相间的奶牛、毛茸茸的小鸡和软绵绵的绵羊。小朋友们可以学习照顾它们，培养爱心和责任感。每种动物都有自己的特点：小猪很聪明，奶牛能产奶，小鸡会下蛋，绵羊有软软的羊毛。'
+            },
+            '农场活动': {
+                mascot: '小乙',
+                answer: '农场里有丰富多彩的活动！每天早上可以喂小动物，周二周四有种植体验，周五下午是农场探索时间，周末还有亲子农场活动。在农场活动中，小朋友们可以亲手种菜种花，观察植物成长，寻找农场的小秘密，学习自然知识！'
+            },
+            '古诗词推荐': {
+                mascot: '小甲',
+                answer: '关于农场和动物的古诗词有很多！比如《咏鹅》："鹅鹅鹅，曲项向天歌。白毛浮绿水，红掌拨清波。"还有《悯农》："锄禾日当午，汗滴禾下土。"这些古诗词能帮助小朋友们更好地理解农场生活，感受古人对自然的热爱。'
+            },
+            '英语学习': {
+                mascot: '小乙',
+                answer: '农场是学习英语的好地方！我们可以学习动物单词：Pig（猪）、Cow（牛）、Chicken（鸡）、Sheep（羊），还有Farm（农场）、Garden（花园）等。我们还会教小朋友们简单的英语句子，比如"I love animals"（我爱动物）、"The pig is pink"（猪是粉红色的）。'
+            },
+            '数学练习': {
+                mascot: '小甲',
+                answer: '农场里到处都有数学！我们可以数一数有几只小鸡、几头牛，学习加法减法。比如：农场里有3只小猪，又来了2只，一共有几只？还可以学习图形：鸡蛋是椭圆形，牛奶盒是长方形，农场的围栏是正方形。通过观察农场，数学变得更有趣！'
+            }
+        };
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendQuestion();
+            }
+        }
+
+        function askQuestion(question) {
+            document.getElementById('questionInput').value = question;
+            sendQuestion();
+        }
+
+        // 农场学习推荐内容
+        const farmRecommendations = {
+            poetry: {
+                title: '📜 古诗词学习',
+                content: `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin: 10px 0;">
+                    <h4>🦆 咏鹅 - 骆宾王</h4>
+                    <p style="font-size: 1.2em; line-height: 1.8; color: #2c3e50;">
+                        鹅鹅鹅，曲项向天歌。<br>
+                        白毛浮绿水，红掌拨清波。
+                    </p>
+                    <p><strong>拼音：</strong>é é é, qū xiàng xiàng tiān gē. bái máo fú lǜ shuǐ, hóng zhǎng bō qīng bō.</p>
+                    <p><strong>意思：</strong>白鹅伸着弯曲的脖子向天歌唱，洁白的羽毛漂浮在碧绿水面上，红红的脚掌拨动着清清的水波。</p>
+                </div>
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 10px;">
+                    <h4>🐄 悯农 - 李绅</h4>
+                    <p style="font-size: 1.1em; line-height: 1.6;">锄禾日当午，汗滴禾下土。谁知盘中餐，粒粒皆辛苦。</p>
+                </div>`
+            },
+            english: {
+                title: '🔤 农场英语单词',
+                content: `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em;">🐷</div>
+                        <h4>Pig</h4>
+                        <p>猪 [zhū]</p>
+                        <p>"Pigs are smart!"</p>
+                    </div>
+                    <div style="background: #d4edda; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em;">🐄</div>
+                        <h4>Cow</h4>
+                        <p>牛 [niú]</p>
+                        <p>"Cows give us milk!"</p>
+                    </div>
+                    <div style="background: #fce4ec; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em;">🐔</div>
+                        <h4>Chicken</h4>
+                        <p>鸡 [jī]</p>
+                        <p>"Chickens lay eggs!"</p>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em;">🐑</div>
+                        <h4>Sheep</h4>
+                        <p>羊 [yáng]</p>
+                        <p>"Sheep have wool!"</p>
+                    </div>
+                </div>`
+            },
+            math: {
+                title: '🔢 农场数学练习',
+                content: `
+                <div style="background: #f0f8ff; padding: 20px; border-radius: 15px;">
+                    <h4>🧮 数数练习</h4>
+                    <p><strong>题目1：</strong>农场里有5只小鸡，又来了3只，现在一共有几只小鸡？</p>
+                    <p style="color: #28a745;"><strong>答案：</strong>5 + 3 = 8只小鸡</p>
+                    
+                    <p><strong>题目2：</strong>牧场上有10头牛，走了4头，还剩几头牛？</p>
+                    <p style="color: #28a745;"><strong>答案：</strong>10 - 4 = 6头牛</p>
+                    
+                    <h4>📐 图形认识</h4>
+                    <p>🥚 鸡蛋是什么形状？<span style="color: #28a745;">椭圆形</span></p>
+                    <p>🏠 农场房子是什么形状？<span style="color: #28a745;">长方形</span></p>
+                    <p>🌕 太阳是什么形状？<span style="color: #28a745;">圆形</span></p>
+                </div>`
+            },
+            books: {
+                title: '📖 农场主题绘本',
+                content: `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div style="background: #fff; padding: 15px; border-radius: 10px; border: 2px solid #f39c12;">
+                        <h4>📚 《小猪佩奇的农场之旅》</h4>
+                        <p>跟着佩奇一家体验农场生活，学习动物知识，培养爱心。</p>
+                        <p><strong>适合年龄：</strong>3-8岁</p>
+                    </div>
+                    <div style="background: #fff; padding: 15px; border-radius: 10px; border: 2px solid #27ae60;">
+                        <h4>📚 《农场里的小动物》</h4>
+                        <p>认识各种农场动物，了解它们的习性和作用。</p>
+                        <p><strong>适合年龄：</strong>2-6岁</p>
+                    </div>
+                    <div style="background: #fff; padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
+                        <h4>📚 《小鸡球球的农场冒险》</h4>
+                        <p>可爱的小鸡球球带你探索农场的每个角落。</p>
+                        <p><strong>适合年龄：</strong>1-5岁</p>
+                    </div>
+                </div>`
+            },
+            videos: {
+                title: '📺 教育动画推荐',
+                content: `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 15px;">
+                    <h4>🎬 推荐动画片</h4>
+                    <ul style="line-height: 2;">
+                        <li><strong>《小猪佩奇》</strong> - 学习家庭生活和社交技能</li>
+                        <li><strong>《超级飞侠农场篇》</strong> - 探索世界各地的农场文化</li>
+                        <li><strong>《巧虎的农场体验》</strong> - 培养观察力和动手能力</li>
+                        <li><strong>《小羊肖恩》</strong> - 幽默有趣的农场故事</li>
+                        <li><strong>《农场英雄》</strong> - 学习团队合作和解决问题</li>
+                    </ul>
+                    <p style="color: #666; font-style: italic;">建议每次观看时间不超过30分钟，保护小朋友的眼睛哦！</p>
+                </div>`
+            },
+            games: {
+                title: '🎮 农场互动游戏',
+                content: `
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 15px;">
+                    <h4>🎯 推荐游戏</h4>
+                    <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 10px;">
+                        <h5>🔍 动物找找看</h5>
+                        <p>在农场图片中找出指定的动物，锻炼观察力和专注力。</p>
+                    </div>
+                    <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 10px;">
+                        <h5>🧩 农场拼图</h5>
+                        <p>拼出完整的农场场景，培养空间想象力和耐心。</p>
+                    </div>
+                    <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 10px;">
+                        <h5>🎵 动物声音配对</h5>
+                        <p>听声音猜动物，学习动物的叫声特点。</p>
+                    </div>
+                    <p><a href="儿童益智游戏.html" style="color: #f39c12; text-decoration: none; font-weight: bold;">🎮 点击这里体验更多益智游戏！</a></p>
+                </div>`
+            }
+        };
+
+        // 显示推荐内容
+        function showRecommendation(type) {
+            const recommendation = farmRecommendations[type];
+            if (recommendation) {
+                addFarmMessage(recommendation.content, 'bot', '农场小助手');
+            }
+        }
+
+        // 农场问答数据库
+        const farmQADatabase = {
+            '农场动物': '我们农场里有很多可爱的小动物！🐷小猪很聪明，🐄奶牛给我们牛奶，🐔小鸡会下蛋，🐑绵羊有软软的羊毛。每种动物都有自己的特点，小朋友们可以通过观察和照顾它们学到很多知识！',
+            '古诗学习': '我来教你一首关于动物的古诗！《咏鹅》："鹅鹅鹅，曲项向天歌。白毛浮绿水，红掌拨清波。"这首诗描写了白鹅在水中游泳的美丽景象。你想学更多古诗吗？',
+            '英语单词': '农场动物的英语单词很有趣！🐷Pig（猪）、🐄Cow（牛）、🐔Chicken（鸡）、🐑Sheep（羊）。我们还可以学句子："I love animals!"（我爱动物）你想学哪个单词？',
+            '数学题目': '来做个农场数学题吧！🐔农场里有6只小鸡，又来了4只，一共有几只？答案是6+4=10只！🐄还有：牧场上有8头牛，走了3头，还剩几头？答案是8-3=5头！数学在农场里到处都是！',
+            '绘本推荐': '我推荐几本超棒的农场绘本！📚《小猪佩奇的农场之旅》、《农场里的小动物》、《小鸡球球的农场冒险》。这些绘本色彩丰富，故事有趣，还能学到很多农场知识！',
+            '动画推荐': '有很多好看的农场动画片！📺《小猪佩奇》、《超级飞侠农场篇》、《巧虎的农场体验》、《小羊肖恩》。这些动画既有趣又有教育意义，记得每次看30分钟就休息一下眼睛哦！'
+        };
+
+        // 农场聊天功能
+        function addFarmMessage(message, type, sender = '') {
+            const container = document.getElementById('farmChatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">🐷</div>
+                    <div><strong>${sender}：</strong>${message}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `<div>${message}</div>`;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendFarmQuestion() {
+            const input = document.getElementById('farmQuestionInput');
+            const question = input.value.trim();
+            
+            if (question) {
+                addFarmMessage(question, 'user');
+                input.value = '';
+                
+                setTimeout(() => {
+                    const answer = getFarmAnswer(question);
+                    addFarmMessage(answer, 'bot', '农场小助手');
+                }, 500);
+            }
+        }
+
+        function askFarmQuestion(question) {
+            document.getElementById('farmQuestionInput').value = question;
+            sendFarmQuestion();
+        }
+
+        function handleFarmKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendFarmQuestion();
+            }
+        }
+
+        function getFarmAnswer(question) {
+            // 关键词匹配
+            for (let key in farmQADatabase) {
+                if (question.includes('动物') && key === '农场动物' ||
+                    question.includes('古诗') && key === '古诗学习' ||
+                    question.includes('英语') && key === '英语单词' ||
+                    question.includes('数学') && key === '数学题目' ||
+                    question.includes('绘本') && key === '绘本推荐' ||
+                    question.includes('动画') && key === '动画推荐') {
+                    return farmQADatabase[key];
+                }
+            }
+            
+            // 默认回答
+            return '这是个很好的问题！你可以点击上面的推荐卡片来学习更多内容，或者问我关于农场动物、古诗、英语、数学、绘本或动画的问题。我会很乐意帮助你学习！🌟';
+        }
+
+        function sendQuestion() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+
+            // 添加用户消息
+            addMessage(question, 'user');
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 模拟思考时间
+            setTimeout(() => {
+                const answer = getAnswer(question);
+                addMessage(answer.text, 'bot', answer.mascot);
+            }, 1000);
+        }
+
+        function addMessage(text, type, mascot = '世') {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'user') {
+                messageDiv.textContent = text;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">${mascot === '小甲' ? '世' : '外'}</div>
+                    <div><strong>${mascot}：</strong>${text}</div>
+                `;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function getAnswer(question) {
+            // 简单的关键词匹配
+            for (const [key, value] of Object.entries(qaDatabase)) {
+                if (question.includes(key) || 
+                    question.includes('特色') && key === '办学特色' ||
+                    question.includes('招生') && key === '招生流程' ||
+                    question.includes('学费') && key === '费用政策' ||
+                    question.includes('课程') && key === '课程设置' ||
+                    question.includes('环境') && key === '校园环境' ||
+                    question.includes('升学') && key === '升学情况' ||
+                    (question.includes('体育设施') || question.includes('体育馆') || question.includes('游泳池') || question.includes('篮球馆')) && key === '体育设施' ||
+                    (question.includes('体育活动') || question.includes('运动安排') || question.includes('训练')) && key === '体育活动' ||
+                    (question.includes('运动项目') || question.includes('体育项目') || question.includes('开设')) && key === '运动项目' ||
+                    (question.includes('体育成绩') || question.includes('比赛') || question.includes('获奖')) && key === '体育成绩' ||
+                    (question.includes('农场') && question.includes('动物')) && key === '农场动物' ||
+                    (question.includes('农场') && question.includes('活动')) && key === '农场活动' ||
+                    (question.includes('古诗') || question.includes('诗词')) && key === '古诗词推荐' ||
+                    (question.includes('英语') && question.includes('学习')) && key === '英语学习' ||
+                    (question.includes('数学') && question.includes('农场')) && key === '数学练习') {
+                    return {
+                        text: value.answer,
+                        mascot: value.mascot
+                    };
+                }
+            }
+            
+            // 默认回答
+            const defaultAnswers = [
+                {
+                    text: '这是一个很好的问题！建议您直接联系我们的招生办公室（电话：0571-12345678），我们的老师会为您提供更详细的信息。您也可以预约参观校园，亲身感受世外的教育氛围。',
+                    mascot: '小甲'
+                },
+                {
+                    text: '感谢您的提问！虽然我可能没有完全理解您的问题，但我建议您关注我们的官方网站或微信公众号，那里有更全面的信息。如果您想了解更多，欢迎参加我们定期举办的校园开放日活动！',
+                    mascot: '小乙'
+                }
+            ];
+            
+            return defaultAnswers[Math.floor(Math.random() * defaultAnswers.length)];
+        }
+
+        // 3D头像交互功能
+        function init3DMascots() {
+            const mascots = document.querySelectorAll('.mascot-3d');
+            
+            mascots.forEach((mascot, index) => {
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                let currentRotationX = 5;
+                let currentRotationY = 0;
+                
+                // 鼠标事件
+                mascot.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    mascot.classList.add('dragging');
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    currentRotationY += deltaX * 0.5;
+                    currentRotationX -= deltaY * 0.5;
+                    
+                    // 限制X轴旋转角度
+                    currentRotationX = Math.max(-30, Math.min(30, currentRotationX));
+                    
+                    mascot.style.transform = `rotateY(${currentRotationY}deg) rotateX(${currentRotationX}deg)`;
+                    
+                    startX = e.clientX;
+                    startY = e.clientY;
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        mascot.classList.remove('dragging');
+                        
+                        // 恢复自动旋转
+                        setTimeout(() => {
+                            if (!mascot.classList.contains('dragging')) {
+                                mascot.style.animation = 'autoRotate 8s linear infinite';
+                                currentRotationX = 5;
+                                currentRotationY = 0;
+                            }
+                        }, 3000);
+                    }
+                });
+                
+                // 触摸事件（移动端支持）
+                mascot.addEventListener('touchstart', (e) => {
+                    isDragging = true;
+                    const touch = e.touches[0];
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    mascot.classList.add('dragging');
+                    e.preventDefault();
+                });
+                
+                mascot.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+                    
+                    currentRotationY += deltaX * 0.5;
+                    currentRotationX -= deltaY * 0.5;
+                    
+                    currentRotationX = Math.max(-30, Math.min(30, currentRotationX));
+                    
+                    mascot.style.transform = `rotateY(${currentRotationY}deg) rotateX(${currentRotationX}deg)`;
+                    
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    e.preventDefault();
+                });
+                
+                mascot.addEventListener('touchend', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        mascot.classList.remove('dragging');
+                        
+                        setTimeout(() => {
+                            if (!mascot.classList.contains('dragging')) {
+                                mascot.style.animation = 'autoRotate 8s linear infinite';
+                                currentRotationX = 5;
+                                currentRotationY = 0;
+                            }
+                        }, 3000);
+                    }
+                });
+                
+                // 双击重置
+                mascot.addEventListener('dblclick', () => {
+                    currentRotationX = 5;
+                    currentRotationY = 0;
+                    mascot.style.transform = `rotateY(0deg) rotateX(5deg)`;
+                    mascot.style.animation = 'autoRotate 8s linear infinite';
+                });
+            });
+        }
+        
+        // 页面加载完成后的欢迎消息和初始化
+        window.onload = function() {
+            // 初始化3D头像交互
+            init3DMascots();
+            
+            // 欢迎消息
+            setTimeout(() => {
+                addMessage('我是小乙！如果您对我们学校的艺术课程、国际交流项目、体育活动或校园生活感兴趣，随时可以问我哦！我们一起让学习变得更有趣！🎨🏀✨', 'bot', '小乙');
+            }, 2000);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物学科创新应用 - K12教育平台</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="apps.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>生物学科创新应用</h1>
+            <nav>
+                <a href="index.php" class="back-btn">← 返回主页</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 细胞结构3D探索 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>细胞结构3D探索</h2>
+                <span class="app-tag">细胞生物学</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="cell-explorer">
+                        <h3>细胞结构浏览器</h3>
+                        <div class="cell-controls">
+                            <div class="cell-type-selector">
+                                <label>细胞类型:</label>
+                                <select id="cellType" onchange="switchCellType()">
+                                    <option value="animal">动物细胞</option>
+                                    <option value="plant">植物细胞</option>
+                                    <option value="bacteria">细菌细胞</option>
+                                </select>
+                            </div>
+                            <div class="organelle-controls">
+                                <h4>细胞器显示</h4>
+                                <label><input type="checkbox" id="nucleus" checked onchange="toggleOrganelle('nucleus')"> 细胞核</label>
+                                <label><input type="checkbox" id="mitochondria" checked onchange="toggleOrganelle('mitochondria')"> 线粒体</label>
+                                <label><input type="checkbox" id="ribosome" checked onchange="toggleOrganelle('ribosome')"> 核糖体</label>
+                                <label><input type="checkbox" id="er" checked onchange="toggleOrganelle('er')"> 内质网</label>
+                                <label><input type="checkbox" id="golgi" checked onchange="toggleOrganelle('golgi')"> 高尔基体</label>
+                                <label><input type="checkbox" id="chloroplast" onchange="toggleOrganelle('chloroplast')"> 叶绿体</label>
+                            </div>
+                        </div>
+                        
+                        <div class="cell-display" id="cellDisplay">
+                            <svg width="400" height="300" id="cellSvg">
+                                <!-- 细胞结构将通过JavaScript绘制 -->
+                            </svg>
+                        </div>
+                        
+                        <div id="organelleInfo" class="organelle-info">
+                            <p>点击细胞器查看详细信息</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>3D可视化细胞结构</li>
+                            <li>交互式教学演示</li>
+                            <li>多种细胞类型对比</li>
+                            <li>细胞器功能详解</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>直观理解细胞结构</li>
+                            <li>掌握细胞器功能</li>
+                            <li>培养空间想象能力</li>
+                            <li>探索生命奥秘</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>3D细胞模型</span>
+                        <span>交互式探索</span>
+                        <span>多细胞类型</span>
+                        <span>功能动画演示</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DNA序列分析工具 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>DNA序列分析工具</h2>
+                <span class="app-tag">分子生物学</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="dna-analyzer">
+                        <h3>DNA序列输入与分析</h3>
+                        <div class="sequence-input">
+                            <label for="dnaSequence">输入DNA序列 (A, T, G, C):</label>
+                            <textarea id="dnaSequence" placeholder="例如: ATGCGATCGTAGC" onchange="analyzeDNA()"></textarea>
+                            <button onclick="generateRandomDNA()">生成随机序列</button>
+                            <button onclick="analyzeDNA()">分析序列</button>
+                        </div>
+                        
+                        <div class="dna-visualization" id="dnaVisualization">
+                            <canvas id="dnaCanvas" width="600" height="200"></canvas>
+                        </div>
+                        
+                        <div id="dnaAnalysisResult" class="analysis-result"></div>
+                        
+                        <div class="transcription-section">
+                            <h4>转录与翻译</h4>
+                            <button onclick="transcribeDNA()">转录为RNA</button>
+                            <button onclick="translateRNA()">翻译为蛋白质</button>
+                            <div id="transcriptionResult" class="transcription-result"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>可视化DNA结构</li>
+                            <li>演示转录翻译过程</li>
+                            <li>序列分析工具</li>
+                            <li>基因表达教学</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>理解DNA结构特点</li>
+                            <li>掌握碱基配对规律</li>
+                            <li>学习遗传信息流</li>
+                            <li>探索基因奥秘</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>序列可视化</span>
+                        <span>转录翻译模拟</span>
+                        <span>碱基统计分析</span>
+                        <span>遗传密码解读</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 生态系统模拟器 -->
+        <section class="app-section">
+            <div class="app-header">
+                <h2>生态系统模拟器</h2>
+                <span class="app-tag">生态学</span>
+            </div>
+            
+            <div class="app-content">
+                <div class="demo-area">
+                    <div class="ecosystem-simulator">
+                        <h3>生态系统平衡模拟</h3>
+                        <div class="ecosystem-controls">
+                            <div class="population-controls">
+                                <h4>种群数量调节</h4>
+                                <div class="control-group">
+                                    <label>生产者 (植物):</label>
+                                    <input type="range" id="producers" min="10" max="100" value="50" onchange="updateEcosystem()">
+                                    <span id="producersValue">50</span>
+                                </div>
+                                <div class="control-group">
+                                    <label>初级消费者 (草食动物):</label>
+                                    <input type="range" id="primaryConsumers" min="5" max="50" value="25" onchange="updateEcosystem()">
+                                    <span id="primaryConsumersValue">25</span>
+                                </div>
+                                <div class="control-group">
+                                    <label>次级消费者 (肉食动物):</label>
+                                    <input type="range" id="secondaryConsumers" min="1" max="20" value="10" onchange="updateEcosystem()">
+                                    <span id="secondaryConsumersValue">10</span>
+                                </div>
+                            </div>
+                            
+                            <div class="environment-controls">
+                                <h4>环境因子</h4>
+                                <div class="control-group">
+                                    <label>温度 (°C):</label>
+                                    <input type="range" id="temperature" min="-10" max="40" value="20" onchange="updateEcosystem()">
+                                    <span id="temperatureValue">20</span>
+                                </div>
+                                <div class="control-group">
+                                    <label>降水量 (mm):</label>
+                                    <input type="range" id="rainfall" min="0" max="2000" value="800" onchange="updateEcosystem()">
+                                    <span id="rainfallValue">800</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ecosystem-display">
+                            <canvas id="ecosystemCanvas" width="600" height="300"></canvas>
+                        </div>
+                        
+                        <div id="ecosystemStatus" class="ecosystem-status"></div>
+                        
+                        <div class="simulation-controls">
+                            <button onclick="startSimulation()">开始模拟</button>
+                            <button onclick="pauseSimulation()">暂停</button>
+                            <button onclick="resetEcosystem()">重置</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card teacher">
+                        <h4>教师收获</h4>
+                        <ul>
+                            <li>动态展示生态平衡</li>
+                            <li>环境因子影响演示</li>
+                            <li>食物链关系可视化</li>
+                            <li>生态保护教育</li>
+                        </ul>
+                    </div>
+                    <div class="benefit-card student">
+                        <h4>学生收获</h4>
+                        <ul>
+                            <li>理解生态系统平衡</li>
+                            <li>探索环境与生物关系</li>
+                            <li>培养环保意识</li>
+                            <li>学习系统性思维</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h4>亮点与突破</h4>
+                    <div class="highlight-tags">
+                        <span>动态生态模拟</span>
+                        <span>多因子交互</span>
+                        <span>实时数据监测</span>
+                        <span>环境影响分析</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="biology_apps.js"></script>
+</body>
+</html>

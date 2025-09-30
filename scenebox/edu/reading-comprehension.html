@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能阅读理解辅助 - AI课堂教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .reading-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .article-selector {
+            margin-bottom: 20px;
+        }
+
+        .article-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .article-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .reading-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .speed-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .highlight-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .article-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .article-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .highlighted {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .questions-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .question-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .question-number {
+            background: #3498db;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .option.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .option.correct {
+            border-color: #2ecc71;
+            background: #d4edda;
+        }
+
+        .option.incorrect {
+            border-color: #e74c3c;
+            background: #f8d7da;
+        }
+
+        .option-label {
+            background: #3498db;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        .check-answer-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .check-answer-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .explanation {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .score-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .reading-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回主页</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📖 智能阅读理解辅助</h1>
+            <p>AI互动阅读系统 - 个性化题目生成与理解指导</p>
+        </div>
+
+        <div class="main-content">
+            <div class="reading-panel">
+                <div class="panel-title">
+                    <span class="icon">📚</span>
+                    阅读文章
+                </div>
+                
+                <div class="article-selector">
+                    <label for="articleSelect">选择文章：</label>
+                    <select id="articleSelect" onchange="loadArticle()">
+                        <option value="spring">春天的故事</option>
+                        <option value="friendship">友谊的力量</option>
+                        <option value="animals">动物王国</option>
+                        <option value="dream">我的梦想</option>
+                    </select>
+                </div>
+
+                <div class="reading-controls">
+                    <button class="control-btn play-btn" onclick="readAloud()">
+                        🔊 朗读
+                    </button>
+                    <button class="control-btn speed-btn" onclick="changeSpeed()">
+                        ⚡ 语速: <span id="speedText">正常</span>
+                    </button>
+                    <button class="control-btn highlight-btn" onclick="toggleHighlight()">
+                        🖍️ 重点标注
+                    </button>
+                </div>
+
+                <div class="article-content" id="articleContent">
+                    <div class="article-title" id="articleTitle">春天的故事</div>
+                    <div id="articleText">
+                        春天来了，大地苏醒了。小草从土里探出头来，嫩绿嫩绿的，像给大地铺上了一层绿毯。
+                        <br><br>
+                        花园里，各种各样的花儿竞相开放。桃花粉红粉红的，像小朋友的笑脸；梨花雪白雪白的，像天上的白云；迎春花金黄金黄的，像闪闪发光的小星星。
+                        <br><br>
+                        小鸟们也从南方飞回来了，它们在树枝上唱着动听的歌曲，好像在说："春天真美好啊！"
+                        <br><br>
+                        小朋友们脱下厚厚的棉衣，穿上轻薄的春装，在公园里快乐地玩耍。他们有的在放风筝，有的在踢毽子，有的在捉迷藏，到处都是欢声笑语。
+                        <br><br>
+                        春天是希望的季节，是生长的季节，是美好的季节。我们要珍惜这美好的春光，好好学习，天天向上。
+                    </div>
+                </div>
+            </div>
+
+            <div class="questions-panel">
+                <div class="panel-title">
+                    <span class="icon">❓</span>
+                    理解题目
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <div id="questionsContainer">
+                    <!-- 题目将通过JavaScript动态生成 -->
+                </div>
+
+                <div class="score-display" id="scoreDisplay" style="display: none;">
+                    <div class="score-number" id="scoreNumber">0</div>
+                    <div class="score-label">答对题目数 / 总题目数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentArticle = 'spring';
+        let currentSpeed = 1;
+        let isHighlighted = false;
+        let currentQuestions = [];
+        let answeredQuestions = 0;
+        let correctAnswers = 0;
+
+        const articles = {
+            spring: {
+                title: '春天的故事',
+                content: `春天来了，大地苏醒了。小草从土里探出头来，嫩绿嫩绿的，像给大地铺上了一层绿毯。
+                <br><br>
+                花园里，各种各样的花儿竞相开放。桃花粉红粉红的，像小朋友的笑脸；梨花雪白雪白的，像天上的白云；迎春花金黄金黄的，像闪闪发光的小星星。
+                <br><br>
+                小鸟们也从南方飞回来了，它们在树枝上唱着动听的歌曲，好像在说："春天真美好啊！"
+                <br><br>
+                小朋友们脱下厚厚的棉衣，穿上轻薄的春装，在公园里快乐地玩耍。他们有的在放风筝，有的在踢毽子，有的在捉迷藏，到处都是欢声笑语。
+                <br><br>
+                春天是希望的季节，是生长的季节，是美好的季节。我们要珍惜这美好的春光，好好学习，天天向上。`,
+                questions: [
+                    {
+                        question: '文章中用什么比喻来形容小草？',
+                        options: ['绿毯', '绿伞', '绿树', '绿水'],
+                        correct: 0,
+                        explanation: '文章中说"小草从土里探出头来，嫩绿嫩绿的，像给大地铺上了一层绿毯"，所以答案是绿毯。'
+                    },
+                    {
+                        question: '桃花的颜色是什么？',
+                        options: ['雪白', '金黄', '粉红', '深红'],
+                        correct: 2,
+                        explanation: '文章中明确提到"桃花粉红粉红的，像小朋友的笑脸"，所以答案是粉红。'
+                    },
+                    {
+                        question: '小朋友们在公园里做什么？',
+                        options: ['只是放风筝', '只是踢毽子', '只是捉迷藏', '放风筝、踢毽子、捉迷藏等'],
+                        correct: 3,
+                        explanation: '文章提到"他们有的在放风筝，有的在踢毽子，有的在捉迷藏"，说明小朋友们在做很多不同的活动。'
+                    }
+                ]
+            },
+            friendship: {
+                title: '友谊的力量',
+                content: `小明和小华是一对好朋友。他们住在同一个小区，每天一起上学，一起回家。
+                <br><br>
+                有一天，小明生病了，不能去上学。小华很担心他，放学后立刻跑到小明家里看望他。小华把当天学的新知识都告诉了小明，还帮他抄写了课堂笔记。
+                <br><br>
+                小明很感动，他说："谢谢你，小华。有你这样的朋友，我真的很幸福。"
+                <br><br>
+                过了几天，轮到小华遇到困难了。他的数学作业有几道题不会做，急得直哭。小明知道后，马上放下手中的游戏，耐心地给小华讲解，直到他完全明白为止。
+                <br><br>
+                从此以后，两个好朋友更加珍惜彼此的友谊。他们互相帮助，共同进步，成为了班里最好的朋友。`,
+                questions: [
+                    {
+                        question: '小明生病时，小华做了什么？',
+                        options: ['只是看望了他', '告诉他新知识并帮他抄笔记', '给他买药', '陪他玩游戏'],
+                        correct: 1,
+                        explanation: '文章中说小华"把当天学的新知识都告诉了小明，还帮他抄写了课堂笔记"。'
+                    },
+                    {
+                        question: '小华遇到什么困难？',
+                        options: ['生病了', '数学作业不会做', '迷路了', '丢了书包'],
+                        correct: 1,
+                        explanation: '文章明确提到"他的数学作业有几道题不会做，急得直哭"。'
+                    }
+                ]
+            },
+            animals: {
+                title: '动物王国',
+                content: `在美丽的大森林里，住着许多可爱的动物。
+                <br><br>
+                大象是森林里最大的动物，它有长长的鼻子和大大的耳朵。大象很聪明，还很善良，经常帮助其他小动物。
+                <br><br>
+                小兔子蹦蹦跳跳的，红红的眼睛，长长的耳朵，短短的尾巴，看起来非常可爱。小兔子最喜欢吃胡萝卜和青菜。
+                <br><br>
+                猴子是最调皮的动物，它们会爬树，会荡秋千，还会模仿人类的动作，经常逗得大家哈哈大笑。
+                <br><br>
+                所有的动物都和睦相处，森林里充满了欢声笑语。`,
+                questions: [
+                    {
+                        question: '大象的特征是什么？',
+                        options: ['短鼻子大耳朵', '长鼻子大耳朵', '长鼻子小耳朵', '短鼻子小耳朵'],
+                        correct: 1,
+                        explanation: '文章中描述大象"有长长的鼻子和大大的耳朵"。'
+                    },
+                    {
+                        question: '小兔子最喜欢吃什么？',
+                        options: ['苹果和香蕉', '胡萝卜和青菜', '肉类', '坚果'],
+                        correct: 1,
+                        explanation: '文章明确说"小兔子最喜欢吃胡萝卜和青菜"。'
+                    }
+                ]
+            },
+            dream: {
+                title: '我的梦想',
+                content: `每个人都有自己的梦想。我的梦想是成为一名老师。
+                <br><br>
+                我想成为老师，是因为我觉得老师是一个很伟大的职业。老师可以教给学生很多知识，帮助他们成长。
+                <br><br>
+                为了实现这个梦想，我现在要好好学习，掌握更多的知识。我还要学会关心别人，帮助同学，培养自己的耐心和爱心。
+                <br><br>
+                我相信，只要我努力学习，认真准备，将来一定能够实现自己的梦想，成为一名优秀的老师。`,
+                questions: [
+                    {
+                        question: '作者的梦想是什么？',
+                        options: ['成为医生', '成为老师', '成为科学家', '成为画家'],
+                        correct: 1,
+                        explanation: '文章开头就明确说"我的梦想是成为一名老师"。'
+                    },
+                    {
+                        question: '为了实现梦想，作者要做什么？',
+                        options: ['只要好好学习', '好好学习，培养耐心和爱心', '什么都不用做', '只要帮助同学'],
+                        correct: 1,
+                        explanation: '文章提到要"好好学习，掌握更多的知识"，还要"学会关心别人，帮助同学，培养自己的耐心和爱心"。'
+                    }
+                ]
+            }
+        };
+
+        function loadArticle() {
+            const select = document.getElementById('articleSelect');
+            currentArticle = select.value;
+            const article = articles[currentArticle];
+            
+            document.getElementById('articleTitle').textContent = article.title;
+            document.getElementById('articleText').innerHTML = article.content;
+            
+            // 重置状态
+            isHighlighted = false;
+            answeredQuestions = 0;
+            correctAnswers = 0;
+            
+            // 生成题目
+            generateQuestions();
+        }
+
+        function generateQuestions() {
+            const article = articles[currentArticle];
+            currentQuestions = article.questions;
+            const container = document.getElementById('questionsContainer');
+            
+            container.innerHTML = '';
+            
+            currentQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <div class="question-text">
+                        <span class="question-number">${index + 1}</span>
+                        ${q.question}
+                    </div>
+                    <ul class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <li class="option" onclick="selectOption(${index}, ${optIndex})">
+                                <span class="option-label">${String.fromCharCode(65 + optIndex)}</span>
+                                ${option}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button class="check-answer-btn" onclick="checkAnswer(${index})" style="display: none;">检查答案</button>
+                    <div class="explanation" id="explanation-${index}">
+                        <div class="explanation-title">💡 解析：</div>
+                        ${q.explanation}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            
+            updateProgress();
+            document.getElementById('scoreDisplay').style.display = 'none';
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            const questionDiv = document.querySelectorAll('.question-item')[questionIndex];
+            const options = questionDiv.querySelectorAll('.option');
+            const checkBtn = questionDiv.querySelector('.check-answer-btn');
+            
+            // 清除之前的选择
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // 选择当前选项
+            options[optionIndex].classList.add('selected');
+            
+            // 显示检查按钮
+            checkBtn.style.display = 'block';
+            
+            // 存储选择
+            currentQuestions[questionIndex].userAnswer = optionIndex;
+        }
+
+        function checkAnswer(questionIndex) {
+            const question = currentQuestions[questionIndex];
+            const questionDiv = document.querySelectorAll('.question-item')[questionIndex];
+            const options = questionDiv.querySelectorAll('.option');
+            const explanation = document.getElementById(`explanation-${questionIndex}`);
+            const checkBtn = questionDiv.querySelector('.check-answer-btn');
+            
+            if (question.userAnswer === undefined) {
+                alert('请先选择一个答案！');
+                return;
+            }
+            
+            // 显示正确答案
+            options.forEach((opt, index) => {
+                if (index === question.correct) {
+                    opt.classList.add('correct');
+                } else if (index === question.userAnswer && index !== question.correct) {
+                    opt.classList.add('incorrect');
+                }
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // 显示解析
+            explanation.classList.add('show');
+            
+            // 隐藏检查按钮
+            checkBtn.style.display = 'none';
+            
+            // 更新统计
+            if (question.userAnswer === question.correct) {
+                correctAnswers++;
+            }
+            answeredQuestions++;
+            
+            updateProgress();
+            
+            // 如果所有题目都答完了，显示总分
+            if (answeredQuestions === currentQuestions.length) {
+                showFinalScore();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (answeredQuestions / currentQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showFinalScore() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreNumber = document.getElementById('scoreNumber');
+            
+            scoreNumber.textContent = `${correctAnswers} / ${currentQuestions.length}`;
+            scoreDisplay.style.display = 'block';
+            
+            // 滚动到分数显示区域
+            scoreDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function readAloud() {
+            if ('speechSynthesis' in window) {
+                const text = document.getElementById('articleText').textContent;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.rate = currentSpeed;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('您的浏览器不支持语音朗读功能');
+            }
+        }
+
+        function changeSpeed() {
+            const speeds = [0.5, 0.8, 1, 1.2, 1.5];
+            const speedTexts = ['很慢', '慢', '正常', '快', '很快'];
+            
+            let currentIndex = speeds.indexOf(currentSpeed);
+            currentIndex = (currentIndex + 1) % speeds.length;
+            
+            currentSpeed = speeds[currentIndex];
+            document.getElementById('speedText').textContent = speedTexts[currentIndex];
+        }
+
+        function toggleHighlight() {
+            const articleText = document.getElementById('articleText');
+            
+            if (!isHighlighted) {
+                // 添加重点标注
+                let content = articleText.innerHTML;
+                
+                // 标注重要词汇
+                const keywords = ['春天', '花儿', '小鸟', '小朋友', '美好', '朋友', '帮助', '动物', '梦想', '老师'];
+                keywords.forEach(keyword => {
+                    const regex = new RegExp(keyword, 'g');
+                    content = content.replace(regex, `<span class="highlighted">${keyword}</span>`);
+                });
+                
+                articleText.innerHTML = content;
+                isHighlighted = true;
+            } else {
+                // 移除标注
+                loadArticle();
+            }
+        }
+
+        // 初始化
+        generateQuestions();
+    </script>
+</body>
+</html>

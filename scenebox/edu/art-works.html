@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 小学生美术作品展示馆</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #FFF8DC 0%, #F0E68C 50%, #DDA0DD 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FF6B9D, #4ECDC4, #FFE066, #FF9A56, #667eea);
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .gallery-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '🎨';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+
+        .artwork-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .artwork-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B9D, #4ECDC4, #FFE066);
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .artwork-card:hover .artwork-image {
+            transform: scale(1.02);
+        }
+
+        .artwork-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .artwork-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .artwork-description {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #666;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .artwork-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .student-works {
+            background: linear-gradient(135deg, #FFE5F1, #FFE5E5);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .student-class {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .student-work {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #f8f9fa;
+        }
+
+        .interactive-section {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .interactive-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .activity-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .activity-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .activity-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quiz-area {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .quiz-area.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-question {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .quiz-option:hover {
+            background: #4ECDC4;
+            color: white;
+            border-color: #4ECDC4;
+        }
+
+        .quiz-option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .quiz-option.wrong {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .footer {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        .footer h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .footer p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .artwork-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activity-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 小学生美术作品展示馆</h1>
+            <p>欣赏经典名画，展示学生作品，培养艺术素养</p>
+            <div class="welcome-banner">
+                <strong>🌟 欢迎来到艺术的世界！</strong><br>
+                在这里，我们可以欣赏到中国古代的经典名画，<br>
+                也能看到同学们精彩的美术作品！
+            </div>
+        </div>
+
+        <!-- 经典名画展示 -->
+        <div class="gallery-section">
+            <div class="section-title">🏛️ 经典名画欣赏</div>
+            
+            <div class="artwork-grid">
+                <!-- 千里江山图 -->
+                <div class="artwork-card">
+                    <svg class="artwork-image" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 天空背景 -->
+                        <defs>
+                            <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#228B22;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#006400;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- 天空 -->
+                        <rect width="400" height="250" fill="url(#skyGradient)"/>
+                        
+                        <!-- 远山 -->
+                        <path d="M0,150 Q100,120 200,140 T400,130 L400,250 L0,250 Z" fill="#9ACD32" opacity="0.7"/>
+                        
+                        <!-- 中山 -->
+                        <path d="M0,180 Q80,150 160,170 Q240,160 320,175 Q360,170 400,180 L400,250 L0,250 Z" fill="url(#mountainGradient)"/>
+                        
+                        <!-- 近山 -->
+                        <path d="M0,200 Q50,180 100,190 Q150,185 200,195 Q250,190 300,200 Q350,195 400,205 L400,250 L0,250 Z" fill="#006400"/>
+                        
+                        <!-- 江水 -->
+                        <path d="M0,220 Q100,210 200,215 Q300,210 400,220 L400,250 L0,250 Z" fill="#4682B4" opacity="0.8"/>
+                        
+                        <!-- 云朵 -->
+                        <ellipse cx="80" cy="60" rx="25" ry="15" fill="white" opacity="0.8"/>
+                        <ellipse cx="95" cy="55" rx="20" ry="12" fill="white" opacity="0.8"/>
+                        <ellipse cx="300" cy="80" rx="30" ry="18" fill="white" opacity="0.8"/>
+                        
+                        <!-- 小船 -->
+                        <path d="M150,210 Q160,205 170,210 L165,215 Z" fill="#8B4513"/>
+                        <line x1="160" y1="210" x2="160" y2="190" stroke="#8B4513" stroke-width="2"/>
+                        
+                        <!-- 文字装饰 -->
+                        <text x="200" y="30" text-anchor="middle" fill="#2F4F4F" font-size="16" font-family="serif">千里江山图</text>
+                    </svg>
+                    
+                    <div class="artwork-title">千里江山图</div>
+                    <div class="artwork-info">
+                        <div class="info-item">
+                            <div class="info-label">作者</div>
+                            <div>王希孟</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">朝代</div>
+                            <div>北宋</div>
+                        </div>
+                    </div>
+                    <div class="artwork-description">
+                        这是中国古代最著名的山水画之一，描绘了祖国的壮丽河山。画中有青山绿水，还有小船在江上航行，非常美丽！
+                    </div>
+                    <div class="artwork-tags">
+                        <span class="tag">山水画</span>
+                        <span class="tag">国画</span>
+                        <span class="tag">经典</span>
+                    </div>
+                </div>
+
+                <!-- 清明上河图 -->
+                <div class="artwork-card">
+                    <svg class="artwork-image" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <rect width="400" height="250" fill="#F5F5DC"/>
+                        
+                        <!-- 河流 -->
+                        <path d="M0,180 Q100,170 200,175 Q300,170 400,180 L400,200 Q300,190 200,195 Q100,190 0,200 Z" fill="#4682B4"/>
+                        
+                        <!-- 桥梁 -->
+                        <path d="M150,175 Q200,160 250,175" stroke="#8B4513" stroke-width="8" fill="none"/>
+                        <rect x="190" y="165" width="20" height="15" fill="#8B4513"/>
+                        
+                        <!-- 房屋 -->
+                        <rect x="50" y="120" width="40" height="30" fill="#DEB887"/>
+                        <polygon points="50,120 70,100 90,120" fill="#8B4513"/>
+                        
+                        <rect x="300" y="110" width="50" height="40" fill="#DEB887"/>
+                        <polygon points="300,110 325,90 350,110" fill="#8B4513"/>
+                        
+                        <!-- 树木 -->
+                        <circle cx="120" cy="140" r="20" fill="#228B22"/>
+                        <rect x="115" y="140" width="10" height="20" fill="#8B4513"/>
+                        
+                        <circle cx="280" cy="130" r="25" fill="#228B22"/>
+                        <rect x="275" y="130" width="10" height="25" fill="#8B4513"/>
+                        
+                        <!-- 人物（简化） -->
+                        <circle cx="180" cy="190" r="3" fill="#FFB6C1"/>
+                        <rect x="178" y="193" width="4" height="8" fill="#4169E1"/>
+                        
+                        <circle cx="220" cy="185" r="3" fill="#FFB6C1"/>
+                        <rect x="218" y="188" width="4" height="8" fill="#DC143C"/>
+                        
+                        <!-- 船只 -->
+                        <path d="M100,185 Q110,180 120,185 L115,190 Z" fill="#8B4513"/>
+                        
+                        <!-- 标题 -->
+                        <text x="200" y="30" text-anchor="middle" fill="#2F4F4F" font-size="16" font-family="serif">清明上河图</text>
+                    </svg>
+                    
+                    <div class="artwork-title">清明上河图</div>
+                    <div class="artwork-info">
+                        <div class="info-item">
+                            <div class="info-label">作者</div>
+                            <div>张择端</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">朝代</div>
+                            <div>北宋</div>
+                        </div>
+                    </div>
+                    <div class="artwork-description">
+                        这幅画展现了古代城市的热闹景象，有桥梁、房屋、人群和船只，就像古代的"照片"一样记录了当时的生活！
+                    </div>
+                    <div class="artwork-tags">
+                        <span class="tag">风俗画</span>
+                        <span class="tag">历史</span>
+                        <span class="tag">生活</span>
+                    </div>
+                </div>
+
+                <!-- 富春山居图 -->
+                <div class="artwork-card">
+                    <svg class="artwork-image" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <rect width="400" height="250" fill="#F8F8FF"/>
+                        
+                        <!-- 远山 -->
+                        <path d="M0,120 Q80,100 160,110 Q240,105 320,115 Q360,110 400,120 L400,250 L0,250 Z" fill="#D3D3D3" opacity="0.6"/>
+                        
+                        <!-- 中景山 -->
+                        <path d="M0,160 Q60,140 120,150 Q180,145 240,155 Q300,150 360,160 Q380,155 400,165 L400,250 L0,250 Z" fill="#A9A9A9" opacity="0.8"/>
+                        
+                        <!-- 近景 -->
+                        <path d="M0,200 Q50,185 100,190 Q150,188 200,195 Q250,190 300,200 Q350,195 400,205 L400,250 L0,250 Z" fill="#696969"/>
+                        
+                        <!-- 水面 -->
+                        <path d="M0,220 Q100,215 200,218 Q300,215 400,225 L400,250 L0,250 Z" fill="#B0E0E6" opacity="0.7"/>
+                        
+                        <!-- 树木点缀 -->
+                        <circle cx="80" cy="180" r="8" fill="#228B22" opacity="0.8"/>
+                        <circle cx="85" cy="175" r="6" fill="#228B22" opacity="0.8"/>
+                        
+                        <circle cx="250" cy="170" r="10" fill="#228B22" opacity="0.8"/>
+                        <circle cx="255" cy="165" r="7" fill="#228B22" opacity="0.8"/>
+                        
+                        <!-- 房屋 -->
+                        <rect x="150" y="185" width="20" height="15" fill="#DEB887" opacity="0.9"/>
+                        <polygon points="150,185 160,175 170,185" fill="#8B4513" opacity="0.9"/>
+                        
+                        <!-- 小船 -->
+                        <path d="M120,215 Q130,212 140,215 L135,218 Z" fill="#8B4513" opacity="0.8"/>
+                        
+                        <!-- 标题 -->
+                        <text x="200" y="30" text-anchor="middle" fill="#2F4F4F" font-size="16" font-family="serif">富春山居图</text>
+                    </svg>
+                    
+                    <div class="artwork-title">富春山居图</div>
+                    <div class="artwork-info">
+                        <div class="info-item">
+                            <div class="info-label">作者</div>
+                            <div>黄公望</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">朝代</div>
+                            <div>元代</div>
+                        </div>
+                    </div>
+                    <div class="artwork-description">
+                        这是一幅非常有名的山水画，画家用淡淡的墨色描绘了富春江边的美丽风景，给人宁静祥和的感觉。
+                    </div>
+                    <div class="artwork-tags">
+                        <span class="tag">水墨画</span>
+                        <span class="tag">山水</span>
+                        <span class="tag">意境</span>
+                    </div>
+                </div>
+
+                <!-- 洛神赋图 -->
+                <div class="artwork-card">
+                    <svg class="artwork-image" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <defs>
+                            <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#E6F3FF;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#B0E0E6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <rect width="400" height="250" fill="url(#waterGradient)"/>
+                        
+                        <!-- 水波 -->
+                        <path d="M0,180 Q50,175 100,180 Q150,175 200,180 Q250,175 300,180 Q350,175 400,180" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.6"/>
+                        <path d="M0,190 Q50,185 100,190 Q150,185 200,190 Q250,185 300,190 Q350,185 400,190" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.6"/>
+                        
+                        <!-- 云朵 -->
+                        <ellipse cx="100" cy="60" rx="30" ry="20" fill="white" opacity="0.8"/>
+                        <ellipse cx="120" cy="55" rx="25" ry="15" fill="white" opacity="0.8"/>
+                        <ellipse cx="300" cy="70" rx="35" ry="22" fill="white" opacity="0.8"/>
+                        
+                        <!-- 仙女（简化表现） -->
+                        <ellipse cx="200" cy="120" rx="15" ry="25" fill="#FFB6C1" opacity="0.9"/>
+                        <circle cx="200" cy="100" r="8" fill="#FFB6C1"/>
+                        
+                        <!-- 飘带 -->
+                        <path d="M185,110 Q170,100 160,120 Q155,140 170,150" stroke="#FF69B4" stroke-width="3" fill="none" opacity="0.8"/>
+                        <path d="M215,110 Q230,100 240,120 Q245,140 230,150" stroke="#FF69B4" stroke-width="3" fill="none" opacity="0.8"/>
+                        
+                        <!-- 龙（简化） -->
+                        <path d="M50,200 Q80,190 110,200 Q140,195 170,205" stroke="#FFD700" stroke-width="6" fill="none"/>
+                        <circle cx="50" cy="200" r="8" fill="#FFD700"/>
+                        
+                        <!-- 莲花 -->
+                        <ellipse cx="320" cy="200" rx="12" ry="8" fill="#FFB6C1"/>
+                        <ellipse cx="320" cy="195" rx="8" ry="6" fill="#FF69B4"/>
+                        
+                        <!-- 标题 -->
+                        <text x="200" y="30" text-anchor="middle" fill="#2F4F4F" font-size="16" font-family="serif">洛神赋图</text>
+                    </svg>
+                    
+                    <div class="artwork-title">洛神赋图</div>
+                    <div class="artwork-info">
+                        <div class="info-item">
+                            <div class="info-label">作者</div>
+                            <div>顾恺之</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">朝代</div>
+                            <div>东晋</div>
+                        </div>
+                    </div>
+                    <div class="artwork-description">
+                        这幅画讲述了一个美丽的神话故事，画中有仙女、龙和莲花，充满了神秘和浪漫的色彩。
+                    </div>
+                    <div class="artwork-tags">
+                        <span class="tag">人物画</span>
+                        <span class="tag">神话</span>
+                        <span class="tag">古典</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学生作品展示 -->
+        <div class="student-works">
+            <div class="section-title">👨‍🎨 学生优秀作品</div>
+            
+            <div class="student-grid">
+                <div class="student-card">
+                    <div class="student-avatar">🎨</div>
+                    <div class="student-name">小明</div>
+                    <div class="student-class">三年级二班</div>
+                    
+                    <svg class="student-work" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 太阳 -->
+                        <circle cx="170" cy="30" r="20" fill="#FFD700"/>
+                        <line x1="150" y1="20" x2="140" y2="15" stroke="#FFD700" stroke-width="2"/>
+                        <line x1="150" y1="40" x2="140" y2="45" stroke="#FFD700" stroke-width="2"/>
+                        <line x1="190" y1="20" x2="200" y2="15" stroke="#FFD700" stroke-width="2"/>
+                        
+                        <!-- 天空 -->
+                        <rect width="200" height="100" fill="#87CEEB"/>
+                        
+                        <!-- 草地 -->
+                        <rect y="100" width="200" height="50" fill="#90EE90"/>
+                        
+                        <!-- 房子 -->
+                        <rect x="50" y="70" width="40" height="30" fill="#DEB887"/>
+                        <polygon points="50,70 70,50 90,70" fill="#8B4513"/>
+                        <rect x="60" y="85" width="8" height="15" fill="#8B4513"/>
+                        
+                        <!-- 树 -->
+                        <circle cx="130" cy="80" r="15" fill="#228B22"/>
+                        <rect x="125" y="80" width="10" height="20" fill="#8B4513"/>
+                        
+                        <!-- 花朵 -->
+                        <circle cx="30" cy="120" r="5" fill="#FF69B4"/>
+                        <circle cx="160" cy="125" r="4" fill="#FF1493"/>
+                    </svg>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">作品：《我的家》</div>
+                </div>
+
+                <div class="student-card">
+                    <div class="student-avatar">🖌️</div>
+                    <div class="student-name">小红</div>
+                    <div class="student-class">四年级一班</div>
+                    
+                    <svg class="student-work" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <rect width="200" height="150" fill="#E6E6FA"/>
+                        
+                        <!-- 彩虹 -->
+                        <path d="M20,80 Q100,40 180,80" stroke="#FF0000" stroke-width="8" fill="none"/>
+                        <path d="M25,85 Q100,45 175,85" stroke="#FF7F00" stroke-width="8" fill="none"/>
+                        <path d="M30,90 Q100,50 170,90" stroke="#FFFF00" stroke-width="8" fill="none"/>
+                        <path d="M35,95 Q100,55 165,95" stroke="#00FF00" stroke-width="8" fill="none"/>
+                        <path d="M40,100 Q100,60 160,100" stroke="#0000FF" stroke-width="8" fill="none"/>
+                        
+                        <!-- 云朵 -->
+                        <ellipse cx="50" cy="60" rx="15" ry="10" fill="white"/>
+                        <ellipse cx="150" cy="65" rx="18" ry="12" fill="white"/>
+                        
+                        <!-- 小鸟 -->
+                        <path d="M80,70 Q85,65 90,70" stroke="#000" stroke-width="2" fill="none"/>
+                        <path d="M120,75 Q125,70 130,75" stroke="#000" stroke-width="2" fill="none"/>
+                    </svg>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">作品：《雨后彩虹》</div>
+                </div>
+
+                <div class="student-card">
+                    <div class="student-avatar">🎭</div>
+                    <div class="student-name">小华</div>
+                    <div class="student-class">五年级三班</div>
+                    
+                    <svg class="student-work" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 海洋背景 -->
+                        <rect width="200" height="150" fill="#4682B4"/>
+                        
+                        <!-- 海浪 -->
+                        <path d="M0,120 Q50,110 100,120 Q150,110 200,120 L200,150 L0,150 Z" fill="#87CEEB"/>
+                        
+                        <!-- 鱼儿 -->
+                        <ellipse cx="60" cy="80" rx="15" ry="8" fill="#FF6347"/>
+                        <polygon points="45,80 35,75 35,85" fill="#FF6347"/>
+                        <circle cx="65" cy="78" r="2" fill="white"/>
+                        
+                        <ellipse cx="140" cy="100" rx="12" ry="6" fill="#FFD700"/>
+                        <polygon points="128,100 120,96 120,104" fill="#FFD700"/>
+                        <circle cx="144" cy="99" r="1.5" fill="white"/>
+                        
+                        <!-- 水草 -->
+                        <path d="M30,150 Q35,130 30,110 Q25,90 30,70" stroke="#228B22" stroke-width="3" fill="none"/>
+                        <path d="M170,150 Q175,135 170,120 Q165,105 170,90" stroke="#228B22" stroke-width="3" fill="none"/>
+                        
+                        <!-- 气泡 -->
+                        <circle cx="80" cy="60" r="3" fill="white" opacity="0.7"/>
+                        <circle cx="85" cy="45" r="2" fill="white" opacity="0.7"/>
+                        <circle cx="160" cy="70" r="4" fill="white" opacity="0.7"/>
+                    </svg>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">作品：《海底世界》</div>
+                </div>
+
+                <div class="student-card">
+                    <div class="student-avatar">🌸</div>
+                    <div class="student-name">小丽</div>
+                    <div class="student-class">二年级四班</div>
+                    
+                    <svg class="student-work" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <rect width="200" height="150" fill="#F0F8FF"/>
+                        
+                        <!-- 花园 -->
+                        <rect y="120" width="200" height="30" fill="#90EE90"/>
+                        
+                        <!-- 花朵们 -->
+                        <g>
+                            <!-- 向日葵 -->
+                            <circle cx="50" cy="100" r="12" fill="#FFD700"/>
+                            <circle cx="50" cy="100" r="6" fill="#8B4513"/>
+                            <rect x="47" y="100" width="6" height="20" fill="#228B22"/>
+                            
+                            <!-- 玫瑰 -->
+                            <circle cx="100" cy="95" r="8" fill="#FF69B4"/>
+                            <circle cx="100" cy="95" r="4" fill="#FF1493"/>
+                            <rect x="98" y="95" width="4" height="25" fill="#228B22"/>
+                            
+                            <!-- 郁金香 -->
+                            <ellipse cx="150" cy="90" rx="6" ry="10" fill="#FF6347"/>
+                            <rect x="148" y="90" width="4" height="30" fill="#228B22"/>
+                        </g>
+                        
+                        <!-- 蝴蝶 -->
+                        <ellipse cx="70" cy="60" rx="8" ry="4" fill="#FF69B4" opacity="0.8"/>
+                        <ellipse cx="78" cy="60" rx="8" ry="4" fill="#FF69B4" opacity="0.8"/>
+                        <line x1="74" y1="60" x2="74" y2="50" stroke="#000" stroke-width="1"/>
+                        
+                        <!-- 太阳 -->
+                        <circle cx="170" cy="30" r="15" fill="#FFD700"/>
+                    </svg>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">作品：《春天的花园》</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 互动学习区 -->
+        <div class="interactive-section">
+            <div class="interactive-title">🎯 艺术小测验</div>
+            <p style="margin-bottom: 20px; color: #666;">来测试一下你对这些名画的了解吧！</p>
+            
+            <div class="activity-buttons">
+                <button class="activity-btn" onclick="startQuiz()">🧠 开始测验</button>
+                <button class="activity-btn" onclick="showArtTips()">💡 艺术小知识</button>
+                <button class="activity-btn" onclick="showDrawingTips()">🎨 绘画小技巧</button>
+            </div>
+            
+            <div class="quiz-area" id="quizArea">
+                <div class="quiz-question" id="quizQuestion">准备好了吗？点击开始测验！</div>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <span id="quizScore">得分: 0</span> | 
+                    <span id="quizProgress">题目: 0/5</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>🌟 艺术学习小贴士</h3>
+            <p>
+                欣赏艺术作品时，可以仔细观察画中的颜色、线条和构图。<br>
+                试着想象画家当时的心情，感受作品想要表达的情感。<br>
+                多画多练，你也能创作出美丽的作品！<br>
+                记住：每个人都有自己独特的艺术天赋！🎨
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 测验题目数据
+        const quizData = [
+            {
+                question: "《千里江山图》是哪个朝代的作品？",
+                options: ["唐代", "北宋", "明代", "清代"],
+                correct: 1
+            },
+            {
+                question: "《清明上河图》主要描绘了什么内容？",
+                options: ["山水风景", "花鸟虫鱼", "城市生活", "神话故事"],
+                correct: 2
+            },
+            {
+                question: "《洛神赋图》的作者是谁？",
+                options: ["顾恺之", "张择端", "王希孟", "黄公望"],
+                correct: 0
+            },
+            {
+                question: "中国画主要使用什么工具？",
+                options: ["油画笔", "铅笔", "毛笔", "蜡笔"],
+                correct: 2
+            },
+            {
+                question: "山水画主要表现什么内容？",
+                options: ["人物肖像", "自然风景", "动物世界", "建筑物"],
+                correct: 1
+            }
+        ];
+
+        let currentQuiz = 0;
+        let quizScore = 0;
+        let quizStarted = false;
+
+        function startQuiz() {
+            currentQuiz = 0;
+            quizScore = 0;
+            quizStarted = true;
+            document.getElementById('quizArea').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuiz >= quizData.length) {
+                endQuiz();
+                return;
+            }
+
+            const question = quizData[currentQuiz];
+            document.getElementById('quizQuestion').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateQuizProgress();
+        }
+
+        function selectAnswer(selectedIndex) {
+            const question = quizData[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== question.correct) {
+                    option.classList.add('wrong');
+                }
+                option.onclick = null; // 禁用点击
+            });
+            
+            if (selectedIndex === question.correct) {
+                quizScore++;
+            }
+            
+            setTimeout(() => {
+                currentQuiz++;
+                showQuestion();
+            }, 2000);
+        }
+
+        function updateQuizProgress() {
+            document.getElementById('quizScore').textContent = `得分: ${quizScore}`;
+            document.getElementById('quizProgress').textContent = `题目: ${currentQuiz + 1}/${quizData.length}`;
+        }
+
+        function endQuiz() {
+            const percentage = Math.round((quizScore / quizData.length) * 100);
+            let message = '';
+            
+            if (percentage >= 80) {
+                message = '🏆 太棒了！你是艺术小专家！';
+            } else if (percentage >= 60) {
+                message = '👍 不错哦！继续加油学习！';
+            } else {
+                message = '💪 没关系，多看多学就会进步的！';
+            }
+            
+            document.getElementById('quizQuestion').innerHTML = `
+                <div style="font-size: 1.5em; margin-bottom: 15px;">${message}</div>
+                <div>你答对了 ${quizScore}/${quizData.length} 题，得分率: ${percentage}%</div>
+            `;
+            
+            document.getElementById('quizOptions').innerHTML = `
+                <button class="activity-btn" onclick="startQuiz()" style="margin: 10px;">🔄 再来一次</button>
+                <button class="activity-btn" onclick="hideQuiz()" style="margin: 10px;">✅ 完成测验</button>
+            `;
+        }
+
+        function hideQuiz() {
+            document.getElementById('quizArea').classList.remove('active');
+            quizStarted = false;
+        }
+
+        function showArtTips() {
+            const tips = [
+                "🎨 中国画有三大类：山水画、花鸟画、人物画",
+                "🖌️ 国画使用的颜料主要来自矿物和植物",
+                "📜 中国画讲究'意境'，不只是画得像",
+                "🌸 画家常常在作品上题诗，诗画结合",
+                "🏔️ 山水画体现了中国人对自然的热爱"
+            ];
+            
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            
+            document.getElementById('quizArea').classList.add('active');
+            document.getElementById('quizQuestion').textContent = '💡 艺术小知识';
+            document.getElementById('quizOptions').innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; font-size: 1.1em; text-align: center;">
+                    ${randomTip}
+                </div>
+                <button class="activity-btn" onclick="showArtTips()" style="margin: 10px;">🎲 换一个知识</button>
+                <button class="activity-btn" onclick="hideQuiz()" style="margin: 10px;">✅ 知道了</button>
+            `;
+            document.getElementById('quizScore').textContent = '';
+            document.getElementById('quizProgress').textContent = '';
+        }
+
+        function showDrawingTips() {
+            const tips = [
+                "✏️ 画画前先观察，看清楚物体的形状和颜色",
+                "🎯 从简单的几何图形开始练习",
+                "🌈 学会调色，了解颜色的搭配",
+                "📏 注意比例，画人物时头部约占身高的1/7",
+                "💡 多练习线条，直线、曲线、波浪线都很重要",
+                "🎨 不要怕画错，橡皮擦是你的好朋友",
+                "👀 多观察生活，身边处处都有美景"
+            ];
+            
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            
+            document.getElementById('quizArea').classList.add('active');
+            document.getElementById('quizQuestion').textContent = '🎨 绘画小技巧';
+            document.getElementById('quizOptions').innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; font-size: 1.1em; text-align: center;">
+                    ${randomTip}
+                </div>
+                <button class="activity-btn" onclick="showDrawingTips()" style="margin: 10px;">🎲 换一个技巧</button>
+                <button class="activity-btn" onclick="hideQuiz()" style="margin: 10px;">✅ 学会了</button>
+            `;
+            document.getElementById('quizScore').textContent = '';
+            document.getElementById('quizProgress').textContent = '';
+        }
+
+        // 页面加载动画
+        window.onload = function() {
+            // 为卡片添加进入动画
+            const cards = document.querySelectorAll('.artwork-card, .student-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        };
+    </script>
+</body>
+</html>
