@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文档写作助手 - 制造业AI解决方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #202124;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #dadce0;
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header h1 {
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .breadcrumb {
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+        
+        .main-panel {
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            margin: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #dadce0;
+        }
+        
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #202124;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .panel-content {
+            padding: 24px;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 73px;
+            width: 320px;
+            height: calc(100vh - 73px);
+            background: #fff;
+            border-right: 1px solid #dadce0;
+            overflow-y: auto;
+            z-index: 50;
+        }
+        
+        .main-content {
+            margin-left: 320px;
+            min-height: calc(100vh - 73px);
+            background: #f8f9fa;
+        }
+        
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #dadce0;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #fafbfc;
+        }
+        
+        .upload-area:hover {
+            border-color: #4285f4;
+            background: #f8f9ff;
+        }
+        
+        .upload-area.active {
+            border-color: #4285f4;
+            background: #e8f0fe;
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #4285f4;
+            margin-bottom: 12px;
+        }
+        
+        .document-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .doc-type-card {
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .doc-type-card:hover {
+            border-color: #4285f4;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        
+        .doc-type-card.selected {
+            background: #e8f0fe;
+            border-color: #4285f4;
+            color: #1a73e8;
+        }
+        
+        .file-explorer {
+            padding: 0;
+        }
+        
+        .folder-section {
+            border-bottom: 1px solid #e8eaed;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #202124;
+            transition: background-color 0.2s;
+            font-weight: 500;
+        }
+        
+        .folder-item:hover {
+            background-color: #f1f3f4;
+        }
+        
+        .folder-item.active {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+        }
+        
+        .folder-icon {
+            margin-right: 12px;
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .file-count {
+            margin-left: auto;
+            color: #5f6368;
+            font-size: 0.75rem;
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .folder-content {
+            display: none;
+            background: #fafbfc;
+        }
+        
+        .folder-content.expanded {
+            display: block;
+        }
+        
+        .file-item {
+            padding: 8px 16px 8px 44px;
+            font-size: 0.8125rem;
+            color: #5f6368;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .file-item:hover {
+            background-color: #f8f9ff;
+            color: #1a73e8;
+            border-left-color: #4285f4;
+        }
+        
+        .permission-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .permission-read {
+            background: #e8f5e8;
+            color: #137333;
+        }
+        
+        .permission-write {
+            background: #fef7e0;
+            color: #b06000;
+        }
+        
+        .permission-admin {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+        
+        .permission-restricted {
+            background: #f1f3f4;
+            color: #5f6368;
+        }
+        
+        .doc-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .processing-flow {
+            margin: 40px 0;
+        }
+        
+        .flow-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .flow-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #4285f4;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin: 0 auto 12px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            transition: all 0.2s ease;
+        }
+        
+        .step-circle:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+        
+        .step-arrow {
+            position: absolute;
+            right: -30px;
+            top: 35px;
+            font-size: 1.5rem;
+            color: #cbd5e0;
+        }
+        
+        .flow-step:last-child .step-arrow {
+            display: none;
+        }
+        
+        .demo-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            padding: 8px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background: #fff;
+            color: #1a73e8;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .demo-btn:hover {
+            background: #f8f9ff;
+            border-color: #4285f4;
+        }
+        
+        .demo-btn:active {
+            background: #e8f0fe;
+        }
+        
+        .demo-output {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            min-height: 300px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border: 1px solid #dadce0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        
+        .stat-card .stat-number {
+            color: #1a73e8;
+        }
+        
+        .permission-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        
+        .permission-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .permission-stat-card {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            gap: 12px;
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+        
+        .stat-info .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a73e8;
+            margin: 0;
+        }
+        
+        .stat-info .stat-label {
+            font-size: 0.875rem;
+            color: #5f6368;
+            margin: 0;
+        }
+        
+        .department-matrix h4,
+        .security-features h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
+        }
+        
+        .matrix-grid {
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .matrix-header,
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 120px repeat(5, 1fr);
+        }
+        
+        .matrix-header {
+            background: #f8f9fa;
+            font-weight: 500;
+        }
+        
+        .matrix-cell {
+            padding: 12px 8px;
+            border-right: 1px solid #dadce0;
+            border-bottom: 1px solid #dadce0;
+            font-size: 0.8125rem;
+            text-align: center;
+        }
+        
+        .matrix-cell:last-child {
+            border-right: none;
+        }
+        
+        .matrix-row:last-child .matrix-cell {
+            border-bottom: none;
+        }
+        
+        .dept-name {
+            font-weight: 500;
+            text-align: left !important;
+            background: #fafbfc;
+        }
+        
+        .perm-full {
+            background: #e8f5e8;
+            color: #137333;
+            font-weight: 500;
+        }
+        
+        .perm-edit {
+            background: #fef7e0;
+            color: #b06000;
+            font-weight: 500;
+        }
+        
+        .perm-read {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+        
+        .perm-none {
+            background: #f1f3f4;
+            color: #5f6368;
+        }
+        
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        
+        .security-item {
+            padding: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .security-item:hover {
+            border-color: #4285f4;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        
+        .security-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .security-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #202124;
+        }
+        
+        .security-desc {
+            font-size: 0.8125rem;
+            color: #5f6368;
+            line-height: 1.4;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-container {
+                flex-direction: column;
+            }
+            
+            .step-arrow {
+                display: none;
+            }
+            
+            .demo-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>📝 智能文档写作助手</h1>
+                <div class="breadcrumb">控制台 > AI工具 > 文档生成</div>
+            </div>
+            </div>
+            </div>
+        </div>
+        
+        <!-- AI处理流程 -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">🤖 Dify AI处理流程</h2>
+            </div>
+            <div class="panel-content">
+            <div class="processing-flow">
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div class="step-circle">📄</div>
+                        <h4>文档解析</h4>
+                        <p>智能识别文档格式和内容结构</p>
+                        <div class="step-arrow">→</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-circle">🧠</div>
+                        <h4>内容理解</h4>
+                        <p>深度分析文档语义和关键信息</p>
+                        <div class="step-arrow">→</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-circle">✨</div>
+                        <h4>智能生成</h4>
+                        <p>基于模板和需求生成目标文档</p>
+                        <div class="step-arrow">→</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-circle">🎯</div>
+                        <h4>优化输出</h4>
+                        <p>格式调整和内容精炼优化</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div style="padding: 16px; border-bottom: 1px solid #dadce0;">
+                <h3 style="margin: 0; font-size: 0.875rem; font-weight: 500; color: #5f6368;">资料库管理</h3>
+            </div>
+            
+            <div class="file-explorer">
+                <div class="folder-section">
+                    <div class="folder-item" onclick="toggleFolder('recent')">
+                        <span class="folder-icon">📁</span>
+                        <span>最近上传</span>
+                        <span class="file-count">12</span>
+                    </div>
+                    <div class="folder-content" id="recent-files">
+                        <div class="file-item">📄 生产流程优化报告.pdf <span class="permission-badge permission-read">只读</span></div>
+                        <div class="file-item">📊 Q3季度分析.xlsx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📝 安全操作手册.docx <span class="permission-badge permission-admin">管理</span></div>
+                    </div>
+                </div>
+                
+                <div class="folder-section">
+                    <div class="folder-item" onclick="toggleFolder('production')">
+                        <span class="folder-icon">📁</span>
+                        <span>生产文档</span>
+                        <span class="file-count">28</span>
+                    </div>
+                    <div class="folder-content" id="production-files">
+                        <div class="file-item">📄 工艺流程标准.pdf <span class="permission-badge permission-read">只读</span></div>
+                        <div class="file-item">📋 质量检测规范.docx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📊 设备维护记录.xlsx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📝 操作指导书.pdf <span class="permission-badge permission-restricted">受限</span></div>
+                    </div>
+                </div>
+                
+                <div class="folder-section">
+                    <div class="folder-item" onclick="toggleFolder('management')">
+                        <span class="folder-icon">📁</span>
+                        <span>管理制度</span>
+                        <span class="file-count">15</span>
+                    </div>
+                    <div class="folder-content" id="management-files">
+                        <div class="file-item">📜 员工手册.pdf <span class="permission-badge permission-read">只读</span></div>
+                        <div class="file-item">📋 安全管理制度.docx <span class="permission-badge permission-admin">管理</span></div>
+                        <div class="file-item">📊 绩效考核标准.xlsx <span class="permission-badge permission-restricted">受限</span></div>
+                    </div>
+                </div>
+                
+                <div class="folder-section">
+                    <div class="folder-item" onclick="toggleFolder('training')">
+                        <span class="folder-icon">📁</span>
+                        <span>培训资料</span>
+                        <span class="file-count">22</span>
+                    </div>
+                    <div class="folder-content" id="training-files">
+                        <div class="file-item">🎓 新员工培训.pptx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📚 技能提升课程.pdf <span class="permission-badge permission-read">只读</span></div>
+                        <div class="file-item">🛡️ 安全教育材料.docx <span class="permission-badge permission-admin">管理</span></div>
+                    </div>
+                </div>
+                
+                <div class="folder-section">
+                    <div class="folder-item" onclick="toggleFolder('templates')">
+                        <span class="folder-icon">📁</span>
+                        <span>文档模板</span>
+                        <span class="file-count">35</span>
+                    </div>
+                    <div class="folder-content" id="templates-files">
+                        <div class="file-item">📝 演讲稿模板.docx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📋 报告模板.pptx <span class="permission-badge permission-write">编辑</span></div>
+                        <div class="file-item">📊 分析模板.xlsx <span class="permission-badge permission-read">只读</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content">
+        
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">🚀 AI驱动的文档创作平台</h2>
+            </div>
+            <div class="panel-content">
+            <!-- 上传区域 -->
+            <div class="upload-section">
+                <div class="upload-area" onclick="triggerFileUpload('source')">
+                    <div class="upload-icon">📁</div>
+                    <h3>上传源材料</h3>
+                    <p>支持PDF、Word、Excel、PPT等格式</p>
+                    <p style="color: #667eea; margin-top: 10px;">点击或拖拽文件到此处</p>
+                    <input type="file" id="sourceFiles" multiple style="display: none;" onchange="handleFileUpload('source', this)">
+                </div>
+                
+                <div class="upload-area" onclick="triggerFileUpload('reference')">
+                    <div class="upload-icon">📚</div>
+                    <h3>参考模板</h3>
+                    <p>上传现有文档模板作为参考</p>
+                    <p style="color: #667eea; margin-top: 10px;">可选：提供写作风格参考</p>
+                    <input type="file" id="referenceFiles" multiple style="display: none;" onchange="handleFileUpload('reference', this)">
+                </div>
+            </div>
+            
+            <!-- 文档类型选择 -->
+            <h3 style="text-align: center; margin-bottom: 25px; color: #2d3748;">📋 选择文档类型</h3>
+            <div class="document-types">
+                <div class="doc-type-card" onclick="selectDocType('speech')">
+                    <div class="doc-icon">🎤</div>
+                    <h4>领导演讲稿</h4>
+                    <p>正式场合演讲、年会致辞、产品发布会等</p>
+                </div>
+                
+                <div class="doc-type-card" onclick="selectDocType('regulation')">
+                    <div class="doc-icon">📜</div>
+                    <h4>内部规章制度</h4>
+                    <p>管理制度、操作规范、安全条例等</p>
+                </div>
+                
+                <div class="doc-type-card" onclick="selectDocType('production')">
+                    <div class="doc-icon">🏭</div>
+                    <h4>生产文档</h4>
+                    <p>工艺流程、操作手册、质量标准等</p>
+                </div>
+                
+                <div class="doc-type-card" onclick="selectDocType('manual')">
+                    <div class="doc-icon">📖</div>
+                    <h4>使用说明书</h4>
+                    <p>产品手册、安装指南、维护说明等</p>
+                </div>
+                
+                <div class="doc-type-card" onclick="selectDocType('report')">
+                    <div class="doc-icon">📊</div>
+                    <h4>分析报告</h4>
+                    <p>市场分析、技术报告、项目总结等</p>
+                </div>
+                
+                <div class="doc-type-card" onclick="selectDocType('training')">
+                    <div class="doc-icon">🎓</div>
+                    <h4>培训材料</h4>
+                    <p>员工培训、技能提升、安全教育等</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 演示区域 -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">🎯 实时演示</h2>
+            </div>
+            <div class="panel-content">
+            <div class="demo-section">
+                <div class="demo-controls">
+                    <button class="demo-btn" onclick="generateDemo('speech')">🎤 生成演讲稿</button>
+                    <button class="demo-btn" onclick="generateDemo('regulation')">📜 生成规章制度</button>
+                    <button class="demo-btn" onclick="generateDemo('production')">🏭 生成生产文档</button>
+                    <button class="demo-btn" onclick="generateDemo('manual')">📖 生成使用说明</button>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>AI正在生成文档，请稍候...</p>
+                </div>
+                
+                <div class="demo-output" id="demoOutput">
+点击上方按钮查看AI生成的文档示例...
+                </div>
+            </div>
+        </div>
+        
+        <!-- 功能特色 -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">⭐ 核心功能特色</h2>
+            </div>
+            <div class="panel-content">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h4>精准理解需求</h4>
+                    <p>深度分析用户上传的源材料，准确把握文档写作意图和要求</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h4>多样化模板</h4>
+                    <p>内置丰富的文档模板库，覆盖制造业各种场景的写作需求</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h4>智能优化</h4>
+                    <p>自动调整语言风格、逻辑结构，确保文档专业性和可读性</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h4>高效生成</h4>
+                    <p>秒级响应，快速生成高质量文档，大幅提升工作效率</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h4>数据安全</h4>
+                    <p>企业级安全保障，文档内容加密处理，保护商业机密</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h4>格式美化</h4>
+                    <p>自动排版和格式优化，生成专业美观的文档输出</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <!-- 权限管控系统 -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">🔐 部门权限管控系统</h2>
+            </div>
+            <div class="panel-content">
+                <div class="permission-overview">
+                    <div class="permission-stats">
+                        <div class="permission-stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <div class="stat-number">100</div>
+                                <div class="stat-label">企业员工</div>
+                            </div>
+                        </div>
+                        <div class="permission-stat-card">
+                            <div class="stat-icon">🏢</div>
+                            <div class="stat-info">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">业务部门</div>
+                            </div>
+                        </div>
+                        <div class="permission-stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-number">5</div>
+                                <div class="stat-label">权限等级</div>
+                            </div>
+                        </div>
+                        <div class="permission-stat-card">
+                            <div class="stat-icon">🔒</div>
+                            <div class="stat-info">
+                                <div class="stat-number">99.9%</div>
+                                <div class="stat-label">安全等级</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="department-matrix">
+                        <h4>部门权限矩阵</h4>
+                        <div class="matrix-grid">
+                            <div class="matrix-header">
+                                <div class="matrix-cell">部门</div>
+                                <div class="matrix-cell">生产文档</div>
+                                <div class="matrix-cell">质量标准</div>
+                                <div class="matrix-cell">管理制度</div>
+                                <div class="matrix-cell">财务数据</div>
+                                <div class="matrix-cell">人事档案</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">生产部 (25人)</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">质量部 (15人)</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">研发部 (20人)</div>
+                                <div class="matrix-cell perm-edit">✏ 编辑</div>
+                                <div class="matrix-cell perm-edit">✏ 编辑</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">管理层 (8人)</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">人事部 (12人)</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-edit">✏ 编辑</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">财务部 (10人)</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">IT部 (6人)</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-none">✗ 无权限</div>
+                                <div class="matrix-cell perm-edit">✏ 编辑</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell dept-name">安全部 (4人)</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-full">✓ 完全</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                                <div class="matrix-cell perm-read">👁 只读</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="security-features">
+                        <h4>安全保障措施</h4>
+                        <div class="security-grid">
+                            <div class="security-item">
+                                <div class="security-icon">🔐</div>
+                                <div class="security-title">多因子认证</div>
+                                <div class="security-desc">支持密码+短信/邮箱+生物识别</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">📝</div>
+                                <div class="security-title">操作审计</div>
+                                <div class="security-desc">记录所有文档访问和修改操作</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">⏰</div>
+                                <div class="security-title">时间限制</div>
+                                <div class="security-desc">设置文档访问时间窗口</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">🌐</div>
+                                <div class="security-title">IP白名单</div>
+                                <div class="security-desc">限制特定IP地址访问</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">🔄</div>
+                                <div class="security-title">版本控制</div>
+                                <div class="security-desc">自动备份和版本追踪</div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-icon">🚨</div>
+                                <div class="security-title">异常监控</div>
+                                <div class="security-desc">实时检测异常访问行为</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 性能统计 -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">📈 性能表现</h2>
+            </div>
+            <div class="panel-content">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="accuracy">96.8%</div>
+                    <div>内容准确率</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="speed">3.2s</div>
+                    <div>平均生成时间</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="formats">20+</div>
+                    <div>支持文档格式</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="templates">150+</div>
+                    <div>内置模板数量</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="users">5000+</div>
+                    <div>企业用户</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="satisfaction">98.5%</div>
+                    <div>用户满意度</div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedDocType = '';
+        let uploadedFiles = {
+            source: [],
+            reference: []
+        };
+        
+        function triggerFileUpload(type) {
+            document.getElementById(type + 'Files').click();
+        }
+        
+        function handleFileUpload(type, input) {
+            const files = Array.from(input.files);
+            uploadedFiles[type] = files;
+            
+            const uploadArea = input.parentElement;
+            if (files.length > 0) {
+                uploadArea.classList.add('active');
+                const fileNames = files.map(f => f.name).join(', ');
+                uploadArea.querySelector('p:last-child').textContent = `已选择: ${fileNames}`;
+            }
+        }
+        
+        function selectDocType(type) {
+            // 移除之前的选择
+            document.querySelectorAll('.doc-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // 选择当前类型
+            event.target.closest('.doc-type-card').classList.add('selected');
+            selectedDocType = type;
+        }
+        
+        function toggleFolder(folderId) {
+            const folderContent = document.getElementById(folderId + '-files');
+            const folderItem = event.target.closest('.folder-item');
+            
+            if (folderContent.classList.contains('expanded')) {
+                folderContent.classList.remove('expanded');
+                folderItem.querySelector('.folder-icon').textContent = '📁';
+            } else {
+                // 关闭其他文件夹
+                document.querySelectorAll('.folder-content').forEach(content => {
+                    content.classList.remove('expanded');
+                });
+                document.querySelectorAll('.folder-icon').forEach(icon => {
+                    icon.textContent = '📁';
+                });
+                
+                // 打开当前文件夹
+                folderContent.classList.add('expanded');
+                folderItem.querySelector('.folder-icon').textContent = '📂';
+            }
+        }
+        
+        function generateDemo(type) {
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('demoOutput');
+            
+            loading.style.display = 'block';
+            output.textContent = '';
+            
+            // 模拟AI生成过程
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                const demoContent = getDemoContent(type);
+                typeWriter(output, demoContent, 50);
+            }, 2000);
+        }
+        
+        function getDemoContent(type) {
+            const contents = {
+                speech: `【AI生成演讲稿示例】
+
+尊敬的各位同事、合作伙伴：
+
+大家好！今天我们齐聚一堂，共同见证我们公司在智能制造领域的重要里程碑。
+
+在过去的一年里，我们始终坚持创新驱动发展战略，通过引入先进的AI技术和自动化设备，我们的生产效率提升了35%，产品质量达到了行业领先水平。
+
+展望未来，我们将继续深化数字化转型，构建更加智能、高效的生产体系。我相信，在全体员工的共同努力下，我们一定能够实现更大的突破。
+
+谢谢大家！`,
+                
+                regulation: `【AI生成规章制度示例】
+
+生产车间安全操作规范
+
+第一条 总则
+为确保生产车间安全有序运行，保障员工人身安全，特制定本规范。
+
+第二条 适用范围
+本规范适用于所有进入生产车间的人员。
+
+第三条 安全要求
+1. 进入车间必须佩戴安全帽、防护眼镜等个人防护用品
+2. 严禁在车间内吸烟、饮食
+3. 操作设备前必须检查设备状态
+4. 发现安全隐患应立即报告
+
+第四条 违规处理
+违反本规范的，将根据情节轻重给予相应处罚。`,
+                
+                production: `【AI生成生产文档示例】
+
+产品装配工艺流程
+
+工艺编号：PA-2024-001
+产品型号：XM-500智能控制器
+
+一、装配准备
+1. 检查零部件清单和质量状态
+2. 准备装配工具和测试设备
+3. 确认工作环境符合要求
+
+二、装配步骤
+步骤1：安装主控板
+- 将主控板放置在指定位置
+- 使用M3螺丝固定，扭矩2.5±0.2N·m
+
+步骤2：连接线缆
+- 按照接线图连接各路线缆
+- 检查连接牢固性
+
+三、质量检验
+1. 外观检查：无划伤、变形
+2. 功能测试：按测试程序执行
+3. 记录检验结果`,
+                
+                manual: `【AI生成使用说明书示例】
+
+XM-500智能控制器使用说明书
+
+一、产品概述
+XM-500智能控制器是一款高性能的工业自动化控制设备，适用于各种生产线的自动化控制。
+
+二、技术参数
+- 工作电压：AC 220V ±10%
+- 工作温度：-10℃~+60℃
+- 控制精度：±0.1%
+- 通信接口：RS485、以太网
+
+三、安装说明
+1. 选择通风良好、无腐蚀性气体的环境
+2. 确保安装面平整、牢固
+3. 预留足够的散热空间
+
+四、操作指南
+1. 开机：按下电源开关，指示灯亮起
+2. 参数设置：通过触摸屏进行参数配置
+3. 运行监控：实时查看运行状态
+
+五、故障排除
+如遇故障，请参考故障代码表进行排查，或联系技术支持。`
+            };
+            
+            return contents[type] || '暂无此类型的演示内容';
+        }
+        
+        function typeWriter(element, text, speed) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // 数字动画效果
+        function animateNumbers() {
+            const stats = {
+                accuracy: 96.8,
+                speed: 3.2,
+                formats: 20,
+                templates: 150,
+                users: 5000,
+                satisfaction: 98.5
+            };
+            
+            Object.keys(stats).forEach(key => {
+                const element = document.getElementById(key);
+                const target = stats[key];
+                let current = 0;
+                const increment = target / 100;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    if (key === 'accuracy' || key === 'satisfaction') {
+                        element.textContent = current.toFixed(1) + '%';
+                    } else if (key === 'speed') {
+                        element.textContent = current.toFixed(1) + 's';
+                    } else if (key === 'formats' || key === 'templates') {
+                        element.textContent = Math.floor(current) + '+';
+                    } else {
+                        element.textContent = Math.floor(current) + '+';
+                    }
+                }, 50);
+            });
+        }
+        
+        // 页面加载完成后启动动画
+        window.addEventListener('load', () => {
+            setTimeout(animateNumbers, 1000);
+        });
+        
+        // 添加拖拽上传功能
+        document.querySelectorAll('.upload-area').forEach(area => {
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.style.borderColor = '#667eea';
+                area.style.background = '#f0f4ff';
+            });
+            
+            area.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                area.style.borderColor = '#cbd5e0';
+                area.style.background = '#f8f9fa';
+            });
+            
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.style.borderColor = '#cbd5e0';
+                area.style.background = '#f8f9fa';
+                
+                const files = Array.from(e.dataTransfer.files);
+                const type = area.querySelector('input').id.replace('Files', '');
+                uploadedFiles[type] = files;
+                
+                if (files.length > 0) {
+                    area.classList.add('active');
+                    const fileNames = files.map(f => f.name).join(', ');
+                    area.querySelector('p:last-child').textContent = `已选择: ${fileNames}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

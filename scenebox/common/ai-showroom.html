@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI样板间 - </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+            padding: 32px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #5f6368;
+        }
+
+        .showroom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .showroom-card {
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .showroom-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            width: 16px;
+            height: 16px;
+            background: #34a853;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 500;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a73e8;
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaed;
+        }
+
+        .industry-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #e8eaed;
+            border-radius: 20px;
+            background: white;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+
+        .filter-btn:hover {
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+
+        .filter-btn.active:hover {
+            color: white;
+        }
+
+        /* 不同行业的渐变色 */
+        .card-header.finance {
+            background: linear-gradient(135deg, #4285f4, #1a73e8);
+        }
+
+        .card-header.healthcare {
+            background: linear-gradient(135deg, #34a853, #137333);
+        }
+
+        .card-header.education {
+            background: linear-gradient(135deg, #fbbc04, #f9ab00);
+        }
+
+        .card-header.retail {
+            background: linear-gradient(135deg, #ea4335, #d33b2c);
+        }
+
+        .card-header.manufacturing {
+            background: linear-gradient(135deg, #9aa0a6, #5f6368);
+        }
+
+        .card-header.government {
+            background: linear-gradient(135deg, #673ab7, #512da8);
+        }
+
+        .demo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #5f6368;
+        }
+
+        .demo-video {
+            width: 100%;
+            height: 300px;
+            background: #f1f3f4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: #5f6368;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">AI样板间</h1>
+        <p class="page-subtitle">探索在各行业的成功应用案例和解决方案</p>
+    </div>
+
+    <div class="industry-filter">
+        <button class="filter-btn active" onclick="filterIndustry('all')">全部行业</button>
+        <button class="filter-btn" onclick="filterIndustry('finance')">金融服务</button>
+        <button class="filter-btn" onclick="filterIndustry('healthcare')">医疗健康</button>
+        <button class="filter-btn" onclick="filterIndustry('education')">教育培训</button>
+        <button class="filter-btn" onclick="filterIndustry('retail')">零售电商</button>
+        <button class="filter-btn" onclick="filterIndustry('manufacturing')">智能制造</button>
+        <button class="filter-btn" onclick="filterIndustry('government')">政务服务</button>
+    </div>
+
+    <div class="showroom-grid" id="showroom-grid">
+        <!-- 样板间卡片将通过JavaScript动态生成 -->
+    </div>
+
+    <!-- 演示模态框 -->
+    <div class="demo-modal" id="demo-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">演示详情</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="demo-video" id="demo-video">
+                🎬 演示视频播放区域
+            </div>
+            <div id="modal-content">
+                <!-- 模态框内容将动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const showrooms = [
+            {
+                id: 'smart-banking',
+                industry: 'finance',
+                title: '智慧银行解决方案',
+                subtitle: '全流程数字化银行服务',
+                features: [
+                    '智能客服机器人',
+                    '风险评估与反欺诈',
+                    '个性化理财推荐',
+                    'OCR票据识别',
+                    '语音银行服务'
+                ],
+                stats: [
+                    { number: '95%', label: '客户满意度' },
+                    { number: '60%', label: '成本降低' },
+                    { number: '24/7', label: '服务时间' }
+                ],
+                description: '基于构建的智慧银行解决方案，通过AI技术全面提升银行服务效率和客户体验。'
+            },
+            {
+                id: 'medical-diagnosis',
+                industry: 'healthcare',
+                title: '智能医疗诊断系统',
+                subtitle: 'AI辅助精准医疗',
+                features: [
+                    'CT/MRI影像分析',
+                    '病理切片识别',
+                    '药物相互作用检测',
+                    '健康风险评估',
+                    '远程诊疗支持'
+                ],
+                stats: [
+                    { number: '98.5%', label: '诊断准确率' },
+                    { number: '70%', label: '效率提升' },
+                    { number: '50+', label: '合作医院' }
+                ],
+                description: '利用深度学习技术，为医疗机构提供高精度的AI辅助诊断服务，显著提升诊疗质量。'
+            },
+            {
+                id: 'smart-education',
+                industry: 'education',
+                title: '智慧教育平台',
+                subtitle: '个性化学习体验',
+                features: [
+                    '自适应学习系统',
+                    '智能作业批改',
+                    '学习行为分析',
+                    '虚拟教学助手',
+                    '知识图谱构建'
+                ],
+                stats: [
+                    { number: '40%', label: '学习效率提升' },
+                    { number: '85%', label: '学生参与度' },
+                    { number: '1000+', label: '合作学校' }
+                ],
+                description: '通过AI技术实现个性化教学，为每个学生提供定制化的学习路径和内容推荐。'
+            },
+            {
+                id: 'smart-retail',
+                industry: 'retail',
+                title: '智能零售解决方案',
+                subtitle: '全渠道购物体验',
+                features: [
+                    '商品推荐引擎',
+                    '库存智能管理',
+                    '价格动态优化',
+                    '客流分析预测',
+                    '无人收银系统'
+                ],
+                stats: [
+                    { number: '35%', label: '销售额增长' },
+                    { number: '25%', label: '库存成本降低' },
+                    { number: '90%', label: '客户复购率' }
+                ],
+                description: '打造智能化零售生态，通过数据驱动的决策支持，全面提升零售运营效率。'
+            },
+            {
+                id: 'smart-manufacturing',
+                industry: 'manufacturing',
+                title: '智能制造系统',
+                subtitle: '工业4.0解决方案',
+                features: [
+                    '设备预测性维护',
+                    '质量检测自动化',
+                    '生产计划优化',
+                    '供应链智能管理',
+                    '能耗优化控制'
+                ],
+                stats: [
+                    { number: '30%', label: '生产效率提升' },
+                    { number: '50%', label: '故障率降低' },
+                    { number: '20%', label: '能耗节约' }
+                ],
+                description: '基于工业互联网和AI技术，实现制造过程的智能化升级和数字化转型。'
+            },
+            {
+                id: 'smart-government',
+                industry: 'government',
+                title: '智慧政务服务',
+                subtitle: '数字政府建设',
+                features: [
+                    '智能政务大厅',
+                    '文档自动处理',
+                    '政策智能问答',
+                    '城市治理分析',
+                    '公共安全监控'
+                ],
+                stats: [
+                    { number: '80%', label: '办事效率提升' },
+                    { number: '95%', label: '群众满意度' },
+                    { number: '100+', label: '服务事项' }
+                ],
+                description: '构建智慧政务服务体系，提升政府服务效率，优化民众办事体验。'
+            }
+        ];
+
+        function renderShowrooms(filteredShowrooms = showrooms) {
+            const container = document.getElementById('showroom-grid');
+            container.innerHTML = '';
+
+            filteredShowrooms.forEach(showroom => {
+                const featuresHtml = showroom.features.map(feature => `
+                    <li>
+                        <span class="feature-icon">✓</span>
+                        ${feature}
+                    </li>
+                `).join('');
+
+                const statsHtml = showroom.stats.map(stat => `
+                    <div class="stat-item">
+                        <div class="stat-number">${stat.number}</div>
+                        <div class="stat-label">${stat.label}</div>
+                    </div>
+                `).join('');
+
+                const cardElement = document.createElement('div');
+                cardElement.className = 'showroom-card';
+                cardElement.innerHTML = `
+                    <div class="card-header ${showroom.industry}">
+                        <h3 class="card-title">${showroom.title}</h3>
+                        <p class="card-subtitle">${showroom.subtitle}</p>
+                    </div>
+                    <div class="card-content">
+                        <ul class="feature-list">
+                            ${featuresHtml}
+                        </ul>
+                        <div class="stats-row">
+                            ${statsHtml}
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="openDemo('${showroom.id}')">
+                                🎬 观看演示
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadCase('${showroom.id}')">
+                                📄 案例详情
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(cardElement);
+            });
+        }
+
+        function filterIndustry(industry) {
+            // 更新按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 过滤显示
+            const filtered = industry === 'all' ? showrooms : showrooms.filter(s => s.industry === industry);
+            renderShowrooms(filtered);
+        }
+
+        function openDemo(showroomId) {
+            const showroom = showrooms.find(s => s.id === showroomId);
+            if (!showroom) return;
+
+            document.getElementById('modal-title').textContent = showroom.title;
+            document.getElementById('modal-content').innerHTML = `
+                <p style="margin-bottom: 16px; color: #5f6368;">${showroom.description}</p>
+                <h4 style="margin-bottom: 12px; color: #202124;">核心功能演示</h4>
+                <ul style="margin-bottom: 20px; padding-left: 20px; color: #5f6368;">
+                    ${showroom.features.map(f => `<li style="margin-bottom: 8px;">${f}</li>`).join('')}
+                </ul>
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 8px; color: #202124;">应用效果</h4>
+                    <div style="display: flex; gap: 24px;">
+                        ${showroom.stats.map(s => `
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: 500; color: #4285f4; margin-bottom: 4px;">${s.number}</div>
+                                <div style="font-size: 12px; color: #5f6368;">${s.label}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="startTrial('${showroomId}')">
+                    🚀 申请试用
+                </button>
+            `;
+
+            document.getElementById('demo-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('demo-modal').style.display = 'none';
+        }
+
+        function downloadCase(showroomId) {
+            const showroom = showrooms.find(s => s.id === showroomId);
+            alert(`正在下载《${showroom.title}》详细案例文档...\n\n文档包含：\n- 解决方案架构\n- 实施方案\n- 技术规格\n- ROI分析报告`);
+        }
+
+        function startTrial(showroomId) {
+            const showroom = showrooms.find(s => s.id === showroomId);
+            alert(`感谢您对《${showroom.title}》的关注！\n\n我们的专业团队将在24小时内与您联系，为您提供：\n- 免费试用账号\n- 专业技术支持\n- 定制化解决方案\n- 实施指导服务`);
+            closeModal();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderShowrooms();
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('demo-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

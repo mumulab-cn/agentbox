@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市场竞品智能分析大屏 - 企业决策支持系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', 'Microsoft YaHei', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: #ffffff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e8eaed;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #1a73e8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            background: #1a73e8;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .header-time {
+            font-size: 14px;
+            color: #5f6368;
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 16px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 24px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .panel:hover {
+            box-shadow: 0 4px 12px rgba(60, 64, 67, 0.15);
+            border-color: #dadce0;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #e8eaed;
+            padding-bottom: 12px;
+        }
+
+        .panel-icon {
+            width: 20px;
+            height: 20px;
+            background: #1a73e8;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        /* 市场趋势面板 */
+        .market-trends {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .trend-chart {
+            height: 280px;
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #trendChart {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .trend-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .indicator {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e8eaed;
+            transition: all 0.2s ease;
+        }
+
+        .indicator:hover {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(60, 64, 67, 0.1);
+        }
+
+        .indicator-value {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1a73e8;
+            margin-bottom: 4px;
+        }
+
+        .indicator-label {
+            font-size: 12px;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+
+        .indicator-change {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .positive { 
+            color: #137333;
+            background: #e6f4ea;
+        }
+        .negative { 
+            color: #d93025;
+            background: #fce8e6;
+        }
+
+        /* 竞品分析面板 */
+        .competitor-analysis {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .competitor-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .competitor-tab {
+            padding: 8px 16px;
+            border: 1px solid #e8eaed;
+            border-radius: 20px;
+            background: #f8f9fa;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .competitor-tab.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .competitor-tab:hover:not(.active) {
+            background: #e8f0fe;
+            border-color: #1a73e8;
+        }
+
+        .competitor-detail {
+            display: none;
+        }
+
+        .competitor-detail.active {
+            display: block;
+        }
+
+        .competitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .competitor-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .threat-level {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .threat-high { background: #fce8e6; color: #d93025; }
+        .threat-medium { background: #fef7e0; color: #f9ab00; }
+        .threat-low { background: #e6f4ea; color: #137333; }
+
+        .competitor-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e8eaed;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a73e8;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #5f6368;
+        }
+
+        .competitor-activities {
+            margin-top: 16px;
+        }
+
+        .activity-section {
+            margin-bottom: 12px;
+        }
+
+        .activity-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: #5f6368;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .activity-item {
+            font-size: 11px;
+            color: #202124;
+            padding: 6px 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #1a73e8;
+        }
+
+        .activity-date {
+            color: #5f6368;
+            font-size: 10px;
+        }
+
+        /* AI决策建议面板 */
+        .ai-recommendations {
+            grid-column: 1 / -1;
+            grid-row: 2;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .recommendation-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e8eaed;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-category {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin: 0;
+        }
+
+        .recommendation-priority {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .priority-high { background: #fce8e6; color: #d93025; }
+        .priority-medium { background: #fef7e0; color: #f9ab00; }
+        .priority-low { background: #e6f4ea; color: #137333; }
+
+        .recommendation-content {
+            font-size: 12px;
+            color: #5f6368;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-data {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .data-title {
+            font-size: 10px;
+            font-weight: 500;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+
+        .data-content {
+            font-size: 11px;
+            color: #202124;
+        }
+
+        .recommendation-impact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .impact-label {
+            font-size: 10px;
+            color: #5f6368;
+        }
+
+        .impact-value {
+            font-size: 11px;
+            font-weight: 500;
+            color: #137333;
+        }
+
+        /* 实时数据流面板 */
+        .real-time-data {
+            grid-column: 1 / -1;
+            grid-row: 3;
+        }
+
+        .data-stream {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .data-widget {
+            background: rgba(15, 20, 25, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            text-align: center;
+        }
+
+        .widget-title {
+            font-size: 14px;
+            color: #8fa8b8;
+            margin-bottom: 10px;
+        }
+
+        .widget-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .widget-trend {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .trend-arrow {
+            font-size: 14px;
+        }
+
+        /* 动画效果 */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .market-trends,
+            .competitor-analysis {
+                grid-column: 1;
+            }
+
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-stream {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 15px 20px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .dashboard-container {
+                padding: 20px;
+            }
+
+            .competitor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-stream {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="header-title">市场竞品智能分析大屏</h1>
+            <div class="header-time" id="currentTime"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- 市场趋势分析 -->
+        <div class="panel market-trends">
+            <div class="panel-title">
+                <div class="panel-icon">📈</div>
+                市场趋势分析
+            </div>
+            <div class="trend-chart">
+                <div class="trend-line"></div>
+                <canvas id="trendChart" width="100%" height="200"></canvas>
+            </div>
+            <div class="trend-indicators">
+                <div class="indicator">
+                    <div class="indicator-value">¥847.2万</div>
+                    <div class="indicator-label">市场规模</div>
+                    <div class="indicator-change positive">↗ +12.3%</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value">23.8%</div>
+                    <div class="indicator-label">增长率</div>
+                    <div class="indicator-change positive">↗ +2.1%</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value">15.2%</div>
+                    <div class="indicator-label">市场份额</div>
+                    <div class="indicator-change negative">↘ -0.8%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 竞品分析 -->
+        <div class="panel competitor-analysis">
+            <div class="panel-title">
+                <div class="panel-icon">🎯</div>
+                竞品动态监控
+            </div>
+            <div class="competitor-selector">
+                <div class="competitor-tab active" onclick="switchCompetitor('huawei')">华为云</div>
+                <div class="competitor-tab" onclick="switchCompetitor('alibaba')">阿里云</div>
+                <div class="competitor-tab" onclick="switchCompetitor('tencent')">腾讯云</div>
+                <div class="competitor-tab" onclick="switchCompetitor('baidu')">百度云</div>
+            </div>
+            
+            <div id="huawei" class="competitor-detail active">
+                <div class="competitor-header">
+                    <div class="competitor-name">华为云</div>
+                    <div class="threat-level threat-high">高威胁</div>
+                </div>
+                <div class="competitor-metrics">
+                    <div class="metric">
+                        <div class="metric-value">28.5%</div>
+                        <div class="metric-label">市场份额</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">+12%</div>
+                        <div class="metric-label">月增长</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">156亿</div>
+                        <div class="metric-label">月营收</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.8分</div>
+                        <div class="metric-label">用户评分</div>
+                    </div>
+                </div>
+                <div class="competitor-activities">
+                    <div class="activity-section">
+                        <div class="activity-title">📱 微信动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                发布《华为云AI大模型助力企业数字化转型》<br>
+                                <span class="activity-date">2024-01-15</span>
+                            </div>
+                            <div class="activity-item">
+                                《华为云盘古大模型3.0正式发布》获得10万+阅读<br>
+                                <span class="activity-date">2024-01-12</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">📰 PR发文</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                华为云与某大型银行签署战略合作协议<br>
+                                <span class="activity-date">2024-01-14</span>
+                            </div>
+                            <div class="activity-item">
+                                华为云在Gartner魔力象限中位居领导者地位<br>
+                                <span class="activity-date">2024-01-10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🚀 产品动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                推出ModelArts 5.0 AI开发平台<br>
+                                <span class="activity-date">2024-01-13</span>
+                            </div>
+                            <div class="activity-item">
+                                升级云原生数据库GaussDB性能<br>
+                                <span class="activity-date">2024-01-11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🎯 获取项目</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                中标某省政务云建设项目（8000万）<br>
+                                <span class="activity-date">2024-01-16</span>
+                            </div>
+                            <div class="activity-item">
+                                签约某汽车制造企业智能制造项目<br>
+                                <span class="activity-date">2024-01-09</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="alibaba" class="competitor-detail">
+                <div class="competitor-header">
+                    <div class="competitor-name">阿里云</div>
+                    <div class="threat-level threat-high">高威胁</div>
+                </div>
+                <div class="competitor-metrics">
+                    <div class="metric">
+                        <div class="metric-value">35.2%</div>
+                        <div class="metric-label">市场份额</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">+8%</div>
+                        <div class="metric-label">月增长</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">189亿</div>
+                        <div class="metric-label">月营收</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.6分</div>
+                        <div class="metric-label">用户评分</div>
+                    </div>
+                </div>
+                <div class="competitor-activities">
+                    <div class="activity-section">
+                        <div class="activity-title">📱 微信动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                《阿里云通义千问大模型全面升级》<br>
+                                <span class="activity-date">2024-01-14</span>
+                            </div>
+                            <div class="activity-item">
+                                发布《2024云计算趋势报告》<br>
+                                <span class="activity-date">2024-01-11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">📰 PR发文</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                阿里云与某零售巨头达成深度合作<br>
+                                <span class="activity-date">2024-01-15</span>
+                            </div>
+                            <div class="activity-item">
+                                阿里云国际化战略再下一城<br>
+                                <span class="activity-date">2024-01-12</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🚀 产品动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                发布新一代云原生操作系统<br>
+                                <span class="activity-date">2024-01-13</span>
+                            </div>
+                            <div class="activity-item">
+                                推出企业级AI助手产品<br>
+                                <span class="activity-date">2024-01-10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🎯 获取项目</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                中标某电信运营商5G项目（12亿）<br>
+                                <span class="activity-date">2024-01-16</span>
+                            </div>
+                            <div class="activity-item">
+                                签约某金融机构数字化转型项目<br>
+                                <span class="activity-date">2024-01-08</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tencent" class="competitor-detail">
+                <div class="competitor-header">
+                    <div class="competitor-name">腾讯云</div>
+                    <div class="threat-level threat-medium">中威胁</div>
+                </div>
+                <div class="competitor-metrics">
+                    <div class="metric">
+                        <div class="metric-value">18.7%</div>
+                        <div class="metric-label">市场份额</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">+5%</div>
+                        <div class="metric-label">月增长</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">98亿</div>
+                        <div class="metric-label">月营收</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.5分</div>
+                        <div class="metric-label">用户评分</div>
+                    </div>
+                </div>
+                <div class="competitor-activities">
+                    <div class="activity-section">
+                        <div class="activity-title">📱 微信动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                《腾讯云混元大模型助力游戏行业创新》<br>
+                                <span class="activity-date">2024-01-15</span>
+                            </div>
+                            <div class="activity-item">
+                                发布《音视频技术白皮书》<br>
+                                <span class="activity-date">2024-01-12</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">📰 PR发文</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                腾讯云与某教育集团签署战略合作<br>
+                                <span class="activity-date">2024-01-14</span>
+                            </div>
+                            <div class="activity-item">
+                                腾讯云游戏解决方案获行业认可<br>
+                                <span class="activity-date">2024-01-11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🚀 产品动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                升级实时音视频TRTC服务<br>
+                                <span class="activity-date">2024-01-13</span>
+                            </div>
+                            <div class="activity-item">
+                                推出新版云游戏解决方案<br>
+                                <span class="activity-date">2024-01-10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🎯 获取项目</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                中标某游戏公司云服务项目（5亿）<br>
+                                <span class="activity-date">2024-01-15</span>
+                            </div>
+                            <div class="activity-item">
+                                签约某直播平台技术服务合同<br>
+                                <span class="activity-date">2024-01-09</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="baidu" class="competitor-detail">
+                <div class="competitor-header">
+                    <div class="competitor-name">百度云</div>
+                    <div class="threat-level threat-low">低威胁</div>
+                </div>
+                <div class="competitor-metrics">
+                    <div class="metric">
+                        <div class="metric-value">8.3%</div>
+                        <div class="metric-label">市场份额</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">+2%</div>
+                        <div class="metric-label">月增长</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">42亿</div>
+                        <div class="metric-label">月营收</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.3分</div>
+                        <div class="metric-label">用户评分</div>
+                    </div>
+                </div>
+                <div class="competitor-activities">
+                    <div class="activity-section">
+                        <div class="activity-title">📱 微信动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                《百度文心一言4.0重磅发布》<br>
+                                <span class="activity-date">2024-01-14</span>
+                            </div>
+                            <div class="activity-item">
+                                发布《AI原生应用开发指南》<br>
+                                <span class="activity-date">2024-01-11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">📰 PR发文</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                百度智能云与某制造企业达成合作<br>
+                                <span class="activity-date">2024-01-13</span>
+                            </div>
+                            <div class="activity-item">
+                                百度云在AI领域获得新突破<br>
+                                <span class="activity-date">2024-01-10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🚀 产品动态</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                推出千帆大模型平台2.0<br>
+                                <span class="activity-date">2024-01-12</span>
+                            </div>
+                            <div class="activity-item">
+                                升级智能客服解决方案<br>
+                                <span class="activity-date">2024-01-09</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-section">
+                        <div class="activity-title">🎯 获取项目</div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                中标某智慧城市AI项目（3亿）<br>
+                                <span class="activity-date">2024-01-14</span>
+                            </div>
+                            <div class="activity-item">
+                                签约某媒体集团内容审核项目<br>
+                                <span class="activity-date">2024-01-08</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI决策建议 -->
+        <div class="panel ai-recommendations">
+            <div class="panel-title">
+                <div class="panel-icon">🤖</div>
+                AI智能决策建议
+            </div>
+            <div class="recommendations-grid">
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">市场策略调整</div>
+                        <div class="recommendation-priority priority-high">高优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        基于华为云市场份额持续增长，建议加强华东区域市场投入，预计可提升3-5%市场份额。同时优化产品定价策略，建议降价8-12%以提升竞争力。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">支撑数据</div>
+                        <div class="data-content">华为云Q1增长12%，华东区域竞争激烈度指数7.8/10，我司华东市场占有率仅15.2%</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">预期收益</span>
+                        <span class="impact-value">+¥2,400万</span>
+                    </div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">产品研发方向</div>
+                        <div class="recommendation-priority priority-high">高优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        阿里云新推出AI大模型功能获得市场认可，建议在Q2启动类似功能开发，预计开发周期4-6个月，投入成本约200万元。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">市场反馈</div>
+                        <div class="data-content">AI功能需求增长45%，客户询问量提升3倍，竞品AI功能用户满意度4.6/5</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">预期ROI</span>
+                        <span class="impact-value">180%</span>
+                    </div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">运营成本优化</div>
+                        <div class="recommendation-priority priority-medium">中优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        市场整体增长放缓，建议优化供应链管理，降低运营成本15%。同时加强客户服务体系，提升客户满意度和复购率。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">成本分析</div>
+                        <div class="data-content">当前运营成本率23.5%，行业平均20.8%，供应链效率可提升空间18%</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">节省成本</span>
+                        <span class="impact-value">¥1,200万/年</span>
+                    </div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">客户留存策略</div>
+                        <div class="recommendation-priority priority-high">高优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        腾讯云在游戏行业客户留存率达85%，建议针对重点行业制定专属服务方案，提升客户粘性和续约率。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">流失分析</div>
+                        <div class="data-content">当前客户流失率12.3%，主要原因：服务响应慢(35%)、功能不足(28%)</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">留存提升</span>
+                        <span class="impact-value">+8.5%</span>
+                    </div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">技术架构升级</div>
+                        <div class="recommendation-priority priority-medium">中优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        基于云原生技术趋势，建议升级现有架构，提升系统性能30%，降低维护成本，增强市场竞争力。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">技术对比</div>
+                        <div class="data-content">当前架构性能指标落后竞品15%，云原生采用率仅45%</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">性能提升</span>
+                        <span class="impact-value">+30%</span>
+                    </div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-category">国际市场拓展</div>
+                        <div class="recommendation-priority priority-low">低优先级</div>
+                    </div>
+                    <div class="recommendation-content">
+                        阿里云国际化进展显著，建议评估东南亚市场机会，制定3年国际化战略，预计需投入5000万启动资金。
+                    </div>
+                    <div class="recommendation-data">
+                        <div class="data-title">市场机会</div>
+                        <div class="data-content">东南亚云市场年增长率32%，当地竞争相对较小，准入门槛适中</div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <span class="impact-label">市场潜力</span>
+                        <span class="impact-value">¥8亿</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实时数据流 -->
+        <div class="panel real-time-data">
+            <div class="panel-title">
+                <div class="panel-icon">📊</div>
+                实时市场数据流
+            </div>
+            <div class="data-stream">
+                <div class="data-widget">
+                    <div class="widget-title">实时销售额</div>
+                    <div class="widget-value pulse" id="realtimeSales">¥2,847万</div>
+                    <div class="widget-trend positive">
+                        <span class="trend-arrow">↗</span>
+                        <span>+5.2%</span>
+                    </div>
+                </div>
+                <div class="data-widget">
+                    <div class="widget-title">在线用户数</div>
+                    <div class="widget-value pulse" id="onlineUsers">12,847</div>
+                    <div class="widget-trend positive">
+                        <span class="trend-arrow">↗</span>
+                        <span>+8.1%</span>
+                    </div>
+                </div>
+                <div class="data-widget">
+                    <div class="widget-title">转化率</div>
+                    <div class="widget-value pulse" id="conversionRate">23.8%</div>
+                    <div class="widget-trend negative">
+                        <span class="trend-arrow">↘</span>
+                        <span>-1.2%</span>
+                    </div>
+                </div>
+                <div class="data-widget">
+                    <div class="widget-title">客户满意度</div>
+                    <div class="widget-value pulse" id="satisfaction">4.6/5</div>
+                    <div class="widget-trend positive">
+                        <span class="trend-arrow">↗</span>
+                        <span>+0.3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // 模拟实时数据更新
+        function updateRealTimeData() {
+            const salesElement = document.getElementById('realtimeSales');
+            const usersElement = document.getElementById('onlineUsers');
+            const conversionElement = document.getElementById('conversionRate');
+            const satisfactionElement = document.getElementById('satisfaction');
+
+            // 模拟数据变化
+            const baseSales = 2847;
+            const baseUsers = 12847;
+            const baseConversion = 23.8;
+            const baseSatisfaction = 4.6;
+
+            const salesVariation = (Math.random() - 0.5) * 100;
+            const usersVariation = Math.floor((Math.random() - 0.5) * 500);
+            const conversionVariation = (Math.random() - 0.5) * 2;
+            const satisfactionVariation = (Math.random() - 0.5) * 0.2;
+
+            salesElement.textContent = `¥${(baseSales + salesVariation).toFixed(0)}万`;
+            usersElement.textContent = (baseUsers + usersVariation).toLocaleString();
+            conversionElement.textContent = `${(baseConversion + conversionVariation).toFixed(1)}%`;
+            satisfactionElement.textContent = `${(baseSatisfaction + satisfactionVariation).toFixed(1)}/5`;
+        }
+
+        // 绘制市场趋势图表
+        function drawTrendChart() {
+            const canvas = document.getElementById('trendChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 设置画布大小
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const width = rect.width;
+            const height = rect.height;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 模拟数据
+            const data = [65, 72, 68, 75, 82, 78, 85, 90, 88, 92, 95, 98];
+            const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            // 绘制背景
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制网格线
+            ctx.strokeStyle = '#e8eaed';
+            ctx.lineWidth = 1;
+            
+            // 水平网格线
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+            
+            // 垂直网格线
+            for (let i = 0; i <= 11; i++) {
+                const x = padding + (chartWidth / 11) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+            }
+            
+            // 绘制趋势线
+            ctx.strokeStyle = '#1a73e8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const maxValue = Math.max(...data);
+            const minValue = Math.min(...data);
+            const valueRange = maxValue - minValue || 1;
+            
+            for (let i = 0; i < data.length; i++) {
+                const x = padding + (chartWidth / 11) * i;
+                const y = height - padding - ((data[i] - minValue) / valueRange) * chartHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // 绘制数据点
+            ctx.fillStyle = '#1a73e8';
+            for (let i = 0; i < data.length; i++) {
+                const x = padding + (chartWidth / 11) * i;
+                const y = height - padding - ((data[i] - minValue) / valueRange) * chartHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 绘制标签
+            ctx.fillStyle = '#5f6368';
+            ctx.font = '11px Google Sans, Roboto, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            
+            // X轴标签
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (chartWidth / 11) * i;
+                ctx.fillText(months[i], x, height - 15);
+            }
+            
+            // Y轴标签
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const value = minValue + (valueRange / 5) * (5 - i);
+                const y = padding + (chartHeight / 5) * i + 4;
+                ctx.fillText(Math.round(value), padding - 10, y);
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            drawTrendChart();
+            
+            // 定时更新
+            setInterval(updateTime, 1000);
+            setInterval(updateRealTimeData, 3000);
+            setInterval(drawTrendChart, 10000);
+        });
+
+        // 竞品切换功能
+        function switchCompetitor(competitorId) {
+            // 隐藏所有竞品详情
+            const allDetails = document.querySelectorAll('.competitor-detail');
+            allDetails.forEach(detail => {
+                detail.classList.remove('active');
+            });
+            
+            // 移除所有标签的active状态
+            const allTabs = document.querySelectorAll('.competitor-tab');
+            allTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的竞品详情
+            const selectedDetail = document.getElementById(competitorId);
+            if (selectedDetail) {
+                selectedDetail.classList.add('active');
+            }
+            
+            // 激活对应的标签
+            const selectedTab = document.querySelector(`[onclick="switchCompetitor('${competitorId}')"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+        }
+
+        // 窗口大小改变时重绘图表
+        window.addEventListener('resize', function() {
+            setTimeout(drawTrendChart, 100);
+        });
+    </script>
+</body>
+</html>

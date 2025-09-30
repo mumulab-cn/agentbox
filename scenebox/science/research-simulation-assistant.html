@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI分子动力学模拟助手 - 校园科研分析平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #1e3c72;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .simulation-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .simulation-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1e3c72;
+            border-bottom: 3px solid #1e3c72;
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .parameter-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .parameter-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .parameter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .parameter-label {
+            font-size: 14px;
+            color: #5a6c7d;
+        }
+
+        .parameter-input {
+            width: 100px;
+            padding: 6px 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .parameter-slider {
+            width: 120px;
+            margin-left: 10px;
+        }
+
+        .simulation-canvas {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .molecule {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.1s linear;
+        }
+
+        .molecule.oxygen {
+            background: #ff4757;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .molecule.hydrogen {
+            background: #70a1ff;
+            box-shadow: 0 0 8px rgba(112, 161, 255, 0.5);
+        }
+
+        .molecule.carbon {
+            background: #5f27cd;
+            box-shadow: 0 0 8px rgba(95, 39, 205, 0.5);
+        }
+
+        .simulation-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+        }
+
+        .simulation-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+
+        .result-unit {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .ai-insights {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin-bottom: 15px;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .insight-content {
+            font-size: 14px;
+            color: #424242;
+            line-height: 1.5;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .chart-placeholder {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .energy-chart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .chart-line {
+            stroke: #1e3c72;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .chart-area {
+            fill: rgba(30, 60, 114, 0.1);
+        }
+
+        .experiment-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .log-timestamp {
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        .log-info {
+            color: #17a2b8;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .log-warning {
+            color: #ffc107;
+        }
+
+        .features-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .feature-desc {
+            color: #5a6c7d;
+            line-height: 1.6;
+        }
+
+        .molecule-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .analysis-content {
+            display: none;
+        }
+
+        .prediction-content {
+            display: none;
+        }
+
+        .prediction-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .prediction-result {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .prediction-title {
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prediction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .prediction-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .prediction-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .prediction-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #155724;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .parameter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🧬</div>
+                <div class="logo-text">AI分子动力学模拟助手</div>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">首页</a>
+                <a href="#" class="nav-link">实验历史</a>
+                <a href="#" class="nav-link">数据库</a>
+                <a href="#" class="nav-link">帮助中心</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">AI分子动力学模拟助手</h1>
+            <p class="hero-subtitle">利用人工智能技术，实现分子运动可视化模拟，预测实验结果，优化研究流程</p>
+        </div>
+
+        <div class="main-content">
+            <div class="simulation-section">
+                <div class="section-header">
+                    <div class="section-icon">⚛️</div>
+                    分子动力学模拟实验室
+                </div>
+                
+                <div class="simulation-tabs">
+                    <div class="tab active" onclick="switchTab('simulation')">实时模拟</div>
+                    <div class="tab" onclick="switchTab('analysis')">数据分析</div>
+                    <div class="tab" onclick="switchTab('prediction')">AI预测</div>
+                </div>
+
+                <div class="tab-content">
+                    <div id="simulation-content">
+                        <div class="parameter-grid">
+                            <div class="parameter-group">
+                                <div class="parameter-title">
+                                    🌡️ 环境参数
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">温度 (K)</span>
+                                    <input type="number" class="parameter-input" id="temperature" value="298" min="200" max="500">
+                                    <input type="range" class="parameter-slider" min="200" max="500" value="298" oninput="updateParameter('temperature', this.value)">
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">压力 (atm)</span>
+                                    <input type="number" class="parameter-input" id="pressure" value="1.0" min="0.1" max="10" step="0.1">
+                                    <input type="range" class="parameter-slider" min="1" max="100" value="10" oninput="updateParameter('pressure', this.value/10)">
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">pH值</span>
+                                    <input type="number" class="parameter-input" id="ph" value="7.0" min="1" max="14" step="0.1">
+                                    <input type="range" class="parameter-slider" min="10" max="140" value="70" oninput="updateParameter('ph', this.value/10)">
+                                </div>
+                            </div>
+                            <div class="parameter-group">
+                                <div class="parameter-title">
+                                    ⚙️ 模拟参数
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">时间步长 (fs)</span>
+                                    <input type="number" class="parameter-input" id="timestep" value="1.0" min="0.1" max="5" step="0.1">
+                                    <input type="range" class="parameter-slider" min="1" max="50" value="10" oninput="updateParameter('timestep', this.value/10)">
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">分子数量</span>
+                                    <input type="number" class="parameter-input" id="molecules" value="100" min="50" max="500">
+                                    <input type="range" class="parameter-slider" min="50" max="500" value="100" oninput="updateParameter('molecules', this.value)">
+                                </div>
+                                <div class="parameter-item">
+                                    <span class="parameter-label">模拟时长 (ns)</span>
+                                    <input type="number" class="parameter-input" id="duration" value="10" min="1" max="100">
+                                    <input type="range" class="parameter-slider" min="1" max="100" value="10" oninput="updateParameter('duration', this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="simulation-status">
+                            <div class="status-indicator"></div>
+                            <span id="statusText">模拟准备就绪</span>
+                        </div>
+
+                        <div class="simulation-canvas" id="simulationCanvas">
+                            <div class="molecule-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #ff4757;"></div>
+                                    <span>氧原子</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #70a1ff;"></div>
+                                    <span>氢原子</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #5f27cd;"></div>
+                                    <span>碳原子</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="simulation-controls">
+                            <button class="btn btn-primary" onclick="startSimulation()">▶️ 开始模拟</button>
+                            <button class="btn btn-warning" onclick="pauseSimulation()">⏸️ 暂停</button>
+                            <button class="btn btn-secondary" onclick="resetSimulation()">🔄 重置</button>
+                            <button class="btn btn-success" onclick="exportResults()">💾 导出结果</button>
+                        </div>
+
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-title">
+                                    🔥 平均动能
+                                </div>
+                                <div class="result-value" id="kineticEnergy">0.00</div>
+                                <div class="result-unit">kJ/mol</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    ⚡ 势能
+                                </div>
+                                <div class="result-value" id="potentialEnergy">0.00</div>
+                                <div class="result-unit">kJ/mol</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    🌡️ 瞬时温度
+                                </div>
+                                <div class="result-value" id="instantTemp">298</div>
+                                <div class="result-unit">K</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    📊 扩散系数
+                                </div>
+                                <div class="result-value" id="diffusionCoeff">0.00</div>
+                                <div class="result-unit">×10⁻⁹ m²/s</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="analysis-content" class="analysis-content">
+                        <div class="chart-container">
+                            <svg class="energy-chart" id="energyChart">
+                                <defs>
+                                    <linearGradient id="energyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:0.3" />
+                                        <stop offset="100%" style="stop-color:#1e3c72;stop-opacity:0.1" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="chart-area" d="M0,180 L50,160 L100,140 L150,120 L200,100 L250,110 L300,90 L350,80 L400,85 L400,200 L0,200 Z" fill="url(#energyGradient)"></path>
+                                <path class="chart-line" d="M0,180 L50,160 L100,140 L150,120 L200,100 L250,110 L300,90 L350,80 L400,85"></path>
+                            </svg>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <div class="insight-title">
+                                🤖 AI分析洞察
+                            </div>
+                            <div class="insight-content">
+                                基于当前模拟数据，AI检测到系统在298K温度下达到热力学平衡。分子间相互作用稳定，建议在此条件下进行长时间模拟以获得更准确的统计数据。
+                            </div>
+                        </div>
+
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-title">
+                                    📈 径向分布函数
+                                </div>
+                                <div class="result-value">g(r)</div>
+                                <div class="result-unit">已计算完成</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    🔄 自相关函数
+                                </div>
+                                <div class="result-value">C(t)</div>
+                                <div class="result-unit">已计算完成</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    📊 密度分布
+                                </div>
+                                <div class="result-value">ρ(z)</div>
+                                <div class="result-unit">已计算完成</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-title">
+                                    ⚡ 电荷分布
+                                </div>
+                                <div class="result-value">q(r)</div>
+                                <div class="result-unit">已计算完成</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="prediction-content" class="prediction-content">
+                        <div class="prediction-form">
+                            <h3 style="margin-bottom: 20px; color: #2c3e50;">🔮 AI实验结果预测</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">实验类型</label>
+                                <select class="form-select" id="experimentType">
+                                    <option value="protein-folding">蛋白质折叠</option>
+                                    <option value="drug-binding">药物结合</option>
+                                    <option value="membrane-transport">膜转运</option>
+                                    <option value="enzyme-catalysis">酶催化</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">目标分子</label>
+                                <input type="text" class="form-input" id="targetMolecule" placeholder="例如：胰岛素、阿司匹林等">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">实验条件</label>
+                                <input type="text" class="form-input" id="experimentConditions" placeholder="例如：生理条件、高温高压等">
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="predictResults()">🚀 开始AI预测</button>
+                        </div>
+
+                        <div class="prediction-result" id="predictionResult">
+                            <div class="prediction-title">
+                                ✨ AI预测结果
+                            </div>
+                            <div class="prediction-details">
+                                <div class="prediction-item">
+                                    <div class="prediction-label">成功概率</div>
+                                    <div class="prediction-value" id="successProb">85%</div>
+                                </div>
+                                <div class="prediction-item">
+                                    <div class="prediction-label">预计时长</div>
+                                    <div class="prediction-value" id="estimatedTime">2.5小时</div>
+                                </div>
+                                <div class="prediction-item">
+                                    <div class="prediction-label">能量变化</div>
+                                    <div class="prediction-value" id="energyChange">-45.2 kJ/mol</div>
+                                </div>
+                                <div class="prediction-item">
+                                    <div class="prediction-label">稳定性评分</div>
+                                    <div class="prediction-value" id="stabilityScore">8.7/10</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">📊</div>
+                        实验进度
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">等待开始</div>
+                    
+                    <div class="ai-insights" style="margin-top: 20px;">
+                        <div class="insight-title">
+                            💡 实时建议
+                        </div>
+                        <div class="insight-content" id="aiSuggestion">
+                            建议在开始模拟前检查所有参数设置，确保温度和压力在合理范围内。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">📝</div>
+                        实验日志
+                    </div>
+                    <div class="experiment-log" id="experimentLog">
+                        <div class="log-entry">
+                            <span class="log-timestamp">[00:00:00]</span>
+                            <span class="log-info">系统初始化完成</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-timestamp">[00:00:01]</span>
+                            <span class="log-success">参数验证通过</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-timestamp">[00:00:02]</span>
+                            <span class="log-info">等待用户操作...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">🎯</div>
+                        快速设置
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="loadPreset('water')">💧 水分子模拟</button>
+                        <button class="btn btn-secondary" onclick="loadPreset('protein')">🧬 蛋白质折叠</button>
+                        <button class="btn btn-secondary" onclick="loadPreset('drug')">💊 药物分子</button>
+                        <button class="btn btn-secondary" onclick="loadPreset('membrane')">🧱 生物膜</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2 class="features-title">AI科研助手特色功能</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <div class="feature-title">实时可视化</div>
+                    <div class="feature-desc">3D分子运动实时渲染，直观展示分子间相互作用和动力学过程</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">AI智能预测</div>
+                    <div class="feature-desc">基于机器学习算法，预测实验结果和最优参数设置</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">深度数据分析</div>
+                    <div class="feature-desc">自动计算径向分布函数、扩散系数等关键物理量</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">高效计算</div>
+                    <div class="feature-desc">GPU加速计算，大幅缩短模拟时间，提升研究效率</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <div class="feature-title">多场景支持</div>
+                    <div class="feature-desc">支持蛋白质折叠、药物设计、材料科学等多个研究领域</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-title">智能建议</div>
+                    <div class="feature-desc">AI实时分析实验数据，提供优化建议和异常检测</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let simulationRunning = false;
+        let simulationInterval;
+        let molecules = [];
+        let simulationTime = 0;
+        let energyData = [];
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('[id$="-content"]').forEach(content => content.style.display = 'none');
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-content').style.display = 'block';
+        }
+
+        // 更新参数
+        function updateParameter(paramId, value) {
+            document.getElementById(paramId).value = value;
+            logMessage(`参数更新: ${paramId} = ${value}`, 'info');
+        }
+
+        // 初始化分子
+        function initializeMolecules() {
+            const canvas = document.getElementById('simulationCanvas');
+            const moleculeCount = parseInt(document.getElementById('molecules').value);
+            
+            // 清除现有分子
+            canvas.querySelectorAll('.molecule').forEach(mol => mol.remove());
+            molecules = [];
+            
+            const types = ['oxygen', 'hydrogen', 'carbon'];
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            for (let i = 0; i < moleculeCount; i++) {
+                const molecule = document.createElement('div');
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                molecule.className = `molecule ${type}`;
+                molecule.style.left = Math.random() * (canvasRect.width - 8) + 'px';
+                molecule.style.top = Math.random() * (canvasRect.height - 8) + 'px';
+                
+                canvas.appendChild(molecule);
+                
+                molecules.push({
+                    element: molecule,
+                    x: parseFloat(molecule.style.left),
+                    y: parseFloat(molecule.style.top),
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    type: type
+                });
+            }
+        }
+
+        // 开始模拟
+        function startSimulation() {
+            if (simulationRunning) return;
+            
+            simulationRunning = true;
+            simulationTime = 0;
+            
+            document.getElementById('statusText').textContent = '模拟运行中...';
+            logMessage('开始分子动力学模拟', 'success');
+            
+            initializeMolecules();
+            
+            simulationInterval = setInterval(() => {
+                updateSimulation();
+                updateProgress();
+                updateResults();
+            }, 50);
+        }
+
+        // 暂停模拟
+        function pauseSimulation() {
+            if (!simulationRunning) return;
+            
+            simulationRunning = false;
+            clearInterval(simulationInterval);
+            
+            document.getElementById('statusText').textContent = '模拟已暂停';
+            logMessage('模拟暂停', 'warning');
+        }
+
+        // 重置模拟
+        function resetSimulation() {
+            simulationRunning = false;
+            clearInterval(simulationInterval);
+            simulationTime = 0;
+            energyData = [];
+            
+            document.getElementById('statusText').textContent = '模拟准备就绪';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '等待开始';
+            
+            // 清除分子
+            const canvas = document.getElementById('simulationCanvas');
+            canvas.querySelectorAll('.molecule').forEach(mol => mol.remove());
+            molecules = [];
+            
+            // 重置结果
+            document.getElementById('kineticEnergy').textContent = '0.00';
+            document.getElementById('potentialEnergy').textContent = '0.00';
+            document.getElementById('instantTemp').textContent = '298';
+            document.getElementById('diffusionCoeff').textContent = '0.00';
+            
+            logMessage('模拟已重置', 'info');
+        }
+
+        // 更新模拟
+        function updateSimulation() {
+            const canvas = document.getElementById('simulationCanvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            
+            molecules.forEach(mol => {
+                // 更新位置
+                mol.x += mol.vx;
+                mol.y += mol.vy;
+                
+                // 边界碰撞
+                if (mol.x <= 0 || mol.x >= canvasRect.width - 8) {
+                    mol.vx *= -0.8;
+                    mol.x = Math.max(0, Math.min(canvasRect.width - 8, mol.x));
+                }
+                if (mol.y <= 0 || mol.y >= canvasRect.height - 8) {
+                    mol.vy *= -0.8;
+                    mol.y = Math.max(0, Math.min(canvasRect.height - 8, mol.y));
+                }
+                
+                // 温度影响
+                const tempFactor = temperature / 298;
+                mol.vx += (Math.random() - 0.5) * 0.1 * tempFactor;
+                mol.vy += (Math.random() - 0.5) * 0.1 * tempFactor;
+                
+                // 限制速度
+                const maxSpeed = 3 * tempFactor;
+                const speed = Math.sqrt(mol.vx * mol.vx + mol.vy * mol.vy);
+                if (speed > maxSpeed) {
+                    mol.vx = (mol.vx / speed) * maxSpeed;
+                    mol.vy = (mol.vy / speed) * maxSpeed;
+                }
+                
+                // 更新DOM位置
+                mol.element.style.left = mol.x + 'px';
+                mol.element.style.top = mol.y + 'px';
+            });
+            
+            simulationTime += 0.05;
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const duration = parseFloat(document.getElementById('duration').value);
+            const progress = Math.min((simulationTime / duration) * 100, 100);
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${progress.toFixed(1)}% (${simulationTime.toFixed(2)}/${duration}ns)`;
+            
+            if (progress >= 100) {
+                pauseSimulation();
+                document.getElementById('statusText').textContent = '模拟完成';
+                logMessage('模拟成功完成', 'success');
+            }
+        }
+
+        // 更新结果
+        function updateResults() {
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            
+            // 计算平均动能
+            let totalKE = 0;
+            molecules.forEach(mol => {
+                const speed = Math.sqrt(mol.vx * mol.vx + mol.vy * mol.vy);
+                totalKE += 0.5 * speed * speed;
+            });
+            const avgKE = molecules.length > 0 ? totalKE / molecules.length : 0;
+            
+            // 更新显示
+            document.getElementById('kineticEnergy').textContent = (avgKE * 10).toFixed(2);
+            document.getElementById('potentialEnergy').textContent = (Math.random() * 50 - 25).toFixed(2);
+            document.getElementById('instantTemp').textContent = (temperature + (Math.random() - 0.5) * 10).toFixed(0);
+            document.getElementById('diffusionCoeff').textContent = (Math.random() * 5).toFixed(2);
+            
+            // 更新AI建议
+            updateAISuggestion();
+        }
+
+        // 更新AI建议
+        function updateAISuggestion() {
+            const suggestions = [
+                '当前系统能量稳定，建议继续观察分子间相互作用。',
+                '检测到温度波动，建议调整热浴参数以维持恒温。',
+                '分子扩散行为正常，可以开始收集统计数据。',
+                '建议增加模拟时长以获得更准确的热力学性质。',
+                '当前参数设置良好，系统已达到平衡态。'
+            ];
+            
+            if (Math.random() < 0.1) { // 10%概率更新建议
+                const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                document.getElementById('aiSuggestion').textContent = suggestion;
+            }
+        }
+
+        // 导出结果
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                parameters: {
+                    temperature: document.getElementById('temperature').value,
+                    pressure: document.getElementById('pressure').value,
+                    molecules: document.getElementById('molecules').value,
+                    duration: document.getElementById('duration').value
+                },
+                results: {
+                    kineticEnergy: document.getElementById('kineticEnergy').textContent,
+                    potentialEnergy: document.getElementById('potentialEnergy').textContent,
+                    temperature: document.getElementById('instantTemp').textContent,
+                    diffusionCoeff: document.getElementById('diffusionCoeff').textContent
+                }
+            };
+            
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `simulation_results_${Date.now()}.json`;
+            link.click();
+            
+            logMessage('结果已导出', 'success');
+        }
+
+        // 加载预设
+        function loadPreset(type) {
+            const presets = {
+                water: { temp: 298, pressure: 1.0, molecules: 200, duration: 5 },
+                protein: { temp: 310, pressure: 1.0, molecules: 500, duration: 20 },
+                drug: { temp: 298, pressure: 1.0, molecules: 100, duration: 10 },
+                membrane: { temp: 310, pressure: 1.0, molecules: 300, duration: 15 }
+            };
+            
+            const preset = presets[type];
+            if (preset) {
+                document.getElementById('temperature').value = preset.temp;
+                document.getElementById('pressure').value = preset.pressure;
+                document.getElementById('molecules').value = preset.molecules;
+                document.getElementById('duration').value = preset.duration;
+                
+                logMessage(`已加载${type}预设参数`, 'info');
+            }
+        }
+
+        // AI预测结果
+        function predictResults() {
+            const experimentType = document.getElementById('experimentType').value;
+            const targetMolecule = document.getElementById('targetMolecule').value;
+            const conditions = document.getElementById('experimentConditions').value;
+            
+            if (!targetMolecule.trim()) {
+                alert('请输入目标分子');
+                return;
+            }
+            
+            // 模拟AI预测过程
+            const button = event.target;
+            button.textContent = '🤖 AI分析中...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                // 生成随机预测结果
+                const successProb = Math.floor(Math.random() * 30) + 70; // 70-99%
+                const estimatedTime = (Math.random() * 5 + 0.5).toFixed(1); // 0.5-5.5小时
+                const energyChange = (Math.random() * 100 - 50).toFixed(1); // -50 to +50
+                const stabilityScore = (Math.random() * 3 + 7).toFixed(1); // 7.0-10.0
+                
+                document.getElementById('successProb').textContent = successProb + '%';
+                document.getElementById('estimatedTime').textContent = estimatedTime + '小时';
+                document.getElementById('energyChange').textContent = energyChange + ' kJ/mol';
+                document.getElementById('stabilityScore').textContent = stabilityScore + '/10';
+                
+                document.getElementById('predictionResult').style.display = 'block';
+                
+                button.textContent = '🚀 开始AI预测';
+                button.disabled = false;
+                
+                logMessage(`AI预测完成: ${targetMolecule} (${experimentType})`, 'success');
+            }, 2000);
+        }
+
+        // 记录日志
+        function logMessage(message, type = 'info') {
+            const log = document.getElementById('experimentLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="log-${type}">${message}</span>
+            `;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+            
+            // 限制日志条数
+            if (log.children.length > 50) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            logMessage('AI分子动力学模拟助手已启动', 'success');
+            
+            // 初始化参数滑块事件
+            document.querySelectorAll('.parameter-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const paramId = this.previousElementSibling.id;
+                    let value = this.value;
+                    
+                    // 根据参数类型调整值
+                    if (paramId === 'pressure' || paramId === 'timestep' || paramId === 'ph') {
+                        value = value / 10;
+                    }
+                    
+                    updateParameter(paramId, value);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

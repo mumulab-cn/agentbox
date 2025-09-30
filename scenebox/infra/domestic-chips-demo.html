@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国产芯片适配演示 - 私有化部署解决方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .section {
+            background: white;
+            margin: 30px 0;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #4a5568;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .chips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .chip-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .chip-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .chip-card:hover::before {
+            left: 100%;
+        }
+
+        .chip-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .chip-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .chip-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .chip-features li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .chip-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .demo-animation {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .animation-container {
+            position: relative;
+            height: 300px;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .data-flow {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            width: 80%;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        .flow-arrow {
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #667eea;
+            animation: slideRight 2s infinite;
+        }
+
+        .flow-step:last-child .flow-arrow {
+            display: none;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .advantage-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .advantage-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .advantage-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .advantage-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .case-studies {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .case-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .case-info h4 {
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .case-info p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            animation: countUp 2s ease-out;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 40px;
+            border-radius: 20px;
+            margin-top: 50px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes slideRight {
+            0%, 100% {
+                transform: translateX(0) translateY(-50%);
+            }
+            50% {
+                transform: translateX(10px) translateY(-50%);
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .chips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .animation-container {
+                height: 200px;
+            }
+            
+            .data-flow {
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+                left: 0;
+                justify-content: space-around;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+                right: 50%;
+                top: auto;
+                bottom: -30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部标题 -->
+        <div class="header">
+            <h1>🇨🇳 国产芯片适配</h1>
+            <p>私有化部署的自主可控解决方案</p>
+        </div>
+
+        <!-- 国产芯片支持展示 -->
+        <div class="section">
+            <h2 class="section-title">🔧 全面支持国产芯片架构</h2>
+            <p style="text-align: center; font-size: 1.1rem; color: #718096; margin-bottom: 30px;">
+                平台通过深度优化，全面适配多种国产芯片架构，充分发挥各芯片的性能优势
+            </p>
+            
+            <div class="chips-grid">
+                <div class="chip-card">
+                    <div class="chip-logo">🐉</div>
+                    <div class="chip-name">龙芯处理器</div>
+                    <ul class="chip-features">
+                        <li>自主指令集架构</li>
+                        <li>完整生态支持</li>
+                        <li>高性能计算优化</li>
+                        <li>企业级稳定性</li>
+                    </ul>
+                </div>
+                
+                <div class="chip-card">
+                    <div class="chip-logo">🚀</div>
+                    <div class="chip-name">飞腾处理器</div>
+                    <ul class="chip-features">
+                        <li>ARM架构优化</li>
+                        <li>服务器级性能</li>
+                        <li>低功耗设计</li>
+                        <li>云计算适配</li>
+                    </ul>
+                </div>
+                
+                <div class="chip-card">
+                    <div class="chip-logo">🦅</div>
+                    <div class="chip-name">鲲鹏处理器</div>
+                    <ul class="chip-features">
+                        <li>多核并行处理</li>
+                        <li>AI加速支持</li>
+                        <li>大数据优化</li>
+                        <li>生态完善</li>
+                    </ul>
+                </div>
+                
+                <div class="chip-card">
+                    <div class="chip-logo">🧠</div>
+                    <div class="chip-name">华为昇腾</div>
+                    <ul class="chip-features">
+                        <li>AI专用架构</li>
+                        <li>深度学习优化</li>
+                        <li>高效能计算</li>
+                        <li>端云协同</li>
+                    </ul>
+                </div>
+                
+                <div class="chip-card">
+                    <div class="chip-logo">⚡</div>
+                    <div class="chip-name">寒武纪MLU</div>
+                    <ul class="chip-features">
+                        <li>机器学习专用</li>
+                        <li>神经网络加速</li>
+                        <li>推理训练并重</li>
+                        <li>软硬件协同</li>
+                    </ul>
+                </div>
+                
+                <div class="chip-card">
+                    <div class="chip-logo">🔥</div>
+                    <div class="chip-name">海光处理器</div>
+                    <ul class="chip-features">
+                        <li>x86兼容架构</li>
+                        <li>高性能计算</li>
+                        <li>数据中心优化</li>
+                        <li>成熟生态支持</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术适配流程动画 -->
+        <div class="section">
+            <h2 class="section-title">🔄 智能适配流程演示</h2>
+            <div class="demo-animation">
+                <p style="font-size: 1.1rem; margin-bottom: 30px; color: #4a5568;">
+                    通过动画演示，直观展示平台与国产芯片的适配过程
+                </p>
+                
+                <div class="animation-container">
+                    <div class="data-flow">
+                        <div class="flow-step">
+                            <div class="flow-icon">🔍</div>
+                            <div>硬件检测</div>
+                            <div class="flow-arrow">→</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-icon">⚙️</div>
+                            <div>驱动适配</div>
+                            <div class="flow-arrow">→</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-icon">🚀</div>
+                            <div>性能优化</div>
+                            <div class="flow-arrow">→</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-icon">✅</div>
+                            <div>功能验证</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-metrics">
+                    <div class="metric-card">
+                        <div class="metric-value">95%</div>
+                        <div class="metric-label">适配成功率</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">30%</div>
+                        <div class="metric-label">性能提升</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">50%</div>
+                        <div class="metric-label">部署时间缩短</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">99.9%</div>
+                        <div class="metric-label">系统稳定性</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心优势 -->
+        <div class="section">
+            <h2 class="section-title">🌟 国产芯片适配优势</h2>
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <span class="advantage-icon">🔒</span>
+                    <div class="advantage-title">自主可控的安全保障</div>
+                    <p>国产芯片的自主研发和生产，为私有化部署提供了从硬件到软件的全方位安全保障，避免了因外部技术限制带来的风险。</p>
+                </div>
+                
+                <div class="advantage-card">
+                    <span class="advantage-icon">🎯</span>
+                    <div class="advantage-title">适配国内应用场景</div>
+                    <p>国产芯片针对国内的计算环境和应用场景进行了优化，能够更好地满足私有化部署中对本地化功能和性能的要求。</p>
+                </div>
+                
+                <div class="advantage-card">
+                    <span class="advantage-icon">🌱</span>
+                    <div class="advantage-title">促进产业生态发展</div>
+                    <p>私有化部署对国产芯片的适配需求，推动了国产芯片产业的发展，促进了上下游产业的协同创新，形成了良好的产业生态。</p>
+                </div>
+                
+                <div class="advantage-card">
+                    <span class="advantage-icon">💰</span>
+                    <div class="advantage-title">资源利旧的考量</div>
+                    <p>企业现有的硬件资源中包含多种国产芯片设备，私有化部署需要充分利用这些现有资源，以降低成本、提高资源利用率。</p>
+                </div>
+                
+                <div class="advantage-card">
+                    <span class="advantage-icon">⚖️</span>
+                    <div class="advantage-title">性能与兼容性平衡</div>
+                    <p>在私有化部署中，既要满足大模型对高性能计算的需求，又要确保与国产芯片的兼容性，保证系统的稳定运行和高效性能。</p>
+                </div>
+                
+                <div class="advantage-card">
+                    <span class="advantage-icon">🔧</span>
+                    <div class="advantage-title">统一开发接口</div>
+                    <p>为开发者提供统一的开发接口和工具链，简化在不同国产芯片上的开发流程，降低开发难度，提高开发效率。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成功案例展示 -->
+        <div class="section">
+            <h2 class="section-title">📈 成功案例与用户反馈</h2>
+            <p style="text-align: center; font-size: 1.1rem; color: #718096; margin-bottom: 30px;">
+                收集并展示用户的反馈和使用经验，分享在私有化部署过程中遇到的问题及解决方案
+            </p>
+            
+            <div class="case-studies">
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">金</div>
+                        <div class="case-info">
+                            <h4>某大型银行</h4>
+                            <p>金融行业 • 龙芯平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>在龙芯平台上成功部署大模型，处理效率提升40%，满足金融级安全要求。</p>
+                    <p><strong>用户反馈：</strong>"的国产芯片适配非常完善，让我们能够在自主可控的环境下运行AI应用，大大提升了业务处理效率。"</p>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">政</div>
+                        <div class="case-info">
+                            <h4>某省政务云</h4>
+                            <p>政务服务 • 飞腾平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>基于飞腾处理器构建的政务AI服务，响应速度提升60%，服务覆盖全省。</p>
+                    <p><strong>用户反馈：</strong>"通过平台，我们快速实现了政务服务的智能化升级，国产芯片的性能完全满足需求。"</p>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">制</div>
+                        <div class="case-info">
+                            <h4>某制造企业</h4>
+                            <p>智能制造 • 鲲鹏平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>在鲲鹏平台上部署质检AI模型，检测精度达到99.5%，生产效率提升35%。</p>
+                    <p><strong>用户反馈：</strong>"帮助我们在国产芯片上实现了高精度的AI质检，既保证了数据安全，又提升了生产质量。"</p>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">医</div>
+                        <div class="case-info">
+                            <h4>某三甲医院</h4>
+                            <p>医疗健康 • 昇腾平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>基于昇腾AI芯片的医学影像分析系统，诊断准确率提升25%，处理速度提升3倍。</p>
+                    <p><strong>用户反馈：</strong>"在昇腾平台上的表现超出预期，AI辅助诊断大大提高了我们的工作效率和诊断精度。"</p>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">教</div>
+                        <div class="case-info">
+                            <h4>某知名高校</h4>
+                            <p>教育科研 • 寒武纪平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>在寒武纪MLU上部署教学AI助手，支持10万+学生同时在线学习，响应延迟低于100ms。</p>
+                    <p><strong>用户反馈：</strong>"让我们能够在国产AI芯片上构建大规模的智能教育平台，为学生提供个性化的学习体验。"</p>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-header">
+                        <div class="case-avatar">能</div>
+                        <div class="case-info">
+                            <h4>某能源集团</h4>
+                            <p>能源行业 • 海光平台</p>
+                        </div>
+                    </div>
+                    <p><strong>部署效果：</strong>基于海光处理器的能源调度AI系统，优化效率提升45%，年节约成本千万级。</p>
+                    <p><strong>用户反馈：</strong>"在海光平台上的稳定性和性能都很出色，帮助我们实现了能源调度的智能化管理。"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行动号召 -->
+        <div class="cta-section">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">🚀 开启您的国产芯片AI之旅</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px;">
+                平台为您提供完整的国产芯片适配解决方案<br>
+                让AI应用在自主可控的环境中发挥最大价值
+            </p>
+            <a href="#" class="cta-button">立即体验  平台</a>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有section添加观察器，实现滚动动画
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            // 观察所有section
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'all 0.8s ease';
+                observer.observe(section);
+            });
+
+            // 芯片卡片悬停效果增强
+            document.querySelectorAll('.chip-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // 数字动画效果
+            function animateNumbers() {
+                document.querySelectorAll('.metric-value').forEach(element => {
+                    const target = parseFloat(element.textContent);
+                    const suffix = element.textContent.replace(/[0-9.]/g, '');
+                    let current = 0;
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        element.textContent = current.toFixed(1) + suffix;
+                    }, 40);
+                });
+            }
+
+            // 当性能指标区域进入视野时开始数字动画
+            const metricsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateNumbers();
+                        metricsObserver.unobserve(entry.target);
+                    }
+                });
+            });
+
+            const metricsSection = document.querySelector('.performance-metrics');
+            if (metricsSection) {
+                metricsObserver.observe(metricsSection);
+            }
+
+            // 流程动画增强
+            const flowIcons = document.querySelectorAll('.flow-icon');
+            let currentStep = 0;
+            
+            function highlightStep() {
+                flowIcons.forEach((icon, index) => {
+                    if (index === currentStep) {
+                        icon.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+                        icon.style.transform = 'scale(1.2)';
+                    } else {
+                        icon.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                        icon.style.transform = 'scale(1)';
+                    }
+                });
+                
+                currentStep = (currentStep + 1) % flowIcons.length;
+            }
+
+            // 每2秒切换一次高亮步骤
+            setInterval(highlightStep, 2000);
+        });
+    </script>
+</body>
+</html>

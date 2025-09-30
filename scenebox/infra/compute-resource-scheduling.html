@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算力资源调度</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .section-title {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-details {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-details h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .feature-details p {
+            color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* vGPU演示区域 */
+        .vgpu-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-title {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .gpu-visualization {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .gpu-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gpu-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: gpuShine 3s infinite;
+        }
+
+        @keyframes gpuShine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gpu-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .gpu-specs {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .instance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .instance-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: instancePulse 2s infinite alternate;
+        }
+
+        @keyframes instancePulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .instance-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .instance-config {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* 监控面板 */
+        .monitoring-panel {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin: 30px 0;
+        }
+
+        .panel-title {
+            color: #4facfe;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .metric-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 3px;
+            animation: metricGrow 2s ease-out;
+        }
+
+        @keyframes metricGrow {
+            0% { width: 0%; }
+        }
+
+        /* 告警系统 */
+        .alert-system {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .alert-title {
+            color: #ff6b6b;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-icon {
+            animation: alertBlink 1s infinite;
+        }
+
+        @keyframes alertBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .alert-time {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .alert-message {
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* 高可用展示 */
+        .ha-visualization {
+            background: rgba(82, 196, 26, 0.1);
+            border: 1px solid rgba(82, 196, 26, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .ha-title {
+            color: #52c41a;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .ha-svg-container {
+            width: 100%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .ha-mechanism {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #52c41a;
+        }
+
+        .mechanism-title {
+            color: #52c41a;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .mechanism-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* SVG动画样式 */
+        .load-balancer {
+            animation: pulse 2s infinite;
+        }
+
+        .service-node {
+            animation: nodeHeartbeat 2s infinite;
+        }
+
+        .failed-node {
+            animation: nodeError 1s infinite;
+        }
+
+        .traffic-flow {
+            animation: trafficFlow 3s infinite;
+        }
+
+        .health-check {
+            animation: healthPulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes nodeHeartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes nodeError {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes trafficFlow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes healthPulse {
+            0%, 100% { r: 3; }
+            50% { r: 5; }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .gpu-visualization {
+                flex-direction: column;
+            }
+
+            .service-nodes {
+                flex-direction: column;
+            }
+
+            .connection-line {
+                width: 2px;
+                height: 30px;
+                margin: 10px 0;
+            }
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <a href="../a.html" class="back-button">← 返回控制台</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>算力资源调度：降本增效利器</h1>
+            <p>通过智能化的GPU资源管理和调度，实现算力资源的最大化利用，为企业AI应用提供高效、稳定、经济的计算支撑</p>
+        </div>
+
+        <!-- vGPU动态切分 -->
+        <div class="content-section">
+            <h2 class="section-title">vGPU动态切分技术</h2>
+            <div class="vgpu-demo">
+                <h3 class="demo-title">🔧 单卡多实例运行演示</h3>
+                <div class="gpu-visualization">
+                    <div class="gpu-card">
+                        <div class="gpu-title">NVIDIA A100</div>
+                        <div class="gpu-specs">80GB HBM2e<br>6912 CUDA Cores</div>
+                    </div>
+                    <div style="font-size: 24px; color: #667eea;">→</div>
+                    <div class="instance-grid">
+                        <div class="instance-card">
+                            <div class="instance-name">ChatGLM-6B</div>
+                            <div class="instance-config">推荐: 3.22GB</div>
+                        </div>
+                        <div class="instance-card">
+                            <div class="instance-name">Baichuan-7B</div>
+                            <div class="instance-config">推荐: 3.22GB</div>
+                        </div>
+                        <div class="instance-card">
+                            <div class="instance-name">Qwen-7B</div>
+                            <div class="instance-config">推荐: 3.22GB</div>
+                        </div>
+                        <div class="instance-card">
+                            <div class="instance-name">LLaMA-7B</div>
+                            <div class="instance-config">推荐: 3.22GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-details">
+                    <h4>智能配置推荐</h4>
+                    <p>系统自动分析模型特征，为7B以下小模型推荐最优的3.22GB显存配置，确保单卡可同时运行多个推理实例，显著提升GPU利用率。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多种GPU支持 -->
+        <div class="content-section">
+            <h2 class="section-title">多厂商GPU生态支持</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🟢</span>
+                    <h3 class="feature-title">NVIDIA GPU</h3>
+                    <p class="feature-desc">全面支持NVIDIA全系列GPU，包括A100、H100、V100等数据中心级显卡。</p>
+                    <div class="feature-details">
+                        <h4>支持特性</h4>
+                        <p>CUDA加速、Tensor Core优化、NVLink互联、Multi-Instance GPU (MIG)技术</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🔶</span>
+                    <h3 class="feature-title">华为昇腾</h3>
+                    <p class="feature-desc">深度适配华为昇腾AI处理器，支持昇腾910、昇腾310等系列产品。</p>
+                    <div class="feature-details">
+                        <h4>技术优势</h4>
+                        <p>CANN框架集成、达芬奇架构优化、昇腾集群管理、国产化AI算力支撑</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🔷</span>
+                    <h3 class="feature-title">海光DCU</h3>
+                    <p class="feature-desc">兼容海光DCU系列产品，为国产化AI基础设施提供强力支撑。</p>
+                    <div class="feature-details">
+                        <h4>国产化优势</h4>
+                        <p>ROCm生态兼容、自主可控、安全可靠、本土化服务支持</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3 class="feature-title">其他国产GPU</h3>
+                    <p class="feature-desc">通过裸金属部署方式，快速响应其他国产GPU厂商的适配需求。</p>
+                    <div class="feature-details">
+                        <h4>灵活部署</h4>
+                        <p>裸金属先行应答、快速POC验证、定制化适配方案、生态伙伴合作</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源监控看板 -->
+        <div class="content-section">
+            <h2 class="section-title">资源利用率监控看板</h2>
+            <div class="monitoring-panel">
+                <h3 class="panel-title">📊 实时GPU设备管理</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">GPU利用率</div>
+                        <div class="metric-value">87%</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 87%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">显存使用率</div>
+                        <div class="metric-value">73%</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 73%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">温度监控</div>
+                        <div class="metric-value">68°C</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 68%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">功耗监控</div>
+                        <div class="metric-value">245W</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 82%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">活跃实例</div>
+                        <div class="metric-value">24</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">队列任务</div>
+                        <div class="metric-value">8</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 32%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-details">
+                <h4>精准定位运维瓶颈</h4>
+                <p>通过实时监控GPU设备状态、资源使用情况和性能指标，快速识别系统瓶颈，优化资源配置，提升整体运维效率。</p>
+            </div>
+        </div>
+
+        <!-- GPU状态告警 -->
+        <div class="content-section">
+            <h2 class="section-title">GPU状态告警系统</h2>
+            <div class="alert-system">
+                <h3 class="alert-title">
+                    <span class="alert-icon">🚨</span>
+                    硬件异常零容忍监控
+                </h3>
+                <ul class="alert-list">
+                    <li class="alert-item">
+                        <div class="alert-time">2024-12-19 14:32:15</div>
+                        <div class="alert-message">GPU-02 温度异常：当前温度85°C，超过阈值80°C</div>
+                    </li>
+                    <li class="alert-item">
+                        <div class="alert-time">2024-12-19 14:28:42</div>
+                        <div class="alert-message">GPU-05 掉卡检测：设备连接中断，正在尝试重新连接</div>
+                    </li>
+                    <li class="alert-item">
+                        <div class="alert-time">2024-12-19 14:25:18</div>
+                        <div class="alert-message">GPU-01 显存使用率告警：当前使用率95%，接近满载</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="feature-details">
+                <h4>智能告警机制</h4>
+                <p>实时监控GPU硬件状态，包括温度、功耗、连接状态等关键指标。一旦检测到异常，立即触发告警通知，确保硬件问题得到及时处理，保障AI服务稳定运行。</p>
+            </div>
+        </div>
+
+        <!-- 推理服务高可用 -->
+        <div class="content-section">
+            <h2 class="section-title">推理服务高可用保障</h2>
+            <div class="ha-visualization">
+                <h3 class="ha-title">🔄 多重保障机制架构</h3>
+                
+                <!-- SVG可视化 -->
+                <div class="ha-svg-container">
+                    <svg width="100%" height="100%" viewBox="0 0 800 500">
+                        <!-- 定义渐变和滤镜 -->
+                        <defs>
+                            <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#52c41a;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#389e0d;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="failedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#ff4d4f;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="lbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1890ff;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#096dd9;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/> 
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- 用户请求 -->
+                        <g transform="translate(50, 50)">
+                            <rect x="0" y="0" width="80" height="40" rx="5" fill="#722ed1" opacity="0.8"/>
+                            <text x="40" y="25" text-anchor="middle" fill="white" font-size="12">用户请求</text>
+                        </g>
+
+                        <!-- 负载均衡器 -->
+                        <g class="load-balancer" transform="translate(200, 30)">
+                            <rect x="0" y="0" width="120" height="80" rx="10" fill="url(#lbGradient)" filter="url(#glow)"/>
+                            <text x="60" y="30" text-anchor="middle" fill="white" font-size="14" font-weight="bold">负载均衡器</text>
+                            <text x="60" y="50" text-anchor="middle" fill="white" font-size="10">智能流量分发</text>
+                            <text x="60" y="65" text-anchor="middle" fill="white" font-size="10">健康检查</text>
+                        </g>
+
+                        <!-- 服务节点集群 -->
+                        <g transform="translate(450, 150)">
+                            <!-- 节点1 -->
+                            <g class="service-node">
+                                <circle cx="0" cy="0" r="35" fill="url(#nodeGradient)" filter="url(#glow)"/>
+                                <text x="0" y="-5" text-anchor="middle" fill="white" font-size="12" font-weight="bold">节点1</text>
+                                <text x="0" y="8" text-anchor="middle" fill="white" font-size="10">正常运行</text>
+                                <circle class="health-check" cx="25" cy="-25" r="3" fill="#52c41a"/>
+                            </g>
+                            
+                            <!-- 节点2 -->
+                            <g class="service-node" transform="translate(100, 0)">
+                                <circle cx="0" cy="0" r="35" fill="url(#nodeGradient)" filter="url(#glow)"/>
+                                <text x="0" y="-5" text-anchor="middle" fill="white" font-size="12" font-weight="bold">节点2</text>
+                                <text x="0" y="8" text-anchor="middle" fill="white" font-size="10">正常运行</text>
+                                <circle class="health-check" cx="25" cy="-25" r="3" fill="#52c41a"/>
+                            </g>
+                            
+                            <!-- 节点3 (故障) -->
+                            <g class="failed-node" transform="translate(200, 0)">
+                                <circle cx="0" cy="0" r="35" fill="url(#failedGradient)" filter="url(#glow)"/>
+                                <text x="0" y="-5" text-anchor="middle" fill="white" font-size="12" font-weight="bold">节点3</text>
+                                <text x="0" y="8" text-anchor="middle" fill="white" font-size="10">故障节点</text>
+                                <circle cx="25" cy="-25" r="3" fill="#ff4d4f"/>
+                                <path d="M 20,-30 L 30,-20 M 30,-30 L 20,-20" stroke="#ff4d4f" stroke-width="2"/>
+                            </g>
+                            
+                            <!-- 节点4 -->
+                            <g class="service-node" transform="translate(300, 0)">
+                                <circle cx="0" cy="0" r="35" fill="url(#nodeGradient)" filter="url(#glow)"/>
+                                <text x="0" y="-5" text-anchor="middle" fill="white" font-size="12" font-weight="bold">节点4</text>
+                                <text x="0" y="8" text-anchor="middle" fill="white" font-size="10">正常运行</text>
+                                <circle class="health-check" cx="25" cy="-25" r="3" fill="#52c41a"/>
+                            </g>
+                        </g>
+
+                        <!-- 流量路径 -->
+                        <!-- 用户到负载均衡器 -->
+                        <path class="traffic-flow" d="M 130,70 Q 165,70 200,70" stroke="#1890ff" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+                        
+                        <!-- 负载均衡器到节点 -->
+                        <path class="traffic-flow" d="M 320,70 Q 385,70 450,150" stroke="#52c41a" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+                        <path class="traffic-flow" d="M 320,80 Q 385,115 550,150" stroke="#52c41a" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+                        <path class="traffic-flow" d="M 320,90 Q 385,160 650,150" stroke="#ff6b6b" stroke-width="2" fill="none" stroke-dasharray="5,5" opacity="0.3"/>
+                        <path class="traffic-flow" d="M 320,100 Q 385,205 750,150" stroke="#52c41a" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+
+                        <!-- 故障转移箭头 -->
+                        <path d="M 650,120 Q 680,100 720,120" stroke="#faad14" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                        <text x="685" y="105" text-anchor="middle" fill="#faad14" font-size="10">故障转移</text>
+
+                        <!-- 箭头标记 -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#faad14" />
+                            </marker>
+                        </defs>
+
+                        <!-- 监控中心 -->
+                        <g transform="translate(50, 300)">
+                            <rect x="0" y="0" width="150" height="60" rx="8" fill="#722ed1" opacity="0.8"/>
+                            <text x="75" y="25" text-anchor="middle" fill="white" font-size="12" font-weight="bold">监控中心</text>
+                            <text x="75" y="40" text-anchor="middle" fill="white" font-size="10">实时健康检查</text>
+                            <text x="75" y="52" text-anchor="middle" fill="white" font-size="10">故障检测与恢复</text>
+                        </g>
+
+                        <!-- 监控连接线 -->
+                        <path d="M 125,300 Q 125,225 450,150" stroke="#722ed1" stroke-width="2" fill="none" stroke-dasharray="3,3" opacity="0.6"/>
+                        <path d="M 150,300 Q 200,225 550,150" stroke="#722ed1" stroke-width="2" fill="none" stroke-dasharray="3,3" opacity="0.6"/>
+                        <path d="M 175,300 Q 275,225 650,150" stroke="#722ed1" stroke-width="2" fill="none" stroke-dasharray="3,3" opacity="0.6"/>
+                        <path d="M 200,300 Q 350,225 750,150" stroke="#722ed1" stroke-width="2" fill="none" stroke-dasharray="3,3" opacity="0.6"/>
+
+                        <!-- 状态指示 -->
+                        <g transform="translate(600, 50)">
+                            <rect x="0" y="0" width="150" height="80" rx="5" fill="rgba(255,255,255,0.1)" stroke="#52c41a" stroke-width="1"/>
+                            <text x="75" y="20" text-anchor="middle" fill="#52c41a" font-size="12" font-weight="bold">系统状态</text>
+                            <text x="10" y="40" fill="#52c41a" font-size="10">✅ 可用节点: 3/4</text>
+                            <text x="10" y="55" fill="#faad14" font-size="10">⚠️ 故障节点: 1</text>
+                            <text x="10" y="70" fill="#52c41a" font-size="10">🔄 自动恢复中</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- 保障机制说明 -->
+                <div class="ha-mechanism">
+                    <div class="mechanism-title">🔄 负载均衡</div>
+                    <div class="mechanism-desc">智能流量分发算法，根据节点负载和响应时间动态调整请求分配，确保资源利用最优化。</div>
+                </div>
+
+                <div class="ha-mechanism">
+                    <div class="mechanism-title">⚡ 自动故障转移</div>
+                    <div class="mechanism-desc">实时监测节点状态，一旦检测到故障立即启动转移机制，将流量重新路由到健康节点，转移时间<100ms。</div>
+                </div>
+
+                <div class="ha-mechanism">
+                    <div class="mechanism-title">💓 服务健康检查</div>
+                    <div class="mechanism-desc">多层次健康检查机制：TCP连接检查、HTTP响应检查、业务逻辑检查，全方位保障服务可用性。</div>
+                </div>
+
+                <div class="ha-mechanism">
+                    <div class="mechanism-title">🛡️ 容灾恢复</div>
+                    <div class="mechanism-desc">自动故障恢复机制，故障节点修复后自动重新加入集群，支持滚动更新和蓝绿部署策略。</div>
+                </div>
+
+                <div style="text-align: center; color: #52c41a; margin-top: 20px; font-weight: bold;">
+                    ✅ 99.99% 服务可用性保障，业务零感知故障切换
+                </div>
+            </div>
+            <div class="feature-details">
+                <h4>多重保障机制</h4>
+                <p>通过负载均衡、自动故障转移、服务健康检查等技术，确保推理服务的高可用性。当单个节点出现故障时，系统自动将流量切换到健康节点，保障模型服务的连续性和稳定性。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.content-section');
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'all 0.6s ease-out';
+                observer.observe(section);
+            });
+
+            // 动态更新监控数据
+            setInterval(updateMetrics, 3000);
+        });
+
+        function updateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            const bars = document.querySelectorAll('.metric-fill');
+            
+            metrics.forEach((metric, index) => {
+                if (index === 0) { // GPU利用率
+                    const newValue = Math.floor(Math.random() * 20) + 75;
+                    metric.textContent = newValue + '%';
+                    bars[index].style.width = newValue + '%';
+                } else if (index === 1) { // 显存使用率
+                    const newValue = Math.floor(Math.random() * 25) + 65;
+                    metric.textContent = newValue + '%';
+                    bars[index].style.width = newValue + '%';
+                } else if (index === 2) { // 温度
+                    const newValue = Math.floor(Math.random() * 10) + 65;
+                    metric.textContent = newValue + '°C';
+                    bars[index].style.width = newValue + '%';
+                } else if (index === 4) { // 活跃实例
+                    const newValue = Math.floor(Math.random() * 10) + 20;
+                    metric.textContent = newValue;
+                    bars[index].style.width = (newValue * 2.5) + '%';
+                } else if (index === 5) { // 队列任务
+                    const newValue = Math.floor(Math.random() * 8) + 3;
+                    metric.textContent = newValue;
+                    bars[index].style.width = (newValue * 12.5) + '%';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
