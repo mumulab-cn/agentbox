@@ -129,3 +129,10 @@ agentbox/
 
 - 提交 [Issue](https://github.com/mumulab-cn/agentbox/issues)
 - 发送邮件至: cloud@mumulab.cn
+
+  
+---
+
+⭐ 如果这个项目对你有帮助，请给它一个星标！
+
+
