@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型优化与定制 - 实践平台</title>
+    <link href="http://localhost/0530/src/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .step-card {
+            transition: transform 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">模型优化与定制平台</a>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-4">模型优化与定制实践平台</h1>
+                <p class="lead">体验最新的模型微调技术，优化您的AI模型性能</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card h-100 step-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-gear feature-icon"></i>
+                        <h3 class="card-title">LoRA微调</h3>
+                        <p class="card-text">低秩适应技术，高效微调大型语言模型</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 step-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-lightning feature-icon"></i>
+                        <h3 class="card-title">P-Tuning</h3>
+                        <p class="card-text">基于提示的连续微调方法</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 step-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up feature-icon"></i>
+                        <h3 class="card-title">评估优化</h3>
+                        <p class="card-text">实时评估和可视化优化效果</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">开始微调实验</h2>
+                        <form id="tuningForm">
+                            <div class="mb-3">
+                                <label class="form-label">选择基础模型</label>
+                                <select class="form-select" id="baseModel">
+                                    <option value="llama2">LLaMA 2</option>
+                                    <option value="bert">BERT</option>
+                                    <option value="gpt2">GPT-2</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">微调方法</label>
+                                <select class="form-select" id="tuningMethod">
+                                    <option value="lora">LoRA</option>
+                                    <option value="ptuning">P-Tuning</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">选择或上传训练数据</label>
+                                <select class="form-select mb-2" id="sampleDataset">
+                                    <option value="">选择示例数据集...</option>
+                                    <option value="情感分析">情感分析数据集</option>
+                                    <option value="文本分类">文本分类数据集</option>
+                                    <option value="命名实体">命名实体识别数据集</option>
+                                </select>
+                                <div id="datasetInfo" class="mb-2 d-none">
+                                    <div class="alert alert-info">
+                                        <h5>数据集说明</h5>
+                                        <p id="datasetDescription"></p>
+                                        <h5>样本预览</h5>
+                                        <div id="samplePreview" class="bg-light p-2 rounded"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="form-label">或上传自己的数据集</label>
+                                    <input type="file" class="form-control" id="trainingData">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">超参数配置</label>
+                                <div class="code-block">
+                                    <pre><code>{
+    "learning_rate": 1e-4,
+    "num_epochs": 3,
+    "batch_size": 8
+}</code></pre>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">开始微调</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">训练进度与评估</h2>
+                        <div class="progress mb-4" style="height: 25px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="trainingProgress">0%</div>
+                        </div>
+                        <div id="evaluationResults" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="model_tuning.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初中一年级课程表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .schedule-container {
+            padding: 30px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .schedule-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .schedule-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .time-slot {
+            background: linear-gradient(135deg, #81ecec, #00cec9);
+            color: white;
+            font-weight: bold;
+            width: 120px;
+        }
+
+        .chinese {
+            background: linear-gradient(135deg, #fab1a0, #e17055);
+            color: white;
+            font-weight: bold;
+        }
+
+        .math {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            font-weight: bold;
+        }
+
+        .english {
+            background: linear-gradient(135deg, #55a3ff, #2d3436);
+            color: white;
+            font-weight: bold;
+        }
+
+        .break {
+            background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+            color: white;
+            font-style: italic;
+        }
+
+        .lunch {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            font-weight: bold;
+        }
+
+        .info-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            font-size: 0.95em;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .subject-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .legend-chinese { background: linear-gradient(135deg, #fab1a0, #e17055); }
+        .legend-math { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+        .legend-english { background: linear-gradient(135deg, #55a3ff, #2d3436); }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .schedule-container {
+                padding: 20px 15px;
+            }
+            
+            .schedule-table th,
+            .schedule-table td {
+                padding: 8px 5px;
+                font-size: 0.9em;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .subject-legend {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 初中一年级课程表</h1>
+            <p>语文 · 数学 · 英语 三门主要课程安排</p>
+        </div>
+
+        <div class="schedule-container">
+            <div class="subject-legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-chinese"></div>
+                    <span>语文</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-math"></div>
+                    <span>数学</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-english"></div>
+                    <span>英语</span>
+                </div>
+            </div>
+
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>周一</th>
+                        <th>周二</th>
+                        <th>周三</th>
+                        <th>周四</th>
+                        <th>周五</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="time-slot">8:00-8:40</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">8:50-9:30</td>
+                        <td class="math">数学</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">9:40-10:20</td>
+                        <td class="english">英语</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">10:30-11:10</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">11:20-12:00</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">12:00-14:00</td>
+                        <td class="lunch" colspan="5">午休时间</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">14:00-14:40</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">14:50-15:30</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                        <td class="math">数学</td>
+                    </tr>
+                    <tr>
+                        <td class="time-slot">15:40-16:20</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="math">数学</td>
+                        <td class="english">英语</td>
+                        <td class="chinese">语文</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-panel">
+                <div class="info-card">
+                    <h3>📖 语文课程</h3>
+                    <p>培养阅读理解能力，学习基础语法知识，提高写作水平，感受中华文化魅力。</p>
+                </div>
+                <div class="info-card">
+                    <h3>🔢 数学课程</h3>
+                    <p>掌握基础数学概念，培养逻辑思维能力，学习代数和几何基础知识。</p>
+                </div>
+                <div class="info-card">
+                    <h3>🌍 英语课程</h3>
+                    <p>学习基础英语语法，培养听说读写能力，为国际交流打下坚实基础。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 高亮当前时间对应的课程
+            function highlightCurrentClass() {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                const currentTime = currentHour * 60 + currentMinute;
+                
+                // 定义时间段
+                const timeSlots = [
+                    {start: 8*60, end: 8*60+40, row: 1},
+                    {start: 8*60+50, end: 9*60+30, row: 2},
+                    {start: 9*60+40, end: 10*60+20, row: 3},
+                    {start: 10*60+30, end: 11*60+10, row: 4},
+                    {start: 11*60+20, end: 12*60, row: 5},
+                    {start: 14*60, end: 14*60+40, row: 7},
+                    {start: 14*60+50, end: 15*60+30, row: 8},
+                    {start: 15*60+40, end: 16*60+20, row: 9}
+                ];
+                
+                // 检查当前时间是否在某个时间段内
+                timeSlots.forEach(slot => {
+                    if (currentTime >= slot.start && currentTime <= slot.end) {
+                        const rows = document.querySelectorAll('.schedule-table tbody tr');
+                        if (rows[slot.row - 1]) {
+                            rows[slot.row - 1].style.backgroundColor = '#fff3cd';
+                            rows[slot.row - 1].style.border = '2px solid #ffc107';
+                        }
+                    }
+                });
+            }
+            
+            // 页面加载时执行一次
+            highlightCurrentClass();
+            
+            // 每分钟更新一次
+            setInterval(highlightCurrentClass, 60000);
+            
+            // 添加点击效果
+            const cells = document.querySelectorAll('.schedule-table td:not(.time-slot):not(.lunch)');
+            cells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    // 移除其他单元格的选中状态
+                    cells.forEach(c => c.classList.remove('selected'));
+                    // 添加选中状态
+                    this.classList.add('selected');
+                    
+                    // 显示课程信息
+                    const subject = this.textContent;
+                    if (subject && subject !== '午休时间') {
+                        alert(`📚 ${subject}课程\n\n点击的课程: ${subject}\n建议: 认真听讲，做好笔记！`);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <style>
+        .selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0,123,255,0.5) !important;
+            z-index: 10;
+            position: relative;
+        }
+    </style>
+</body>
+</html>

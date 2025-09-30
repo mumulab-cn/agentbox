@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS AI 麻将</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <style>
+        .mahjong-tile {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
+            border: 2px solid #888;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 10px;
+            text-align: center;
+            margin: 2px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .mahjong-tile:hover {
+            transform: translateY(-5px) rotate(2deg);
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+            animation: tileHover 0.3s ease;
+        }
+        
+        .mahjong-tile.selected {
+            background: linear-gradient(145deg, #ffd700, #ffb347);
+            border-color: #ff6b35;
+            transform: translateY(-3px) scale(1.05);
+            animation: tileSelect 0.5s ease;
+        }
+        
+        .mahjong-tile.new-tile {
+            animation: newTileAppear 0.8s ease;
+        }
+        
+        .meld-complete {
+            animation: meldComplete 1s ease;
+        }
+        
+        .win-celebration {
+            animation: winCelebration 2s ease infinite;
+        }
+        
+        @keyframes tileHover {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+            100% { transform: translateY(-5px) rotate(2deg); }
+        }
+        
+        @keyframes tileSelect {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.1); }
+            100% { transform: translateY(-3px) scale(1.05); }
+        }
+        
+        @keyframes newTileAppear {
+            0% { 
+                opacity: 0; 
+                transform: scale(0) rotate(180deg); 
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.2) rotate(90deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+        
+        @keyframes meldComplete {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            50% { transform: scale(1.05) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(3deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        
+        @keyframes winCelebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            50% { transform: scale(1.05) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(3deg); }
+        }
+        
+        .floating-score {
+            position: fixed;
+            z-index: 1000;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: floatingScore 2s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes floatingScore {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+        
+        .tile-symbol {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .tile-name {
+            font-size: 8px;
+            line-height: 1;
+        }
+        
+        .hand-area {
+            min-height: 100px;
+            background: linear-gradient(135deg, #2d5a27, #4a7c59);
+            border: 3px dashed #8fbc8f;
+            border-radius: 12px;
+        }
+        
+        .meld-area {
+            min-height: 80px;
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            border: 2px solid #daa520;
+            border-radius: 8px;
+        }
+        
+        .game-board {
+            background: linear-gradient(45deg, #228b22, #32cd32);
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        /* AWS服务分类颜色 */
+        .compute { background: linear-gradient(145deg, #ff6b35, #f7931e); }
+        .storage { background: linear-gradient(145deg, #4285f4, #34a853); }
+        .database { background: linear-gradient(145deg, #9c27b0, #673ab7); }
+        .ai-ml { background: linear-gradient(145deg, #e91e63, #f44336); }
+        .networking { background: linear-gradient(145deg, #00bcd4, #009688); }
+        .security { background: linear-gradient(145deg, #795548, #607d8b); }
+        .analytics { background: linear-gradient(145deg, #ff9800, #ffc107); }
+        .devtools { background: linear-gradient(145deg, #8bc34a, #4caf50); }
+        .iot { background: linear-gradient(145deg, #3f51b5, #2196f3); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-800 to-green-600 min-h-screen">
+    <header class="text-center py-6 text-white">
+        <h1 class="text-4xl font-bold mb-2">🀄 AWS AI 麻将 🀄</h1>
+        <p class="text-lg">用AWS服务组合胡牌，构建完整的云架构解决方案！</p>
+    </header>
+
+    <div class="container mx-auto px-4">
+        <!-- 游戏状态栏 -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="score-display">
+                <h3 class="font-bold">当前分数</h3>
+                <div id="score" class="text-2xl">0</div>
+            </div>
+            <div class="score-display">
+                <h3 class="font-bold">剩余牌数</h3>
+                <div id="remaining-tiles" class="text-2xl">144</div>
+            </div>
+            <div class="score-display">
+                <h3 class="font-bold">回合</h3>
+                <div id="round" class="text-2xl">1</div>
+            </div>
+        </div>
+
+        <!-- 主游戏区域 -->
+        <div class="game-board p-6 mb-6">
+            <!-- 已组合的牌组区域 -->
+            <div class="mb-6">
+                <h3 class="text-white text-xl font-bold mb-3">🏆 已完成的架构组合</h3>
+                <div id="completed-melds" class="flex flex-wrap gap-4">
+                    <!-- 完成的组合将显示在这里 -->
+                </div>
+            </div>
+
+            <!-- 手牌区域 -->
+            <div class="mb-6">
+                <h3 class="text-white text-xl font-bold mb-3">🎯 你的手牌</h3>
+                <div id="player-hand" class="hand-area p-4 flex flex-wrap gap-2">
+                    <!-- 玩家手牌将显示在这里 -->
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="text-center mb-6">
+                <button id="draw-tile" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg mr-4 transition-all duration-300 transform hover:scale-105">
+                    摸牌
+                </button>
+                <button id="check-win" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg mr-4 transition-all duration-300 transform hover:scale-105">
+                    检查胡牌
+                </button>
+                <button id="reset-game" class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                    重新开始
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏说明 -->
+        <div class="bg-white rounded-lg p-6 mb-6">
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">🎮 游戏规则</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-blue-600">基本规则</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>每次摸一张AWS服务牌</li>
+                        <li>组成3张相同服务的"刻子"或连续服务的"顺子"</li>
+                        <li>收集4个组合+1对眼牌即可胡牌</li>
+                        <li>不同的AWS架构组合有不同分数</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-green-600">特殊组合</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>🔥 全AI服务胡牌：+500分</li>
+                        <li>💾 全存储服务胡牌：+300分</li>
+                        <li>🔒 全安全服务胡牌：+400分</li>
+                        <li>⚡ 全计算服务胡牌：+350分</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果显示区域 -->
+        <div id="game-result" class="text-center mb-6"></div>
+    </div>
+
+    <footer class="text-center py-4 text-white">
+        <p>&copy; 2024 AWS AI 麻将 - 学习云服务的趣味方式</p>
+    </footer>
+
+    <script>
+        // 音效函数
+        function playSound(type) {
+            // 使用Web Audio API创建简单音效
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            let frequency, duration;
+            switch(type) {
+                case 'select':
+                    frequency = 800;
+                    duration = 0.1;
+                    break;
+                case 'meld':
+                    frequency = 1200;
+                    duration = 0.3;
+                    break;
+                case 'draw':
+                    frequency = 600;
+                    duration = 0.2;
+                    break;
+                case 'win':
+                    // 胜利音效 - 播放一个上升的音调
+                    playWinSound(audioContext);
+                    return;
+                default:
+                    return;
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        function playWinSound(audioContext) {
+            const frequencies = [523, 659, 784, 1047]; // C, E, G, C (大调和弦)
+            frequencies.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                }, index * 100);
+            });
+        }
+        
+        // 显示浮动分数动画
+        function showFloatingScore(score, x, y) {
+            const floatingScore = $(`<div class="floating-score">+${score}</div>`);
+            floatingScore.css({
+                left: x + 'px',
+                top: y + 'px'
+            });
+            
+            $('body').append(floatingScore);
+            
+            setTimeout(() => {
+                floatingScore.remove();
+            }, 2000);
+        }
+
+        // AWS服务牌库定义
+        const awsTiles = [
+            // 计算服务 (万)
+            { id: 'ec2-1', name: 'EC2', category: 'compute', symbol: '一', type: '万', count: 4 },
+            { id: 'lambda-2', name: 'Lambda', category: 'compute', symbol: '二', type: '万', count: 4 },
+            { id: 'ecs-3', name: 'ECS', category: 'compute', symbol: '三', type: '万', count: 4 },
+            { id: 'eks-4', name: 'EKS', category: 'compute', symbol: '四', type: '万', count: 4 },
+            { id: 'batch-5', name: 'Batch', category: 'compute', symbol: '五', type: '万', count: 4 },
+            { id: 'fargate-6', name: 'Fargate', category: 'compute', symbol: '六', type: '万', count: 4 },
+            { id: 'lightsail-7', name: 'Lightsail', category: 'compute', symbol: '七', type: '万', count: 4 },
+            { id: 'outposts-8', name: 'Outposts', category: 'compute', symbol: '八', type: '万', count: 4 },
+            { id: 'wavelength-9', name: 'Wavelength', category: 'compute', symbol: '九', type: '万', count: 4 },
+
+            // 存储服务 (条)
+            { id: 's3-1', name: 'S3', category: 'storage', symbol: '一', type: '条', count: 4 },
+            { id: 'ebs-2', name: 'EBS', category: 'storage', symbol: '二', type: '条', count: 4 },
+            { id: 'efs-3', name: 'EFS', category: 'storage', symbol: '三', type: '条', count: 4 },
+            { id: 'fsx-4', name: 'FSx', category: 'storage', symbol: '四', type: '条', count: 4 },
+            { id: 'glacier-5', name: 'Glacier', category: 'storage', symbol: '五', type: '条', count: 4 },
+            { id: 'backup-6', name: 'Backup', category: 'storage', symbol: '六', type: '条', count: 4 },
+            { id: 'datasync-7', name: 'DataSync', category: 'storage', symbol: '七', type: '条', count: 4 },
+            { id: 'snowball-8', name: 'Snowball', category: 'storage', symbol: '八', type: '条', count: 4 },
+            { id: 'snowmobile-9', name: 'Snowmobile', category: 'storage', symbol: '九', type: '条', count: 4 },
+
+            // 数据库服务 (筒)
+            { id: 'rds-1', name: 'RDS', category: 'database', symbol: '一', type: '筒', count: 4 },
+            { id: 'dynamodb-2', name: 'DynamoDB', category: 'database', symbol: '二', type: '筒', count: 4 },
+            { id: 'redshift-3', name: 'Redshift', category: 'database', symbol: '三', type: '筒', count: 4 },
+            { id: 'aurora-4', name: 'Aurora', category: 'database', symbol: '四', type: '筒', count: 4 },
+            { id: 'documentdb-5', name: 'DocumentDB', category: 'database', symbol: '五', type: '筒', count: 4 },
+            { id: 'neptune-6', name: 'Neptune', category: 'database', symbol: '六', type: '筒', count: 4 },
+            { id: 'timestream-7', name: 'Timestream', category: 'database', symbol: '七', type: '筒', count: 4 },
+            { id: 'qldb-8', name: 'QLDB', category: 'database', symbol: '八', type: '筒', count: 4 },
+            { id: 'keyspaces-9', name: 'Keyspaces', category: 'database', symbol: '九', type: '筒', count: 4 },
+
+            // AI/ML服务 (字牌)
+            { id: 'sagemaker', name: 'SageMaker', category: 'ai-ml', symbol: '东', type: '字', count: 4 },
+            { id: 'rekognition', name: 'Rekognition', category: 'ai-ml', symbol: '南', type: '字', count: 4 },
+            { id: 'comprehend', name: 'Comprehend', category: 'ai-ml', symbol: '西', type: '字', count: 4 },
+            { id: 'textract', name: 'Textract', category: 'ai-ml', symbol: '北', type: '字', count: 4 },
+            { id: 'polly', name: 'Polly', category: 'ai-ml', symbol: '中', type: '字', count: 4 },
+            { id: 'transcribe', name: 'Transcribe', category: 'ai-ml', symbol: '发', type: '字', count: 4 },
+            { id: 'translate', name: 'Translate', category: 'ai-ml', symbol: '白', type: '字', count: 4 }
+        ];
+
+        let gameTiles = [];
+        let playerHand = [];
+        let completedMelds = [];
+        let selectedTiles = [];
+        let score = 0;
+        let round = 1;
+
+        // 初始化游戏
+        function initGame() {
+            // 创建牌库
+            gameTiles = [];
+            awsTiles.forEach(tile => {
+                for (let i = 0; i < tile.count; i++) {
+                    gameTiles.push({...tile, uniqueId: `${tile.id}-${i}`});
+                }
+            });
+            
+            // 洗牌
+            shuffleTiles();
+            
+            // 发初始手牌（13张）
+            playerHand = [];
+            for (let i = 0; i < 13; i++) {
+                drawTile();
+            }
+            
+            // 重置游戏状态
+            completedMelds = [];
+            selectedTiles = [];
+            score = 0;
+            round = 1;
+            
+            updateDisplay();
+        }
+
+        // 洗牌
+        function shuffleTiles() {
+            for (let i = gameTiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gameTiles[i], gameTiles[j]] = [gameTiles[j], gameTiles[i]];
+            }
+        }
+
+        // 摸牌
+        function drawTile() {
+            if (gameTiles.length > 0) {
+                const tile = gameTiles.pop();
+                playerHand.push(tile);
+                updateDisplay();
+                return tile;
+            }
+            return null;
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            // 更新手牌显示
+            const handElement = $('#player-hand');
+            handElement.empty();
+            
+            playerHand.forEach((tile, index) => {
+                const tileElement = $(`
+                    <div class="mahjong-tile ${tile.category} new-tile" data-index="${index}">
+                        <div class="tile-symbol">${tile.symbol}</div>
+                        <div class="tile-name">${tile.name}</div>
+                        <div class="tile-name">${tile.type}</div>
+                    </div>
+                `);
+                handElement.append(tileElement);
+                
+                // 移除new-tile类，避免重复动画
+                setTimeout(() => {
+                    tileElement.removeClass('new-tile');
+                }, 800);
+            });
+
+            // 更新完成的组合显示
+            const meldsElement = $('#completed-melds');
+            meldsElement.empty();
+            
+            completedMelds.forEach((meld, index) => {
+                const meldDiv = $('<div class="meld-area p-2 flex gap-1"></div>');
+                meld.tiles.forEach(tile => {
+                    const tileElement = $(`
+                        <div class="mahjong-tile ${tile.category} meld-complete" style="transform: scale(0.8);">
+                            <div class="tile-symbol">${tile.symbol}</div>
+                            <div class="tile-name">${tile.name}</div>
+                        </div>
+                    `);
+                    meldDiv.append(tileElement);
+                });
+                
+                const scoreLabel = $(`<div class="text-white text-sm mt-1">${meld.type}: +${meld.score}分</div>`);
+                const meldContainer = $('<div class="text-center"></div>');
+                meldContainer.append(meldDiv).append(scoreLabel);
+                meldsElement.append(meldContainer);
+            });
+
+            // 更新状态栏
+            $('#score').text(score);
+            $('#remaining-tiles').text(gameTiles.length);
+            $('#round').text(round);
+        }
+
+        // 检查是否可以组成组合
+        function checkMelds() {
+            if (selectedTiles.length !== 3) return false;
+            
+            const tiles = selectedTiles.map(index => playerHand[index]);
+            
+            // 检查刻子（三张相同）
+            if (tiles[0].name === tiles[1].name && tiles[1].name === tiles[2].name) {
+                return { type: '刻子', tiles: tiles, score: 100 };
+            }
+            
+            // 检查顺子（同类型连续）
+            if (tiles[0].type === tiles[1].type && tiles[1].type === tiles[2].type && tiles[0].type !== '字') {
+                const symbols = tiles.map(t => t.symbol).sort();
+                const numbers = symbols.map(s => ['一','二','三','四','五','六','七','八','九'].indexOf(s) + 1);
+                if (numbers[2] - numbers[1] === 1 && numbers[1] - numbers[0] === 1) {
+                    return { type: '顺子', tiles: tiles, score: 80 };
+                }
+            }
+            
+            return false;
+        }
+
+        // 检查胡牌
+        function checkWin() {
+            // 简化的胡牌检查：需要4个组合 + 1对眼
+            if (completedMelds.length >= 4 && playerHand.length >= 2) {
+                // 检查是否有对子作为眼牌
+                const handCounts = {};
+                playerHand.forEach(tile => {
+                    handCounts[tile.name] = (handCounts[tile.name] || 0) + 1;
+                });
+                
+                const hasPair = Object.values(handCounts).some(count => count >= 2);
+                
+                if (hasPair) {
+                    // 计算特殊胡牌奖励
+                    let bonus = 0;
+                    const categories = completedMelds.map(m => m.tiles[0].category);
+                    
+                    if (categories.every(cat => cat === 'ai-ml')) {
+                        bonus = 500; // 全AI服务
+                    } else if (categories.every(cat => cat === 'storage')) {
+                        bonus = 300; // 全存储服务
+                    } else if (categories.every(cat => cat === 'compute')) {
+                        bonus = 350; // 全计算服务
+                    }
+                    
+                    return { win: true, bonus: bonus };
+                }
+            }
+            
+            return { win: false, bonus: 0 };
+        }
+
+        // 事件处理
+        $(document).ready(function() {
+            // 初始化游戏
+            initGame();
+
+            // 牌点击事件
+            $(document).on('click', '.mahjong-tile', function() {
+                const index = parseInt($(this).data('index'));
+                if (index !== undefined) {
+                    if (selectedTiles.includes(index)) {
+                        selectedTiles = selectedTiles.filter(i => i !== index);
+                        $(this).removeClass('selected');
+                    } else if (selectedTiles.length < 3) {
+                        selectedTiles.push(index);
+                        $(this).addClass('selected');
+                        playSound('select'); // 播放选择音效
+                    }
+                    
+                    // 如果选择了3张牌，检查是否可以组合
+                    if (selectedTiles.length === 3) {
+                        const meld = checkMelds();
+                        if (meld) {
+                            setTimeout(() => {
+                                if (confirm(`发现${meld.type}！获得${meld.score}分，是否确认组合？`)) {
+                                    // 播放组合音效
+                                    playSound('meld');
+                                    
+                                    // 显示浮动分数
+                                    const rect = $(this)[0].getBoundingClientRect();
+                                    showFloatingScore(meld.score, rect.left + rect.width/2, rect.top);
+                                    
+                                    // 添加到完成的组合
+                                    completedMelds.push(meld);
+                                    score += meld.score;
+                                    
+                                    // 从手牌中移除
+                                    selectedTiles.sort((a, b) => b - a); // 从大到小排序
+                                    selectedTiles.forEach(index => {
+                                        playerHand.splice(index, 1);
+                                    });
+                                    
+                                    selectedTiles = [];
+                                    updateDisplay();
+                                }
+                            }, 100);
+                        }
+                    }
+                }
+            });
+
+            // 摸牌按钮
+            $('#draw-tile').click(function() {
+                if (playerHand.length < 14) {
+                    const tile = drawTile();
+                    if (tile) {
+                        playSound('draw'); // 播放摸牌音效
+                        $('#game-result').html(`
+                            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+                                摸到了：${tile.name} (${tile.type}${tile.symbol})
+                            </div>
+                        `);
+                    } else {
+                        $('#game-result').html(`
+                            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                                牌库已空！
+                            </div>
+                        `);
+                    }
+                } else {
+                    $('#game-result').html(`
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            手牌已满！请先组合或打出一些牌。
+                        </div>
+                    `);
+                }
+            });
+
+            // 检查胡牌按钮
+            $('#check-win').click(function() {
+                const winResult = checkWin();
+                if (winResult.win) {
+                    playSound('win'); // 播放胜利音效
+                    const totalScore = score + winResult.bonus;
+                    $('#game-result').html(`
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center win-celebration">
+                            <h3 class="text-2xl font-bold">🎉 恭喜胡牌！🎉</h3>
+                            <p>基础分数：${score}分</p>
+                            <p>特殊奖励：${winResult.bonus}分</p>
+                            <p class="text-xl font-bold">总分：${totalScore}分</p>
+                        </div>
+                    `);
+                    score = totalScore;
+                    updateDisplay();
+                } else {
+                    $('#game-result').html(`
+                        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                            还没有胡牌！需要4个组合 + 1对眼牌。当前已完成${completedMelds.length}个组合。
+                        </div>
+                    `);
+                }
+            });
+
+            // 重新开始按钮
+            $('#reset-game').click(function() {
+                if (confirm('确定要重新开始游戏吗？')) {
+                    initGame();
+                    $('#game-result').empty();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

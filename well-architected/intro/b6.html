@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成式AI架构 Well-Architected Framework - 架构维度</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5bbfba;
+            --accent-color: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --text-color: #333;
+            --light-text: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .principle-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        
+        .principle-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+        
+        .principle-item:last-child {
+            border-bottom: none;
+        }
+        
+        .principle-item-detailed {
+            padding: 8px 0 8px 20px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .principle-item-detailed:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: var(--secondary-color);
+        }
+        
+        .radar-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem auto;
+        }
+        
+        .footer {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .dimension-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .framework-overview {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(91, 191, 186, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(91, 191, 186, 0.25);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .radar-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header class="header text-center">
+        <div class="container">
+            <h1>生成式AI架构 Well-Architected Framework</h1>
+            <p>架构维度 - 指导企业在设计和实施AI系统时的最佳实践和原则</p>
+        </div>
+    </header>
+    
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 架构维度概述 -->
+        <div class="framework-overview">
+            <h2 class="section-title">架构维度概述</h2>
+            <p>生成式AI架构的Well-Architected Framework在架构维度上划分为6个核心模块，每个模块都包含一系列原则，用于指导企业在设计和实施AI系统时遵循最佳实践。这些模块共同构成了一个全面的架构评估和优化框架。</p>
+            
+            <div class="text-center mt-4 mb-4">
+                <div class="dimension-icon">🏗️</div>
+                <h3>架构维度六大模块</h3>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>成本优化</h4>
+                            <p>优化AI系统的各项成本，提高投资回报率</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>性能效率</h4>
+                            <p>提高AI系统的性能和效率，优化资源利用</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>安全性及合规性</h4>
+                            <p>保障AI系统的安全性和合规性，防范风险</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>弹性和稳定性</h4>
+                            <p>增强AI系统的弹性和稳定性，应对变化和故障</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>持续运营</h4>
+                            <p>确保AI系统的可观测性、可维护性和持续运行</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>合理部署</h4>
+                            <p>优化AI系统的部署策略，提高部署效率和质量</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 雷达图可视化 -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">架构维度雷达图</h2>
+                <div class="radar-container">
+                    <canvas id="architectureRadar"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 架构维度详细内容 -->
+        <h2 class="section-title mt-5">架构维度详细说明</h2>
+        
+        <div class="accordion" id="architectureDimensions">
+            <!-- 成本优化 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        1. 成本优化
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>成本优化维度关注如何优化AI系统的各项成本，包括计算、存储、网络、数据、硬件、软件等方面的成本，以提高投资回报率。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">优化计算成本</li>
+                                    <li class="principle-item-detailed">优化存储成本</li>
+                                    <li class="principle-item-detailed">优化网络成本</li>
+                                    <li class="principle-item-detailed">优化数据成本</li>
+                                    <li class="principle-item-detailed">优化硬件成本</li>
+                                    <li class="principle-item-detailed">优化软件成本</li>
+                                    <li class="principle-item-detailed">优化算法成本</li>
+                                    <li class="principle-item-detailed">优化模型成本</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">优化推理成本</li>
+                                    <li class="principle-item-detailed">优化部署成本</li>
+                                    <li class="principle-item-detailed">优化训练成本</li>
+                                    <li class="principle-item-detailed">优化推理加速成本</li>
+                                    <li class="principle-item-detailed">优化模型压缩成本</li>
+                                    <li class="principle-item-detailed">优化模型并行化成本</li>
+                                    <li class="principle-item-detailed">优化模型分布式化成本</li>
+                                    <li class="principle-item-detailed">优化模型微服务化成本</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 性能效率 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        2. 性能效率
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>性能效率维度关注如何提高AI系统的性能和效率，包括推理延迟、吞吐量、训练速度等方面，以优化资源利用并提升用户体验。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">优化推理延迟</li>
+                                    <li class="principle-item-detailed">优化推理吞吐量</li>
+                                    <li class="principle-item-detailed">优化训练速度</li>
+                                    <li class="principle-item-detailed">优化训练吞吐量</li>
+                                    <li class="principle-item-detailed">优化推理加速</li>
+                                    <li class="principle-item-detailed">优化模型压缩</li>
+                                    <li class="principle-item-detailed">优化模型并行化</li>
+                                    <li class="principle-item-detailed">优化模型分布式化</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">优化模型微服务化</li>
+                                    <li class="principle-item-detailed">优化模型加速</li>
+                                    <li class="principle-item-detailed">优化模型推理加速</li>
+                                    <li class="principle-item-detailed">优化模型训练加速</li>
+                                    <li class="principle-item-detailed">优化模型部署加速</li>
+                                    <li class="principle-item-detailed">优化模型推理加速</li>
+                                    <li class="principle-item-detailed">优化模型训练加速</li>
+                                    <li class="principle-item-detailed">优化模型部署加速</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 安全性及合规性 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        3. 安全性及合规性
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>安全性及合规性维度关注AI系统的安全性和合规性，包括数据安全、模型安全、推理安全等方面，以防范风险并确保系统符合相关法规和标准。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">安全数据管理</li>
+                                    <li class="principle-item-detailed">安全数据传输</li>
+                                    <li class="principle-item-detailed">安全数据存储</li>
+                                    <li class="principle-item-detailed">安全数据处理</li>
+                                    <li class="principle-item-detailed">安全模型部署</li>
+                                    <li class="principle-item-detailed">安全模型推理</li>
+                                    <li class="principle-item-detailed">安全模型训练</li>
+                                    <li class="principle-item-detailed">安全模型部署</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">安全模型推理</li>
+                                    <li class="principle-item-detailed">安全模型训练</li>
+                                    <li class="principle-item-detailed">安全模型部署</li>
+                                    <li class="principle-item-detailed">安全模型推理</li>
+                                    <li class="principle-item-detailed">安全模型训练</li>
+                                    <li class="principle-item-detailed">安全模型部署</li>
+                                    <li class="principle-item-detailed">安全模型推理</li>
+                                    <li class="principle-item-detailed">安全模型训练</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 弹性和稳定性 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        4. 弹性和稳定性
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>弹性和稳定性维度关注AI系统的弹性和稳定性，包括系统容错、故障恢复、负载均衡等方面，以增强系统应对变化和故障的能力。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">弹性训练</li>
+                                    <li class="principle-item-detailed">弹性推理</li>
+                                    <li class="principle-item-detailed">故障恢复机制</li>
+                                    <li class="principle-item-detailed">负载均衡策略</li>
+                                    <li class="principle-item-detailed">系统容错设计</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">高可用性架构</li>
+                                    <li class="principle-item-detailed">灾难恢复策略</li>
+                                    <li class="principle-item-detailed">自动扩缩容机制</li>
+                                    <li class="principle-item-detailed">服务降级策略</li>
+                                    <li class="principle-item-detailed">多区域部署</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 持续运营 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        5. 持续运营
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>持续运营维度关注AI系统的持续运营，包括可观测性、可维护性、监控告警等方面，以确保系统的可靠运行和持续改进。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">系统可观测性</li>
+                                    <li class="principle-item-detailed">系统可维护性</li>
+                                    <li class="principle-item-detailed">监控告警机制</li>
+                                    <li class="principle-item-detailed">日志管理</li>
+                                    <li class="principle-item-detailed">性能分析</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">自动化运维</li>
+                                    <li class="principle-item-detailed">持续集成与部署</li>
+                                    <li class="principle-item-detailed">变更管理</li>
+                                    <li class="principle-item-detailed">问题排查与解决</li>
+                                    <li class="principle-item-detailed">容量规划与管理</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 合理部署 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                        6. 合理部署
+                    </button>
+                </h2>
+                <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#architectureDimensions">
+                    <div class="accordion-body">
+                        <p>合理部署维度关注AI系统的合理部署，包括模型部署、应用嵌入方式、Agent平台等方面，以优化部署策略并提高部署效率和质量。</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">模型部署策略</li>
+                                    <li class="principle-item-detailed">应用嵌入方式</li>
+                                    <li class="principle-item-detailed">Agent平台设计</li>
+                                    <li class="principle-item-detailed">多环境部署</li>
+                                    <li class="principle-item-detailed">版本管理与回滚</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="principle-list">
+                                    <li class="principle-item-detailed">蓝绿部署</li>
+                                    <li class="principle-item-detailed">金丝雀发布</li>
+                                    <li class="principle-item-detailed">A/B测试</li>
+                                    <li class="principle-item-detailed">服务网格</li>
+                                    <li class="principle-item-detailed">微服务架构</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 链接到资源维度页面 -->
+        <div class="text-center mt-5">
+            <a href="a6.html" class="btn btn-primary btn-lg">查看资源维度</a>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>© 2023 生成式AI架构 Well-Architected Framework</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript代码 -->
+    <script>
+        $(document).ready(function() {
+            // 初始化架构维度雷达图
+            const architectureRadarCtx = document.getElementById('architectureRadar').getContext('2d');
+            
+            const architectureRadarData = {
+                labels: [
+                    '成本优化',
+                    '性能效率',
+                    '安全性及合规性',
+                    '弹性和稳定性',
+                    '持续运营',
+                    '合理部署'
+                ],
+                datasets: [{
+                    label: '当前评估',
+                    data: [85, 90, 95, 80, 85, 88],
+                    backgroundColor: 'rgba(91, 191, 186, 0.2)',
+                    borderColor: 'rgba(91, 191, 186, 1)',
+                    pointBackgroundColor: 'rgba(91, 191, 186, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(91, 191, 186, 1)'
+                }, {
+                    label: '目标水平',
+                    data: [95, 95, 100, 90, 95, 95],
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                    borderColor: 'rgba(0, 102, 204, 0.6)',
+                    pointBackgroundColor: 'rgba(0, 102, 204, 0.6)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(0, 102, 204, 0.6)',
+                    borderDash: [5, 5]
+                }]
+            };
+            
+            const architectureRadarConfig = {
+                type: 'radar',
+                data: architectureRadarData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            new Chart(architectureRadarCtx, architectureRadarConfig);
+        });
+    </script>
+</body>
+</html>

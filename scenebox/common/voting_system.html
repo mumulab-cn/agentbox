@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投票系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .voting-section {
+            margin-bottom: 40px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #4CAF50;
+            background-color: #f9f9f9;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        
+        .option label {
+            cursor: pointer;
+            font-size: 16px;
+            flex-grow: 1;
+        }
+        
+        .vote-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s ease;
+        }
+        
+        .vote-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .vote-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .result-bar {
+            background-color: #e0e0e0;
+            height: 25px;
+            border-radius: 12px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        
+        .result-fill {
+            background-color: #4CAF50;
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .total-votes {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .reset-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        
+        .reset-btn:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗳️ 在线投票系统</h1>
+        
+        <div class="voting-section">
+            <h2>请选择您最喜欢的编程语言：</h2>
+            
+            <div class="option" onclick="selectOption('javascript')">
+                <input type="radio" id="javascript" name="language" value="javascript">
+                <label for="javascript">JavaScript - 灵活的网页开发语言</label>
+            </div>
+            
+            <div class="option" onclick="selectOption('python')">
+                <input type="radio" id="python" name="language" value="python">
+                <label for="python">Python - 简洁优雅的通用语言</label>
+            </div>
+            
+            <div class="option" onclick="selectOption('java')">
+                <input type="radio" id="java" name="language" value="java">
+                <label for="java">Java - 企业级开发首选</label>
+            </div>
+            
+            <div class="option" onclick="selectOption('csharp')">
+                <input type="radio" id="csharp" name="language" value="csharp">
+                <label for="csharp">C# - 微软生态系统核心</label>
+            </div>
+            
+            <div class="option" onclick="selectOption('cpp')">
+                <input type="radio" id="cpp" name="language" value="cpp">
+                <label for="cpp">C++ - 高性能系统开发</label>
+            </div>
+            
+            <button class="vote-btn" onclick="submitVote()" id="voteButton">提交投票</button>
+        </div>
+        
+        <div class="results" id="results" style="display: none;">
+            <h2>📊 投票结果</h2>
+            <div id="resultsList"></div>
+            <div class="total-votes" id="totalVotes"></div>
+            <button class="reset-btn" onclick="resetVoting()">重置投票</button>
+        </div>
+    </div>
+
+    <script>
+        // 投票数据存储
+        let votes = {
+            javascript: 0,
+            python: 0,
+            java: 0,
+            csharp: 0,
+            cpp: 0
+        };
+        
+        // 选项标签
+        const optionLabels = {
+            javascript: 'JavaScript',
+            python: 'Python',
+            java: 'Java',
+            csharp: 'C#',
+            cpp: 'C++'
+        };
+        
+        // 从本地存储加载数据
+        function loadVotes() {
+            const savedVotes = localStorage.getItem('votingSystemData');
+            if (savedVotes) {
+                votes = JSON.parse(savedVotes);
+                showResults();
+            }
+        }
+        
+        // 保存数据到本地存储
+        function saveVotes() {
+            localStorage.setItem('votingSystemData', JSON.stringify(votes));
+        }
+        
+        // 选择选项
+        function selectOption(value) {
+            document.getElementById(value).checked = true;
+        }
+        
+        // 提交投票
+        function submitVote() {
+            const selectedOption = document.querySelector('input[name="language"]:checked');
+            
+            if (!selectedOption) {
+                alert('请选择一个选项后再投票！');
+                return;
+            }
+            
+            // 增加投票数
+            votes[selectedOption.value]++;
+            
+            // 保存数据
+            saveVotes();
+            
+            // 显示结果
+            showResults();
+            
+            // 禁用投票按钮
+            document.getElementById('voteButton').disabled = true;
+            document.getElementById('voteButton').textContent = '投票已提交';
+            
+            // 禁用所有选项
+            const options = document.querySelectorAll('input[name="language"]');
+            options.forEach(option => option.disabled = true);
+            
+            alert('投票成功！感谢您的参与！');
+        }
+        
+        // 显示投票结果
+        function showResults() {
+            const resultsDiv = document.getElementById('results');
+            const resultsListDiv = document.getElementById('resultsList');
+            const totalVotesDiv = document.getElementById('totalVotes');
+            
+            resultsDiv.style.display = 'block';
+            
+            // 计算总票数
+            const totalVotes = Object.values(votes).reduce((sum, count) => sum + count, 0);
+            
+            // 生成结果HTML
+            let resultsHTML = '';
+            
+            for (const [key, count] of Object.entries(votes)) {
+                const percentage = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+                
+                resultsHTML += `
+                    <div class="result-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span><strong>${optionLabels[key]}</strong></span>
+                            <span>${count} 票 (${percentage}%)</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-fill" style="width: ${percentage}%">
+                                ${percentage > 15 ? percentage + '%' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsListDiv.innerHTML = resultsHTML;
+            totalVotesDiv.textContent = `总投票数：${totalVotes} 票`;
+        }
+        
+        // 重置投票
+        function resetVoting() {
+            if (confirm('确定要重置所有投票数据吗？此操作不可撤销！')) {
+                // 重置投票数据
+                votes = {
+                    javascript: 0,
+                    python: 0,
+                    java: 0,
+                    csharp: 0,
+                    cpp: 0
+                };
+                
+                // 清除本地存储
+                localStorage.removeItem('votingSystemData');
+                
+                // 重置界面
+                document.getElementById('results').style.display = 'none';
+                document.getElementById('voteButton').disabled = false;
+                document.getElementById('voteButton').textContent = '提交投票';
+                
+                // 启用所有选项
+                const options = document.querySelectorAll('input[name="language"]');
+                options.forEach(option => {
+                    option.disabled = false;
+                    option.checked = false;
+                });
+                
+                alert('投票数据已重置！');
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            loadVotes();
+        };
+    </script>
+</body>
+</html>

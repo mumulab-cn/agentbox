@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页数据爬取示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .demo-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .url-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .scrape-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .scrape-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .scrape-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-area {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            border: 1px solid #e9ecef;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .data-item {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .data-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .data-item p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .data-item .meta {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .code-section {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-section pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        .method-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sample-data {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .sample-data h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .sample-item {
+            background: white;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 8px 0;
+            border-left: 3px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .method-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>网页数据爬取示例</h1>
+            <p>演示如何从网页中提取和处理数据</p>
+        </div>
+
+        <!-- 实时爬取演示 -->
+        <div class="demo-section">
+            <h2>🔍 实时数据爬取演示</h2>
+            
+            <div class="method-tabs">
+                <button class="tab-btn active" onclick="switchTab('fetch')">Fetch API</button>
+                <button class="tab-btn" onclick="switchTab('proxy')">代理爬取</button>
+                <button class="tab-btn" onclick="switchTab('dom')">DOM解析</button>
+            </div>
+
+            <!-- Fetch API 方法 -->
+            <div id="fetch-tab" class="tab-content active">
+                <div class="control-panel">
+                    <input type="text" class="url-input" id="fetchUrl" 
+                           placeholder="输入要爬取的API端点 (如: https://jsonplaceholder.typicode.com/posts)" 
+                           value="https://jsonplaceholder.typicode.com/posts">
+                    <button class="scrape-btn" onclick="fetchData()">开始爬取</button>
+                </div>
+                
+                <div class="code-section">
+                    <pre><code>// Fetch API 爬取示例
+async function fetchData() {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('爬取失败:', error);
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- 代理爬取方法 -->
+            <div id="proxy-tab" class="tab-content">
+                <div class="control-panel">
+                    <input type="text" class="url-input" id="proxyUrl" 
+                           placeholder="输入要爬取的网页URL" 
+                           value="https://httpbin.org/html">
+                    <button class="scrape-btn" onclick="proxyFetch()">代理爬取</button>
+                </div>
+                
+                <div class="code-section">
+                    <pre><code>// 使用代理服务爬取
+async function proxyFetch() {
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const targetUrl = encodeURIComponent(url);
+    
+    try {
+        const response = await fetch(proxyUrl + targetUrl);
+        const data = await response.json();
+        return data.contents;
+    } catch (error) {
+        console.error('代理爬取失败:', error);
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- DOM解析方法 -->
+            <div id="dom-tab" class="tab-content">
+                <div class="control-panel">
+                    <button class="scrape-btn" onclick="parseCurrentPage()">解析当前页面</button>
+                </div>
+                
+                <div class="code-section">
+                    <pre><code>// DOM解析示例
+function parseCurrentPage() {
+    const elements = document.querySelectorAll('.data-item');
+    const data = Array.from(elements).map(el => ({
+        title: el.querySelector('h4')?.textContent,
+        content: el.querySelector('p')?.textContent,
+        meta: el.querySelector('.meta')?.textContent
+    }));
+    return data;
+}</code></pre>
+                </div>
+            </div>
+
+            <div id="results" class="results-area">
+                <p class="loading">点击上方按钮开始数据爬取...</p>
+            </div>
+        </div>
+
+        <!-- 示例数据展示 -->
+        <div class="demo-section">
+            <h2>📊 爬取数据示例</h2>
+            
+            <div class="sample-data">
+                <h3>模拟爬取的新闻数据</h3>
+                <div class="sample-item">
+                    <h4>人工智能技术突破新里程碑</h4>
+                    <p>最新研究表明，深度学习算法在图像识别领域取得了重大突破...</p>
+                    <div class="meta">来源: 科技日报 | 时间: 2024-01-15</div>
+                </div>
+                <div class="sample-item">
+                    <h4>区块链技术在金融领域的应用</h4>
+                    <p>区块链技术正在改变传统金融行业的运作模式...</p>
+                    <div class="meta">来源: 金融时报 | 时间: 2024-01-14</div>
+                </div>
+                <div class="sample-item">
+                    <h4>5G网络建设加速推进</h4>
+                    <p>全国5G基站建设进入快车道，覆盖范围不断扩大...</p>
+                    <div class="meta">来源: 通信世界 | 时间: 2024-01-13</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术说明 -->
+        <div class="demo-section">
+            <h2>🛠️ 技术实现说明</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #495057; margin-bottom: 15px;">🌐 跨域问题解决</h3>
+                    <ul style="color: #6c757d; line-height: 1.6;">
+                        <li>使用CORS代理服务</li>
+                        <li>JSONP回调方式</li>
+                        <li>服务器端代理</li>
+                        <li>浏览器扩展程序</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #495057; margin-bottom: 15px;">🔍 数据提取方法</h3>
+                    <ul style="color: #6c757d; line-height: 1.6;">
+                        <li>CSS选择器定位</li>
+                        <li>XPath表达式</li>
+                        <li>正则表达式匹配</li>
+                        <li>JSON数据解析</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #495057; margin-bottom: 15px;">⚡ 性能优化</h3>
+                    <ul style="color: #6c757d; line-height: 1.6;">
+                        <li>异步请求处理</li>
+                        <li>数据缓存机制</li>
+                        <li>请求频率控制</li>
+                        <li>错误重试机制</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #495057; margin-bottom: 15px;">🛡️ 注意事项</h3>
+                    <ul style="color: #6c757d; line-height: 1.6;">
+                        <li>遵守robots.txt协议</li>
+                        <li>控制请求频率</li>
+                        <li>处理反爬虫机制</li>
+                        <li>数据使用合规性</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有按钮的激活状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // 激活对应按钮
+            event.target.classList.add('active');
+        }
+
+        // Fetch API 爬取
+        async function fetchData() {
+            const url = document.getElementById('fetchUrl').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!url) {
+                showError('请输入有效的URL');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p class="loading">正在爬取数据...</p>';
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data.slice(0, 5)); // 只显示前5条数据
+                
+            } catch (error) {
+                showError('爬取失败: ' + error.message);
+            }
+        }
+
+        // 代理爬取
+        async function proxyFetch() {
+            const url = document.getElementById('proxyUrl').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!url) {
+                showError('请输入有效的URL');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p class="loading">正在通过代理爬取数据...</p>';
+            
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const targetUrl = encodeURIComponent(url);
+                
+                const response = await fetch(proxyUrl + targetUrl);
+                const data = await response.json();
+                
+                if (data.status.http_code !== 200) {
+                    throw new Error('目标网站返回错误: ' + data.status.http_code);
+                }
+                
+                // 解析HTML内容
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+                
+                // 提取标题和段落
+                const titles = Array.from(doc.querySelectorAll('h1, h2, h3')).slice(0, 3);
+                const paragraphs = Array.from(doc.querySelectorAll('p')).slice(0, 3);
+                
+                const extractedData = titles.map((title, index) => ({
+                    id: index + 1,
+                    title: title.textContent.trim(),
+                    body: paragraphs[index]?.textContent.trim() || '无内容描述'
+                }));
+                
+                displayResults(extractedData);
+                
+            } catch (error) {
+                showError('代理爬取失败: ' + error.message);
+            }
+        }
+
+        // 解析当前页面
+        function parseCurrentPage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p class="loading">正在解析当前页面...</p>';
+            
+            try {
+                // 提取页面中的示例数据
+                const sampleItems = document.querySelectorAll('.sample-item');
+                const extractedData = Array.from(sampleItems).map((item, index) => {
+                    const title = item.querySelector('h4')?.textContent || '无标题';
+                    const content = item.querySelector('p')?.textContent || '无内容';
+                    const meta = item.querySelector('.meta')?.textContent || '无元信息';
+                    
+                    return {
+                        id: index + 1,
+                        title: title,
+                        body: content,
+                        meta: meta
+                    };
+                });
+                
+                displayResults(extractedData);
+                
+            } catch (error) {
+                showError('页面解析失败: ' + error.message);
+            }
+        }
+
+        // 显示结果
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!data || data.length === 0) {
+                resultsDiv.innerHTML = '<p class="error">未找到任何数据</p>';
+                return;
+            }
+            
+            let html = '<div class="success">✅ 数据爬取成功！共获取 ' + data.length + ' 条记录</div>';
+            
+            data.forEach(item => {
+                html += `
+                    <div class="data-item">
+                        <h4>${escapeHtml(item.title || '无标题')}</h4>
+                        <p>${escapeHtml(item.body || '无内容').substring(0, 200)}${item.body && item.body.length > 200 ? '...' : ''}</p>
+                        <div class="meta">ID: ${item.id} ${item.meta ? '| ' + escapeHtml(item.meta) : ''}</div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // 显示错误
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="error">❌ ' + escapeHtml(message) + '</div>';
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('网页数据爬取示例页面已加载');
+        });
+    </script>
+</body>
+</html>

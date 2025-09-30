@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库RAG系统架构与实现指南 - A3完整版技术卡片</title>
+    <style>
+        @page {
+            size: A3 landscape;
+            margin: 8mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 8px;
+            color: #333;
+            font-size: 9px;
+        }
+        
+        .container {
+            width: 420mm;
+            height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 15mm;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        
+        .header p {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-button {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: bold;
+            color: #666;
+            border-radius: 6px 6px 0 0;
+            margin-right: 3px;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            flex: 1;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .workflow-diagram {
+            width: 100%;
+            height: 280px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .workflow-svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .concept-card {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            border-left: 3px solid #667eea;
+        }
+        
+        .concept-card h3 {
+            color: #667eea;
+            font-size: 10px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        
+        .concept-card p {
+            font-size: 8px;
+            line-height: 1.3;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .concept-card .tech-list {
+            font-size: 7px;
+            color: #888;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 7px;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 4px 6px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .best-practices {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .best-practices h3 {
+            color: #28a745;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+        
+        .best-practices ul {
+            list-style: none;
+            font-size: 8px;
+            line-height: 1.4;
+        }
+        
+        .best-practices li {
+            margin-bottom: 4px;
+            padding-left: 12px;
+            position: relative;
+        }
+        
+        .best-practices li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* 底部详细说明样式 */
+        .bottom-details {
+            margin-top: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .bottom-details h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            font-size: 7px;
+            line-height: 1.3;
+        }
+        
+        .detail-section {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .detail-section h4 {
+            color: #495057;
+            font-size: 8px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 3px;
+        }
+        
+        .detail-section p {
+            margin-bottom: 4px;
+            text-align: justify;
+        }
+        
+        .detail-section strong {
+            color: #343a40;
+            font-weight: 600;
+        }
+        
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            
+            .container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                min-height: auto !important;
+            }
+            
+            .tab-button.active {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bottom-details {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>知识库RAG系统架构与实现指南</h1>
+            <p>检索增强生成技术的完整解决方案 | 从理论到实践的全面指南</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('architecture')">系统架构</button>
+                <button class="tab-button" onclick="showTab('concepts')">核心概念</button>
+                <button class="tab-button" onclick="showTab('comparison')">技术对比</button>
+                <button class="tab-button" onclick="showTab('practices')">最佳实践</button>
+            </div>
+            
+            <!-- 系统架构标签页 -->
+            <div id="architecture" class="tab-content active">
+                <div class="workflow-diagram">
+                    <svg width="800" height="380" viewBox="0 0 800 380" class="workflow-svg">
+                        <!-- 定义渐变和箭头 -->
+                        <defs>
+                            <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#43e97b;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#38f9d7;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#fecfef;stop-opacity:1" />
+                            </linearGradient>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <!-- 背景 -->
+                        <rect width="100%" height="100%" fill="#f8f9fa"/>
+                        
+                        <!-- 文档处理阶段 -->
+                        <rect x="50" y="50" width="120" height="80" rx="10" fill="url(#blueGradient)" stroke="#2196f3" stroke-width="2"/>
+                        <text x="110" y="80" text-anchor="middle" fill="white" font-size="12" font-weight="bold">文档处理</text>
+                        <text x="110" y="95" text-anchor="middle" fill="white" font-size="9">Document Processing</text>
+                        <text x="110" y="110" text-anchor="middle" fill="white" font-size="8">解析·清洗·分块</text>
+                        
+                        <!-- 向量化阶段 -->
+                        <rect x="220" y="50" width="120" height="80" rx="10" fill="url(#greenGradient)" stroke="#4caf50" stroke-width="2"/>
+                        <text x="280" y="80" text-anchor="middle" fill="white" font-size="12" font-weight="bold">向量化</text>
+                        <text x="280" y="95" text-anchor="middle" fill="white" font-size="9">Vectorization</text>
+                        <text x="280" y="110" text-anchor="middle" fill="white" font-size="8">嵌入·编码·存储</text>
+                        
+                        <!-- 向量存储 -->
+                        <rect x="500" y="50" width="120" height="80" rx="10" fill="url(#purpleGradient)" stroke="#9c27b0" stroke-width="2"/>
+                        <text x="560" y="80" text-anchor="middle" fill="white" font-size="12" font-weight="bold">向量存储</text>
+                        <text x="560" y="95" text-anchor="middle" fill="white" font-size="9">Vector Store</text>
+                        <text x="560" y="110" text-anchor="middle" fill="white" font-size="8">索引·管理·查询</text>
+                        
+                        <!-- 查询处理流程 -->
+                        <text x="50" y="180" font-size="14" font-weight="bold" fill="#333">查询处理流程</text>
+                        
+                        <!-- 用户查询 -->
+                        <rect x="50" y="200" width="120" height="60" rx="10" fill="url(#blueGradient)" stroke="#2196f3" stroke-width="2"/>
+                        <text x="110" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">用户查询</text>
+                        <text x="110" y="240" text-anchor="middle" fill="white" font-size="9">User Query</text>
+                        
+                        <!-- 查询向量化 -->
+                        <rect x="200" y="200" width="120" height="60" rx="10" fill="url(#greenGradient)" stroke="#4caf50" stroke-width="2"/>
+                        <text x="260" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">查询向量化</text>
+                        <text x="260" y="240" text-anchor="middle" fill="white" font-size="9">Query Embedding</text>
+                        
+                        <!-- 相似度检索 -->
+                        <rect x="350" y="200" width="120" height="60" rx="10" fill="url(#purpleGradient)" stroke="#9c27b0" stroke-width="2"/>
+                        <text x="410" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">相似度检索</text>
+                        <text x="410" y="240" text-anchor="middle" fill="white" font-size="9">Similarity Search</text>
+                        
+                        <!-- 上下文构建 -->
+                        <rect x="500" y="200" width="120" height="60" rx="10" fill="url(#orangeGradient)" stroke="#ff5722" stroke-width="2"/>
+                        <text x="560" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">上下文构建</text>
+                        <text x="560" y="240" text-anchor="middle" fill="white" font-size="9">Context Building</text>
+                        
+                        <!-- LLM生成 -->
+                        <rect x="650" y="200" width="120" height="60" rx="10" fill="url(#orangeGradient)" stroke="#f5576c" stroke-width="2"/>
+                        <text x="710" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">LLM生成</text>
+                        <text x="710" y="240" text-anchor="middle" fill="white" font-size="9">LLM Generation</text>
+                        
+                        <!-- 查询流程箭头 -->
+                        <line x1="170" y1="230" x2="200" y2="230" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="320" y1="230" x2="350" y2="230" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="470" y1="230" x2="500" y2="230" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="620" y1="230" x2="650" y2="230" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 向量存储到检索的连接 -->
+                        <line x1="560" y1="130" x2="560" y2="150" stroke="#666" stroke-width="2"/>
+                        <line x1="560" y1="150" x2="410" y2="150" stroke="#666" stroke-width="2"/>
+                        <line x1="410" y1="150" x2="410" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 文档处理流程箭头 -->
+                        <line x1="170" y1="90" x2="220" y2="90" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="340" y1="90" x2="500" y2="90" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 技术栈标注 -->
+                        <text x="50" y="320" font-size="14" font-weight="bold" fill="#333">核心技术栈</text>
+                        
+                        <rect x="50" y="330" width="150" height="30" rx="5" fill="#e3f2fd" stroke="#2196f3"/>
+                        <text x="125" y="350" text-anchor="middle" font-size="10" fill="#1976d2">文档处理: LangChain, Unstructured</text>
+                        
+                        <rect x="220" y="330" width="150" height="30" rx="5" fill="#f3e5f5" stroke="#9c27b0"/>
+                        <text x="295" y="350" text-anchor="middle" font-size="10" fill="#7b1fa2">向量模型: OpenAI, Sentence-BERT</text>
+                        
+                        <rect x="390" y="330" width="150" height="30" rx="5" fill="#e8f5e8" stroke="#4caf50"/>
+                        <text x="465" y="350" text-anchor="middle" font-size="10" fill="#388e3c">向量数据库: Chroma, Pinecone, Weaviate</text>
+                        
+                        <rect x="560" y="330" width="150" height="30" rx="5" fill="#fff3e0" stroke="#ff9800"/>
+                        <text x="635" y="350" text-anchor="middle" font-size="10" fill="#f57c00">LLM: GPT-4, Claude, Llama</text>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- 核心概念标签页 -->
+            <div id="concepts" class="tab-content">
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h3>🔍 检索增强生成 (RAG)</h3>
+                        <p>结合信息检索和文本生成的技术，通过检索相关文档片段来增强大语言模型的生成能力，提供更准确、更新的信息。</p>
+                        <div class="tech-list">核心优势: 实时性、准确性、可解释性</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>📊 向量嵌入 (Embeddings)</h3>
+                        <p>将文本转换为高维向量表示，捕获语义信息。通过计算向量间的相似度来找到语义相关的文档片段。</p>
+                        <div class="tech-list">常用模型: text-embedding-ada-002, all-MiniLM-L6-v2</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>🗄️ 向量数据库</h3>
+                        <p>专门存储和检索高维向量的数据库系统，支持高效的相似度搜索和大规模向量索引。</p>
+                        <div class="tech-list">主流选择: Pinecone, Chroma, Weaviate, Qdrant</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>📝 文档分块 (Chunking)</h3>
+                        <p>将长文档分割成较小的片段，每个片段包含完整的语义信息，便于向量化和检索。</p>
+                        <div class="tech-list">策略: 固定长度、语义分割、重叠分块</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>🎯 检索策略</h3>
+                        <p>根据查询向量在向量空间中找到最相似的文档片段，常用余弦相似度、欧氏距离等度量方法。</p>
+                        <div class="tech-list">方法: 密集检索、稀疏检索、混合检索</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>🔄 重排序 (Re-ranking)</h3>
+                        <p>对初步检索结果进行二次排序，使用更复杂的模型提高检索质量和相关性。</p>
+                        <div class="tech-list">工具: Cross-encoder, ColBERT, RankGPT</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>💡 提示工程</h3>
+                        <p>设计有效的提示模板，将检索到的上下文和用户查询组合，指导LLM生成高质量的回答。</p>
+                        <div class="tech-list">技巧: 上下文注入、角色设定、输出格式控制</div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3>📈 评估指标</h3>
+                        <p>衡量RAG系统性能的关键指标，包括检索准确性、生成质量、响应时间等多个维度。</p>
+                        <div class="tech-list">指标: Recall@K, MRR, BLEU, ROUGE, Faithfulness</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 技术对比标签页 -->
+            <div id="comparison" class="tab-content">
+                <h3 style="margin-bottom: 10px; color: #667eea; font-size: 11px;">向量数据库对比</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>数据库</th>
+                            <th>类型</th>
+                            <th>优势</th>
+                            <th>适用场景</th>
+                            <th>价格模式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pinecone</strong></td>
+                            <td>云服务</td>
+                            <td>高性能、易用、托管服务</td>
+                            <td>生产环境、大规模应用</td>
+                            <td>按使用量付费</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chroma</strong></td>
+                            <td>开源</td>
+                            <td>轻量级、易集成、本地部署</td>
+                            <td>原型开发、小规模应用</td>
+                            <td>免费开源</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weaviate</strong></td>
+                            <td>开源/云</td>
+                            <td>GraphQL API、多模态支持</td>
+                            <td>复杂查询、多媒体数据</td>
+                            <td>开源免费/云服务付费</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Qdrant</strong></td>
+                            <td>开源/云</td>
+                            <td>高性能、Rust实现、过滤功能</td>
+                            <td>高并发、复杂过滤需求</td>
+                            <td>开源免费/云服务付费</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Milvus</strong></td>
+                            <td>开源</td>
+                            <td>分布式、高可扩展性</td>
+                            <td>大规模企业应用</td>
+                            <td>开源免费</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 style="margin: 15px 0 10px 0; color: #667eea; font-size: 11px;">检索策略对比</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>策略</th>
+                            <th>原理</th>
+                            <th>优势</th>
+                            <th>劣势</th>
+                            <th>适用场景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>密集检索</strong></td>
+                            <td>基于向量相似度</td>
+                            <td>语义理解强、泛化能力好</td>
+                            <td>计算成本高、精确匹配弱</td>
+                            <td>语义搜索、概念查询</td>
+                        </tr>
+                        <tr>
+                            <td><strong>稀疏检索</strong></td>
+                            <td>基于关键词匹配</td>
+                            <td>精确匹配、计算效率高</td>
+                            <td>语义理解弱、词汇依赖</td>
+                            <td>精确查询、关键词搜索</td>
+                        </tr>
+                        <tr>
+                            <td><strong>混合检索</strong></td>
+                            <td>结合密集和稀疏</td>
+                            <td>兼顾语义和精确匹配</td>
+                            <td>系统复杂度高</td>
+                            <td>综合搜索需求</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 最佳实践标签页 -->
+            <div id="practices" class="tab-content">
+                <div class="best-practices">
+                    <h3>🚀 RAG系统优化最佳实践</h3>
+                    <ul>
+                        <li><strong>文档预处理：</strong>清理噪声数据，统一格式，保持文档结构完整性</li>
+                        <li><strong>分块策略：</strong>根据文档类型选择合适的分块大小，通常512-1024 tokens</li>
+                        <li><strong>向量模型选择：</strong>根据语言和领域选择合适的嵌入模型</li>
+                        <li><strong>检索优化：</strong>调整top-k参数，使用重排序提高相关性</li>
+                        <li><strong>提示优化：</strong>设计清晰的提示模板，包含上下文和指令</li>
+                        <li><strong>缓存机制：</strong>缓存常见查询结果，提高响应速度</li>
+                        <li><strong>监控评估：</strong>建立完整的评估体系，持续优化系统性能</li>
+                        <li><strong>安全考虑：</strong>实施访问控制，防止敏感信息泄露</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <h3 style="color: #667eea; margin-bottom: 10px; font-size: 11px;">实施步骤</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #007bff;">
+                            <h4 style="color: #007bff; margin-bottom: 6px; font-size: 9px;">阶段一：基础搭建</h4>
+                            <p style="font-size: 8px; line-height: 1.3;">选择技术栈，搭建基础架构，实现文档处理和向量化流程</p>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #28a745;">
+                            <h4 style="color: #28a745; margin-bottom: 6px; font-size: 9px;">阶段二：功能完善</h4>
+                            <p style="font-size: 8px; line-height: 1.3;">优化检索算法，完善提示工程，添加重排序和过滤功能</p>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #ffc107;">
+                            <h4 style="color: #e68900; margin-bottom: 6px; font-size: 9px;">阶段三：生产部署</h4>
+                            <p style="font-size: 8px; line-height: 1.3;">性能优化，监控告警，安全加固，用户体验优化</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部详细说明文字 -->
+        <div class="bottom-details">
+            <h3>知识库RAG系统详细技术说明</h3>
+            <div class="detail-grid">
+                <div class="detail-section">
+                    <h4>文档处理与预处理</h4>
+                    <p><strong>文档解析：</strong>支持PDF、Word、HTML、Markdown等多种格式，使用Unstructured、PyPDF2等工具进行内容提取。</p>
+                    <p><strong>文本清洗：</strong>去除无关字符、统一编码格式、处理特殊符号，保持文本的一致性和可读性。</p>
+                    <p><strong>结构化处理：</strong>识别标题、段落、表格等文档结构，保持语义完整性。</p>
+                    <p><strong>元数据提取：</strong>提取文档标题、作者、创建时间等元信息，用于后续的过滤和排序。</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>向量化与嵌入技术</h4>
+                    <p><strong>嵌入模型选择：</strong>根据语言和领域选择合适的预训练模型，如OpenAI的text-embedding-ada-002或开源的sentence-transformers。</p>
+                    <p><strong>批量处理：</strong>优化向量化流程，支持大批量文档的高效处理，合理控制API调用频率。</p>
+                    <p><strong>维度优化：</strong>根据存储和计算需求选择合适的向量维度，平衡精度和性能。</p>
+                    <p><strong>增量更新：</strong>支持新文档的增量向量化，避免重复计算已处理的文档。</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>检索算法与优化</h4>
+                    <p><strong>相似度计算：</strong>使用余弦相似度、欧氏距离等方法计算查询向量与文档向量的相似性。</p>
+                    <p><strong>索引优化：</strong>使用HNSW、IVF等高效索引算法，支持大规模向量的快速检索。</p>
+                    <p><strong>多阶段检索：</strong>先进行粗粒度检索，再使用精细模型进行重排序，提高检索质量。</p>
+                    <p><strong>过滤机制：</strong>支持基于元数据的过滤，如时间范围、文档类型、权限等条件筛选。</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>生成与后处理</h4>
+                    <p><strong>上下文构建：</strong>将检索到的相关文档片段组织成连贯的上下文，控制总长度在模型限制内。</p>
+                    <p><strong>提示工程：</strong>设计有效的提示模板，明确指示模型如何使用检索到的信息生成回答。</p>
+                    <p><strong>答案生成：</strong>使用大语言模型基于上下文和查询生成准确、相关的回答。</p>
+                    <p><strong>质量控制：</strong>检查生成内容的事实性、相关性和完整性，必要时进行后处理优化。</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>系统监控与评估</h4>
+                    <p><strong>性能监控：</strong>监控检索延迟、生成时间、系统吞吐量等关键性能指标。</p>
+                    <p><strong>质量评估：</strong>使用BLEU、ROUGE、BERTScore等指标评估生成质量，定期进行人工评估。</p>
+                    <p><strong>用户反馈：</strong>收集用户对答案质量的反馈，用于系统持续改进。</p>
+                    <p><strong>A/B测试：</strong>对比不同配置的效果，数据驱动的优化决策。</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>部署与运维</h4>
+                    <p><strong>容器化部署：</strong>使用Docker容器化各个组件，支持微服务架构和水平扩展。</p>
+                    <p><strong>负载均衡：</strong>配置负载均衡器，确保高可用性和请求分发的合理性。</p>
+                    <p><strong>缓存策略：</strong>实施多级缓存，包括查询缓存、向量缓存和结果缓存。</p>
+                    <p><strong>安全防护：</strong>实施API限流、身份认证、数据加密等安全措施，保护系统和数据安全。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // 移除所有按钮的active状态
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // 显示选中的内容
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

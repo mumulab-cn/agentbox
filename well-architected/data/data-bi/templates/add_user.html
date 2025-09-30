@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>添加新用户
+                    </h5>
+                    <a href="{{ url_for('users_list') }}" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>返回列表
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="addUserForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-user me-1"></i>姓名 <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="请输入用户姓名" required>
+                        <div class="form-text">请输入2-20个字符的姓名</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-1"></i>邮箱 <span class="text-danger">*</span>
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="请输入邮箱地址" required>
+                        <div class="form-text">请输入有效的邮箱地址</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="age" class="form-label">
+                            <i class="fas fa-birthday-cake me-1"></i>年龄 <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="age" name="age" 
+                               placeholder="请输入年龄" min="1" max="120" required>
+                        <div class="form-text">请输入1-120之间的年龄</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>保存用户
+                        </button>
+                        <a href="{{ url_for('users_list') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表单说明 -->
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>填写说明
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>姓名：</strong>必填项，长度为2-20个字符</li>
+                    <li><strong>邮箱：</strong>必填项，请确保邮箱地址格式正确</li>
+                    <li><strong>年龄：</strong>必填项，范围为1-120岁</li>
+                </ul>
+                
+                <div class="mt-3 p-3 bg-light rounded">
+                    <h6 class="text-primary mb-2">
+                        <i class="fas fa-lightbulb me-1"></i>提示
+                    </h6>
+                    <p class="mb-0 small">
+                        添加成功后，您可以在用户列表中查看新用户，
+                        也可以通过 API 接口 <code>/api/users</code> 获取用户数据。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('addUserForm').addEventListener('submit', function(e) {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const age = document.getElementById('age').value;
+    
+    // 基本验证
+    if (name.length < 2 || name.length > 20) {
+        e.preventDefault();
+        alert('姓名长度必须在2-20个字符之间');
+        return;
+    }
+    
+    if (!email.includes('@') || !email.includes('.')) {
+        e.preventDefault();
+        alert('请输入有效的邮箱地址');
+        return;
+    }
+    
+    if (age < 1 || age > 120) {
+        e.preventDefault();
+        alert('年龄必须在1-120之间');
+        return;
+    }
+    
+    // 显示提交状态
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>保存中...';
+    submitBtn.disabled = true;
+    
+    // 模拟提交延迟（实际项目中不需要）
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 2000);
+});
+
+// 实时验证
+document.getElementById('name').addEventListener('input', function() {
+    const value = this.value.trim();
+    const feedback = this.nextElementSibling;
+    
+    if (value.length < 2) {
+        feedback.textContent = '姓名至少需要2个字符';
+        feedback.className = 'form-text text-danger';
+    } else if (value.length > 20) {
+        feedback.textContent = '姓名不能超过20个字符';
+        feedback.className = 'form-text text-danger';
+    } else {
+        feedback.textContent = '请输入2-20个字符的姓名';
+        feedback.className = 'form-text';
+    }
+});
+
+document.getElementById('email').addEventListener('input', function() {
+    const value = this.value.trim();
+    const feedback = this.nextElementSibling;
+    
+    if (value && (!value.includes('@') || !value.includes('.'))) {
+        feedback.textContent = '请输入有效的邮箱地址';
+        feedback.className = 'form-text text-danger';
+    } else {
+        feedback.textContent = '请输入有效的邮箱地址';
+        feedback.className = 'form-text';
+    }
+});
+
+document.getElementById('age').addEventListener('input', function() {
+    const value = parseInt(this.value);
+    const feedback = this.nextElementSibling;
+    
+    if (value && (value < 1 || value > 120)) {
+        feedback.textContent = '年龄必须在1-120之间';
+        feedback.className = 'form-text text-danger';
+    } else {
+        feedback.textContent = '请输入1-120之间的年龄';
+        feedback.className = 'form-text';
+    }
+});
+</script>
+{% endblock %}

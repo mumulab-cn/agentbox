@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI数据分析系统 - A3完整版</title>
+    <style>
+        @page {
+            size: A3 landscape;
+            margin: 8mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 8px;
+            line-height: 1.1;
+            color: #333;
+            background: white;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 4px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 4px;
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            border-radius: 3px;
+        }
+        
+        .header h1 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .header p {
+            font-size: 7px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            height: 100%;
+        }
+        
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            padding: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            font-size: 9px;
+            color: #6f42c1;
+            margin-bottom: 3px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1px;
+        }
+        
+        .architecture-diagram {
+            height: 120px;
+            overflow: hidden;
+        }
+        
+        .architecture-diagram svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .data-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 3px 0;
+        }
+        
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .flow-icon {
+            font-size: 12px;
+            margin-bottom: 1px;
+        }
+        
+        .flow-step div {
+            font-size: 6px;
+            line-height: 1.1;
+        }
+        
+        .flow-arrow {
+            font-size: 8px;
+            color: #6c757d;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 2px;
+            padding: 3px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 10px;
+            font-weight: bold;
+            color: #6f42c1;
+        }
+        
+        .metric-label {
+            font-size: 5px;
+            color: #6c757d;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 2px;
+            padding: 3px;
+            border-left: 2px solid #6f42c1;
+        }
+        
+        .card h3 {
+            font-size: 7px;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+        
+        .card p {
+            font-size: 5px;
+            color: #5a6c7d;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+        
+        .card ul {
+            font-size: 5px;
+            color: #5a6c7d;
+            padding-left: 8px;
+        }
+        
+        .card li {
+            margin-bottom: 1px;
+        }
+        
+        .algorithm-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        
+        .algo-icon {
+            width: 12px;
+            height: 12px;
+            background: #6f42c1;
+            color: white;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5px;
+            font-weight: bold;
+            margin-right: 3px;
+        }
+        
+        .algo-content {
+            flex: 1;
+        }
+        
+        .algo-name {
+            font-size: 6px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .algo-desc {
+            font-size: 5px;
+            color: #6c757d;
+        }
+        
+        .table-container {
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 5px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 1px;
+            text-align: left;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .viz-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        
+        .viz-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 2px;
+            padding: 2px;
+            text-align: center;
+        }
+        
+        .viz-icon {
+            font-size: 8px;
+            margin-bottom: 1px;
+        }
+        
+        .viz-name {
+            font-size: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .viz-desc {
+            font-size: 4px;
+            color: #6c757d;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 0 1px;
+            border-radius: 1px;
+        }
+        
+        .details-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            padding: 4px;
+        }
+        
+        .details-title {
+            font-size: 9px;
+            color: #2c3e50;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+        }
+        
+        .detail-item {
+            background: #fff8e1;
+            border: 1px solid #ffecb3;
+            border-radius: 2px;
+            padding: 3px;
+        }
+        
+        .detail-item h4 {
+            font-size: 6px;
+            color: #e65100;
+            margin-bottom: 1px;
+        }
+        
+        .detail-item p {
+            font-size: 5px;
+            color: #bf360c;
+            line-height: 1.1;
+        }
+        
+        @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .container { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI + 数据分析</h1>
+            <p>智能数据分析与机器学习技术全景图</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="column">
+                <!-- 数据分析流程 -->
+                <div class="section architecture-diagram">
+                    <h2>📊 数据分析流程</h2>
+                    <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f8f9fa"/>
+                                <stop offset="100%" style="stop-color:#e9ecef"/>
+                            </linearGradient>
+                            <linearGradient id="dataGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6f42c1"/>
+                                <stop offset="100%" style="stop-color:#e83e8c"/>
+                            </linearGradient>
+                            <linearGradient id="processGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#007bff"/>
+                                <stop offset="100%" style="stop-color:#6610f2"/>
+                            </linearGradient>
+                            <linearGradient id="mlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#28a745"/>
+                                <stop offset="100%" style="stop-color:#20c997"/>
+                            </linearGradient>
+                            <linearGradient id="outputGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#fd7e14"/>
+                                <stop offset="100%" style="stop-color:#dc3545"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <rect width="900" height="300" fill="url(#bgGradient)" rx="10"/>
+                        
+                        <!-- 数据层 -->
+                        <rect x="30" y="50" width="120" height="200" fill="url(#dataGradient)" rx="8" opacity="0.9"/>
+                        <text x="90" y="70" text-anchor="middle" fill="white" font-size="12" font-weight="bold">数据层</text>
+                        
+                        <rect x="45" y="90" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="90" y="105" text-anchor="middle" fill="#6f42c1" font-size="8" font-weight="bold">结构化数据</text>
+                        
+                        <rect x="45" y="125" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="90" y="140" text-anchor="middle" fill="#6f42c1" font-size="8" font-weight="bold">非结构化数据</text>
+                        
+                        <rect x="45" y="160" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="90" y="175" text-anchor="middle" fill="#6f42c1" font-size="8" font-weight="bold">流式数据</text>
+                        
+                        <rect x="45" y="195" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="90" y="210" text-anchor="middle" fill="#6f42c1" font-size="8" font-weight="bold">外部API</text>
+                        
+                        <!-- 处理层 -->
+                        <rect x="200" y="50" width="120" height="200" fill="url(#processGradient)" rx="8" opacity="0.9"/>
+                        <text x="260" y="70" text-anchor="middle" fill="white" font-size="12" font-weight="bold">处理层</text>
+                        
+                        <rect x="215" y="90" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="260" y="102" text-anchor="middle" fill="#007bff" font-size="8" font-weight="bold">数据清洗</text>
+                        
+                        <rect x="215" y="120" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="260" y="132" text-anchor="middle" fill="#007bff" font-size="8" font-weight="bold">特征工程</text>
+                        
+                        <rect x="215" y="150" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="260" y="162" text-anchor="middle" fill="#007bff" font-size="8" font-weight="bold">数据变换</text>
+                        
+                        <rect x="215" y="180" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="260" y="192" text-anchor="middle" fill="#007bff" font-size="8" font-weight="bold">数据集成</text>
+                        
+                        <rect x="215" y="210" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="260" y="222" text-anchor="middle" fill="#007bff" font-size="8" font-weight="bold">质量检查</text>
+                        
+                        <!-- AI/ML层 -->
+                        <rect x="370" y="50" width="120" height="200" fill="url(#mlGradient)" rx="8" opacity="0.9"/>
+                        <text x="430" y="70" text-anchor="middle" fill="white" font-size="12" font-weight="bold">AI/ML层</text>
+                        
+                        <rect x="385" y="90" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="430" y="102" text-anchor="middle" fill="#28a745" font-size="8" font-weight="bold">监督学习</text>
+                        
+                        <rect x="385" y="120" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="430" y="132" text-anchor="middle" fill="#28a745" font-size="8" font-weight="bold">无监督学习</text>
+                        
+                        <rect x="385" y="150" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="430" y="162" text-anchor="middle" fill="#28a745" font-size="8" font-weight="bold">深度学习</text>
+                        
+                        <rect x="385" y="180" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="430" y="192" text-anchor="middle" fill="#28a745" font-size="8" font-weight="bold">强化学习</text>
+                        
+                        <rect x="385" y="210" width="90" height="20" fill="white" rx="3" opacity="0.9"/>
+                        <text x="430" y="222" text-anchor="middle" fill="#28a745" font-size="8" font-weight="bold">集成学习</text>
+                        
+                        <!-- 输出层 -->
+                        <rect x="540" y="50" width="120" height="200" fill="url(#outputGradient)" rx="8" opacity="0.9"/>
+                        <text x="600" y="70" text-anchor="middle" fill="white" font-size="12" font-weight="bold">输出层</text>
+                        
+                        <rect x="555" y="90" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="600" y="105" text-anchor="middle" fill="#fd7e14" font-size="8" font-weight="bold">预测模型</text>
+                        
+                        <rect x="555" y="125" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="600" y="140" text-anchor="middle" fill="#fd7e14" font-size="8" font-weight="bold">分析报告</text>
+                        
+                        <rect x="555" y="160" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="600" y="175" text-anchor="middle" fill="#fd7e14" font-size="8" font-weight="bold">可视化</text>
+                        
+                        <rect x="555" y="195" width="90" height="25" fill="white" rx="3" opacity="0.9"/>
+                        <text x="600" y="210" text-anchor="middle" fill="#fd7e14" font-size="8" font-weight="bold">决策支持</text>
+                        
+                        <!-- 连接箭头 -->
+                        <g fill="#6c757d" opacity="0.7">
+                            <polygon points="160,150 190,145 190,155"/>
+                            <polygon points="330,150 360,145 360,155"/>
+                            <polygon points="500,150 530,145 530,155"/>
+                        </g>
+                        
+                        <!-- 技术标签 -->
+                        <rect x="30" y="15" width="50" height="15" fill="#17a2b8" rx="2"/>
+                        <text x="55" y="25" text-anchor="middle" fill="white" font-size="7" font-weight="bold">Pandas</text>
+                        
+                        <rect x="90" y="15" width="50" height="15" fill="#6f42c1" rx="2"/>
+                        <text x="115" y="25" text-anchor="middle" fill="white" font-size="7" font-weight="bold">Spark</text>
+                        
+                        <rect x="150" y="15" width="60" height="15" fill="#e83e8c" rx="2"/>
+                        <text x="180" y="25" text-anchor="middle" fill="white" font-size="7" font-weight="bold">TensorFlow</text>
+                        
+                        <rect x="220" y="15" width="50" height="15" fill="#fd7e14" rx="2"/>
+                        <text x="245" y="25" text-anchor="middle" fill="white" font-size="7" font-weight="bold">PyTorch</text>
+                    </svg>
+                </div>
+                
+                <div class="section">
+                    <h2>🔄 数据流程</h2>
+                    <div class="data-flow">
+                        <div class="flow-step">
+                            <div class="flow-icon">📊</div>
+                            <div><strong>数据收集</strong></div>
+                            <div>多源数据整合</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon">🔧</div>
+                            <div><strong>数据预处理</strong></div>
+                            <div>清洗与转换</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon">🤖</div>
+                            <div><strong>模型训练</strong></div>
+                            <div>算法优化</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon">📈</div>
+                            <div><strong>结果输出</strong></div>
+                            <div>洞察与决策</div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">95%</div>
+                            <div class="metric-label">预测准确率</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">10x</div>
+                            <div class="metric-label">处理速度提升</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">80%</div>
+                            <div class="metric-label">成本降低</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">24/7</div>
+                            <div class="metric-label">实时监控</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 算法模型 -->
+                <div class="section">
+                    <h2>🎯 算法模型</h2>
+                    <div class="grid">
+                        <div class="card">
+                            <h3>监督学习</h3>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">RF</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">随机森林</div>
+                                    <div class="algo-desc">集成学习算法</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">SVM</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">支持向量机</div>
+                                    <div class="algo-desc">高维数据分类</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">XGB</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">XGBoost</div>
+                                    <div class="algo-desc">梯度提升算法</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>无监督学习</h3>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">KM</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">K-Means</div>
+                                    <div class="algo-desc">聚类算法</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">PCA</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">主成分分析</div>
+                                    <div class="algo-desc">降维算法</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">DB</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">DBSCAN</div>
+                                    <div class="algo-desc">密度聚类</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>深度学习</h3>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">CNN</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">卷积神经网络</div>
+                                    <div class="algo-desc">图像识别</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">RNN</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">循环神经网络</div>
+                                    <div class="algo-desc">序列数据</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">TF</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">Transformer</div>
+                                    <div class="algo-desc">自然语言处理</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>强化学习</h3>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">DQN</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">深度Q网络</div>
+                                    <div class="algo-desc">游戏AI</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">PPO</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">策略优化</div>
+                                    <div class="algo-desc">策略梯度</div>
+                                </div>
+                            </div>
+                            <div class="algorithm-item">
+                                <div class="algo-icon">A3C</div>
+                                <div class="algo-content">
+                                    <div class="algo-name">演员评论家</div>
+                                    <div class="algo-desc">并行训练</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column">
+                <!-- 工具平台 -->
+                <div class="section">
+                    <h2>🛠️ 工具平台</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>工具类别</th>
+                                    <th>主要工具</th>
+                                    <th>核心功能</th>
+                                    <th>适用场景</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>数据处理</strong></td>
+                                    <td>Pandas, Spark</td>
+                                    <td>数据清洗转换</td>
+                                    <td>数据预处理</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>机器学习</strong></td>
+                                    <td>Scikit-learn</td>
+                                    <td>经典ML算法</td>
+                                    <td>传统机器学习</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>深度学习</strong></td>
+                                    <td>TensorFlow, PyTorch</td>
+                                    <td>神经网络训练</td>
+                                    <td>复杂模式识别</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>数据可视化</strong></td>
+                                    <td>Matplotlib, Plotly</td>
+                                    <td>图表生成</td>
+                                    <td>数据展示</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>大数据</strong></td>
+                                    <td>Hadoop, Kafka</td>
+                                    <td>分布式处理</td>
+                                    <td>海量数据</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>云平台</strong></td>
+                                    <td>AWS, Azure, GCP</td>
+                                    <td>云端计算</td>
+                                    <td>弹性扩展</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 数据可视化 -->
+                <div class="section">
+                    <h2>📊 数据可视化</h2>
+                    <div class="viz-grid">
+                        <div class="viz-card">
+                            <div class="viz-icon">📊</div>
+                            <div class="viz-name">柱状图</div>
+                            <div class="viz-desc">分类数据对比</div>
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-icon">📈</div>
+                            <div class="viz-name">折线图</div>
+                            <div class="viz-desc">趋势变化分析</div>
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-icon">🥧</div>
+                            <div class="viz-name">饼图</div>
+                            <div class="viz-desc">比例关系展示</div>
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-icon">🔥</div>
+                            <div class="viz-name">热力图</div>
+                            <div class="viz-desc">相关性矩阵</div>
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-icon">📦</div>
+                            <div class="viz-name">箱线图</div>
+                            <div class="viz-desc">分布特征分析</div>
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-icon">🌐</div>
+                            <div class="viz-name">网络图</div>
+                            <div class="viz-desc">关系网络可视化</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 应用场景 -->
+                <div class="section">
+                    <h2>🎯 应用场景</h2>
+                    <div class="grid">
+                        <div class="card">
+                            <h3>🏪 零售电商</h3>
+                            <p>通过<span class="highlight">用户行为分析</span>提升销售转化。</p>
+                            <ul>
+                                <li><strong>个性化推荐:</strong> 协同过滤推荐</li>
+                                <li><strong>价格优化:</strong> 动态定价策略</li>
+                                <li><strong>库存管理:</strong> 需求预测</li>
+                                <li><strong>用户画像:</strong> RFM分析</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>🏦 金融服务</h3>
+                            <p>运用<span class="highlight">风险建模</span>优化金融决策。</p>
+                            <ul>
+                                <li><strong>信用评分:</strong> 违约风险评估</li>
+                                <li><strong>欺诈检测:</strong> 异常交易识别</li>
+                                <li><strong>算法交易:</strong> 量化投资策略</li>
+                                <li><strong>风险管理:</strong> VaR模型</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>🏥 医疗健康</h3>
+                            <p>利用<span class="highlight">医疗数据挖掘</span>改善诊疗效果。</p>
+                            <ul>
+                                <li><strong>疾病预测:</strong> 风险评估</li>
+                                <li><strong>药物发现:</strong> 分子结构分析</li>
+                                <li><strong>医学影像:</strong> 智能诊断</li>
+                                <li><strong>精准医疗:</strong> 基因数据分析</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>🏭 制造业</h3>
+                            <p>通过<span class="highlight">工业数据分析</span>实现智能制造。</p>
+                            <ul>
+                                <li><strong>预测性维护:</strong> 设备故障预警</li>
+                                <li><strong>质量检测:</strong> 缺陷自动识别</li>
+                                <li><strong>生产优化:</strong> 工艺参数优化</li>
+                                <li><strong>供应链管理:</strong> 需求预测</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>🚗 交通出行</h3>
+                            <p>运用<span class="highlight">时空数据分析</span>优化交通系统。</p>
+                            <ul>
+                                <li><strong>路径规划:</strong> 最优路线推荐</li>
+                                <li><strong>交通预测:</strong> 拥堵预警</li>
+                                <li><strong>需求预测:</strong> 出行需求分析</li>
+                                <li><strong>安全分析:</strong> 事故风险评估</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>📱 互联网</h3>
+                            <p>基于<span class="highlight">用户数据</span>提升产品体验。</p>
+                            <ul>
+                                <li><strong>内容推荐:</strong> 个性化分发</li>
+                                <li><strong>用户增长:</strong> 获客留存分析</li>
+                                <li><strong>A/B测试:</strong> 功能效果评估</li>
+                                <li><strong>情感分析:</strong> 用户反馈挖掘</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column">
+                <!-- 核心技术详解 -->
+                <div class="section">
+                    <h2>🔬 核心技术详解</h2>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <h4>📊 大数据处理技术</h4>
+                            <p>构建分布式数据处理架构，支持PB级数据的高效存储和计算。采用Hadoop生态系统进行批处理，Spark进行内存计算，Kafka处理实时数据流。</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>🤖 机器学习算法优化</h4>
+                            <p>基于AutoML技术实现算法自动选择和超参数优化。采用集成学习方法提升模型性能和鲁棒性。实现在线学习和增量学习。</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>🔄 MLOps生产化部署</h4>
+                            <p>建立端到端的机器学习生产流水线，从数据准备到模型部署的全自动化。采用容器化技术实现模型的标准化部署。</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>📈 实时数据分析</h4>
+                            <p>构建流式数据处理架构，支持毫秒级的实时数据分析和响应。采用复杂事件处理技术识别数据流中的模式和异常。</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>🎯 业务智能决策</h4>
+                            <p>建立多维数据分析体系，支持OLAP查询和钻取分析。构建指标体系和KPI监控框架，实现业务目标的量化管理。</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>🔒 数据安全保护</h4>
+                            <p>实施数据分级分类管理，建立敏感数据识别和保护机制。采用差分隐私和联邦学习技术，在保护隐私的前提下进行数据分析。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="details-section">
+            <div class="details-title">AI数据分析核心技术详解</div>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <h4>📊 大数据处理与存储技术</h4>
+                    <p>构建分布式数据处理架构，支持PB级数据的高效存储和计算。采用Hadoop生态系统进行批处理，Spark进行内存计算，Kafka处理实时数据流。集成数据湖和数据仓库架构，支持结构化和非结构化数据的统一管理。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🤖 机器学习算法优化</h4>
+                    <p>基于AutoML技术实现算法自动选择和超参数优化。采用集成学习方法提升模型性能和鲁棒性。实现在线学习和增量学习，支持模型的持续更新。集成特征工程自动化，包括特征选择、特征构造和特征变换。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🔄 MLOps生产化部署</h4>
+                    <p>建立端到端的机器学习生产流水线，从数据准备到模型部署的全自动化。采用容器化技术实现模型的标准化部署和弹性扩缩容。集成模型版本管理和A/B测试框架，支持模型的灰度发布和效果评估。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>📈 实时数据分析与决策</h4>
+                    <p>构建流式数据处理架构，支持毫秒级的实时数据分析和响应。采用复杂事件处理技术识别数据流中的模式和异常。集成实时机器学习推理引擎，支持在线预测和决策。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🎯 业务智能与数据驱动决策</h4>
+                    <p>建立多维数据分析体系，支持OLAP查询和钻取分析。构建指标体系和KPI监控框架，实现业务目标的量化管理。集成预测分析和情景分析功能，支持业务规划和风险评估。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🔒 数据安全与隐私保护</h4>
+                    <p>实施数据分级分类管理，建立敏感数据识别和保护机制。采用差分隐私和联邦学习技术，在保护隐私的前提下进行数据分析。集成数据脱敏和匿名化工具，确保数据使用的合规性。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

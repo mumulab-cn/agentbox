@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天平台控制台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .console-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        .message-bubble {
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .chat-container {
+            height: calc(100vh - 120px);
+        }
+        .message-list {
+            height: calc(100% - 80px);
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+        #message-list {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        .cli-message-bg {
+            background-color: #FF8800 !important;
+        }
+        .cli-message-text {
+            color: rgba(255, 136, 0, 0.7) !important;
+        }
+    </style>
+</head>
+<body class="console-bg text-white min-h-screen">
+    <div class="flex h-screen">
+        <!-- 左侧菜单 -->
+        <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
+            <div class="p-4 border-b border-slate-700">
+                <h1 class="text-xl font-bold text-blue-400">
+                    <i class="fas fa-comments mr-2"></i>
+                    聊天控制台
+                </h1>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <div class="space-y-2">
+                    <div class="text-sm text-slate-400 uppercase tracking-wide mb-3">平台</div>
+                    
+                    <a href="#" class="sidebar-item flex items-center p-3 rounded-lg transition-colors duration-200 text-blue-300" data-platform="feishu">
+                        <i class="fas fa-rocket mr-3"></i>
+                        <span>飞书</span>
+                        <span class="ml-auto bg-blue-600 text-xs px-2 py-1 rounded-full" id="feishu-count">0</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-item flex items-center p-3 rounded-lg transition-colors duration-200 text-green-300" data-platform="wechat">
+                        <i class="fab fa-weixin mr-3"></i>
+                        <span>企业微信</span>
+                        <span class="ml-auto bg-green-600 text-xs px-2 py-1 rounded-full" id="wechat-count">0</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-item flex items-center p-3 rounded-lg transition-colors duration-200 text-orange-300" data-platform="dingtalk">
+                        <i class="fas fa-bell mr-3"></i>
+                        <span>钉钉</span>
+                        <span class="ml-auto bg-orange-600 text-xs px-2 py-1 rounded-full" id="dingtalk-count">0</span>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <div class="text-sm text-slate-400 uppercase tracking-wide mb-3">设置</div>
+                    <a href="feishu_config.html" class="sidebar-item flex items-center p-3 rounded-lg transition-colors duration-200 text-slate-300">
+                        <i class="fas fa-rocket mr-3"></i>
+                        <span>飞书API配置</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center p-3 rounded-lg transition-colors duration-200 text-slate-300">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>系统设置</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="flex-1 flex flex-col">
+            <!-- 顶部标题栏 -->
+            <div class="bg-slate-800 border-b border-slate-700 p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold" id="platform-title">选择平台开始聊天</h2>
+                        <p class="text-sm text-slate-400" id="platform-subtitle">请从左侧菜单选择一个平台</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors duration-200" id="refresh-btn">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            刷新
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 聊天区域 -->
+            <div class="flex-1 flex" id="chat-area" style="display: none;">
+                <!-- 对话列表 -->
+                <div class="w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
+                    <div class="p-4 border-b border-slate-700">
+                        <h3 class="font-semibold text-slate-200">对话列表</h3>
+                    </div>
+                    <div class="flex-1 overflow-y-auto" id="conversation-list">
+                        <!-- 对话列表将在这里动态加载 -->
+                    </div>
+                </div>
+                
+                <!-- 消息区域 -->
+                <div class="flex-1 flex flex-col">
+                    <div class="flex-1 overflow-y-auto p-4 space-y-4" id="message-list">
+                        <!-- 消息将在这里显示 -->
+                    </div>
+                    
+                    <!-- 消息输入框 -->
+                    <div class="border-t border-slate-700 p-4">
+                        <div class="flex space-x-4">
+                            <input type="text" id="message-input" placeholder="输入消息..." 
+                                   class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                            <button id="send-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg transition-colors duration-200">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 欢迎页面 -->
+            <div class="flex-1 flex items-center justify-center" id="welcome-area">
+                <div class="text-center">
+                    <i class="fas fa-comments text-6xl text-slate-600 mb-4"></i>
+                    <h3 class="text-2xl font-semibold text-slate-300 mb-2">欢迎使用聊天控制台</h3>
+                    <p class="text-slate-400">请从左侧菜单选择一个平台开始管理对话</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

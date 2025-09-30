@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI应用成本分析 - 实践平台</title>
+    <link href="http://localhost/0530/src/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .cost-card {
+            transition: transform 0.3s ease;
+            border-left: 4px solid #0d6efd;
+        }
+        .cost-card:hover {
+            transform: translateY(-5px);
+        }
+        .cost-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .cost-trend {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .chart-container {
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 3px 6px;
+            border-radius: 50%;
+            font-size: 12px;
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">AI应用成本分析平台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">成本概览</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">成本预测</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">优化建议</a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link" href="#">成本告警
+                            <span class="alert-badge">3</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-3">AI应用成本分析中心</h1>
+                <p class="lead">全面分析和优化您的AI应用成本支出</p>
+            </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="filter-section">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label">时间范围</label>
+                            <select class="form-select" id="timeRange">
+                                <option value="today">今日</option>
+                                <option value="week" selected>本周</option>
+                                <option value="month">本月</option>
+                                <option value="quarter">本季度</option>
+                                <option value="year">本年度</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">成本类型</label>
+                            <select class="form-select" id="costType">
+                                <option value="all" selected>全部成本</option>
+                                <option value="model">模型调用成本</option>
+                                <option value="data">数据处理成本</option>
+                                <option value="storage">存储成本</option>
+                                <option value="compute">计算资源成本</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">应用类型</label>
+                            <select class="form-select" id="appType">
+                                <option value="all" selected>全部应用</option>
+                                <option value="chat">对话应用</option>
+                                <option value="generation">生成应用</option>
+                                <option value="analysis">分析应用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="applyFilter">应用筛选</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心指标卡片 -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card h-100 cost-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-currency-dollar feature-icon"></i>
+                        <div class="cost-value">¥45,621</div>
+                        <h5 class="card-title">本月总成本</h5>
+                        <p class="cost-trend"><i class="bi bi-arrow-up-right text-danger"></i> 较上月增长 15.2%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 cost-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up feature-icon"></i>
+                        <div class="cost-value">¥0.82</div>
+                        <h5 class="card-title">平均单次调用成本</h5>
+                        <p class="cost-trend"><i class="bi bi-arrow-down-right text-success"></i> 较上月降低 8.5%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 cost-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-lightning feature-icon"></i>
+                        <div class="cost-value">89.5%</div>
+                        <h5 class="card-title">资源利用率</h5>
+                        <p class="cost-trend"><i class="bi bi-arrow-up-right text-success"></i> 较上月提升 5.2%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 cost-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-piggy-bank feature-icon"></i>
+                        <div class="cost-value">¥12,450</div>
+                        <h5 class="card-title">预计节省空间</h5>
+                        <p class="cost-trend">基于优化建议</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成本分析图表 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="card-title">成本趋势分析</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-primary btn-sm">日</button>
+                                <button type="button" class="btn btn-primary btn-sm">周</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm">月</button>
+                            </div>
+                        </div>
+                        <div id="costTrendChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">成本构成分析</h3>
+                        <div id="costBreakdownChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">应用成本排名</h3>
+                        <div id="appCostRankChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TCO分析工具 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">TCO成本估算工具</h2>
+                        <form id="tcoForm">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">预计使用时长</label>
+                                    <select class="form-select" id="usagePeriod">
+                                        <option value="1">1年</option>
+                                        <option value="3">3年</option>
+                                        <option value="5">5年</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">预计月调用量</label>
+                                    <input type="number" class="form-control" id="monthlyUsage" placeholder="输入预计月调用次数">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">存储需求(GB)</label>
+                                    <input type="number" class="form-control" id="storageNeeds" placeholder="输入存储容量需求">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">计算TCO</button>
+                            </div>
+                        </form>
+                        <div id="tcoResult" class="mt-4 d-none">
+                            <h4>TCO分析结果</h4>
+                            <div id="tcoChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成本优化建议 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">成本优化建议</h2>
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">优化模型调用策略</h5>
+                                    <small class="text-success">预计节省 ¥5,200/月</small>
+                                </div>
+                                <p class="mb-1">通过批量处理和缓存优化，减少重复的模型调用，提高资源利用效率。</p>
+                            </div>
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">调整存储方案</h5>
+                                    <small class="text-success">预计节省 ¥3,800/月</small>
+                                </div>
+                                <p class="mb-1">使用分层存储策略，将低频访问数据迁移到更经济的存储层级。</p>
+                            </div>
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">资源自动伸缩</h5>
+                                    <small class="text-success">预计节省 ¥3,450/月</small>
+                                </div>
+                                <p class="mb-1">根据实际负载自动调整计算资源，避免资源浪费。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="cost_analysis.js"></script>
+</body>
+</html>

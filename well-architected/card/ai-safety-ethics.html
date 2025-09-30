@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI安全伦理与防护护栏 - A3技术卡片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* A3纸张设置 */
+        .container {
+            width: 420mm;
+            height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #dc3545, #fd7e14);
+            border-radius: 2px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+
+        /* 标签页导航 */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab:last-child {
+            margin-right: 0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        /* 内容区域 */
+        .content {
+            min-height: 400px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 安全框架图样式 */
+        .safety-diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .safety-svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #dc3545;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .card ul {
+            color: #5a6c7d;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+
+        .card li {
+            margin-bottom: 8px;
+        }
+
+        /* 表格样式 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #5a6c7d;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 底部详细说明 */
+        .details-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .details-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .detail-item h4 {
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .detail-item p {
+            color: #5a6c7d;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                width: 100%;
+                height: auto;
+                padding: 20px;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .details-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                margin-bottom: 5px;
+                border-radius: 10px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 打印样式 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                width: 420mm;
+                height: 297mm;
+                box-shadow: none;
+                border-radius: 0;
+                page-break-inside: avoid;
+            }
+            
+            .tab:not(.active) {
+                display: none;
+            }
+            
+            .tab-content:not(.active) {
+                display: none;
+            }
+        }
+
+        /* 特殊样式 */
+        .highlight {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .safety-badge {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .risk-level {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-low {
+            background: #d1edff;
+            color: #0c5460;
+        }
+
+        .principle-item {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI安全伦理与防护护栏</h1>
+            <p class="subtitle">负责任的AI开发 - 安全框架、伦理准则与风险防控</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('framework')">安全框架</button>
+            <button class="tab" onclick="showTab('ethics')">伦理准则</button>
+            <button class="tab" onclick="showTab('guardrails')">防护护栏</button>
+            <button class="tab" onclick="showTab('compliance')">合规治理</button>
+        </div>
+
+        <div class="content">
+            <!-- 安全框架标签页 -->
+            <div id="framework" class="tab-content active">
+                <div class="safety-diagram">
+                    <svg class="safety-svg" viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f8f9fa"/>
+                                <stop offset="100%" style="stop-color:#e9ecef"/>
+                            </linearGradient>
+                            <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#dc3545"/>
+                                <stop offset="100%" style="stop-color:#fd7e14"/>
+                            </linearGradient>
+                            <linearGradient id="layerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6f42c1"/>
+                                <stop offset="100%" style="stop-color:#e83e8c"/>
+                            </linearGradient>
+                            <linearGradient id="processGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#20c997"/>
+                                <stop offset="100%" style="stop-color:#17a2b8"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <rect width="900" height="450" fill="url(#bgGradient)" rx="15"/>
+                        
+                        <!-- 核心安全层 -->
+                        <circle cx="450" cy="225" r="80" fill="url(#coreGradient)"/>
+                        <text x="450" y="220" text-anchor="middle" fill="white" font-size="14" font-weight="bold">AI安全核心</text>
+                        <text x="450" y="240" text-anchor="middle" fill="white" font-size="11">Safety Core</text>
+                        
+                        <!-- 内层防护圈 -->
+                        <circle cx="450" cy="225" r="130" fill="none" stroke="url(#layerGradient)" stroke-width="3" stroke-dasharray="10,5"/>
+                        
+                        <!-- 模型安全 -->
+                        <rect x="300" y="120" width="100" height="50" fill="url(#layerGradient)" rx="8"/>
+                        <text x="350" y="140" text-anchor="middle" fill="white" font-size="12" font-weight="bold">模型安全</text>
+                        <text x="350" y="155" text-anchor="middle" fill="white" font-size="9">Model Safety</text>
+                        
+                        <!-- 数据安全 -->
+                        <rect x="500" y="120" width="100" height="50" fill="url(#layerGradient)" rx="8"/>
+                        <text x="550" y="140" text-anchor="middle" fill="white" font-size="12" font-weight="bold">数据安全</text>
+                        <text x="550" y="155" text-anchor="middle" fill="white" font-size="9">Data Safety</text>
+                        
+                        <!-- 应用安全 -->
+                        <rect x="300" y="280" width="100" height="50" fill="url(#layerGradient)" rx="8"/>
+                        <text x="350" y="300" text-anchor="middle" fill="white" font-size="12" font-weight="bold">应用安全</text>
+                        <text x="350" y="315" text-anchor="middle" fill="white" font-size="9">App Safety</text>
+                        
+                        <!-- 系统安全 -->
+                        <rect x="500" y="280" width="100" height="50" fill="url(#layerGradient)" rx="8"/>
+                        <text x="550" y="300" text-anchor="middle" fill="white" font-size="12" font-weight="bold">系统安全</text>
+                        <text x="550" y="315" text-anchor="middle" fill="white" font-size="9">System Safety</text>
+                        
+                        <!-- 外层防护圈 -->
+                        <circle cx="450" cy="225" r="180" fill="none" stroke="url(#processGradient)" stroke-width="3" stroke-dasharray="15,8"/>
+                        
+                        <!-- 外层防护组件 -->
+                        <!-- 风险评估 -->
+                        <rect x="150" y="80" width="90" height="40" fill="url(#processGradient)" rx="6"/>
+                        <text x="195" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">风险评估</text>
+                        <text x="195" y="110" text-anchor="middle" fill="white" font-size="8">Risk Assessment</text>
+                        
+                        <!-- 监控预警 -->
+                        <rect x="660" y="80" width="90" height="40" fill="url(#processGradient)" rx="6"/>
+                        <text x="705" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">监控预警</text>
+                        <text x="705" y="110" text-anchor="middle" fill="white" font-size="8">Monitoring</text>
+                        
+                        <!-- 合规审计 -->
+                        <rect x="150" y="330" width="90" height="40" fill="url(#processGradient)" rx="6"/>
+                        <text x="195" y="345" text-anchor="middle" fill="white" font-size="11" font-weight="bold">合规审计</text>
+                        <text x="195" y="360" text-anchor="middle" fill="white" font-size="8">Compliance</text>
+                        
+                        <!-- 应急响应 -->
+                        <rect x="660" y="330" width="90" height="40" fill="url(#processGradient)" rx="6"/>
+                        <text x="705" y="345" text-anchor="middle" fill="white" font-size="11" font-weight="bold">应急响应</text>
+                        <text x="705" y="360" text-anchor="middle" fill="white" font-size="8">Emergency</text>
+                        
+                        <!-- 治理框架 -->
+                        <rect x="80" y="200" width="80" height="50" fill="#6c757d" rx="6"/>
+                        <text x="120" y="220" text-anchor="middle" fill="white" font-size="11" font-weight="bold">治理框架</text>
+                        <text x="120" y="235" text-anchor="middle" fill="white" font-size="8">Governance</text>
+                        
+                        <!-- 标准规范 -->
+                        <rect x="740" y="200" width="80" height="50" fill="#6c757d" rx="6"/>
+                        <text x="780" y="220" text-anchor="middle" fill="white" font-size="11" font-weight="bold">标准规范</text>
+                        <text x="780" y="235" text-anchor="middle" fill="white" font-size="8">Standards</text>
+                        
+                        <!-- 连接线 -->
+                        <g stroke="#6c757d" stroke-width="2" fill="none" opacity="0.6">
+                            <!-- 内层连接 -->
+                            <line x1="370" y1="145" x2="410" y2="180"/>
+                            <line x1="530" y1="145" x2="490" y2="180"/>
+                            <line x1="370" y1="305" x2="410" y2="270"/>
+                            <line x1="530" y1="305" x2="490" y2="270"/>
+                            
+                            <!-- 外层连接 -->
+                            <line x1="240" y1="100" x2="320" y2="140"/>
+                            <line x1="660" y1="100" x2="580" y2="140"/>
+                            <line x1="240" y1="350" x2="320" y2="310"/>
+                            <line x1="660" y1="350" x2="580" y2="310"/>
+                            
+                            <!-- 治理连接 -->
+                            <line x1="160" y1="225" x2="320" y2="225"/>
+                            <line x1="740" y1="225" x2="580" y2="225"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>🛡️ 多层防护体系</h3>
+                        <p>构建<span class="highlight">纵深防御</span>的安全架构，从模型到应用的全方位保护。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="safety-badge">模型层防护</span>
+                            <span class="safety-badge">数据层防护</span>
+                            <span class="safety-badge">应用层防护</span>
+                            <span class="safety-badge">系统层防护</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>⚠️ 风险识别评估</h3>
+                        <p>建立<span class="highlight">全面风险评估</span>体系，识别和量化AI系统潜在风险。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="risk-high">高风险</span>
+                            <span class="risk-medium">中风险</span>
+                            <span class="risk-low">低风险</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>📊 实时监控预警</h3>
+                        <p>部署<span class="highlight">智能监控系统</span>，实时检测异常行为和安全威胁。</p>
+                        <ul>
+                            <li>模型输出质量监控</li>
+                            <li>异常行为检测</li>
+                            <li>性能指标监控</li>
+                            <li>安全事件告警</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🚨 应急响应机制</h3>
+                        <p>建立<span class="highlight">快速响应</span>体系，及时处理安全事件和系统故障。</p>
+                        <ul>
+                            <li>事件分级处理</li>
+                            <li>自动化响应</li>
+                            <li>人工干预机制</li>
+                            <li>恢复预案执行</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 伦理准则标签页 -->
+            <div id="ethics" class="tab-content">
+                <div class="grid">
+                    <div class="principle-item">
+                        <h3>🤝 公平性原则 (Fairness)</h3>
+                        <p>确保AI系统对所有用户群体<span class="highlight">公平对待</span>，避免歧视和偏见。</p>
+                        <ul>
+                            <li><strong>算法公平:</strong> 消除训练数据中的偏见</li>
+                            <li><strong>结果公平:</strong> 确保不同群体获得公平结果</li>
+                            <li><strong>机会公平:</strong> 保障平等的访问和使用机会</li>
+                            <li><strong>程序公平:</strong> 建立透明的决策流程</li>
+                        </ul>
+                    </div>
+                    <div class="principle-item">
+                        <h3>🔍 透明性原则 (Transparency)</h3>
+                        <p>提供AI系统的<span class="highlight">可解释性</span>，让用户理解决策过程。</p>
+                        <ul>
+                            <li><strong>算法透明:</strong> 公开算法逻辑和决策规则</li>
+                            <li><strong>数据透明:</strong> 说明数据来源和处理方式</li>
+                            <li><strong>结果透明:</strong> 解释输出结果的依据</li>
+                            <li><strong>风险透明:</strong> 告知潜在风险和限制</li>
+                        </ul>
+                    </div>
+                    <div class="principle-item">
+                        <h3>🔒 隐私保护原则 (Privacy)</h3>
+                        <p>严格保护用户<span class="highlight">个人隐私</span>和敏感信息安全。</p>
+                        <ul>
+                            <li><strong>数据最小化:</strong> 只收集必要的数据</li>
+                            <li><strong>用途限制:</strong> 数据仅用于声明目的</li>
+                            <li><strong>安全存储:</strong> 采用加密和访问控制</li>
+                            <li><strong>用户控制:</strong> 提供数据管理权限</li>
+                        </ul>
+                    </div>
+                    <div class="principle-item">
+                        <h3>👥 人类中心原则 (Human-Centric)</h3>
+                        <p>以<span class="highlight">人类福祉</span>为中心，增强而非替代人类能力。</p>
+                        <ul>
+                            <li><strong>人类监督:</strong> 保持人类最终决策权</li>
+                            <li><strong>能力增强:</strong> 提升人类工作效率</li>
+                            <li><strong>价值对齐:</strong> 符合人类价值观</li>
+                            <li><strong>社会责任:</strong> 促进社会整体福利</li>
+                        </ul>
+                    </div>
+                    <div class="principle-item">
+                        <h3>🎯 可靠性原则 (Reliability)</h3>
+                        <p>确保AI系统<span class="highlight">稳定可靠</span>，在各种环境下正常运行。</p>
+                        <ul>
+                            <li><strong>鲁棒性:</strong> 抵抗异常输入和攻击</li>
+                            <li><strong>一致性:</strong> 相同输入产生一致输出</li>
+                            <li><strong>可预测性:</strong> 行为符合预期</li>
+                            <li><strong>容错性:</strong> 优雅处理错误情况</li>
+                        </ul>
+                    </div>
+                    <div class="principle-item">
+                        <h3>⚖️ 问责制原则 (Accountability)</h3>
+                        <p>建立清晰的<span class="highlight">责任机制</span>，确保AI系统的负责任使用。</p>
+                        <ul>
+                            <li><strong>责任主体:</strong> 明确开发和使用责任</li>
+                            <li><strong>审计机制:</strong> 定期评估和检查</li>
+                            <li><strong>补救措施:</strong> 提供错误纠正机制</li>
+                            <li><strong>法律合规:</strong> 遵守相关法律法规</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 防护护栏标签页 -->
+            <div id="guardrails" class="tab-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>防护类型</th>
+                            <th>实现方式</th>
+                            <th>应用场景</th>
+                            <th>技术方案</th>
+                            <th>效果评级</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>输入过滤</strong></td>
+                            <td>内容检测、格式验证</td>
+                            <td>恶意输入防护</td>
+                            <td>规则引擎+ML分类</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>输出审查</strong></td>
+                            <td>内容审核、质量检测</td>
+                            <td>有害内容过滤</td>
+                            <td>多模型验证</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>行为约束</strong></td>
+                            <td>权限控制、操作限制</td>
+                            <td>系统安全防护</td>
+                            <td>RBAC+策略引擎</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>模型对齐</strong></td>
+                            <td>价值观训练、奖励建模</td>
+                            <td>价值观一致性</td>
+                            <td>RLHF+Constitutional AI</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>红队测试</strong></td>
+                            <td>对抗性测试、漏洞挖掘</td>
+                            <td>安全性验证</td>
+                            <td>自动化测试框架</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>人工监督</strong></td>
+                            <td>人在回路、专家审核</td>
+                            <td>关键决策验证</td>
+                            <td>工作流集成</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🚫 内容安全护栏</h3>
+                        <p>防止生成<span class="highlight">有害内容</span>，保护用户和社会安全。</p>
+                        <ul>
+                            <li><strong>暴力内容:</strong> 检测和过滤暴力描述</li>
+                            <li><strong>仇恨言论:</strong> 识别歧视性语言</li>
+                            <li><strong>虚假信息:</strong> 防止误导性内容</li>
+                            <li><strong>隐私泄露:</strong> 保护个人敏感信息</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🔐 访问控制护栏</h3>
+                        <p>实施<span class="highlight">精细化权限管理</span>，控制系统访问。</p>
+                        <ul>
+                            <li><strong>身份认证:</strong> 多因素身份验证</li>
+                            <li><strong>授权管理:</strong> 基于角色的访问控制</li>
+                            <li><strong>会话管理:</strong> 安全会话控制</li>
+                            <li><strong>审计日志:</strong> 完整操作记录</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>⚡ 性能安全护栏</h3>
+                        <p>防止<span class="highlight">资源滥用</span>和<span class="highlight">拒绝服务攻击</span>。</p>
+                        <ul>
+                            <li><strong>速率限制:</strong> API调用频率控制</li>
+                            <li><strong>资源监控:</strong> CPU/内存使用监控</li>
+                            <li><strong>负载均衡:</strong> 分布式负载处理</li>
+                            <li><strong>熔断机制:</strong> 故障自动隔离</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🎯 模型行为护栏</h3>
+                        <p>确保模型<span class="highlight">按预期行为</span>，避免意外输出。</p>
+                        <ul>
+                            <li><strong>输出约束:</strong> 限制输出格式和内容</li>
+                            <li><strong>逻辑检查:</strong> 验证推理逻辑</li>
+                            <li><strong>一致性检测:</strong> 确保输出一致性</li>
+                            <li><strong>异常检测:</strong> 识别异常行为模式</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 合规治理标签页 -->
+            <div id="compliance" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>📋 法规遵循</h3>
+                        <p>遵守国内外<span class="highlight">AI相关法律法规</span>和标准。</p>
+                        <ul>
+                            <li><strong>GDPR:</strong> 欧盟通用数据保护条例</li>
+                            <li><strong>AI法案:</strong> 欧盟人工智能法案</li>
+                            <li><strong>网络安全法:</strong> 中国网络安全法</li>
+                            <li><strong>数据安全法:</strong> 中国数据安全法</li>
+                            <li><strong>个保法:</strong> 个人信息保护法</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🏛️ 治理架构</h3>
+                        <p>建立<span class="highlight">完善的治理体系</span>，确保AI负责任发展。</p>
+                        <ul>
+                            <li><strong>治理委员会:</strong> 高层决策机构</li>
+                            <li><strong>伦理委员会:</strong> 伦理审查机构</li>
+                            <li><strong>技术委员会:</strong> 技术标准制定</li>
+                            <li><strong>风险委员会:</strong> 风险评估管理</li>
+                            <li><strong>合规部门:</strong> 法规遵循监督</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>📊 审计评估</h3>
+                        <p>定期进行<span class="highlight">全面审计评估</span>，确保合规性。</p>
+                        <ul>
+                            <li><strong>技术审计:</strong> 算法和系统审计</li>
+                            <li><strong>伦理审计:</strong> 伦理合规性检查</li>
+                            <li><strong>安全审计:</strong> 安全风险评估</li>
+                            <li><strong>数据审计:</strong> 数据处理合规性</li>
+                            <li><strong>第三方审计:</strong> 独立机构评估</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>📚 标准规范</h3>
+                        <p>制定和遵循<span class="highlight">行业标准规范</span>。</p>
+                        <ul>
+                            <li><strong>ISO/IEC 23053:</strong> AI风险管理框架</li>
+                            <li><strong>ISO/IEC 23894:</strong> AI系统风险管理</li>
+                            <li><strong>IEEE 2857:</strong> AI系统工程标准</li>
+                            <li><strong>国标GB/T:</strong> 中国AI相关标准</li>
+                            <li><strong>行业标准:</strong> 特定领域规范</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🔄 持续改进</h3>
+                        <p>建立<span class="highlight">持续改进机制</span>，适应法规变化。</p>
+                        <ul>
+                            <li><strong>法规跟踪:</strong> 实时跟踪法规变化</li>
+                            <li><strong>影响评估:</strong> 评估法规影响</li>
+                            <li><strong>合规更新:</strong> 及时更新合规措施</li>
+                            <li><strong>培训教育:</strong> 员工合规培训</li>
+                            <li><strong>最佳实践:</strong> 分享行业经验</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🤝 利益相关方参与</h3>
+                        <p>广泛<span class="highlight">利益相关方参与</span>治理过程。</p>
+                        <ul>
+                            <li><strong>用户参与:</strong> 用户反馈和建议</li>
+                            <li><strong>专家咨询:</strong> 领域专家意见</li>
+                            <li><strong>社会监督:</strong> 公众监督参与</li>
+                            <li><strong>政府合作:</strong> 与监管机构合作</li>
+                            <li><strong>行业协作:</strong> 行业自律组织</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部详细说明 -->
+        <div class="details-section">
+            <h2 class="details-title">AI安全伦理核心技术详解</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <h4>🛡️ 多层安全防护体系构建</h4>
+                    <p>建立从数据输入到结果输出的全链路安全防护机制。包括输入验证、模型安全、输出审查、系统防护等多个层次。采用纵深防御策略，确保即使某一层防护失效，其他层次仍能提供保护。集成威胁检测、异常监控、自动响应等智能化安全组件。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>⚖️ 伦理原则与价值对齐</h4>
+                    <p>将人类价值观和伦理原则嵌入AI系统设计和开发全过程。通过Constitutional AI、RLHF等技术实现价值对齐。建立伦理审查机制，对AI应用进行伦理影响评估。制定明确的伦理准则和行为规范，指导AI系统的负责任开发和使用。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🚨 智能护栏与实时防护</h4>
+                    <p>部署智能化的安全护栏系统，实时监控和拦截潜在风险。包括内容安全过滤、行为异常检测、权限访问控制等多种防护机制。采用机器学习技术提升护栏的智能化水平，能够自适应新的威胁模式。建立分级响应机制，根据风险等级采取相应的防护措施。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>📊 风险评估与管理体系</h4>
+                    <p>建立全面的AI风险识别、评估和管理体系。采用定量和定性相结合的方法评估AI系统风险。建立风险分级标准和处置流程，确保高风险场景得到重点关注。实施持续风险监控，及时发现和应对新兴风险。建立风险沟通机制，确保相关方了解风险状况。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🏛️ 合规治理与标准化</h4>
+                    <p>建立完善的AI治理框架，确保符合法律法规要求。制定内部治理政策和操作规程，明确各方责任和义务。建立合规监控和审计机制，定期评估合规状况。积极参与行业标准制定，推动AI治理标准化。建立与监管机构的沟通协调机制，及时响应监管要求。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🔄 持续改进与适应机制</h4>
+                    <p>建立AI安全伦理的持续改进机制，适应技术发展和环境变化。定期评估和更新安全策略、伦理准则和治理框架。建立学习型组织，从安全事件和伦理争议中汲取经验教训。推动技术创新与伦理发展的协调统一，确保AI技术的可持续发展。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有标签内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签的active状态
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 激活对应的标签
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

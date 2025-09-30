@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据BI流程展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .process-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .step-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .step-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-details h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .step-details ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .step-details li {
+            padding: 5px 0;
+            color: #6c757d;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .step-details li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tools-section {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .tools-section h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .tools-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tool-tag {
+            background: #1976d2;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: white;
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+
+        .summary-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 40px;
+        }
+
+        .summary-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .summary-content {
+            color: #666;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .process-flow {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>数据BI流程展示</h1>
+            <p>从原始数据到商业洞察的完整数据处理流程</p>
+        </div>
+
+        <div class="process-flow">
+            <!-- 步骤1: 数据收集 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3 class="step-title">数据收集</h3>
+                <p class="step-description">从各种数据源获取原始数据，建立数据管道和采集机制。</p>
+                
+                <div class="step-details">
+                    <h4>主要活动：</h4>
+                    <ul>
+                        <li>识别和连接数据源</li>
+                        <li>建立数据采集管道</li>
+                        <li>设置数据抓取调度</li>
+                        <li>监控数据质量和完整性</li>
+                        <li>处理数据访问权限</li>
+                    </ul>
+                </div>
+
+                <div class="tools-section">
+                    <h4>常用工具：</h4>
+                    <div class="tools-tags">
+                        <span class="tool-tag">Apache Kafka</span>
+                        <span class="tool-tag">Flume</span>
+                        <span class="tool-tag">Logstash</span>
+                        <span class="tool-tag">Sqoop</span>
+                        <span class="tool-tag">API接口</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤2: 数据清洗 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3 class="step-title">数据清洗</h3>
+                <p class="step-description">处理原始数据中的错误、缺失值和不一致性，确保数据质量。</p>
+                
+                <div class="step-details">
+                    <h4>主要活动：</h4>
+                    <ul>
+                        <li>去除重复数据</li>
+                        <li>处理缺失值和异常值</li>
+                        <li>数据格式标准化</li>
+                        <li>数据类型转换</li>
+                        <li>数据验证和校验</li>
+                    </ul>
+                </div>
+
+                <div class="tools-section">
+                    <h4>常用工具：</h4>
+                    <div class="tools-tags">
+                        <span class="tool-tag">Pandas</span>
+                        <span class="tool-tag">OpenRefine</span>
+                        <span class="tool-tag">Trifacta</span>
+                        <span class="tool-tag">Spark</span>
+                        <span class="tool-tag">SQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤3: 数据增强 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3 class="step-title">数据增强</h3>
+                <p class="step-description">通过特征工程、数据融合和外部数据补充来丰富数据集。</p>
+                
+                <div class="step-details">
+                    <h4>主要活动：</h4>
+                    <ul>
+                        <li>特征工程和特征选择</li>
+                        <li>数据聚合和汇总</li>
+                        <li>外部数据源整合</li>
+                        <li>数据标准化和归一化</li>
+                        <li>创建衍生指标</li>
+                    </ul>
+                </div>
+
+                <div class="tools-section">
+                    <h4>常用工具：</h4>
+                    <div class="tools-tags">
+                        <span class="tool-tag">Scikit-learn</span>
+                        <span class="tool-tag">Feature-engine</span>
+                        <span class="tool-tag">Featuretools</span>
+                        <span class="tool-tag">dbt</span>
+                        <span class="tool-tag">Airflow</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤4: 数据使用 -->
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3 class="step-title">数据使用</h3>
+                <p class="step-description">将处理好的数据应用于分析、建模和可视化，产生商业价值。</p>
+                
+                <div class="step-details">
+                    <h4>主要活动：</h4>
+                    <ul>
+                        <li>数据分析和探索</li>
+                        <li>机器学习建模</li>
+                        <li>数据可视化</li>
+                        <li>报表和仪表板</li>
+                        <li>业务洞察和决策支持</li>
+                    </ul>
+                </div>
+
+                <div class="tools-section">
+                    <h4>常用工具：</h4>
+                    <div class="tools-tags">
+                        <span class="tool-tag">Tableau</span>
+                        <span class="tool-tag">Power BI</span>
+                        <span class="tool-tag">Jupyter</span>
+                        <span class="tool-tag">R Studio</span>
+                        <span class="tool-tag">Grafana</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h2>流程总结</h2>
+            <div class="summary-content">
+                <p>数据BI流程是一个循环迭代的过程，每个步骤都至关重要：</p>
+                <br>
+                <p><strong>数据收集</strong>阶段确保我们获得高质量的原始数据；<strong>数据清洗</strong>阶段保证数据的准确性和一致性；<strong>数据增强</strong>阶段通过特征工程提升数据价值；<strong>数据使用</strong>阶段将数据转化为商业洞察。</p>
+                <br>
+                <p>成功的数据BI项目需要在每个阶段都保持高标准，并建立完善的数据治理体系，确保数据的安全性、可追溯性和可重复性。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.step-card');
+            
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+            });
+        });
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .step-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

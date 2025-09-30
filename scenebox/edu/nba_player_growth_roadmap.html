@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA球员成长路线图 - 从小学生到NBA巨星</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .tab-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .tab-button:hover, .tab-button.active {
+            background: rgba(255, 107, 53, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .roadmap {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .roadmap-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #ff6b35, #f7931e);
+            transform: translateX(-50%);
+        }
+
+        .stage {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .stage:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .stage-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 0 40px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .stage-content:hover {
+            transform: scale(1.05);
+        }
+
+        .stage-icon {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 2;
+        }
+
+        .stage-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #ff6b35;
+        }
+
+        .stage-age {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .stage-description {
+            line-height: 1.6;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .player-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .player-name {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #ff6b35;
+        }
+
+        .player-info {
+            margin-bottom: 15px;
+        }
+
+        .player-stats {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .stage {
+                flex-direction: column !important;
+            }
+            
+            .stage-content {
+                margin: 20px 0;
+            }
+            
+            .roadmap-line {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏀 NBA球员成长路线图</h1>
+            <p class="subtitle">从小学生到NBA巨星的完整成长路径</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('roadmap')">成长路线图</button>
+            <button class="tab-button" onclick="showTab('players')">NBA球星介绍</button>
+        </nav>
+
+        <div id="roadmap" class="content-section active">
+            <div class="roadmap">
+                <div class="roadmap-line"></div>
+                
+                <div class="stage">
+                    <div class="stage-icon">🎯</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">小学阶段 - 篮球启蒙</h3>
+                        <p class="stage-age">年龄：6-12岁</p>
+                        <p class="stage-description">
+                            开始接触篮球，学习基本的运球、投篮和传球技巧。参加学校篮球队或社区篮球训练营，培养对篮球的兴趣和基础技能。重点是享受游戏的乐趣，建立团队合作意识。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">📚</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">初中阶段 - 技能发展</h3>
+                        <p class="stage-age">年龄：13-15岁</p>
+                        <p class="stage-description">
+                            加入校队，参加地区比赛。系统学习篮球战术，提高个人技术水平。开始专项训练，如投篮准确性、防守技巧等。同时保持学业成绩，为未来的奖学金机会做准备。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">🏆</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">高中阶段 - 竞技提升</h3>
+                        <p class="stage-age">年龄：16-18岁</p>
+                        <p class="stage-description">
+                            成为校队核心球员，参加州级和全国性比赛。接受专业教练指导，进行高强度训练。开始被大学球探关注，争取获得大学篮球奖学金。保持优异的学术成绩。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">🎓</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">大学阶段 - 精英训练</h3>
+                        <p class="stage-age">年龄：18-22岁</p>
+                        <p class="stage-description">
+                            进入知名大学篮球项目，如杜克大学、北卡罗来纳大学等。参加NCAA比赛，在全国电视转播中展现实力。接受世界级教练指导，与未来NBA球员同场竞技。完成学位教育。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">🌟</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">NBA选秀 - 职业起点</h3>
+                        <p class="stage-age">年龄：19-22岁</p>
+                        <p class="stage-description">
+                            参加NBA选秀大会，通过试训展示能力。被NBA球队选中，签署职业合同。开始职业生涯，适应NBA的比赛强度和节奏。在发展联盟或NBA球队中磨练技艺。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="stage-icon">👑</div>
+                    <div class="stage-content">
+                        <h3 class="stage-title">NBA巨星 - 巅峰成就</h3>
+                        <p class="stage-age">年龄：23岁以上</p>
+                        <p class="stage-description">
+                            成为NBA全明星球员，争夺总冠军和个人荣誉。签署大额合同，成为球队核心。影响力扩展到球场之外，成为全球体育偶像。为篮球运动的发展做出贡献。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="players" class="content-section">
+            <div class="players-grid">
+                <div class="player-card">
+                    <div class="player-avatar">MJ</div>
+                    <h3 class="player-name">迈克尔·乔丹</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>得分后卫</p>
+                        <p><strong>身高：</strong>1.98米</p>
+                        <p><strong>效力球队：</strong>芝加哥公牛队、华盛顿奇才队</p>
+                        <p><strong>职业生涯：</strong>1984-2003年</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>6次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>6次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>5次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>30.1分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-avatar">LBJ</div>
+                    <h3 class="player-name">勒布朗·詹姆斯</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>小前锋</p>
+                        <p><strong>身高：</strong>2.06米</p>
+                        <p><strong>效力球队：</strong>骑士队、热火队、湖人队</p>
+                        <p><strong>职业生涯：</strong>2003年至今</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>4次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>4次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>4次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>27.2分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-avatar">KB</div>
+                    <h3 class="player-name">科比·布莱恩特</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>得分后卫</p>
+                        <p><strong>身高：</strong>1.98米</p>
+                        <p><strong>效力球队：</strong>洛杉矶湖人队</p>
+                        <p><strong>职业生涯：</strong>1996-2016年</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>5次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>2次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>1次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>25.0分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-avatar">SC</div>
+                    <h3 class="player-name">史蒂芬·库里</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>控球后卫</p>
+                        <p><strong>身高：</strong>1.91米</p>
+                        <p><strong>效力球队：</strong>金州勇士队</p>
+                        <p><strong>职业生涯：</strong>2009年至今</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>4次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>1次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>2次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>24.6分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-avatar">KD</div>
+                    <h3 class="player-name">凯文·杜兰特</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>小前锋</p>
+                        <p><strong>身高：</strong>2.08米</p>
+                        <p><strong>效力球队：</strong>超音速队、雷霆队、勇士队、篮网队、太阳队</p>
+                        <p><strong>职业生涯：</strong>2007年至今</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>2次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>2次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>1次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>27.3分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-avatar">GA</div>
+                    <h3 class="player-name">扬尼斯·阿德托昆博</h3>
+                    <div class="player-info">
+                        <p><strong>位置：</strong>大前锋</p>
+                        <p><strong>身高：</strong>2.11米</p>
+                        <p><strong>效力球队：</strong>密尔沃基雄鹿队</p>
+                        <p><strong>职业生涯：</strong>2013年至今</p>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat-item">
+                            <span>总冠军：</span>
+                            <span>1次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>总决赛MVP：</span>
+                            <span>1次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>常规赛MVP：</span>
+                            <span>2次</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>场均得分：</span>
+                            <span>22.6分</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有内容区域
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 移除所有按钮的活跃状态
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // 显示选中的内容区域
+            document.getElementById(tabName).classList.add('active');
+
+            // 激活对应的按钮
+            event.target.classList.add('active');
+        }
+
+        // 页面加载时的动画效果
+        window.addEventListener('load', function() {
+            const stages = document.querySelectorAll('.stage');
+            stages.forEach((stage, index) => {
+                setTimeout(() => {
+                    stage.style.opacity = '0';
+                    stage.style.transform = 'translateY(50px)';
+                    stage.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        stage.style.opacity = '1';
+                        stage.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全合规 - 企业级AI应用演练沙盘平台</title>
+    <link href="http://localhost/0530/src/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .security-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .security-card:hover {
+            transform: translateY(-5px);
+        }
+        .security-icon {
+            font-size: 2.5rem;
+            color: #1a73e8;
+            margin-bottom: 1rem;
+        }
+        .compliance-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+        }
+        .status-compliant {
+            background-color: #34a853;
+            color: white;
+        }
+        .status-in-progress {
+            background-color: #fbbc05;
+            color: white;
+        }
+        .beian-demo {
+            background-color: #fff;
+        }
+        .nav-tabs .nav-link {
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            color: #1a73e8;
+            border-bottom: 2px solid #1a73e8;
+        }
+    </style>
+    <script>
+        function simulateBeianSubmit(type) {
+            // 隐藏所有结果
+            document.querySelectorAll('.beian-result').forEach(el => el.classList.add('d-none'));
+            
+            // 显示对应类型的结果
+            const resultEl = document.getElementById(type + 'BeianResult');
+            if (resultEl) {
+                resultEl.classList.remove('d-none');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="beianTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="app-tab" data-bs-toggle="tab" data-bs-target="#app-beian" type="button" role="tab">应用备案</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data-beian" type="button" role="tab">数据备案</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="algorithm-tab" data-bs-toggle="tab" data-bs-target="#algorithm-beian" type="button" role="tab">算法备案</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="website-tab" data-bs-toggle="tab" data-bs-target="#website-beian" type="button" role="tab">网站备案</button>
+            </li>
+        </ul>
+
+        <!-- 标签内容 -->
+        <div class="tab-content" id="beianTabContent">
+            <!-- 应用备案 -->
+            <div class="tab-pane fade show active" id="app-beian" role="tabpanel">
+                <div class="row">
+                    <!-- 备案原理 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card security-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-app security-icon"></i>
+                                    <h5 class="card-title">应用备案原理</h5>
+                                </div>
+                                <p>应用备案是确保移动应用程序合规运营的重要环节，通过备案可以规范应用的开发和运营，保护用户权益。</p>
+                                <h6 class="mt-3">备案目的：</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>确保应用内容合法合规</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>保护用户个人信息安全</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>规范应用市场管理</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>提升应用服务质量</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 备案流程 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card security-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-diagram-3 security-icon"></i>
+                                    <h5 class="card-title">应用备案流程</h5>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">1</span>
+                                        <span>准备应用相关材料</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">2</span>
+                                        <span>填写应用信息</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">3</span>
+                                        <span>提交安全评估</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">4</span>
+                                        <span>等待审核通过</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-primary rounded-circle me-3">5</span>
+                                        <span>获取备案凭证</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 交互式演示 -->
+                    <div class="col-12">
+                        <div class="card security-card">
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    <i class="bi bi-phone security-icon"></i>
+                                    <h5 class="card-title">应用备案交互式演示</h5>
+                                </div>
+                                
+                                <!-- 模拟备案表单 -->
+                                <div class="beian-demo p-4 border rounded">
+                                    <h6 class="mb-4">应用备案申请表</h6>
+                                    <form id="appBeianForm">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">应用名称</label>
+                                                <input type="text" class="form-control" placeholder="请输入应用名称">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">应用包名</label>
+                                                <input type="text" class="form-control" placeholder="请输入应用包名">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">应用类型</label>
+                                                <select class="form-select">
+                                                    <option selected>请选择应用类型</option>
+                                                    <option>工具类</option>
+                                                    <option>社交类</option>
+                                                    <option>游戏类</option>
+                                                    <option>生活服务类</option>
+                                                    <option>教育类</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">开发者名称</label>
+                                                <input type="text" class="form-control" placeholder="请输入开发者名称">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">应用简介</label>
+                                            <textarea class="form-control" rows="3" placeholder="请输入应用简介"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">上传应用截图</label>
+                                            <input type="file" class="form-control" multiple>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">上传隐私政策</label>
+                                            <input type="file" class="form-control">
+                                        </div>
+                                        <div class="text-center mt-4">
+                                            <button type="button" class="btn btn-primary px-4" onclick="simulateBeianSubmit('app')">提交备案申请</button>
+                                        </div>
+                                    </form>
+                                    
+                                    <!-- 模拟备案结果 -->
+                                    <div id="appBeianResult" class="mt-4 p-3 border rounded d-none beian-result">
+                                        <h6 class="mb-3">备案申请结果</h6>
+                                        <div class="alert alert-success">
+                                            <i class="bi bi-check-circle-fill me-2"></i>
+                                            <span>恭喜！您的应用备案申请已提交成功，备案号：APP备20250001号</span>
+                                        </div>
+                                        <p class="mb-2">请遵守以下要求：</p>
+                                        <ul>
+                                            <li>在应用商店展示备案信息</li>
+                                            <li>确保应用功能与备案信息一致</li>
+                                            <li>保护用户个人信息安全</li>
+                                            <li>及时更新备案信息</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据备案 -->
+            <div class="tab-pane fade" id="data-beian" role="tabpanel">
+                <div class="row">
+                    <!-- 备案原理 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card security-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-database security-icon"></i>
+                                    <h5 class="card-title">数据备案原理</h5>
+                                </div>
+                                <p>数据备案是对重要数据进行登记和管理的制度，旨在保护数据安全，规范数据使用，防止数据泄露和滥用。</p>
+                                <h6 class="mt-3">备案目的：</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>保护重要数据安全</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>规范数据使用流程</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>防止数据泄露风险</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>确保数据合规使用</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 备案流程 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card security-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-diagram-3 security-icon"></i>
+                                    <h5 class="card-title">数据备案流程</h5>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">1</span>
+                                        <span>数据分类分级</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-primary rounded-circle me-3">2</span>
+                                        <span>准备数据说明文档</span>

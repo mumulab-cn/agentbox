@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <!-- 主要介绍 -->
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-flask text-primary" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="mb-3">Flask 示例应用</h2>
+                <p class="lead text-muted mb-4">
+                    这是一个使用 Flask 框架构建的完整示例应用，展示了现代 Web 开发的最佳实践
+                </p>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <p class="text-muted">
+                            本应用集成了用户管理、博客系统、搜索功能和 RESTful API，
+                            采用响应式设计，支持多种数据操作和交互功能。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 功能特性 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>核心功能
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px; flex-shrink: 0;">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-2">用户管理系统</h6>
+                                        <p class="text-muted small mb-0">
+                                            完整的用户 CRUD 操作，包括用户列表、详情查看、添加新用户等功能
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px; flex-shrink: 0;">
+                                        <i class="fas fa-blog text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-2">博客系统</h6>
+                                        <p class="text-muted small mb-0">
+                                            支持文章发布、分类管理、多视图展示，提供丰富的内容管理功能
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px; flex-shrink: 0;">
+                                        <i class="fas fa-search text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-2">智能搜索</h6>
+                                        <p class="text-muted small mb-0">
+                                            全文搜索功能，支持用户和文章的多维度搜索，提供搜索建议
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 50px; height: 50px; flex-shrink: 0;">
+                                        <i class="fas fa-code text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-2">RESTful API</h6>
+                                        <p class="text-muted small mb-0">
+                                            完整的 API 接口，支持 JSON 数据交换，便于前后端分离开发
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 技术栈 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-server me-2"></i>后端技术
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fab fa-python text-primary me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">Python 3.x</h6>
+                                <small class="text-muted">主要编程语言</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-flask text-success me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">Flask 2.x</h6>
+                                <small class="text-muted">轻量级 Web 框架</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-leaf text-info me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">Jinja2</h6>
+                                <small class="text-muted">模板引擎</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-database text-warning me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">内存数据存储</h6>
+                                <small class="text-muted">演示用数据层</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-desktop me-2"></i>前端技术
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fab fa-html5 text-danger me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">HTML5</h6>
+                                <small class="text-muted">语义化标记</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fab fa-css3-alt text-primary me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">CSS3</h6>
+                                <small class="text-muted">样式和动画</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fab fa-js-square text-warning me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">JavaScript</h6>
+                                <small class="text-muted">交互功能</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fab fa-bootstrap text-purple me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1">Bootstrap 5</h6>
+                                <small class="text-muted">响应式框架</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 项目信息 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>项目信息
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                <h4 class="text-primary mb-1">v1.0.0</h4>
+                                <small class="text-muted">当前版本</small>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <h4 class="text-success mb-1">2024</h4>
+                                <small class="text-muted">发布年份</small>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <h4 class="text-info mb-1">MIT</h4>
+                                <small class="text-muted">开源协议</small>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">主要特点</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        响应式设计，支持多设备访问
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        模块化架构，易于扩展
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        RESTful API 设计
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        现代化 UI 界面
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">适用场景</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-info me-2"></i>
+                                        Flask 学习和教学
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-info me-2"></i>
+                                        Web 开发原型设计
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-info me-2"></i>
+                                        小型项目快速开发
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-info me-2"></i>
+                                        API 服务开发参考
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 联系信息 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>联系我们
+                        </h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="mb-3">如果您有任何问题或建议，欢迎与我们联系</p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="mailto:admin@example.com" class="btn btn-outline-primary">
+                                <i class="fas fa-envelope me-1"></i>邮箱联系
+                            </a>
+                            <a href="#" class="btn btn-outline-info">
+                                <i class="fab fa-github me-1"></i>GitHub
+                            </a>
+                            <a href="#" class="btn btn-outline-success">
+                                <i class="fas fa-globe me-1"></i>官方网站
+                            </a>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <small class="text-muted">
+                                <i class="fas fa-heart text-danger me-1"></i>
+                                感谢您使用 Flask 示例应用！
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 页面加载动画
+document.addEventListener('DOMContentLoaded', function() {
+    // 为卡片添加淡入动画
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+
+// 技术栈图标悬停效果
+document.querySelectorAll('.fab, .fas').forEach(icon => {
+    if (icon.closest('.card-body')) {
+        icon.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.2) rotate(5deg)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        icon.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) rotate(0deg)';
+        });
+    }
+});
+</script>
+{% endblock %}

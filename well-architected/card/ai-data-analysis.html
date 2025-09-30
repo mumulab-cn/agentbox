@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 数据分析 - A3技术卡片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* A3纸张设置 */
+        .container {
+            width: 420mm;
+            height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #6f42c1, #e83e8c);
+            border-radius: 2px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+
+        /* 标签页导航 */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab:last-child {
+            margin-right: 0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        /* 内容区域 */
+        .content {
+            min-height: 400px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 数据分析流程图样式 */
+        .analysis-diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .analysis-svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #6f42c1;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .card ul {
+            color: #5a6c7d;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+
+        .card li {
+            margin-bottom: 8px;
+        }
+
+        /* 表格样式 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #5a6c7d;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 底部详细说明 */
+        .details-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .details-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6f42c1;
+        }
+
+        .detail-item h4 {
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .detail-item p {
+            color: #5a6c7d;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                width: 100%;
+                height: auto;
+                padding: 20px;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .details-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                margin-bottom: 5px;
+                border-radius: 10px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 打印样式 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                width: 420mm;
+                height: 297mm;
+                box-shadow: none;
+                border-radius: 0;
+                page-break-inside: avoid;
+            }
+            
+            .tab:not(.active) {
+                display: none;
+            }
+            
+            .tab-content:not(.active) {
+                display: none;
+            }
+        }
+
+        /* 特殊样式 */
+        .highlight {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .pipeline-step {
+            background: linear-gradient(135deg, #f3e5f5, #e8eaf6);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #6f42c1;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #fff3e0, #fce4ec);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e83e8c;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #6f42c1;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #5a6c7d;
+            font-size: 0.9em;
+        }
+
+        .algorithm-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6f42c1;
+        }
+
+        .algo-icon {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .algo-content {
+            flex: 1;
+        }
+
+        .algo-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .algo-desc {
+            color: #5a6c7d;
+            font-size: 0.85em;
+        }
+
+        .data-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-icon {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.2em;
+        }
+
+        .flow-arrow {
+            color: #6c757d;
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+
+        .visualization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .viz-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid #6f42c1;
+        }
+
+        .viz-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #6f42c1;
+        }
+
+        .viz-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .viz-desc {
+            color: #5a6c7d;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI + 数据分析</h1>
+            <p class="subtitle">智能数据科学 - 机器学习、深度学习与数据挖掘全栈解决方案</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">分析流程</button>
+            <button class="tab" onclick="showTab('algorithms')">算法模型</button>
+            <button class="tab" onclick="showTab('tools')">工具平台</button>
+            <button class="tab" onclick="showTab('applications')">应用场景</button>
+        </div>
+
+        <div class="content">
+            <!-- 分析流程标签页 -->
+            <div id="overview" class="tab-content active">
+                <div class="analysis-diagram">
+                    <svg class="analysis-svg" viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f8f9fa"/>
+                                <stop offset="100%" style="stop-color:#e9ecef"/>
+                            </linearGradient>
+                            <linearGradient id="dataGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6f42c1"/>
+                                <stop offset="100%" style="stop-color:#e83e8c"/>
+                            </linearGradient>
+                            <linearGradient id="processGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#007bff"/>
+                                <stop offset="100%" style="stop-color:#6610f2"/>
+                            </linearGradient>
+                            <linearGradient id="mlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#28a745"/>
+                                <stop offset="100%" style="stop-color:#20c997"/>
+                            </linearGradient>
+                            <linearGradient id="outputGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#fd7e14"/>
+                                <stop offset="100%" style="stop-color:#dc3545"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <rect width="900" height="450" fill="url(#bgGradient)" rx="15"/>
+                        
+                        <!-- 数据层 -->
+                        <rect x="50" y="80" width="150" height="290" fill="url(#dataGradient)" rx="10" opacity="0.9"/>
+                        <text x="125" y="105" text-anchor="middle" fill="white" font-size="16" font-weight="bold">数据层</text>
+                        <text x="125" y="125" text-anchor="middle" fill="white" font-size="10">Data Layer</text>
+                        
+                        <!-- 数据源 -->
+                        <rect x="70" y="150" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="125" y="165" text-anchor="middle" fill="#6f42c1" font-size="11" font-weight="bold">结构化数据</text>
+                        <text x="125" y="178" text-anchor="middle" fill="#6f42c1" font-size="8">SQL/NoSQL</text>
+                        
+                        <rect x="70" y="195" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="125" y="210" text-anchor="middle" fill="#6f42c1" font-size="11" font-weight="bold">非结构化数据</text>
+                        <text x="125" y="223" text-anchor="middle" fill="#6f42c1" font-size="8">文本/图像/音频</text>
+                        
+                        <rect x="70" y="240" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="125" y="255" text-anchor="middle" fill="#6f42c1" font-size="11" font-weight="bold">流式数据</text>
+                        <text x="125" y="268" text-anchor="middle" fill="#6f42c1" font-size="8">实时数据流</text>
+                        
+                        <rect x="70" y="285" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="125" y="300" text-anchor="middle" fill="#6f42c1" font-size="11" font-weight="bold">外部API</text>
+                        <text x="125" y="313" text-anchor="middle" fill="#6f42c1" font-size="8">第三方数据</text>
+                        
+                        <!-- 处理层 -->
+                        <rect x="250" y="80" width="150" height="290" fill="url(#processGradient)" rx="10" opacity="0.9"/>
+                        <text x="325" y="105" text-anchor="middle" fill="white" font-size="16" font-weight="bold">处理层</text>
+                        <text x="325" y="125" text-anchor="middle" fill="white" font-size="10">Processing Layer</text>
+                        
+                        <!-- 处理步骤 -->
+                        <rect x="270" y="150" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="325" y="168" text-anchor="middle" fill="#007bff" font-size="10" font-weight="bold">数据清洗</text>
+                        
+                        <rect x="270" y="190" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="325" y="208" text-anchor="middle" fill="#007bff" font-size="10" font-weight="bold">特征工程</text>
+                        
+                        <rect x="270" y="230" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="325" y="248" text-anchor="middle" fill="#007bff" font-size="10" font-weight="bold">数据变换</text>
+                        
+                        <rect x="270" y="270" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="325" y="288" text-anchor="middle" fill="#007bff" font-size="10" font-weight="bold">数据集成</text>
+                        
+                        <rect x="270" y="310" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="325" y="328" text-anchor="middle" fill="#007bff" font-size="10" font-weight="bold">质量检查</text>
+                        
+                        <!-- AI/ML层 -->
+                        <rect x="450" y="80" width="150" height="290" fill="url(#mlGradient)" rx="10" opacity="0.9"/>
+                        <text x="525" y="105" text-anchor="middle" fill="white" font-size="16" font-weight="bold">AI/ML层</text>
+                        <text x="525" y="125" text-anchor="middle" fill="white" font-size="10">AI/ML Layer</text>
+                        
+                        <!-- ML算法 -->
+                        <rect x="470" y="150" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="525" y="168" text-anchor="middle" fill="#28a745" font-size="10" font-weight="bold">监督学习</text>
+                        
+                        <rect x="470" y="190" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="525" y="208" text-anchor="middle" fill="#28a745" font-size="10" font-weight="bold">无监督学习</text>
+                        
+                        <rect x="470" y="230" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="525" y="248" text-anchor="middle" fill="#28a745" font-size="10" font-weight="bold">深度学习</text>
+                        
+                        <rect x="470" y="270" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="525" y="288" text-anchor="middle" fill="#28a745" font-size="10" font-weight="bold">强化学习</text>
+                        
+                        <rect x="470" y="310" width="110" height="30" fill="white" rx="5" opacity="0.9"/>
+                        <text x="525" y="328" text-anchor="middle" fill="#28a745" font-size="10" font-weight="bold">集成学习</text>
+                        
+                        <!-- 输出层 -->
+                        <rect x="650" y="80" width="150" height="290" fill="url(#outputGradient)" rx="10" opacity="0.9"/>
+                        <text x="725" y="105" text-anchor="middle" fill="white" font-size="16" font-weight="bold">输出层</text>
+                        <text x="725" y="125" text-anchor="middle" fill="white" font-size="10">Output Layer</text>
+                        
+                        <!-- 输出类型 -->
+                        <rect x="670" y="150" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="725" y="165" text-anchor="middle" fill="#fd7e14" font-size="11" font-weight="bold">预测模型</text>
+                        <text x="725" y="178" text-anchor="middle" fill="#fd7e14" font-size="8">Prediction</text>
+                        
+                        <rect x="670" y="195" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="725" y="210" text-anchor="middle" fill="#fd7e14" font-size="11" font-weight="bold">分析报告</text>
+                        <text x="725" y="223" text-anchor="middle" fill="#fd7e14" font-size="8">Analytics</text>
+                        
+                        <rect x="670" y="240" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="725" y="255" text-anchor="middle" fill="#fd7e14" font-size="11" font-weight="bold">可视化</text>
+                        <text x="725" y="268" text-anchor="middle" fill="#fd7e14" font-size="8">Visualization</text>
+                        
+                        <rect x="670" y="285" width="110" height="35" fill="white" rx="5" opacity="0.9"/>
+                        <text x="725" y="300" text-anchor="middle" fill="#fd7e14" font-size="11" font-weight="bold">决策支持</text>
+                        <text x="725" y="313" text-anchor="middle" fill="#fd7e14" font-size="8">Decision</text>
+                        
+                        <!-- 连接箭头 -->
+                        <g fill="#6c757d" opacity="0.7">
+                            <polygon points="210,225 240,215 240,235"/>
+                            <polygon points="410,225 440,215 440,235"/>
+                            <polygon points="610,225 640,215 640,235"/>
+                        </g>
+                        
+                        <!-- 反馈循环 -->
+                        <path d="M 725 380 Q 450 410 125 380" stroke="#6c757d" stroke-width="3" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+                        <text x="450" y="400" text-anchor="middle" fill="#6c757d" font-size="10">持续学习与模型优化</text>
+                        
+                        <!-- 技术标签 -->
+                        <rect x="50" y="20" width="70" height="20" fill="#17a2b8" rx="3"/>
+                        <text x="85" y="32" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Pandas</text>
+                        
+                        <rect x="130" y="20" width="70" height="20" fill="#6f42c1" rx="3"/>
+                        <text x="165" y="32" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Spark</text>
+                        
+                        <rect x="210" y="20" width="70" height="20" fill="#e83e8c" rx="3"/>
+                        <text x="245" y="32" text-anchor="middle" fill="white" font-size="9" font-weight="bold">TensorFlow</text>
+                        
+                        <rect x="290" y="20" width="70" height="20" fill="#fd7e14" rx="3"/>
+                        <text x="325" y="32" text-anchor="middle" fill="white" font-size="9" font-weight="bold">PyTorch</text>
+                        
+                        <rect x="370" y="20" width="70" height="20" fill="#28a745" rx="3"/>
+                        <text x="405" y="32" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Scikit-learn</text>
+                    </svg>
+                </div>
+                
+                <div class="data-flow">
+                    <div class="flow-step">
+                        <div class="flow-icon">📊</div>
+                        <div><strong>数据收集</strong></div>
+                        <div style="font-size: 0.8em; color: #6c757d;">多源数据整合</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-icon">🔧</div>
+                        <div><strong>数据预处理</strong></div>
+                        <div style="font-size: 0.8em; color: #6c757d;">清洗与转换</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-icon">🤖</div>
+                        <div><strong>模型训练</strong></div>
+                        <div style="font-size: 0.8em; color: #6c757d;">算法优化</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-icon">📈</div>
+                        <div><strong>结果输出</strong></div>
+                        <div style="font-size: 0.8em; color: #6c757d;">洞察与决策</div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="metric-card">
+                        <div class="metric-value">95%</div>
+                        <div class="metric-label">预测准确率</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">10x</div>
+                        <div class="metric-label">处理速度提升</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">80%</div>
+                        <div class="metric-label">成本降低</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">24/7</div>
+                        <div class="metric-label">实时监控</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 算法模型标签页 -->
+            <div id="algorithms" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>🎯 监督学习算法</h3>
+                        <p>基于<span class="highlight">标注数据</span>进行训练，实现分类和回归任务。</p>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">RF</div>
+                            <div class="algo-content">
+                                <div class="algo-name">随机森林 (Random Forest)</div>
+                                <div class="algo-desc">集成学习算法，适用于分类和回归</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">SVM</div>
+                            <div class="algo-content">
+                                <div class="algo-name">支持向量机 (SVM)</div>
+                                <div class="algo-desc">高维数据分类的强大工具</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">XGB</div>
+                            <div class="algo-content">
+                                <div class="algo-name">XGBoost</div>
+                                <div class="algo-desc">梯度提升算法，竞赛常用</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🔍 无监督学习算法</h3>
+                        <p>从<span class="highlight">无标签数据</span>中发现隐藏模式和结构。</p>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">KM</div>
+                            <div class="algo-content">
+                                <div class="algo-name">K-Means聚类</div>
+                                <div class="algo-desc">经典聚类算法，用户分群分析</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">PCA</div>
+                            <div class="algo-content">
+                                <div class="algo-name">主成分分析 (PCA)</div>
+                                <div class="algo-desc">降维算法，特征提取</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">DB</div>
+                            <div class="algo-content">
+                                <div class="algo-name">DBSCAN</div>
+                                <div class="algo-desc">密度聚类，异常检测</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🧠 深度学习模型</h3>
+                        <p>基于<span class="highlight">神经网络</span>的复杂模式识别和学习。</p>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">CNN</div>
+                            <div class="algo-content">
+                                <div class="algo-name">卷积神经网络 (CNN)</div>
+                                <div class="algo-desc">图像识别和计算机视觉</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">RNN</div>
+                            <div class="algo-content">
+                                <div class="algo-name">循环神经网络 (RNN/LSTM)</div>
+                                <div class="algo-desc">序列数据和时间序列分析</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">TF</div>
+                            <div class="algo-content">
+                                <div class="algo-name">Transformer</div>
+                                <div class="algo-desc">自然语言处理和大模型基础</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🎮 强化学习算法</h3>
+                        <p>通过<span class="highlight">试错学习</span>优化决策策略。</p>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">DQN</div>
+                            <div class="algo-content">
+                                <div class="algo-name">深度Q网络 (DQN)</div>
+                                <div class="algo-desc">游戏AI和决策优化</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">PPO</div>
+                            <div class="algo-content">
+                                <div class="algo-name">近端策略优化 (PPO)</div>
+                                <div class="algo-desc">稳定的策略梯度算法</div>
+                            </div>
+                        </div>
+                        <div class="algorithm-item">
+                            <div class="algo-icon">A3C</div>
+                            <div class="algo-content">
+                                <div class="algo-name">异步优势演员评论家</div>
+                                <div class="algo-desc">并行强化学习训练</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 工具平台标签页 -->
+            <div id="tools" class="tab-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>工具类别</th>
+                            <th>主要工具</th>
+                            <th>核心功能</th>
+                            <th>适用场景</th>
+                            <th>学习难度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>数据处理</strong></td>
+                            <td>Pandas, Spark, Dask</td>
+                            <td>数据清洗、转换、聚合</td>
+                            <td>数据预处理</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>机器学习</strong></td>
+                            <td>Scikit-learn, XGBoost</td>
+                            <td>传统ML算法实现</td>
+                            <td>分类回归任务</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>深度学习</strong></td>
+                            <td>TensorFlow, PyTorch</td>
+                            <td>神经网络训练</td>
+                            <td>复杂模式识别</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>数据可视化</strong></td>
+                            <td>Matplotlib, Plotly, Tableau</td>
+                            <td>图表生成、交互式可视化</td>
+                            <td>数据展示分析</td>
+                            <td>⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>大数据处理</strong></td>
+                            <td>Hadoop, Spark, Kafka</td>
+                            <td>分布式计算、流处理</td>
+                            <td>海量数据处理</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>云平台</strong></td>
+                            <td>AWS, Azure, GCP</td>
+                            <td>云端ML服务</td>
+                            <td>企业级部署</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="grid">
+                    <div class="pipeline-step">
+                        <h3>🐍 Python生态系统</h3>
+                        <p><strong>核心优势:</strong> 丰富的数据科学库和活跃的社区支持。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="tool-badge">NumPy</span>
+                            <span class="tool-badge">Pandas</span>
+                            <span class="tool-badge">Matplotlib</span>
+                            <span class="tool-badge">Seaborn</span>
+                            <span class="tool-badge">Scikit-learn</span>
+                            <span class="tool-badge">TensorFlow</span>
+                            <span class="tool-badge">PyTorch</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <h3>📊 R语言生态</h3>
+                        <p><strong>核心优势:</strong> 专业的统计分析和数据可视化能力。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="tool-badge">dplyr</span>
+                            <span class="tool-badge">ggplot2</span>
+                            <span class="tool-badge">caret</span>
+                            <span class="tool-badge">randomForest</span>
+                            <span class="tool-badge">shiny</span>
+                            <span class="tool-badge">tidyverse</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <h3>☁️ 云平台服务</h3>
+                        <p><strong>核心优势:</strong> 弹性计算资源和托管ML服务。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="tool-badge">AWS SageMaker</span>
+                            <span class="tool-badge">Azure ML</span>
+                            <span class="tool-badge">Google AI Platform</span>
+                            <span class="tool-badge">Databricks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <h3>🔧 MLOps工具链</h3>
+                        <p><strong>核心优势:</strong> 机器学习生产化部署和运维管理。</p>
+                        <div style="margin-top: 10px;">
+                            <span class="tool-badge">MLflow</span>
+                            <span class="tool-badge">Kubeflow</span>
+                            <span class="tool-badge">DVC</span>
+                            <span class="tool-badge">Weights & Biases</span>
+                            <span class="tool-badge">Docker</span>
+                            <span class="tool-badge">Kubernetes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-grid">
+                    <div class="viz-card">
+                        <div class="viz-icon">📊</div>
+                        <div class="viz-name">柱状图</div>
+                        <div class="viz-desc">分类数据对比</div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-icon">📈</div>
+                        <div class="viz-name">折线图</div>
+                        <div class="viz-desc">趋势变化分析</div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-icon">🥧</div>
+                        <div class="viz-name">饼图</div>
+                        <div class="viz-desc">比例关系展示</div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-icon">🔥</div>
+                        <div class="viz-name">热力图</div>
+                        <div class="viz-desc">相关性矩阵</div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-icon">📦</div>
+                        <div class="viz-name">箱线图</div>
+                        <div class="viz-desc">分布特征分析</div>
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-icon">🌐</div>
+                        <div class="viz-name">网络图</div>
+                        <div class="viz-desc">关系网络可视化</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 应用场景标签页 -->
+            <div id="applications" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>🏪 零售电商</h3>
+                        <p>通过<span class="highlight">用户行为分析</span>和<span class="highlight">推荐系统</span>提升销售转化。</p>
+                        <ul>
+                            <li><strong>个性化推荐:</strong> 基于协同过滤的商品推荐</li>
+                            <li><strong>价格优化:</strong> 动态定价策略分析</li>
+                            <li><strong>库存管理:</strong> 需求预测和补货优化</li>
+                            <li><strong>用户画像:</strong> RFM分析和客户细分</li>
+                            <li><strong>流失预警:</strong> 客户流失风险预测</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🏦 金融服务</h3>
+                        <p>运用<span class="highlight">风险建模</span>和<span class="highlight">量化分析</span>优化金融决策。</p>
+                        <ul>
+                            <li><strong>信用评分:</strong> 贷款违约风险评估</li>
+                            <li><strong>欺诈检测:</strong> 异常交易识别</li>
+                            <li><strong>算法交易:</strong> 量化投资策略</li>
+                            <li><strong>风险管理:</strong> VaR模型和压力测试</li>
+                            <li><strong>智能投顾:</strong> 个性化投资建议</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🏥 医疗健康</h3>
+                        <p>利用<span class="highlight">医疗数据挖掘</span>改善诊疗效果和健康管理。</p>
+                        <ul>
+                            <li><strong>疾病预测:</strong> 基于症状的疾病风险评估</li>
+                            <li><strong>药物发现:</strong> 分子结构分析和药效预测</li>
+                            <li><strong>医学影像:</strong> CT/MRI图像智能诊断</li>
+                            <li><strong>个性化治疗:</strong> 基因数据的精准医疗</li>
+                            <li><strong>健康监控:</strong> 可穿戴设备数据分析</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🏭 制造业</h3>
+                        <p>通过<span class="highlight">工业数据分析</span>实现智能制造和质量控制。</p>
+                        <ul>
+                            <li><strong>预测性维护:</strong> 设备故障预警</li>
+                            <li><strong>质量检测:</strong> 产品缺陷自动识别</li>
+                            <li><strong>生产优化:</strong> 工艺参数优化</li>
+                            <li><strong>供应链管理:</strong> 需求预测和库存优化</li>
+                            <li><strong>能耗分析:</strong> 节能减排优化</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🚗 交通出行</h3>
+                        <p>运用<span class="highlight">时空数据分析</span>优化交通系统和出行体验。</p>
+                        <ul>
+                            <li><strong>路径规划:</strong> 最优路线推荐</li>
+                            <li><strong>交通预测:</strong> 拥堵预警和疏导</li>
+                            <li><strong>需求预测:</strong> 共享出行需求分析</li>
+                            <li><strong>安全分析:</strong> 事故风险评估</li>
+                            <li><strong>自动驾驶:</strong> 环境感知和决策</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📱 互联网</h3>
+                        <p>基于<span class="highlight">用户数据</span>和<span class="highlight">内容分析</span>提升产品体验。</p>
+                        <ul>
+                            <li><strong>内容推荐:</strong> 个性化内容分发</li>
+                            <li><strong>用户增长:</strong> 获客和留存分析</li>
+                            <li><strong>A/B测试:</strong> 产品功能效果评估</li>
+                            <li><strong>情感分析:</strong> 用户反馈情感挖掘</li>
+                            <li><strong>广告优化:</strong> 精准广告投放</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部详细说明 -->
+        <div class="details-section">
+            <h2 class="details-title">AI数据分析核心技术详解</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <h4>📊 大数据处理与存储技术</h4>
+                    <p>构建分布式数据处理架构，支持PB级数据的高效存储和计算。采用Hadoop生态系统进行批处理，Spark进行内存计算，Kafka处理实时数据流。集成数据湖和数据仓库架构，支持结构化和非结构化数据的统一管理。实现数据血缘追踪和质量监控，确保数据的准确性和一致性。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🤖 机器学习算法优化</h4>
+                    <p>基于AutoML技术实现算法自动选择和超参数优化。采用集成学习方法提升模型性能和鲁棒性。实现在线学习和增量学习，支持模型的持续更新。集成特征工程自动化，包括特征选择、特征构造和特征变换。建立模型解释性框架，提供SHAP、LIME等可解释性分析工具。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🔄 MLOps生产化部署</h4>
+                    <p>建立端到端的机器学习生产流水线，从数据准备到模型部署的全自动化。采用容器化技术实现模型的标准化部署和弹性扩缩容。集成模型版本管理和A/B测试框架，支持模型的灰度发布和效果评估。实现模型监控和漂移检测，及时发现和处理模型性能下降问题。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>📈 实时数据分析与决策</h4>
+                    <p>构建流式数据处理架构，支持毫秒级的实时数据分析和响应。采用复杂事件处理(CEP)技术识别数据流中的模式和异常。集成实时机器学习推理引擎，支持在线预测和决策。建立实时数据可视化和告警系统，提供业务指标的实时监控和异常预警功能。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🎯 业务智能与数据驱动决策</h4>
+                    <p>建立多维数据分析体系，支持OLAP查询和钻取分析。构建指标体系和KPI监控框架，实现业务目标的量化管理。集成预测分析和情景分析功能，支持业务规划和风险评估。提供自助式数据分析平台，降低数据分析的技术门槛，赋能业务用户进行数据探索和洞察发现。</p>
+                </div>
+                <div class="detail-item">
+                    <h4>🔒 数据安全与隐私保护</h4>
+                    <p>实施数据分级分类管理，建立敏感数据识别和保护机制。采用差分隐私和联邦学习技术，在保护隐私的前提下进行数据分析。集成数据脱敏和匿名化工具，确保数据使用的合规性。建立数据访问控制和审计机制，实现数据使用的全程追踪和监管。遵循GDPR等数据保护法规要求。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有标签内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签的active状态
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 激活对应的标签
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

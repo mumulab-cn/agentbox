@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能财务管理系统 - 青少年游戏充值理财助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航菜单 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🎮</span>
+                    <span class="logo-text">智能财务管理</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-tab="dashboard">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">总览</span>
+                </div>
+                <div class="menu-item" data-tab="records">
+                    <span class="menu-icon">📝</span>
+                    <span class="menu-text">充值记录</span>
+                </div>
+                <div class="menu-item" data-tab="budget">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">预算管理</span>
+                </div>
+                <div class="menu-item" data-tab="analysis">
+                    <span class="menu-icon">📈</span>
+                    <span class="menu-text">消费分析</span>
+                </div>
+                <div class="menu-item" data-tab="suggestions">
+                    <span class="menu-icon">💡</span>
+                    <span class="menu-text">理财建议</span>
+                </div>
+                <div class="menu-item" id="learnBtn">
+                    <span class="menu-icon">📚</span>
+                    <span class="menu-text">学习中心</span>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>帮助青少年理性游戏充值，培养良好理财习惯</h1>
+            </header>
+
+            <!-- 总览页面 -->
+            <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>本月消费</h3>
+                    <div class="amount" id="monthlySpent">¥0</div>
+                    <div class="progress-bar">
+                        <div class="progress" id="monthlyProgress"></div>
+                    </div>
+                    <small>预算: <span id="monthlyBudget">¥0</span></small>
+                </div>
+                
+                <div class="card">
+                    <h3>今日消费</h3>
+                    <div class="amount" id="todaySpent">¥0</div>
+                </div>
+                
+                <div class="card">
+                    <h3>消费趋势</h3>
+                    <div class="trend" id="spendingTrend">📈 正常</div>
+                </div>
+                
+                <div class="card alert-card" id="alertCard" style="display: none;">
+                    <h3>⚠️ 消费提醒</h3>
+                    <div id="alertMessage"></div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="spendingChart"></canvas>
+            </div>
+        </div>
+
+            <!-- 充值记录页面 -->
+            <div id="records" class="tab-content">
+            <div class="section-header">
+                <h2>📝 充值记录管理</h2>
+                <p class="section-description">记录和管理您的游戏充值历史</p>
+                <button class="btn btn-primary" id="addRecordBtn">
+                    <span class="btn-icon">➕</span>
+                    添加新记录
+                </button>
+            </div>
+            
+            <div class="records-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalRecords">0</div>
+                        <div class="stat-label">总记录数</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎮</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalGames">0</div>
+                        <div class="stat-label">涉及游戏</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="avgAmount">¥0</div>
+                        <div class="stat-label">平均金额</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h3>🔍 筛选条件</h3>
+                </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>游戏筛选</label>
+                        <select id="gameFilter">
+                            <option value="">所有游戏</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>月份筛选</label>
+                        <select id="monthFilter">
+                            <option value="">所有月份</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>金额范围</label>
+                        <select id="amountFilter">
+                            <option value="">所有金额</option>
+                            <option value="0-50">¥0-50</option>
+                            <option value="50-100">¥50-100</option>
+                            <option value="100-200">¥100-200</option>
+                            <option value="200+">¥200以上</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="records-container">
+                <div class="records-header">
+                    <h3>📋 记录列表</h3>
+                    <div class="records-actions">
+                        <button class="btn btn-secondary" id="exportRecords">📤 导出</button>
+                        <button class="btn btn-secondary" id="clearRecords">🗑️ 清空</button>
+                    </div>
+                </div>
+                <div class="records-list" id="recordsList">
+                    <!-- 记录将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </div>
+
+            <!-- 预算管理页面 -->
+            <div id="budget" class="tab-content">
+            <div class="section-header">
+                <h2>💳 预算管理中心</h2>
+                <p class="section-description">设置合理的消费预算，培养良好的理财习惯</p>
+            </div>
+            
+            <div class="budget-overview">
+                <div class="budget-card current-budget">
+                    <div class="budget-icon">💰</div>
+                    <div class="budget-info">
+                        <h3>当前月度预算</h3>
+                        <div class="budget-amount" id="currentBudgetAmount">¥0</div>
+                        <div class="budget-status-text" id="budgetStatusText">未设置预算</div>
+                    </div>
+                </div>
+                
+                <div class="budget-card remaining-budget">
+                    <div class="budget-icon">📊</div>
+                    <div class="budget-info">
+                        <h3>剩余预算</h3>
+                        <div class="budget-amount" id="remainingBudgetAmount">¥0</div>
+                        <div class="budget-status-text" id="remainingDays">本月剩余天数</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="budget-settings">
+                <div class="settings-header">
+                    <h3>⚙️ 预算设置</h3>
+                    <p>合理设置预算限制，避免过度消费</p>
+                </div>
+                
+                <div class="budget-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>💳 月度预算 (¥)</label>
+                            <input type="number" id="monthlyBudgetInput" placeholder="建议设置为月收入的5-10%">
+                            <small class="form-hint">建议根据您的月收入合理设置</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>🎯 单次充值上限 (¥)</label>
+                            <input type="number" id="singleLimitInput" placeholder="避免冲动消费的单次上限">
+                            <small class="form-hint">防止单次大额冲动消费</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>📅 每日充值上限 (¥)</label>
+                            <input type="number" id="dailyLimitInput" placeholder="控制每日消费频率">
+                            <small class="form-hint">控制每日消费频率和金额</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>⏰ 冷静期设置 (小时)</label>
+                            <input type="number" id="cooldownInput" placeholder="充值前的思考时间" value="24">
+                            <small class="form-hint">充值前的冷静思考时间</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="saveBudgetBtn">
+                            <span class="btn-icon">💾</span>
+                            保存预算设置
+                        </button>
+                        <button class="btn btn-secondary" id="resetBudgetBtn">
+                            <span class="btn-icon">🔄</span>
+                            重置设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="budget-analysis">
+                <div class="analysis-header">
+                    <h3>📈 预算使用分析</h3>
+                </div>
+                
+                <div class="budget-progress-section">
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">月度预算使用情况</span>
+                            <span class="progress-percentage" id="budgetPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="budget-bar">
+                                <div class="budget-used" id="budgetUsed"></div>
+                            </div>
+                        </div>
+                        <div class="progress-details">
+                            <span class="detail-item">已使用: <strong id="usedAmount">¥0</strong></span>
+                            <span class="detail-item">剩余: <strong id="remainingAmount">¥0</strong></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="budget-tips">
+                    <div class="tips-header">
+                        <h4>💡 理财小贴士</h4>
+                    </div>
+                    <div class="tips-content" id="budgetTips">
+                        <div class="tip-item">
+                            <span class="tip-icon">🎯</span>
+                            <span class="tip-text">建议将游戏消费控制在月收入的5-10%以内</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">⏰</span>
+                            <span class="tip-text">充值前先冷静24小时，避免冲动消费</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">📊</span>
+                            <span class="tip-text">定期回顾消费记录，调整预算设置</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- 消费分析页面 -->
+            <div id="analysis" class="tab-content">
+            <div class="section-header">
+                <h2>📊 消费分析报告</h2>
+                <p class="section-description">深入了解您的消费习惯，发现潜在的优化空间</p>
+            </div>
+            
+            <div class="analysis-overview">
+                <div class="overview-card total-spent">
+                    <div class="overview-icon">💰</div>
+                    <div class="overview-content">
+                        <h3>总消费金额</h3>
+                        <div class="overview-amount" id="totalSpentAmount">¥0</div>
+                        <small>本月累计消费</small>
+                    </div>
+                </div>
+                
+                <div class="overview-card avg-daily">
+                    <div class="overview-icon">📅</div>
+                    <div class="overview-content">
+                        <h3>日均消费</h3>
+                        <div class="overview-amount" id="avgDailyAmount">¥0</div>
+                        <small>平均每日消费</small>
+                    </div>
+                </div>
+                
+                <div class="overview-card game-count">
+                    <div class="overview-icon">🎮</div>
+                    <div class="overview-content">
+                        <h3>涉及游戏</h3>
+                        <div class="overview-amount" id="gameCountAmount">0</div>
+                        <small>款游戏</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-grid">
+                <div class="card analysis-card">
+                    <div class="card-header">
+                        <h3>💡 消费模式分析</h3>
+                        <div class="card-icon">📈</div>
+                    </div>
+                    <div class="card-content">
+                        <div id="spendingPattern" class="analysis-content">正在分析您的消费模式...</div>
+                        <div class="pattern-tips" id="patternTips"></div>
+                    </div>
+                </div>
+                
+                <div class="card analysis-card">
+                    <div class="card-header">
+                        <h3>🏆 热门游戏排行</h3>
+                        <div class="card-icon">🎯</div>
+                    </div>
+                    <div class="card-content">
+                        <div id="topGames" class="top-games-list">暂无数据</div>
+                    </div>
+                </div>
+                
+                <div class="card analysis-card">
+                    <div class="card-header">
+                        <h3>⏰ 消费频率统计</h3>
+                        <div class="card-icon">📊</div>
+                    </div>
+                    <div class="card-content">
+                        <div id="spendingFrequency" class="frequency-content">正在统计消费频率...</div>
+                        <div class="frequency-chart" id="frequencyChart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>🎮 游戏消费分布图</h3>
+                        <p>查看各游戏的消费占比情况</p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="analysisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- 理财建议页面 -->
+            <div id="suggestions" class="tab-content">
+            <h2>个性化理财建议</h2>
+            
+            <div class="suggestions-list" id="suggestionsList">
+                <!-- 建议将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+            <!-- 学习中心页面 -->
+            <div id="learning" class="tab-content">
+            <div class="section-header">
+                <h2>🎓 学习中心</h2>
+                <p class="section-description">通过系统化学习，掌握理财知识，培养良好的消费习惯</p>
+            </div>
+            
+            <div class="learning-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="totalCourses">3</div>
+                        <div class="stat-label">课程总数</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="completedCourses">0</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="studyTime">0</div>
+                        <div class="stat-label">学习时长(分钟)</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="totalScore">0</div>
+                        <div class="stat-label">总积分</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="learning-path">
+                <div class="path-header">
+                    <h3>📈 学习路径</h3>
+                    <p>按照推荐顺序学习，循序渐进掌握理财技能</p>
+                </div>
+                
+                <div class="learning-modules">
+                    <div class="module-card active" onclick="window.open('learn.html', '_blank')">
+                        <div class="module-header">
+                            <div class="module-icon">💰</div>
+                            <div class="module-badge level-1">基础课程</div>
+                        </div>
+                        <div class="module-content">
+                            <h3>理解金钱的价值</h3>
+                            <p>学习金钱的基本概念，了解赚钱的不易和花钱的意义，建立正确的金钱观念</p>
+                            <div class="module-features">
+                                <span class="feature-tag">💡 互动学习</span>
+                                <span class="feature-tag">🧮 实用工具</span>
+                                <span class="feature-tag">📝 课后测试</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-info">
+                                <span class="progress-label">学习进度</span>
+                                <span class="progress-percentage" id="course1Progress">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="course1ProgressBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="module-actions">
+                            <button class="btn btn-primary">
+                                <span class="btn-icon">🚀</span>
+                                开始学习
+                            </button>
+                            <div class="module-stats">
+                                <span class="stat-item">⏱️ 约30分钟</span>
+                                <span class="stat-item">🎯 5个知识点</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card coming-soon">
+                        <div class="module-header">
+                            <div class="module-icon">📊</div>
+                            <div class="module-badge level-2">进阶课程</div>
+                        </div>
+                        <div class="module-content">
+                            <h3>预算规划基础</h3>
+                            <p>学习如何制定合理的消费预算和理财计划，掌握收支管理技巧</p>
+                            <div class="module-features">
+                                <span class="feature-tag disabled">📊 预算工具</span>
+                                <span class="feature-tag disabled">📈 数据分析</span>
+                                <span class="feature-tag disabled">💼 实战案例</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-info">
+                            <div class="coming-soon-badge">即将推出</div>
+                            <p class="coming-soon-text">完成基础课程后解锁</p>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card coming-soon">
+                        <div class="module-header">
+                            <div class="module-icon">🎯</div>
+                            <div class="module-badge level-3">高级课程</div>
+                        </div>
+                        <div class="module-content">
+                            <h3>理性消费决策</h3>
+                            <p>培养理性思考能力，学会分析消费需求，避免冲动消费和过度消费</p>
+                            <div class="module-features">
+                                <span class="feature-tag disabled">🧠 决策模型</span>
+                                <span class="feature-tag disabled">⚖️ 需求分析</span>
+                                <span class="feature-tag disabled">🛡️ 风险防范</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-info">
+                            <div class="coming-soon-badge">即将推出</div>
+                            <p class="coming-soon-text">完成进阶课程后解锁</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="learning-achievements">
+                <div class="achievements-header">
+                    <h3>🏆 学习成就</h3>
+                    <p>通过学习获得成就徽章，记录您的成长历程</p>
+                </div>
+                
+                <div class="achievements-grid">
+                    <div class="achievement-item locked">
+                        <div class="achievement-icon">🌟</div>
+                        <div class="achievement-info">
+                            <h4>理财新手</h4>
+                            <p>完成第一个课程</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item locked">
+                        <div class="achievement-icon">💎</div>
+                        <div class="achievement-info">
+                            <h4>预算专家</h4>
+                            <p>掌握预算规划技能</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item locked">
+                        <div class="achievement-icon">🎓</div>
+                        <div class="achievement-info">
+                            <h4>理财达人</h4>
+                            <p>完成所有基础课程</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item locked">
+                        <div class="achievement-icon">🏅</div>
+                        <div class="achievement-info">
+                            <h4>满分学霸</h4>
+                            <p>所有测试满分通过</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </main>
+    </div>
+
+    <!-- 添加记录模态框 -->
+    <div id="recordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>添加充值记录</h3>
+            
+            <form id="recordForm">
+                <div class="form-group">
+                    <label>游戏名称</label>
+                    <input type="text" id="gameName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>充值金额 (¥)</label>
+                    <input type="number" id="amount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>充值日期</label>
+                    <input type="date" id="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="note" placeholder="可选"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">添加记录</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

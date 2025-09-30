@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器学习模型 CheatSheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .subsection {
+            margin-bottom: 25px;
+        }
+
+        .subsection h3 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .command-list {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .command-list code {
+            display: block;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .command-list code:last-child {
+            border-bottom: none;
+        }
+
+        .tip {
+            background: #e8f5e8;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 3px solid #3498db;
+        }
+
+        .card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .card li::before {
+            content: '▶';
+            color: #3498db;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 机器学习模型 CheatSheet</h1>
+            <p>模型管理 | 模型部署 | 模型微调 完整指南</p>
+        </div>
+
+        <div class="content">
+            <!-- 模型管理部分 -->
+            <div class="section">
+                <h2>📊 模型管理</h2>
+                
+                <div class="subsection">
+                    <h3>版本控制</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Git LFS</h4>
+                            <div class="command-list">
+                                <code># 安装 Git LFS</code>
+                                <code>git lfs install</code>
+                                <code># 跟踪模型文件</code>
+                                <code>git lfs track "*.pkl" "*.h5" "*.pth"</code>
+                                <code># 提交模型</code>
+                                <code>git add .gitattributes</code>
+                                <code>git commit -m "Add model tracking"</code>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>MLflow</h4>
+                            <div class="command-list">
+                                <code># 启动 MLflow UI</code>
+                                <code>mlflow ui</code>
+                                <code># 记录模型</code>
+                                <code>mlflow.sklearn.log_model(model, "model")</code>
+                                <code># 注册模型</code>
+                                <code>mlflow.register_model("runs:/run_id/model", "MyModel")</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>模型存储</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>本地存储</h4>
+                            <ul>
+                                <li>Pickle (.pkl) - Python 对象序列化</li>
+                                <li>Joblib (.joblib) - scikit-learn 推荐</li>
+                                <li>HDF5 (.h5) - Keras/TensorFlow</li>
+                                <li>PyTorch (.pth/.pt) - PyTorch 模型</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>云存储</h4>
+                            <ul>
+                                <li>AWS S3 - 高可用性对象存储</li>
+                                <li>Google Cloud Storage - 企业级存储</li>
+                                <li>Azure Blob Storage - 微软云存储</li>
+                                <li>MinIO - 开源对象存储</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>模型监控</h3>
+                    <div class="tip">
+                        <strong>💡 监控要点：</strong> 模型性能、数据漂移、概念漂移、资源使用情况
+                    </div>
+                    <div class="command-list">
+                        <code># 使用 Evidently 监控数据漂移</code>
+                        <code>from evidently import ColumnMapping</code>
+                        <code>from evidently.report import Report</code>
+                        <code>from evidently.metric_preset import DataDriftPreset</code>
+                        <code>report = Report(metrics=[DataDriftPreset()])</code>
+                        <code>report.run(reference_data=ref_data, current_data=cur_data)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型部署部分 -->
+            <div class="section">
+                <h2>🚀 模型部署</h2>
+                
+                <div class="subsection">
+                    <h3>容器化部署</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Docker 部署</h4>
+                            <div class="command-list">
+                                <code># Dockerfile 示例</code>
+                                <code>FROM python:3.9-slim</code>
+                                <code>COPY requirements.txt .</code>
+                                <code>RUN pip install -r requirements.txt</code>
+                                <code>COPY . .</code>
+                                <code>EXPOSE 8000</code>
+                                <code>CMD ["python", "app.py"]</code>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>Kubernetes 部署</h4>
+                            <div class="command-list">
+                                <code># 创建部署</code>
+                                <code>kubectl create deployment ml-model --image=my-model:latest</code>
+                                <code># 暴露服务</code>
+                                <code>kubectl expose deployment ml-model --port=8000 --type=LoadBalancer</code>
+                                <code># 扩展副本</code>
+                                <code>kubectl scale deployment ml-model --replicas=3</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>API 服务</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>FastAPI</h4>
+                            <div class="command-list">
+                                <code>from fastapi import FastAPI</code>
+                                <code>import joblib</code>
+                                <code>app = FastAPI()</code>
+                                <code>model = joblib.load("model.pkl")</code>
+                                <code>@app.post("/predict")</code>
+                                <code>def predict(data: dict):</code>
+                                <code>    return {"prediction": model.predict([data])}</code>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>Flask</h4>
+                            <div class="command-list">
+                                <code>from flask import Flask, request, jsonify</code>
+                                <code>import pickle</code>
+                                <code>app = Flask(__name__)</code>
+                                <code>with open('model.pkl', 'rb') as f:</code>
+                                <code>    model = pickle.load(f)</code>
+                                <code>@app.route('/predict', methods=['POST'])</code>
+                                <code>def predict():</code>
+                                <code>    data = request.json</code>
+                                <code>    prediction = model.predict([data])</code>
+                                <code>    return jsonify({'prediction': prediction.tolist()})</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>云平台部署</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>AWS SageMaker</h4>
+                            <ul>
+                                <li>托管的机器学习平台</li>
+                                <li>自动扩展和负载均衡</li>
+                                <li>A/B 测试支持</li>
+                                <li>内置监控和日志</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>Google AI Platform</h4>
+                            <ul>
+                                <li>无服务器推理</li>
+                                <li>批量预测</li>
+                                <li>自定义容器支持</li>
+                                <li>集成 TensorFlow Serving</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ 部署注意事项：</strong> 确保模型版本一致性、设置健康检查、配置日志记录、实施安全措施
+                </div>
+            </div>
+
+            <!-- 模型微调部分 -->
+            <div class="section">
+                <h2>🔧 模型微调</h2>
+                
+                <div class="subsection">
+                    <h3>数据准备</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>数据清洗</h4>
+                            <div class="command-list">
+                                <code># 处理缺失值</code>
+                                <code>df.fillna(df.mean(), inplace=True)</code>
+                                <code># 去除重复值</code>
+                                <code>df.drop_duplicates(inplace=True)</code>
+                                <code># 异常值检测</code>
+                                <code>Q1 = df.quantile(0.25)</code>
+                                <code>Q3 = df.quantile(0.75)</code>
+                                <code>IQR = Q3 - Q1</code>
+                                <code>df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]</code>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>特征工程</h4>
+                            <ul>
+                                <li>标准化/归一化</li>
+                                <li>独热编码</li>
+                                <li>特征选择</li>
+                                <li>特征组合</li>
+                                <li>降维处理</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>训练策略</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>超参数优化</h4>
+                            <div class="command-list">
+                                <code># 使用 Optuna</code>
+                                <code>import optuna</code>
+                                <code>def objective(trial):</code>
+                                <code>    lr = trial.suggest_float('lr', 1e-5, 1e-1)</code>
+                                <code>    batch_size = trial.suggest_int('batch_size', 16, 128)</code>
+                                <code>    # 训练模型并返回验证分数</code>
+                                <code>    return validation_score</code>
+                                <code>study = optuna.create_study(direction='maximize')</code>
+                                <code>study.optimize(objective, n_trials=100)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>交叉验证</h4>
+                            <div class="command-list">
+                                <code>from sklearn.model_selection import cross_val_score</code>
+                                <code># K折交叉验证</code>
+                                <code>scores = cross_val_score(model, X, y, cv=5)</code>
+                                <code>print(f"CV Score: {scores.mean():.3f} (+/- {scores.std() * 2:.3f})")</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>模型评估</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <h4>分类指标</h4>
+                            <ul>
+                                <li>准确率 (Accuracy)</li>
+                                <li>精确率 (Precision)</li>
+                                <li>召回率 (Recall)</li>
+                                <li>F1-Score</li>
+                                <li>AUC-ROC</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>回归指标</h4>
+                            <ul>
+                                <li>均方误差 (MSE)</li>
+                                <li>均方根误差 (RMSE)</li>
+                                <li>平均绝对误差 (MAE)</li>
+                                <li>R² 决定系数</li>
+                                <li>平均绝对百分比误差 (MAPE)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>迁移学习</h3>
+                    <div class="command-list">
+                        <code># PyTorch 迁移学习示例</code>
+                        <code>import torchvision.models as models</code>
+                        <code>model = models.resnet18(pretrained=True)</code>
+                        <code># 冻结预训练层</code>
+                        <code>for param in model.parameters():</code>
+                        <code>    param.requires_grad = False</code>
+                        <code># 替换最后一层</code>
+                        <code>model.fc = nn.Linear(model.fc.in_features, num_classes)</code>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 微调技巧：</strong> 使用较小的学习率、逐层解冻、数据增强、早停机制
+                </div>
+            </div>
+
+            <!-- 最佳实践 -->
+            <div class="section">
+                <h2>✨ 最佳实践</h2>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h4>开发流程</h4>
+                        <ul>
+                            <li>版本控制所有代码和配置</li>
+                            <li>使用虚拟环境隔离依赖</li>
+                            <li>编写单元测试和集成测试</li>
+                            <li>实施 CI/CD 流水线</li>
+                            <li>文档化所有流程</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>生产环境</h4>
+                        <ul>
+                            <li>实施模型监控和告警</li>
+                            <li>设置模型回滚机制</li>
+                            <li>配置负载均衡和自动扩展</li>
+                            <li>定期重训练模型</li>
+                            <li>保持数据和模型的安全性</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

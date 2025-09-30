@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI平台监控中心 - 实践平台</title>
+    <link href="http://localhost/0530/src/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .monitor-card {
+            transition: transform 0.3s ease;
+            border-left: 4px solid #0d6efd;
+        }
+        .monitor-card:hover {
+            transform: translateY(-5px);
+        }
+        .monitor-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .monitor-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .chart-container {
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tool-logo {
+            height: 30px;
+            margin-right: 10px;
+        }
+        .alert-status {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .alert-critical {
+            background-color: #dc3545;
+        }
+        .alert-warning {
+            background-color: #ffc107;
+        }
+        .alert-normal {
+            background-color: #198754;
+        }
+        .layer-header {
+            background-color: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .metric-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">AI平台监控中心</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">监控概览</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">告警管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">监控配置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">工具集成</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-3">AI平台全栈监控中心</h1>
+                <p class="lead">实时监控AI技术栈各层性能、资源使用和健康状态</p>
+            </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="filter-section">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label">时间范围</label>
+                            <select class="form-select" id="timeRange">
+                                <option value="15m">最近15分钟</option>
+                                <option value="1h">最近1小时</option>
+                                <option value="6h">最近6小时</option>
+                                <option value="12h">最近12小时</option>
+                                <option value="24h" selected>最近24小时</option>
+                                <option value="7d">最近7天</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">监控层级</label>
+                            <select class="form-select" id="monitorLayer">
+                                <option value="all" selected>全部层级</option>
+                                <option value="infrastructure">基础设施层</option>
+                                <option value="model">模型层</option>
+                                <option value="application">应用层</option>
+                                <option value="user">用户层</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">告警级别</label>
+                            <select class="form-select" id="alertLevel">
+                                <option value="all" selected>全部告警</option>
+                                <option value="critical">严重告警</option>
+                                <option value="warning">警告</option>
+                                <option value="info">信息</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="applyFilter">应用筛选</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用层监控 -->
+        <div class="row mb-4 application-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-window"></i> 应用层监控
+                    <div class="float-end">
+                        <img src="https://www.datadoghq.com/favicon.ico" alt="Datadog" class="tool-logo" title="Datadog">
+                        <img src="https://newrelic.com/favicon.ico" alt="New Relic" class="tool-logo" title="New Relic">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>API性能指标</h4>
+                                <div id="applicationPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">响应时间</span>
+                                    <span class="badge bg-success metric-badge">请求成功率</span>
+                                    <span class="badge bg-info metric-badge">吞吐量</span>
+                                    <span class="badge bg-warning metric-badge">错误率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Grafana</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>应用健康状态</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>应用名称</th>
+                                            <th>状态</th>
+                                            <th>响应时间</th>
+                                            <th>错误率</th>
+                                            <th>实例数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>对话应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>120ms</td>
+                                            <td>0.05%</td>
+                                            <td>5/5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Agent应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>180ms</td>
+                                            <td>0.1%</td>
+                                            <td>8/8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>内容生成</td>
+                                            <td><span class="badge bg-warning">警告</span></td>
+                                            <td>350ms</td>
+                                            <td>1.2%</td>
+                                            <td>3/4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>知识库</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>90ms</td>
+                                            <td>0.02%</td>
+                                            <td>3/3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="small text-muted mt-2">监控工具: Kubernetes + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>日志分析</h4>
+                                <div id="logAnalysisChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">错误日志</span>
+                                    <span class="badge bg-success metric-badge">警告日志</span>
+                                    <span class="badge bg-info metric-badge">信息日志</span>
+                                    <span class="badge bg-secondary metric-badge">调试日志</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: ELK Stack (Elasticsearch + Logstash + Kibana)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>分布式追踪</h4>
+                                <div id="tracingChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">请求链路</span>
+                                    <span class="badge bg-success metric-badge">服务依赖</span>
+                                    <span class="badge bg-info metric-badge">瓶颈分析</span>
+                                    <span class="badge bg-warning metric-badge">异常追踪</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Jaeger + OpenTelemetry</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户层监控 -->
+        <div class="row mb-4 user-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-people"></i> 用户层监控
+                    <div class="float-end">
+                        <img src="https://www.google-analytics.com/favicon.ico" alt="Google Analytics" class="tool-logo" title="Google Analytics">
+                        <img src="https://www.hotjar.com/favicon.ico" alt="Hotjar" class="tool-logo" title="Hotjar">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>用户体验指标</h4>
+                                <div id="userExperienceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">满意度</span>
+                                    <span class="badge bg-success metric-badge">使用频率</span>
+                                    <span class="badge bg-info metric-badge">任务完成率</span>
+                                    <span class="badge bg-warning metric-badge">放弃率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: 自定义反馈系统 + Prometheus</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>用户行为分析</h4>
+                                <div id="userBehaviorChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">活跃用户</span>
+                                    <span class="badge bg-success metric-badge">会话时长</span>
+                                    <span class="badge bg-info metric-badge">功能使用率</span>
+                                    <span class="badge bg-warning metric-badge">转化率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Google Analytics + 自定义埋点</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 告警管理 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-bell"></i> 告警管理
+                    <div class="float-end">
+                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" class="tool-logo" title="Prometheus Alertmanager">
+                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" class="tool-logo" title="Grafana Alerts">
+                        <img src="https://pagerduty.com/favicon.ico" alt="PagerDuty" class="tool-logo" title="PagerDuty">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>告警趋势</h4>
+                                <div id="alertTrendsChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-danger metric-badge">严重告警</span>
+                                    <span class="badge bg-warning metric-badge">警告</span>
+                                    <span class="badge bg-info metric-badge">信息</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus Alertmanager + Grafana</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h4>活跃告警</h4>
+                                <div id="alertsContainer" class="overflow-auto" style="max-height: 300px;">
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> <strong>严重告警</strong>: LLaMA 3模型响应时间异常
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 内容生成应用实例健康检查失败
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: GPU-3利用率超过90%
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 数据库连接数接近上限
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-info alert-dismissible fade show">
+                                        <i class="bi bi-info-circle-fill"></i> <strong>信息</strong>: 系统自动扩展新增2个模型服务实例
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 监控工具集成 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-tools"></i> 监控工具集成
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Prometheus</h5>
+                                        <p class="small">时序数据库和监控系统，负责指标收集和存储</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Grafana</h5>
+                                        <p class="small">可视化平台，提供丰富的图表和仪表盘</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://www.elastic.co/favicon.ico" alt="ELK Stack" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>ELK Stack</h5>
+                                        <p class="small">日志收集、存储和分析平台</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="car body text-center">
+                                        <img src="body text-center">
+                                        <img src="URL_ADDRESS.jaegertracing.io/img/jaeger-logo.png" alt="Jaeger" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Jaeger</h5>
+                                        <p class="small">分布式追踪系统</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统状态概览 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">系统状态概览</h2>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card h-100 monitor-card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-hdd-rack feature-icon"></i>
+                                        <div class="monitor-value">99.8%</div>
+                                        <h5 class="card-title">基础设施可用性</h5>
+                                        <p class="monitor-label"><span class="alert-status alert-normal"></span> 正常运行</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 monitor-card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-cpu feature-icon"></i>
+                                        <div class="monitor-value">97.5%</div>
+                                        <h5 class="card-title">模型服务可用性</h5>
+                                        <p class="monitor-label"><span class="alert-status alert-warning"></span> 2个警告</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 monitor-card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-window feature-icon"></i>
+                                        <div class="monitor-value">99.2%</div>
+                                        <h5 class="card-title">应用层可用性</h5>
+                                        <p class="monitor-label"><span class="alert-status alert-normal"></span> 正常运行</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 monitor-card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-exclamation-triangle feature-icon" style="color: #ffc107;"></i>
+                                        <div class="monitor-value">5</div>
+                                        <h5 class="card-title">活跃告警</h5>
+                                        <p class="monitor-label"><span class="alert-status alert-critical"></span> 1个严重 <span class="alert-status alert-warning"></span> 4个警告</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用层监控 -->
+        <div class="row mb-4 application-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-window"></i> 应用层监控
+                    <div class="float-end">
+                        <img src="https://www.datadoghq.com/favicon.ico" alt="Datadog" class="tool-logo" title="Datadog">
+                        <img src="https://newrelic.com/favicon.ico" alt="New Relic" class="tool-logo" title="New Relic">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>API性能指标</h4>
+                                <div id="applicationPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">响应时间</span>
+                                    <span class="badge bg-success metric-badge">请求成功率</span>
+                                    <span class="badge bg-info metric-badge">吞吐量</span>
+                                    <span class="badge bg-warning metric-badge">错误率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Grafana</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>应用健康状态</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>应用名称</th>
+                                            <th>状态</th>
+                                            <th>响应时间</th>
+                                            <th>错误率</th>
+                                            <th>实例数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>对话应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>120ms</td>
+                                            <td>0.05%</td>
+                                            <td>5/5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Agent应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>180ms</td>
+                                            <td>0.1%</td>
+                                            <td>8/8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>内容生成</td>
+                                            <td><span class="badge bg-warning">警告</span></td>
+                                            <td>350ms</td>
+                                            <td>1.2%</td>
+                                            <td>3/4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>知识库</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>90ms</td>
+                                            <td>0.02%</td>
+                                            <td>3/3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="small text-muted mt-2">监控工具: Kubernetes + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>日志分析</h4>
+                                <div id="logAnalysisChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">错误日志</span>
+                                    <span class="badge bg-success metric-badge">警告日志</span>
+                                    <span class="badge bg-info metric-badge">信息日志</span>
+                                    <span class="badge bg-secondary metric-badge">调试日志</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: ELK Stack (Elasticsearch + Logstash + Kibana)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>分布式追踪</h4>
+                                <div id="tracingChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">请求链路</span>
+                                    <span class="badge bg-success metric-badge">服务依赖</span>
+                                    <span class="badge bg-info metric-badge">瓶颈分析</span>
+                                    <span class="badge bg-warning metric-badge">异常追踪</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Jaeger + OpenTelemetry</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户层监控 -->
+        <div class="row mb-4 user-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-people"></i> 用户层监控
+                    <div class="float-end">
+                        <img src="https://www.google-analytics.com/favicon.ico" alt="Google Analytics" class="tool-logo" title="Google Analytics">
+                        <img src="https://www.hotjar.com/favicon.ico" alt="Hotjar" class="tool-logo" title="Hotjar">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>用户体验指标</h4>
+                                <div id="userExperienceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">满意度</span>
+                                    <span class="badge bg-success metric-badge">使用频率</span>
+                                    <span class="badge bg-info metric-badge">任务完成率</span>
+                                    <span class="badge bg-warning metric-badge">放弃率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: 自定义反馈系统 + Prometheus</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>用户行为分析</h4>
+                                <div id="userBehaviorChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">活跃用户</span>
+                                    <span class="badge bg-success metric-badge">会话时长</span>
+                                    <span class="badge bg-info metric-badge">功能使用率</span>
+                                    <span class="badge bg-warning metric-badge">转化率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Google Analytics + 自定义埋点</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 告警管理 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-bell"></i> 告警管理
+                    <div class="float-end">
+                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" class="tool-logo" title="Prometheus Alertmanager">
+                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" class="tool-logo" title="Grafana Alerts">
+                        <img src="https://pagerduty.com/favicon.ico" alt="PagerDuty" class="tool-logo" title="PagerDuty">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>告警趋势</h4>
+                                <div id="alertTrendsChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-danger metric-badge">严重告警</span>
+                                    <span class="badge bg-warning metric-badge">警告</span>
+                                    <span class="badge bg-info metric-badge">信息</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus Alertmanager + Grafana</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h4>活跃告警</h4>
+                                <div id="alertsContainer" class="overflow-auto" style="max-height: 300px;">
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> <strong>严重告警</strong>: LLaMA 3模型响应时间异常
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 内容生成应用实例健康检查失败
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: GPU-3利用率超过90%
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 数据库连接数接近上限
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-info alert-dismissible fade show">
+                                        <i class="bi bi-info-circle-fill"></i> <strong>信息</strong>: 系统自动扩展新增2个模型服务实例
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 监控工具集成 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-tools"></i> 监控工具集成
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Prometheus</h5>
+                                        <p class="small">时序数据库和监控系统，负责指标收集和存储</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Grafana</h5>
+                                        <p class="small">可视化平台，提供丰富的图表和仪表盘</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://www.elastic.co/favicon.ico" alt="ELK Stack" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>ELK Stack</h5>
+                                        <p class="small">日志收集、存储和分析平台</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="car body text-center">
+                                        <img src="body text-center">
+                                        <img src="URL_ADDRESS.elastic.co/favicon.ico" alt="ELK Stack" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>ELK Stack</h5>
+                                        <p class="small">日志收集、存储和分析平台</p>
+                                        <span class="badge bg-success">已集成</span>
+                                         <div class="float-end">
+                                         </div>
+
+                                         <div class="float-end">
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- 基础设施层监控 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-hdd-rack"></i> 基础设施层监控
+                    <div class="float-end">
+                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" class="tool-logo" title="Prometheus">
+                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" class="tool-logo" title="Grafana">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>模型性能指标</h4>
+                                <div id="modelPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">推理延迟</span>
+                                    <span class="badge bg-success metric-badge">吞吐量</span>
+                                    <span class="badge bg-info metric-badge">准确率</span>
+                                    <span class="badge bg-warning metric-badge">GPU利用率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: MLflow + Prometheus</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>模型延迟分布</h4>
+                                <div id="modelLatencyChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">P50延迟</span>
+                                    <span class="badge bg-success metric-badge">P90延迟</span>
+                                    <span class="badge bg-info metric-badge">P99延迟</span>
+                                    <span class="badge bg-warning metric-badge">超时率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Jaeger + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>模型吞吐量</h4>
+                                <div id="modelThroughputChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">请求/秒</span>
+                                    <span class="badge bg-success metric-badge">批处理大小</span>
+                                    <span class="badge bg-info metric-badge">并发请求数</span>
+                                    <span class="badge bg-warning metric-badge">队列长度</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Grafana</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>模型版本与部署</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>模型名称</th>
+                                            <th>版本</th>
+                                            <th>部署时间</th>
+                                            <th>状态</th>
+                                            <th>健康度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>GPT-4</td>
+                                            <td>v1.2.5</td>
+                                            <td>2025-02-15</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 98%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>LLaMA 3</td>
+                                            <td>v2.0.1</td>
+                                            <td>2025-02-20</td>
+                                            <td><span class="badge bg-warning">部分可用</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Embedding</td>
+                                            <td>v3.1.0</td>
+                                            <td>2025-02-10</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 99%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>多模态模型</td>
+                                            <td>v1.5.2</td>
+                                            <td>2025-02-18</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="small text-muted mt-2">监控工具: MLflow + Kubernetes Dashboard</p>
+                            </div>
+                        </div>
+                            <div class="col-md-6">
+                                <h4>服务器资源使用率</h4>
+                                <div id="serverResourceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">CPU使用率</span>
+                                    <span class="badge bg-success metric-badge">内存使用率</span>
+                                    <span class="badge bg-info metric-badge">磁盘I/O</span>
+                                    <span class="badge bg-warning metric-badge">网络流量</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Node Exporter</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>容器资源监控</h4>
+                                <div id="containerResourceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">容器CPU使用率</span>
+                                    <span class="badge bg-success metric-badge">容器内存使用率</span>
+                                    <span class="badge bg-info metric-badge">容器网络I/O</span>
+                                    <span class="badge bg-secondary metric-badge">容器数量</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: cAdvisor + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>数据库性能</h4>
+                                <div id="databasePerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">查询响应时间</span>
+                                    <span class="badge bg-success metric-badge">连接数</span>
+                                    <span class="badge bg-info metric-badge">事务吞吐量</span>
+                                    <span class="badge bg-warning metric-badge">缓存命中率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Database Exporter</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>网络性能</h4>
+                                <div id="networkPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">网络延迟</span>
+                                    <span class="badge bg-success metric-badge">吞吐量</span>
+                                    <span class="badge bg-info metric-badge">错误率</span>
+                                    <span class="badge bg-warning metric-badge">带宽使用率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Blackbox Exporter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用层监控 -->
+        <div class="row mb-4 application-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-window"></i> 应用层监控
+                    <div class="float-end">
+                        <img src="https://www.datadoghq.com/favicon.ico" alt="Datadog" class="tool-logo" title="Datadog">
+                        <img src="https://newrelic.com/favicon.ico" alt="New Relic" class="tool-logo" title="New Relic">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>API性能指标</h4>
+                                <div id="applicationPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">响应时间</span>
+                                    <span class="badge bg-success metric-badge">请求成功率</span>
+                                    <span class="badge bg-info metric-badge">吞吐量</span>
+                                    <span class="badge bg-warning metric-badge">错误率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Grafana</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>应用健康状态</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>应用名称</th>
+                                            <th>状态</th>
+                                            <th>响应时间</th>
+                                            <th>错误率</th>
+                                            <th>实例数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>对话应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>120ms</td>
+                                            <td>0.05%</td>
+                                            <td>5/5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Agent应用</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>180ms</td>
+                                            <td>0.1%</td>
+                                            <td>8/8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>内容生成</td>
+                                            <td><span class="badge bg-warning">警告</span></td>
+                                            <td>350ms</td>
+                                            <td>1.2%</td>
+                                            <td>3/4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>知识库</td>
+                                            <td><span class="badge bg-success">正常</span></td>
+                                            <td>90ms</td>
+                                            <td>0.02%</td>
+                                            <td>3/3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="small text-muted mt-2">监控工具: Kubernetes + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>日志分析</h4>
+                                <div id="logAnalysisChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">错误日志</span>
+                                    <span class="badge bg-success metric-badge">警告日志</span>
+                                    <span class="badge bg-info metric-badge">信息日志</span>
+                                    <span class="badge bg-secondary metric-badge">调试日志</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: ELK Stack (Elasticsearch + Logstash + Kibana)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>分布式追踪</h4>
+                                <div id="tracingChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">请求链路</span>
+                                    <span class="badge bg-success metric-badge">服务依赖</span>
+                                    <span class="badge bg-info metric-badge">瓶颈分析</span>
+                                    <span class="badge bg-warning metric-badge">异常追踪</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Jaeger + OpenTelemetry</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户层监控 -->
+        <div class="row mb-4 user-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-people"></i> 用户层监控
+                    <div class="float-end">
+                        <img src="https://www.google-analytics.com/favicon.ico" alt="Google Analytics" class="tool-logo" title="Google Analytics">
+                        <img src="https://www.hotjar.com/favicon.ico" alt="Hotjar" class="tool-logo" title="Hotjar">
+                        <img src="https://www.elastic.co/favicon.ico" alt="ELK" class="tool-logo" title="ELK Stack">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>用户体验指标</h4>
+                                <div id="userExperienceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">满意度</span>
+                                    <span class="badge bg-success metric-badge">使用频率</span>
+                                    <span class="badge bg-info metric-badge">任务完成率</span>
+                                    <span class="badge bg-warning metric-badge">放弃率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: 自定义反馈系统 + Prometheus</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>用户行为分析</h4>
+                                <div id="userBehaviorChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">活跃用户</span>
+                                    <span class="badge bg-success metric-badge">会话时长</span>
+                                    <span class="badge bg-info metric-badge">功能使用率</span>
+                                    <span class="badge bg-warning metric-badge">转化率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Google Analytics + 自定义埋点</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 告警管理 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-bell"></i> 告警管理
+                    <div class="float-end">
+                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" class="tool-logo" title="Prometheus Alertmanager">
+                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" class="tool-logo" title="Grafana Alerts">
+                        <img src="https://pagerduty.com/favicon.ico" alt="PagerDuty" class="tool-logo" title="PagerDuty">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>告警趋势</h4>
+                                <div id="alertTrendsChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-danger metric-badge">严重告警</span>
+                                    <span class="badge bg-warning metric-badge">警告</span>
+                                    <span class="badge bg-info metric-badge">信息</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus Alertmanager + Grafana</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h4>活跃告警</h4>
+                                <div id="alertsContainer" class="overflow-auto" style="max-height: 300px;">
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> <strong>严重告警</strong>: LLaMA 3模型响应时间异常
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 内容生成应用实例健康检查失败
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: GPU-3利用率超过90%
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-warning alert-dismissible fade show">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <strong>警告</strong>: 数据库连接数接近上限
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    <div class="alert alert-info alert-dismissible fade show">
+                                        <i class="bi bi-info-circle-fill"></i> <strong>信息</strong>: 系统自动扩展新增2个模型服务实例
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 监控工具集成 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-tools"></i> 监控工具集成
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Prometheus</h5>
+                                        <p class="small">时序数据库和监控系统，负责指标收集和存储</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://grafana.com/static/img/menu/grafana2.svg" alt="Grafana" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>Grafana</h5>
+                                        <p class="small">可视化平台，提供丰富的图表和仪表盘</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="https://www.elastic.co/favicon.ico" alt="ELK Stack" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>ELK Stack</h5>
+                                        <p class="small">日志收集、存储和分析平台</p>
+                                        <span class="badge bg-success">已集成</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="car body text-center">
+                                        <img src="body text-center">
+                                        <img src="URL_ADDRESS.elastic.co/favicon.ico" alt="ELK Stack" style="height: 50px; margin-bottom: 15px;">
+                                        <h5>ELK Stack</h5>
+                                        <p class="small">日志收集、存储和分析平台</p>
+                                        <span class="badge bg-success">已集成</span>
+                                         <div class="float-end">
+                                         </div>
+
+                                         <div class="float-end">
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- 模型层监控 -->
+        <div class="row mb-4 model-layer">
+            <div class="col-12">
+                <div class="layer-header">
+                    <i class="bi bi-cpu"></i> 模型层监控
+                    <div class="float-end">
+                        <img src="https://mlflow.org/favicon.ico" alt="MLflow" class="tool-logo" title="MLflow">
+                        <img src="https://prometheus.io/assets/favicons/favicon.ico" alt="Prometheus" class="tool-logo" title="Prometheus">
+                        <img src="https://www.jaegertracing.io/favicon.ico" alt="Jaeger" class="tool-logo" title="Jaeger">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>模型性能指标</h4>
+                                <div id="modelPerformanceChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">推理延迟</span>
+                                    <span class="badge bg-success metric-badge">吞吐量</span>
+                                    <span class="badge bg-info metric-badge">准确率</span>
+                                    <span class="badge bg-warning metric-badge">GPU利用率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: MLflow + Prometheus</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>模型延迟分布</h4>
+                                <div id="modelLatencyChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">P50延迟</span>
+                                    <span class="badge bg-success metric-badge">P90延迟</span>
+                                    <span class="badge bg-info metric-badge">P99延迟</span>
+                                    <span class="badge bg-warning metric-badge">超时率</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Jaeger + Prometheus</p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>模型吞吐量</h4>
+                                <div id="modelThroughputChart" class="chart-container"></div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary metric-badge">请求/秒</span>
+                                    <span class="badge bg-success metric-badge">批处理大小</span>
+                                    <span class="badge bg-info metric-badge">并发请求数</span>
+                                    <span class="badge bg-warning metric-badge">队列长度</span>
+                                </div>
+                                <p class="small text-muted mt-2">监控工具: Prometheus + Grafana</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>模型版本与部署</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>模型名称</th>
+                                            <th>版本</th>
+                                            <th>部署时间</th>
+                                            <th>状态</th>
+                                            <th>健康度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>GPT-4</td>
+                                            <td>v1.2.5</td>
+                                            <td>2025-02-15</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 98%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>LLaMA 3</td>
+                                            <td>v2.0.1</td>
+                                            <td>2025-02-20</td>
+                                            <td><span class="badge bg-warning">部分可用</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Embedding</td>
+                                            <td>v3.1.0</td>
+                                            <td>2025-02-10</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 99%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>多模态模型</td>
+                                            <td>v1.5.2</td>
+                                            <td>2025-02-18</td>
+                                            <td><span class="badge bg-success">运行中</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="small text-muted mt-2">监控工具: MLflow + Kubernetes Dashboard</p>
+                            </div>
+                        </div>

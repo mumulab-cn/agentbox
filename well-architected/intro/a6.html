@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成式AI架构 Well-Architected Framework</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5bbfba;
+            --accent-color: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --text-color: #333;
+            --light-text: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .resource-card .card-header {
+            background-color: var(--primary-color);
+        }
+        
+        .architecture-card .card-header {
+            background-color: var(--secondary-color);
+        }
+        
+        .principle-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+        
+        .principle-item:last-child {
+            border-bottom: none;
+        }
+        
+        .radar-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem auto;
+        }
+        
+        .tab-content {
+            padding: 20px 0;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background-color: transparent;
+        }
+        
+        .footer {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .dimension-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .framework-overview {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 2rem 0;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .radar-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header class="header text-center">
+        <div class="container">
+            <h1>生成式AI架构 Well-Architected Framework</h1>
+            <p>指导企业在设计和实施AI系统时，遵循最佳实践和原则的架构框架</p>
+        </div>
+    </header>
+    
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 架构框架概述 -->
+        <div class="framework-overview">
+            <h2 class="section-title">架构框架概述</h2>
+            <p>生成式AI架构的Well-Architected Framework是一套全面的指导框架，旨在帮助企业构建高效、安全、可靠且具有成本效益的AI系统。该框架从两个维度进行划分：</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-grid-3x3-gap dimension-icon">🧩</i>
+                            <h4>资源维度</h4>
+                            <p>关注AI系统的组成部分和资源层次</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-diagram-3 dimension-icon">🏗️</i>
+                            <h4>架构维度</h4>
+                            <p>关注AI系统的设计原则和质量属性</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 雷达图可视化 -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">架构维度雷达图</h2>
+                <div class="radar-container">
+                    <canvas id="architectureRadar"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 资源维度和架构维度的选项卡 -->
+        <ul class="nav nav-tabs" id="frameworkTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="resource-tab" data-bs-toggle="tab" data-bs-target="#resource" type="button" role="tab" aria-controls="resource" aria-selected="true">资源维度</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="architecture-tab" data-bs-toggle="tab" data-bs-target="#architecture" type="button" role="tab" aria-controls="architecture" aria-selected="false">架构维度</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="frameworkTabsContent">
+            <!-- 资源维度内容 -->
+            <div class="tab-pane fade show active" id="resource" role="tabpanel" aria-labelledby="resource-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">1. 基础设施</div>
+                            <div class="card-body">
+                                <p>包括云端API服务和私有化部署等基础设施资源，为AI系统提供计算、存储和网络支持。</p>
+                                <div class="principle-item">• 基础设施弹性扩展原则</div>
+                                <div class="principle-item">• 资源高效利用原则</div>
+                                <div class="principle-item">• 基础设施安全防护原则</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">2. 模型层</div>
+                            <div class="card-body">
+                                <p>包括各类AI模型的选择、训练、优化和部署，是AI系统的核心智能部分。</p>
+                                <div class="principle-item">• 模型选型适配原则</div>
+                                <div class="principle-item">• 模型性能优化原则</div>
+                                <div class="principle-item">• 模型安全与隐私保护原则</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">3. 数据层</div>
+                            <div class="card-body">
+                                <p>包括数据采集、存储、处理、标注和管理，为AI模型提供训练和推理所需的数据资源。</p>
+                                <div class="principle-item">• 数据质量保障原则</div>
+                                <div class="principle-item">• 数据安全与合规原则</div>
+                                <div class="principle-item">• 数据高效处理原则</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">4. 工具、插件、Workflow</div>
+                            <div class="card-body">
+                                <p>包括各类工具、插件、工作流程和自定义开发的API等，用于扩展和增强AI系统的功能。</p>
+                                <div class="principle-item">• 工具集成与互操作原则</div>
+                                <div class="principle-item">• 工作流程优化原则</div>
+                                <div class="principle-item">• API设计与管理原则</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">5. Prompt提示词</div>
+                            <div class="card-body">
+                                <p>包括提示词的设计、优化和管理，是与生成式AI模型交互的关键接口。</p>
+                                <div class="principle-item">• 提示词效果优化原则</div>
+                                <div class="principle-item">• 提示词安全与合规原则</div>
+                                <div class="principle-item">• 提示词版本管理原则</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card resource-card">
+                            <div class="card-header">6. Agent应用层</div>
+                            <div class="card-body">
+                                <p>包括基于AI的智能代理应用，能够自主执行任务、解决问题并与用户交互。</p>
+                                <div class="principle-item">• Agent行为可控原则</div>
+                                <div class="principle-item">• Agent性能优化原则</div>
+                                <div class="principle-item">• Agent用户体验原则</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 架构维度内容 -->
+            <div class="tab-pane fade" id="architecture" role="tabpanel" aria-labelledby="architecture-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">1. 成本优化</div>
+                            <div class="card-body">
+                                <p>关注如何优化AI系统的各项成本，包括计算、存储、网络、数据、硬件、软件等方面的成本。</p>
+                                <div class="principle-item">• 优化计算成本</div>
+                                <div class="principle-item">• 优化存储成本</div>
+                                <div class="principle-item">• 优化网络成本</div>
+                                <div class="principle-item">• 优化模型成本</div>
+                                <div class="principle-item">• 优化训练与推理成本</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">2. 性能效率</div>
+                            <div class="card-body">
+                                <p>关注如何提高AI系统的性能和效率，包括推理延迟、吞吐量、训练速度等方面。</p>
+                                <div class="principle-item">• 优化推理延迟</div>
+                                <div class="principle-item">• 优化推理吞吐量</div>
+                                <div class="principle-item">• 优化训练速度</div>
+                                <div class="principle-item">• 优化模型压缩</div>
+                                <div class="principle-item">• 优化模型并行化与分布式化</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">3. 安全性及合规性</div>
+                            <div class="card-body">
+                                <p>关注AI系统的安全性和合规性，包括数据安全、模型安全、推理安全等方面。</p>
+                                <div class="principle-item">• 安全数据管理</div>
+                                <div class="principle-item">• 安全数据传输</div>
+                                <div class="principle-item">• 安全数据存储</div>
+                                <div class="principle-item">• 安全模型部署</div>
+                                <div class="principle-item">• 安全模型推理与训练</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">4. 弹性和稳定性</div>
+                            <div class="card-body">
+                                <p>关注AI系统的弹性和稳定性，包括系统容错、故障恢复、负载均衡等方面。</p>
+                                <div class="principle-item">• 弹性训练</div>
+                                <div class="principle-item">• 弹性推理</div>
+                                <div class="principle-item">• 故障恢复机制</div>
+                                <div class="principle-item">• 负载均衡策略</div>
+                                <div class="principle-item">• 系统容错设计</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">5. 持续运营</div>
+                            <div class="card-body">
+                                <p>关注AI系统的持续运营，包括可观测性、可维护性、监控告警等方面。</p>
+                                <div class="principle-item">• 系统可观测性</div>
+                                <div class="principle-item">• 系统可维护性</div>
+                                <div class="principle-item">• 监控告警机制</div>
+                                <div class="principle-item">• 日志管理</div>
+                                <div class="principle-item">• 性能分析</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card architecture-card">
+                            <div class="card-header">6. 合理部署</div>
+                            <div class="card-body">
+                                <p>关注AI系统的合理部署，包括模型部署、应用嵌入方式、Agent平台等方面。</p>
+                                <div class="principle-item">• 模型部署策略</div>
+                                <div class="principle-item">• 应用嵌入方式</div>
+                                <div class="principle-item">• Agent平台设计</div>
+                                <div class="principle-item">• 多环境部署</div>
+                                <div class="principle-item">• 版本管理与回滚</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>© 2023 生成式AI架构 Well-Architected Framework</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript代码 -->
+    <script>
+        $(document).ready(function() {
+            // 初始化架构维度雷达图
+            const architectureRadarCtx = document.getElementById('architectureRadar').getContext('2d');
+            
+            const architectureRadarData = {
+                labels: [
+                    '成本优化',
+                    '性能效率',
+                    '安全性及合规性',
+                    '弹性和稳定性',
+                    '持续运营',
+                    '合理部署'
+                ],
+                datasets: [{
+                    label: '架构维度评估',
+                    data: [85, 90, 95, 80, 85, 88],
+                    backgroundColor: 'rgba(0, 102, 204, 0.2)',
+                    borderColor: 'rgba(0, 102, 204, 1)',
+                    pointBackgroundColor: 'rgba(0, 102, 204, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(0, 102, 204, 1)'
+                }, {
+                    label: '资源维度评估',
+                    data: [90, 85, 80, 88, 92, 85],
+                    backgroundColor: 'rgba(91, 191, 186, 0.2)',
+                    borderColor: 'rgba(91, 191, 186, 1)',
+                    pointBackgroundColor: 'rgba(91, 191, 186, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(91, 191, 186, 1)'
+                }]
+            };
+            
+            const architectureRadarConfig = {
+                type: 'radar',
+                data: architectureRadarData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            new Chart(architectureRadarCtx, architectureRadarConfig);
+        });
+    </script>
+</body>
+</html>

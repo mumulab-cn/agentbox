@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成式AI应用全栈架构 - 高可用高可靠平台</title>
+    <link href="http://localhost/0530/src/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .architecture-card {
+            transition: transform 0.3s ease;
+        }
+        .architecture-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem;
+            border-radius: 0.25rem;
+            background-color: #e9ecef;
+            font-size: 0.875rem;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-healthy {
+            background-color: #28a745;
+        }
+        .status-warning {
+            background-color: #ffc107;
+        }
+        .status-error {
+            background-color: #dc3545;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" ></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="js/security_sandbox.js"></script>
+</head>
+<body><!-- Tab页导航 -->
+    <ul class="nav nav-tabs" id="modelTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tuning-tab" type="button" role="tab" onclick="window.location.href='security.html'">内容安全</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="models-tab" data-bs-toggle="tab" data-bs-target="#models" type="button" role="tab">模型权限</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tuning-tab" type="button" role="tab" onclick="window.location.href='security_data.html'">数据安全</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tuning-tab" type="button" role="tab" onclick="window.location.href='security_network.html'">网络安全</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tuning-tab" type="button" role="tab" onclick="window.location.href='security_audit.html'">安全审计</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tuning-tab" type="button" role="tab" onclick="window.location.href='security_compliance.html'">合规</button>
+        </li>
+    </ul>
+
+    <main>
+        <!-- 弹性扩展模块 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card architecture-card">
+                    <div class="card-body">
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h5><i class="bi bi-lock-fill"></i> 双重加密原理</h5>
+                            <svg width="100%" height="80" class="mb-2">
+                                <rect x="15%" y="30" width="20%" height="20" fill="#0d6efd" opacity="0.8"/>
+                                <text x="25%" y="45" fill="white">网络层加密</text>
+                                <rect x="45%" y="30" width="20%" height="20" fill="#6f42c1" opacity="0.8"/>
+                                <text x="55%" y="45" fill="white">应用层加密</text>
+                                <path d="M65% 40 H85%" stroke="#28a745" stroke-width="2" stroke-dasharray="5"/>
+                            </svg>
+                            <p class="text-muted">网络层加密如同保险箱，应用层加密则是箱内密码锁，双重保护确保数据全链路安全。</p>
+                        </div>
+                        <h2 class="card-title mb-4">
+                            <i class="bi bi-cloud me-2"></i>OneAPI
+                        </h2>
+                        <div class="row g-4">
+                            <!-- 安全沙箱容器 -->
+                            <div class="col-12 mb-4">
+                                <div class="card sandbox-container">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0"><i class="bi bi-shield-lock"></i> 安全沙箱环境</h5>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div class="sandbox-visual mb-3">
+                                            <svg class="sandbox-diagram" viewBox="0 0 800 200" width="100%" height="200">
+                                                <!-- 沙箱边框 -->
+                                                <rect x="50" y="20" width="700" height="160" rx="10" ry="10" fill="#f8f9fa" stroke="#6f42c1" stroke-width="2" stroke-dasharray="5" />
+                                                
+                                                <!-- 用户端 -->
+                                                <rect x="100" y="60" width="150" height="80" rx="5" ry="5" fill="#e7f1ff" stroke="#0d6efd" stroke-width="2" />
+                                                <text x="175" y="50" text-anchor="middle" fill="#0d6efd" font-weight="bold">用户端</text>
+                                                <circle id="user-data" cx="130" cy="100" r="8" fill="#0d6efd" />
+                                                
+                                                <!-- 模型推理服务 -->
+                                                <rect x="550" y="60" width="150" height="80" rx="5" ry="5" fill="#e7f9ef" stroke="#28a745" stroke-width="2" />
+                                                <text x="625" y="50" text-anchor="middle" fill="#28a745" font-weight="bold">模型推理服务</text>
+                                                <circle id="model-result" cx="670" cy="100" r="8" fill="#28a745" />
+                                                
+                                                <!-- 加密/解密节点 -->
+                                                <rect x="325" y="40" width="150" height="120" rx="5" ry="5" fill="#f8f0fc" stroke="#6f42c1" stroke-width="2" />
+                                                <text x="400" y="30" text-anchor="middle" fill="#6f42c1" font-weight="bold">加密/解密处理</text>
+                                                <circle id="encrypt-node" cx="400" cy="80" r="15" fill="#6f42c1" />
+                                                <text x="400" y="85" text-anchor="middle" fill="white" font-size="18">🔒</text>
+                                                <circle id="decrypt-node" cx="400" cy="120" r="15" fill="#6f42c1" />
+                                                <text x="400" y="125" text-anchor="middle" fill="white" font-size="18">🔓</text>
+                                                
+                                                <!-- 连接路径 -->
+                                                <path id="request-path" d="M150 100 H325" stroke="#0d6efd" stroke-width="3" stroke-dasharray="10" />
+                                                <path id="process-path" d="M400 85 L400 115" stroke="#6f42c1" stroke-width="3" />
+                                                <path id="response-path" d="M475 100 H550" stroke="#28a745" stroke-width="3" stroke-dasharray="10" />
+                                                
+                                                <!-- 数据包 -->
+                                                <circle id="data-packet" cx="150" cy="100" r="6" fill="#dc3545">
+                                                    <animate id="request-anim" attributeName="cx" from="150" to="325" dur="3s" begin="0s;response-anim.end+1s" fill="freeze" />
+                                                    <animate id="encrypt-anim" attributeName="cy" from="80" to="120" dur="1s" begin="request-anim.end" fill="freeze" />
+                                                    <animate id="response-anim" attributeName="cx" from="475" to="650" dur="3s" begin="encrypt-anim.end" fill="freeze" />
+                                                </circle>
+                                            </svg>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <!-- 用户端模块 -->
+                                            <div class="col-md-4">
+                                                <div class="card h-100 encryption-step" id="user-module">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title"><i class="bi bi-person-badge"></i> 用户端</h6>
+                                                        <pre class="bg-light p-2 mt-2 small">
+// 用户请求加密
+function secureRequest(data) {
+  // 应用层加密
+  const encryptedData = AES.encrypt(
+    JSON.stringify(data),
+    sessionKey
+  );
+  // 网络层加密
+  return TLS.secureChannel(encryptedData);
+}</pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 加密处理模块 -->
+                                            <div class="col-md-4">
+                                                <div class="card h-100 encryption-step" id="sandbox-module">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title"><i class="bi bi-shield-lock"></i> 沙箱处理</h6>
+                                                        <pre class="bg-light p-2 mt-2 small">
+// 沙箱内存安全处理
+function processInSandbox(encryptedData) {
+  // 内存隔离区解密
+  const secureMemory = createIsolatedMemory();
+  const plaintext = secureMemory.decrypt(
+    encryptedData, privateKey
+  );
+  // 处理后立即清除内存
+  const result = model.inference(plaintext);
+  secureMemory.clear();
+  return result;
+}</pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 模型推理模块 -->
+                                            <div class="col-md-4">
+                                                <div class="card h-100 encryption-step" id="model-module">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title"><i class="bi bi-cpu"></i> 模型推理</h6>
+                                                        <pre class="bg-light p-2 mt-2 small">
+// 模型推理与响应加密
+function secureResponse(result) {
+  // 结果加密
+  const encryptedResult = RSA.encrypt(
+    JSON.stringify(result),
+    publicKey
+  );
+  // 签名验证
+  return {
+    data: encryptedResult,
+    signature: createSignature(encryptedResult)
+  };
+}</pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 步骤控制区 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-outline-primary step-btn active" data-step="1">用户请求</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="2">沙箱加密处理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="3">模型推理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="4">沙箱解密处理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="5">安全响应</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画样式 -->
+        <style>
+            .encryption-step.active {
+                border: 2px solid #0d6efd;
+                box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+            }
+            .sandbox-container {
+                border: 2px solid transparent;
+                transition: all 0.3s ease;
+            }
+            .sandbox-container.active {
+                border-color: #6f42c1;
+                box-shadow: 0 0 15px rgba(111, 66, 193, 0.3);
+            }
+            .sandbox-diagram {
+                transition: all 0.5s ease;
+            }
+            @keyframes pulse {
+                0% { opacity: 0.7; }
+                50% { opacity: 1; }
+                100% { opacity: 0.7; }
+            }
+            @keyframes dashFlow {
+                to { stroke-dashoffset: 20; }
+            }
+            #request-path, #response-path {
+                animation: dashFlow 1s linear infinite;
+            }
+            #data-packet {
+                animation: pulse 2s infinite;
+            }
+            .step-description {
+                height: 80px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+        </style>
+
+        <!-- 交互脚本 -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 初始化安全沙箱
+                const sandbox = new SecuritySandbox();
+                sandbox.initialize();
+                
+                // 状态信息显示区
+                const statusContainer = document.createElement('div');
+                statusContainer.className = 'mt-3 p-2 bg-light rounded small';
+                statusContainer.id = 'sandbox-status';
+                document.querySelector('.sandbox-container .card-body').appendChild(statusContainer);
+                
+                // 初始化第一步
+                highlightStep(1);
+                
+                // 绑定步骤按钮事件
+                document.querySelectorAll('.step-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const step = parseInt(btn.dataset.step);
+                        highlightStep(step);
+                        simulateProcessStep(step, sandbox);
+                    });
+                });
+                
+                // 高亮特定步骤
+                function highlightStep(step) {
+                    // 更新按钮状态
+                    document.querySelectorAll('.step-btn').forEach(b => {
+                        b.classList.toggle('active', parseInt(b.dataset.step) === step);
+                    });
+                    
+                    // 重置所有模块
+                    document.querySelectorAll('.encryption-step').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    
+                    // 高亮沙箱容器
+                    const sandboxContainer = document.querySelector('.sandbox-container');
+                    sandboxContainer.classList.add('active');
+                    
+                    // 根据步骤高亮特定模块
+                    switch(step) {
+                        case 1: // 用户请求
+                            document.getElementById('user-module').classList.add('active');
+                            break;
+                        case 2: // 沙箱加密处理
+                            document.getElementById('sandbox-module').classList.add('active');
+                            break;
+                        case 3: // 模型推理
+                            document.getElementById('model-module').classList.add('active');
+                            break;
+                        case 4: // 沙箱解密处理
+                            document.getElementById('sandbox-module').classList.add('active');
+                            break;
+                        case 5: // 安全响应
+                            document.getElementById('user-module').classList.add('active');
+                            break;
+                    }
+                    
+                    // 控制动画
+                    controlAnimation(step);
+                }
+                
+                // 控制SVG动画
+                function controlAnimation(step) {
+                    const dataPacket = document.getElementById('data-packet');
+                    if (!dataPacket) return;
+                    
+                    // 重置动画位置
+                    switch(step) {
+                        case 1: // 用户请求 - 数据包位于用户端
+                            dataPacket.setAttributeNS(null, 'cx', '150');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                        case 2: // 沙箱加密 - 数据包位于加密节点
+                            dataPacket.setAttributeNS(null, 'cx', '400');
+                            dataPacket.setAttributeNS(null, 'cy', '80');
+                            break;
+                        case 3: // 模型推理 - 数据包位于模型端
+                            dataPacket.setAttributeNS(null, 'cx', '650');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                        case 4: // 沙箱解密 - 数据包位于解密节点
+                            dataPacket.setAttributeNS(null, 'cx', '400');
+                            dataPacket.setAttributeNS(null, 'cy', '120');
+                            break;
+                        case 5: // 安全响应 - 数据包返回用户端
+                            dataPacket.setAttributeNS(null, 'cx', '150');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                    }
+                    
+                    // 根据步骤播放相应动画
+                    if (step === 1) {
+                        const requestAnim = document.getElementById('request-anim');
+                        if (requestAnim) requestAnim.beginElement();
+                    } else if (step === 2) {
+                        const encryptAnim = document.getElementById('encrypt-anim');
+                        if (encryptAnim) encryptAnim.beginElement();
+                    } else if (step === 3) {
+                        const responseAnim = document.getElementById('response-anim');
+                        if (responseAnim) responseAnim.beginElement();
+                    }
+                }
+                
+                // 模拟沙箱处理步骤
+                function simulateProcessStep(step, sandbox) {
+                    const statusEl = document.getElementById('sandbox-status');
+                    let statusHTML = '';
+                    
+                    switch(step) {
+                        case 1: // 用户请求
+                            statusHTML = '<strong>用户请求阶段</strong><br>准备发送加密请求到安全沙箱...';
+                            setTimeout(() => {
+                                const userData = { query: '请分析这段文本的情感', text: '这是一段示例文本' };
+                                const securePacket = sandbox.processRequest(userData);
+                                statusEl.innerHTML += '<br>✅ 请求已加密并发送';
+                                sandbox.logAudit('用户请求', { action: '发送请求', status: 'success' });
+                            }, 1000);
+                            break;
+                            
+                        case 2: // 沙箱加密处理
+                            statusHTML = '<strong>沙箱加密处理阶段</strong><br>在隔离内存中处理加密数据...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 应用层解密完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 网络层解密完成';
+                                    sandbox.logAudit('沙箱处理', { action: '解密数据', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                            
+                        case 3: // 模型推理
+                            statusHTML = '<strong>模型推理阶段</strong><br>在安全环境中执行模型推理...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 模型推理完成';
+                                sandbox.logAudit('模型推理', { action: '执行推理', status: 'success' });
+                            }, 1500);
+                            break;
+                            
+                        case 4: // 沙箱解密处理
+                            statusHTML = '<strong>沙箱加密响应阶段</strong><br>对模型结果进行安全处理...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 结果签名完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 结果加密完成';
+                                    sandbox.logAudit('沙箱处理', { action: '加密响应', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                            
+                        case 5: // 安全响应
+                            statusHTML = '<strong>安全响应阶段</strong><br>将加密响应返回给用户...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 响应验证完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 响应解密完成';
+                                    sandbox.logAudit('用户响应', { action: '接收响应', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                    }
+                    
+                    statusEl.innerHTML = statusHTML;
+                }
+            });
+        </script>
+        <!-- 步骤控制区 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-outline-primary step-btn active" data-step="1">用户请求</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="2">沙箱加密处理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="3">模型推理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="4">沙箱解密处理</button>
+                    <button class="btn btn-outline-primary step-btn" data-step="5">安全响应</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画样式 -->
+        <style>
+            .encryption-step.active {
+                border: 2px solid #0d6efd;
+                box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+            }
+            .sandbox-container {
+                border: 2px solid transparent;
+                transition: all 0.3s ease;
+            }
+            .sandbox-container.active {
+                border-color: #6f42c1;
+                box-shadow: 0 0 15px rgba(111, 66, 193, 0.3);
+            }
+            .sandbox-diagram {
+                transition: all 0.5s ease;
+            }
+            @keyframes pulse {
+                0% { opacity: 0.7; }
+                50% { opacity: 1; }
+                100% { opacity: 0.7; }
+            }
+            @keyframes dashFlow {
+                to { stroke-dashoffset: 20; }
+            }
+            #request-path, #response-path {
+                animation: dashFlow 1s linear infinite;
+            }
+            #data-packet {
+                animation: pulse 2s infinite;
+            }
+            .step-description {
+                height: 80px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+        </style>
+
+        <!-- 交互脚本 -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 初始化安全沙箱
+                const sandbox = new SecuritySandbox();
+                sandbox.initialize();
+                
+                // 状态信息显示区
+                const statusContainer = document.createElement('div');
+                statusContainer.className = 'mt-3 p-2 bg-light rounded small';
+                statusContainer.id = 'sandbox-status';
+                document.querySelector('.sandbox-container .card-body').appendChild(statusContainer);
+                
+                // 初始化第一步
+                highlightStep(1);
+                
+                // 绑定步骤按钮事件
+                document.querySelectorAll('.step-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const step = parseInt(btn.dataset.step);
+                        highlightStep(step);
+                        simulateProcessStep(step, sandbox);
+                    });
+                });
+                
+                // 高亮特定步骤
+                function highlightStep(step) {
+                    // 更新按钮状态
+                    document.querySelectorAll('.step-btn').forEach(b => {
+                        b.classList.toggle('active', parseInt(b.dataset.step) === step);
+                    });
+                    
+                    // 重置所有模块
+                    document.querySelectorAll('.encryption-step').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    
+                    // 高亮沙箱容器
+                    const sandboxContainer = document.querySelector('.sandbox-container');
+                    sandboxContainer.classList.add('active');
+                    
+                    // 根据步骤高亮特定模块
+                    switch(step) {
+                        case 1: // 用户请求
+                            document.getElementById('user-module').classList.add('active');
+                            break;
+                        case 2: // 沙箱加密处理
+                            document.getElementById('sandbox-module').classList.add('active');
+                            break;
+                        case 3: // 模型推理
+                            document.getElementById('model-module').classList.add('active');
+                            break;
+                        case 4: // 沙箱解密处理
+                            document.getElementById('sandbox-module').classList.add('active');
+                            break;
+                        case 5: // 安全响应
+                            document.getElementById('user-module').classList.add('active');
+                            break;
+                    }
+                    
+                    // 控制动画
+                    controlAnimation(step);
+                }
+                
+                // 控制SVG动画
+                function controlAnimation(step) {
+                    const dataPacket = document.getElementById('data-packet');
+                    if (!dataPacket) return;
+                    
+                    // 重置动画位置
+                    switch(step) {
+                        case 1: // 用户请求 - 数据包位于用户端
+                            dataPacket.setAttributeNS(null, 'cx', '150');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                        case 2: // 沙箱加密 - 数据包位于加密节点
+                            dataPacket.setAttributeNS(null, 'cx', '400');
+                            dataPacket.setAttributeNS(null, 'cy', '80');
+                            break;
+                        case 3: // 模型推理 - 数据包位于模型端
+                            dataPacket.setAttributeNS(null, 'cx', '650');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                        case 4: // 沙箱解密 - 数据包位于解密节点
+                            dataPacket.setAttributeNS(null, 'cx', '400');
+                            dataPacket.setAttributeNS(null, 'cy', '120');
+                            break;
+                        case 5: // 安全响应 - 数据包返回用户端
+                            dataPacket.setAttributeNS(null, 'cx', '150');
+                            dataPacket.setAttributeNS(null, 'cy', '100');
+                            break;
+                    }
+                    
+                    // 根据步骤播放相应动画
+                    if (step === 1) {
+                        const requestAnim = document.getElementById('request-anim');
+                        if (requestAnim) requestAnim.beginElement();
+                    } else if (step === 2) {
+                        const encryptAnim = document.getElementById('encrypt-anim');
+                        if (encryptAnim) encryptAnim.beginElement();
+                    } else if (step === 3) {
+                        const responseAnim = document.getElementById('response-anim');
+                        if (responseAnim) responseAnim.beginElement();
+                    }
+                }
+                
+                // 模拟沙箱处理步骤
+                function simulateProcessStep(step, sandbox) {
+                    const statusEl = document.getElementById('sandbox-status');
+                    let statusHTML = '';
+                    
+                    switch(step) {
+                        case 1: // 用户请求
+                            statusHTML = '<strong>用户请求阶段</strong><br>准备发送加密请求到安全沙箱...';
+                            setTimeout(() => {
+                                const userData = { query: '请分析这段文本的情感', text: '这是一段示例文本' };
+                                const securePacket = sandbox.processRequest(userData);
+                                statusEl.innerHTML += '<br>✅ 请求已加密并发送';
+                                sandbox.logAudit('用户请求', { action: '发送请求', status: 'success' });
+                            }, 1000);
+                            break;
+                            
+                        case 2: // 沙箱加密处理
+                            statusHTML = '<strong>沙箱加密处理阶段</strong><br>在隔离内存中处理加密数据...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 应用层解密完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 网络层解密完成';
+                                    sandbox.logAudit('沙箱处理', { action: '解密数据', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                            
+                        case 3: // 模型推理
+                            statusHTML = '<strong>模型推理阶段</strong><br>在安全环境中执行模型推理...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 模型推理完成';
+                                sandbox.logAudit('模型推理', { action: '执行推理', status: 'success' });
+                            }, 1500);
+                            break;
+                            
+                        case 4: // 沙箱解密处理
+                            statusHTML = '<strong>沙箱加密响应阶段</strong><br>对模型结果进行安全处理...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 结果签名完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 结果加密完成';
+                                    sandbox.logAudit('沙箱处理', { action: '加密响应', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                            
+                        case 5: // 安全响应
+                            statusHTML = '<strong>安全响应阶段</strong><br>将加密响应返回给用户...';
+                            setTimeout(() => {
+                                statusEl.innerHTML += '<br>✅ 响应验证完成';
+                                setTimeout(() => {
+                                    statusEl.innerHTML += '<br>✅ 响应解密完成';
+                                    sandbox.logAudit('用户响应', { action: '接收响应', status: 'success' });
+                                }, 800);
+                            }, 1000);
+                            break;
+                    }
+                    
+                    statusEl.innerHTML = statusHTML;
+                }
+            });
+        </script>
+    </main>
+</body>
+</html>

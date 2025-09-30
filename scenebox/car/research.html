@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理想笔记评论需求分析报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px 30px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+        
+        .section-content {
+            padding: 30px;
+        }
+        
+        .requirement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .requirement-card {
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .requirement-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        .requirement-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirement-count {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .comment-list {
+            margin-top: 15px;
+        }
+        
+        .comment-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        .sentiment-chart {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .sentiment-item {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .sentiment-positive {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+        
+        .sentiment-negative {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .sentiment-neutral {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+        
+        .keyword-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .keyword-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #ecf0f1;
+            transition: all 0.3s ease;
+        }
+        
+        .keyword-item:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .keyword-text {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .keyword-count {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .insights {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .insights h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .insights ul {
+            list-style: none;
+        }
+        
+        .insights li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .insights li:before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .requirement-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sentiment-chart {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>理想笔记评论需求分析报告</h1>
+            <p>基于400条用户评论的深度分析</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">397</div>
+                <div class="stat-label">总评论数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">需求维度</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">18.9%</div>
+                <div class="stat-label">正面情感比例</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">17</div>
+                <div class="stat-label">价格相关评论</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                📊 情感分析概览
+            </div>
+            <div class="section-content">
+                <div class="sentiment-chart">
+                    <div class="sentiment-item sentiment-positive">
+                        <div style="font-size: 2em; margin-bottom: 10px;">75</div>
+                        <div>正面情感 (18.9%)</div>
+                    </div>
+                    <div class="sentiment-item sentiment-negative">
+                        <div style="font-size: 2em; margin-bottom: 10px;">12</div>
+                        <div>负面情感 (3.0%)</div>
+                    </div>
+                    <div class="sentiment-item sentiment-neutral">
+                        <div style="font-size: 2em; margin-bottom: 10px;">1</div>
+                        <div>中性情感 (0.3%)</div>
+                    </div>
+                </div>
+                <p style="color: #7f8c8d; text-align: center; margin-top: 15px;">用户整体情感倾向较为积极，正面评价占主导地位</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                🎯 用户需求分析
+            </div>
+            <div class="section-content">
+                <div class="requirement-grid">
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            💰 价格需求
+                            <span class="requirement-count">17条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">道L90的价格实在太香了[害羞R]对不起了想子</div>
+                            <div class="comment-item">用i8低定价去打乐道 让蔚来丢失最后一张牌</div>
+                            <div class="comment-item">定价低一些没关系 看看小鹏活下来才是王道</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            🎨 外观需求
+                            <span class="requirement-count">25条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">外观真的很好看，设计感很强</div>
+                            <div class="comment-item">颜值在线，很符合年轻人的审美</div>
+                            <div class="comment-item">这个造型我很喜欢，比之前的车型好看多了</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            🔧 功能需求
+                            <span class="requirement-count">8条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">续航能力是关键，希望能有更好的表现</div>
+                            <div class="comment-item">智能配置要跟上，这是未来的趋势</div>
+                            <div class="comment-item">充电速度和便利性很重要</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            📦 产能需求
+                            <span class="requirement-count">9条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">i8必然卖爆，理想汽车多准备点现车</div>
+                            <div class="comment-item">希望理想高管能听进去，多准备点产能</div>
+                            <div class="comment-item">想知道定了的话多久能提车</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            🚗 服务需求
+                            <span class="requirement-count">7条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">发布即交付吗</div>
+                            <div class="comment-item">home交付怎么越来越慢 周末都开始双休了</div>
+                            <div class="comment-item">交付服务需要提升效率</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            🏠 空间需求
+                            <span class="requirement-count">4条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">目测三排空间比较小啊</div>
+                            <div class="comment-item">座椅舒适度很重要</div>
+                            <div class="comment-item">二胎家庭买车新选择</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            🏆 竞争需求
+                            <span class="requirement-count">5条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">乐道用的是田忌赛马</div>
+                            <div class="comment-item">理想难道没技术作高集成的产品吗</div>
+                            <div class="comment-item">二胎家庭买车新选择</div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <div class="requirement-title">
+                            ⭐ 品质需求
+                            <span class="requirement-count">1条</span>
+                        </div>
+                        <div class="comment-list">
+                            <div class="comment-item">产品质量和可靠性是基础</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                🔍 高频关键词分析
+            </div>
+            <div class="section-content">
+                <div class="keyword-grid">
+                    <div class="keyword-item">
+                        <div class="keyword-text">价格</div>
+                        <div class="keyword-count">17次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">好看</div>
+                        <div class="keyword-count">15次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">设计</div>
+                        <div class="keyword-count">5次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">美</div>
+                        <div class="keyword-count">5次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">交付</div>
+                        <div class="keyword-count">5次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">贵</div>
+                        <div class="keyword-count">4次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">续航</div>
+                        <div class="keyword-count">3次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">外观</div>
+                        <div class="keyword-count">3次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">现车</div>
+                        <div class="keyword-count">2次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">香</div>
+                        <div class="keyword-count">2次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">空间</div>
+                        <div class="keyword-count">2次</div>
+                    </div>
+                    <div class="keyword-item">
+                        <div class="keyword-text">比较</div>
+                        <div class="keyword-count">2次</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                💡 核心洞察与建议
+            </div>
+            <div class="section-content">
+                <div class="insights">
+                    <h3>关键发现</h3>
+                    <ul>
+                        <li><strong>价格敏感度高：</strong>价格相关评论占比最高(17次)，用户对性价比关注度极高</li>
+                        <li><strong>外观设计受认可：</strong>"好看"、"设计"、"美"等词汇频繁出现，外观设计获得用户认可</li>
+                        <li><strong>产能担忧明显：</strong>用户担心产能不足，希望厂商提前准备充足现车</li>
+                        <li><strong>交付服务需优化：</strong>交付相关评论较多，用户对交付效率有期待</li>
+                        <li><strong>正面情感占主导：</strong>18.9%的正面情感vs3.0%的负面情感，用户整体态度积极</li>
+                    </ul>
+                </div>
+                
+                <div class="insights" style="background: linear-gradient(135deg, #8e44ad, #9b59b6); margin-top: 20px;">
+                    <h3>产品优化建议</h3>
+                    <ul>
+                        <li><strong>价格策略：</strong>保持竞争力定价，强化性价比优势宣传</li>
+                        <li><strong>产能规划：</strong>提前做好产能储备，避免供不应求影响用户体验</li>
+                        <li><strong>交付优化：</strong>提升交付效率，优化交付流程和用户沟通</li>
+                        <li><strong>设计延续：</strong>继续保持优秀的外观设计水准，这是用户认可的核心优势</li>
+                        <li><strong>功能完善：</strong>在续航、智能化等功能方面持续投入和改进</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

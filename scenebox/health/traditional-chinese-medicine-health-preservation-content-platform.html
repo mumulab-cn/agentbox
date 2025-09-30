@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中医养生大健康内容中台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-green-700">
+                    <i class="fas fa-leaf mr-2"></i>
+                    中医养生大健康内容中台
+                </h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">欢迎使用</span>
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex h-screen">
+        <!-- 左侧菜单 -->
+        <aside class="w-64 bg-white shadow-sm border-r border-gray-200">
+            <nav class="mt-6">
+                <ul class="space-y-2 px-4">
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="dashboard">
+                            <i class="fas fa-chart-dashboard mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="crawl-data">
+                            <i class="fas fa-spider mr-3"></i>
+                            <span>爬取数据</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="upload-materials">
+                            <i class="fas fa-upload mr-3"></i>
+                            <span>上传内部资料</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="generate-articles">
+                            <i class="fas fa-magic mr-3"></i>
+                            <span>自动生成文章</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="generation-records">
+                            <i class="fas fa-history mr-3"></i>
+                            <span>生成记录</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors" data-page="system-settings">
+                            <i class="fas fa-cog mr-3"></i>
+                            <span>系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 右侧内容区域 -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-6">
+                <!-- Dashboard 页面 -->
+                <div id="dashboard-page" class="page-content">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Dashboard</h2>
+                        <p class="text-gray-600">数据统计与概览</p>
+                    </div>
+                    
+                    <!-- 统计卡片 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                    <i class="fas fa-file-alt text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">总文章数</p>
+                                    <p class="text-2xl font-bold text-gray-900">1,234</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                    <i class="fas fa-eye text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">总阅读量</p>
+                                    <p class="text-2xl font-bold text-gray-900">56,789</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                    <i class="fas fa-calendar text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">今日发布</p>
+                                    <p class="text-2xl font-bold text-gray-900">12</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                    <i class="fas fa-share-alt text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">发布平台</p>
+                                    <p class="text-2xl font-bold text-gray-900">8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据表格区域 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">最近发布文章</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">发布时间</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">阅读量</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">春季养生小贴士</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-15</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">1,234</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">中医调理方法</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-14</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">987</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">健康饮食指南</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-13</td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">2,156</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">平台统计</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-600">微信公众号</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">45%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-600">今日头条</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">30%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-600">小红书</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">25%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 快速操作区域 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">快速操作</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                新建文章
+                            </button>
+                            <button class="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-download mr-2"></i>
+                                导出数据
+                            </button>
+                            <button class="flex items-center justify-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-sync mr-2"></i>
+                                刷新统计
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 其他页面内容将在后续添加 -->
+                <div id="crawl-data-page" class="page-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">爬取数据</h2>
+                        <p class="text-gray-600">微信公众号等自媒体数据爬取与管理</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- 左侧：数据源配置 -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">添加数据源</h3>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">平台类型</label>
+                                    <select id="platform-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="">选择平台</option>
+                                        <option value="wechat">微信公众号</option>
+                                        <option value="weibo">微博</option>
+                                        <option value="xiaohongshu">小红书</option>
+                                        <option value="toutiao">今日头条</option>
+                                        <option value="zhihu">知乎</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">账号/关键词</label>
+                                    <input type="text" id="crawl-target" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="输入账号名或关键词">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">爬取频率</label>
+                                    <select id="crawl-frequency" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="daily">每日</option>
+                                        <option value="weekly">每周</option>
+                                        <option value="monthly">每月</option>
+                                        <option value="manual">手动</option>
+                                    </select>
+                                </div>
+                                
+                                <button id="add-source-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    添加数据源
+                                </button>
+                            </div>
+                            
+                            <!-- 快速操作 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">快速操作</h3>
+                                <div class="space-y-2">
+                                    <button class="w-full text-left px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
+                                        <i class="fas fa-play mr-2"></i>
+                                        启动所有任务
+                                    </button>
+                                    <button class="w-full text-left px-3 py-2 text-sm bg-yellow-50 text-yellow-600 rounded hover:bg-yellow-100 transition-colors">
+                                        <i class="fas fa-pause mr-2"></i>
+                                        暂停所有任务
+                                    </button>
+                                    <button class="w-full text-left px-3 py-2 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors">
+                                        <i class="fas fa-trash mr-2"></i>
+                                        清理过期数据
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右侧：数据源列表和爬取结果 -->
+                        <div class="lg:col-span-3">
+                            <!-- 数据源列表 -->
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">数据源管理</h3>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                            <i class="fas fa-sync mr-1"></i>
+                                            刷新状态
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">平台</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">目标</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">频率</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">最后爬取</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-sources-table" class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <i class="fab fa-weixin text-green-500 mr-2"></i>
+                                                        <span class="text-sm text-gray-900">微信公众号</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">养生堂</td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">每日</td>
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">运行中</span>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-15 10:30</td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                                                    <button class="text-blue-600 hover:text-blue-800">编辑</button>
+                                                    <button class="text-red-600 hover:text-red-800">删除</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <i class="fab fa-weibo text-red-500 mr-2"></i>
+                                                        <span class="text-sm text-gray-900">微博</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">中医养生</td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">每周</td>
+                                                <td class="px-4 py-4 whitespace-nowrap">
+                                                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">暂停</span>
+                                                </td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-14 15:20</td>
+                                                <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                                                    <button class="text-blue-600 hover:text-blue-800">编辑</button>
+                                                    <button class="text-red-600 hover:text-red-800">删除</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 最新爬取数据 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">最新爬取数据</h3>
+                                    <div class="flex space-x-2">
+                                        <select class="px-3 py-1 text-sm border border-gray-300 rounded">
+                                            <option>全部平台</option>
+                                            <option>微信公众号</option>
+                                            <option>微博</option>
+                                            <option>小红书</option>
+                                        </select>
+                                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-download mr-1"></i>
+                                            导出数据
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <h4 class="font-medium text-gray-900">春季养生：如何调理身体迎接新季节</h4>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">微信公众号</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">春季是万物复苏的季节，也是调理身体的最佳时机。中医认为，春季养生应该顺应自然规律...</p>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>来源：养生堂</span>
+                                            <span>爬取时间：2025-01-15 10:30</span>
+                                            <div class="flex space-x-2">
+                                                <button class="text-blue-600 hover:text-blue-800">查看详情</button>
+                                                <button class="text-green-600 hover:text-green-800">加入素材库</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <h4 class="font-medium text-gray-900">中医按摩手法详解：缓解颈椎疲劳</h4>
+                                            <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">微博</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">现代人长期使用电脑和手机，颈椎问题日益严重。今天分享几个简单有效的中医按摩手法...</p>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>来源：中医养生专家</span>
+                                            <span>爬取时间：2025-01-15 09:15</span>
+                                            <div class="flex space-x-2">
+                                                <button class="text-blue-600 hover:text-blue-800">查看详情</button>
+                                                <button class="text-green-600 hover:text-green-800">加入素材库</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <h4 class="font-medium text-gray-900">养生茶饮推荐：适合不同体质的茶品选择</h4>
+                                            <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded-full">小红书</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">不同体质的人适合喝不同的茶，选对了茶品，不仅能够享受美味，还能起到很好的养生效果...</p>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>来源：养生小达人</span>
+                                            <span>爬取时间：2025-01-15 08:45</span>
+                                            <div class="flex space-x-2">
+                                                <button class="text-blue-600 hover:text-blue-800">查看详情</button>
+                                                <button class="text-green-600 hover:text-green-800">加入素材库</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="upload-materials-page" class="page-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">上传内部资料</h2>
+                        <p class="text-gray-600">管理内部资料和素材库，为文章生成提供优质内容</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- 左侧：上传和分类管理 -->
+                        <div class="lg:col-span-1">
+                            <!-- 文件上传区域 -->
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">上传资料</h3>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">资料分类</label>
+                                    <select id="material-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="">选择分类</option>
+                                        <option value="product-info">产品资料</option>
+                                        <option value="health-knowledge">健康知识</option>
+                                        <option value="tcm-theory">中医理论</option>
+                                        <option value="case-study">案例研究</option>
+                                        <option value="marketing">营销素材</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">资料标题</label>
+                                    <input type="text" id="material-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="输入资料标题">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">资料描述</label>
+                                    <textarea id="material-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="简要描述资料内容"></textarea>
+                                </div>
+                                
+                                <!-- 文件上传区域 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">选择文件</label>
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors cursor-pointer" id="file-drop-zone">
+                                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-600 mb-2">拖拽文件到此处或点击选择</p>
+                                        <p class="text-xs text-gray-500">支持 PDF, DOC, DOCX, TXT, MD 格式</p>
+                                        <input type="file" id="file-input" class="hidden" accept=".pdf,.doc,.docx,.txt,.md" multiple>
+                                    </div>
+                                </div>
+                                
+                                <button id="upload-material-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-upload mr-2"></i>
+                                    上传资料
+                                </button>
+                            </div>
+                            
+                            <!-- 分类统计 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">分类统计</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">产品资料</span>
+                                        <span class="text-sm font-medium text-gray-900">12</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">健康知识</span>
+                                        <span class="text-sm font-medium text-gray-900">8</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">中医理论</span>
+                                        <span class="text-sm font-medium text-gray-900">15</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">案例研究</span>
+                                        <span class="text-sm font-medium text-gray-900">6</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">营销素材</span>
+                                        <span class="text-sm font-medium text-gray-900">9</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">其他</span>
+                                        <span class="text-sm font-medium text-gray-900">4</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右侧：资料列表 -->
+                        <div class="lg:col-span-3">
+                            <!-- 搜索和筛选 -->
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div class="flex-1">
+                                        <div class="relative">
+                                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                            <input type="text" id="search-materials" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="搜索资料标题或内容...">
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <select id="filter-category" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                            <option value="">全部分类</option>
+                                            <option value="product-info">产品资料</option>
+                                            <option value="health-knowledge">健康知识</option>
+                                            <option value="tcm-theory">中医理论</option>
+                                            <option value="case-study">案例研究</option>
+                                            <option value="marketing">营销素材</option>
+                                            <option value="other">其他</option>
+                                        </select>
+                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-download mr-2"></i>
+                                            批量导出
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 资料列表 -->
+                            <div class="bg-white rounded-lg shadow">
+                                <div class="p-6 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">资料库</h3>
+                                </div>
+                                
+                                <div id="materials-list" class="divide-y divide-gray-200">
+                                    <!-- 资料项目 -->
+                                    <div class="p-6 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                                                    <h4 class="font-medium text-gray-900">中医养生茶饮配方大全</h4>
+                                                    <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">产品资料</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mb-2">详细介绍了各种中医养生茶饮的配方、功效和适用人群，包含20多种经典配方和现代改良方案。</p>
+                                                <div class="flex items-center text-xs text-gray-500 space-x-4">
+                                                    <span><i class="fas fa-calendar mr-1"></i>上传时间：2025-01-15</span>
+                                                    <span><i class="fas fa-file mr-1"></i>文件大小：2.3MB</span>
+                                                    <span><i class="fas fa-eye mr-1"></i>查看次数：15</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex space-x-2 ml-4">
+                                                <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                                    <i class="fas fa-eye mr-1"></i>
+                                                    预览
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                                    <i class="fas fa-download mr-1"></i>
+                                                    下载
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                                    <i class="fas fa-trash mr-1"></i>
+                                                    删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-6 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <i class="fas fa-file-word text-blue-500 mr-2"></i>
+                                                    <h4 class="font-medium text-gray-900">春季养生指导手册</h4>
+                                                    <span class="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">健康知识</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mb-2">春季养生的完整指导手册，涵盖饮食调理、运动保健、情志养生等多个方面的专业建议。</p>
+                                                <div class="flex items-center text-xs text-gray-500 space-x-4">
+                                                    <span><i class="fas fa-calendar mr-1"></i>上传时间：2025-01-14</span>
+                                                    <span><i class="fas fa-file mr-1"></i>文件大小：1.8MB</span>
+                                                    <span><i class="fas fa-eye mr-1"></i>查看次数：23</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex space-x-2 ml-4">
+                                                <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                                    <i class="fas fa-eye mr-1"></i>
+                                                    预览
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                                    <i class="fas fa-download mr-1"></i>
+                                                    下载
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                                    <i class="fas fa-trash mr-1"></i>
+                                                    删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-6 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <i class="fas fa-file-alt text-gray-500 mr-2"></i>
+                                                    <h4 class="font-medium text-gray-900">中医诊断学基础理论</h4>
+                                                    <span class="ml-2 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">中医理论</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mb-2">中医诊断学的基础理论知识，包括望闻问切四诊法的详细介绍和实际应用案例。</p>
+                                                <div class="flex items-center text-xs text-gray-500 space-x-4">
+                                                    <span><i class="fas fa-calendar mr-1"></i>上传时间：2025-01-13</span>
+                                                    <span><i class="fas fa-file mr-1"></i>文件大小：3.1MB</span>
+                                                    <span><i class="fas fa-eye mr-1"></i>查看次数：31</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex space-x-2 ml-4">
+                                                <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                                    <i class="fas fa-eye mr-1"></i>
+                                                    预览
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                                    <i class="fas fa-download mr-1"></i>
+                                                    下载
+                                                </button>
+                                                <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                                    <i class="fas fa-trash mr-1"></i>
+                                                    删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="generate-articles-page" class="page-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">自动生成文章</h2>
+                        <p class="text-gray-600">根据输入主题自动生成宣传文章，每个产品生成5篇文章，每天生成5篇文章</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 左侧：生成设置 -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">生成设置</h3>
+                                
+                                <!-- 主题输入 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">文章主题</label>
+                                    <input type="text" id="article-topic" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="请输入文章主题...">
+                                </div>
+                                
+                                <!-- 产品选择 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">选择产品</label>
+                                    <select id="product-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <option value="">请选择产品</option>
+                                        <option value="herbal-tea">养生茶饮</option>
+                                        <option value="health-supplement">保健品</option>
+                                        <option value="massage-oil">按摩精油</option>
+                                        <option value="herbal-medicine">中药材</option>
+                                        <option value="wellness-course">养生课程</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- 生成数量 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">生成数量</label>
+                                    <div class="flex items-center space-x-4">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="generate-count" value="5" checked class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">5篇文章</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="generate-count" value="custom" class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">自定义</span>
+                                        </label>
+                                    </div>
+                                    <input type="number" id="custom-count" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="自定义数量" min="1" max="20" disabled>
+                                </div>
+                                
+                                <!-- 文章类型 -->
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">文章类型</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" value="knowledge" checked class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">知识科普</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" value="product" checked class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">产品介绍</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" value="case" class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">案例分享</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" value="tips" class="text-green-600 focus:ring-green-500">
+                                            <span class="ml-2 text-sm text-gray-700">养生贴士</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 生成按钮 -->
+                                <button id="generate-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                                    <i class="fas fa-magic mr-2"></i>
+                                    开始生成
+                                </button>
+                            </div>
+                            
+                            <!-- 生成进度 -->
+                            <div id="generation-progress" class="bg-white rounded-lg shadow p-6 mt-6 hidden">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">生成进度</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">总进度</span>
+                                        <span id="progress-text" class="text-sm font-medium text-gray-900">0/5</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div id="progress-bar" class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <div id="current-task" class="text-sm text-gray-500">等待开始...</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右侧：文章预览 -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">文章预览</h3>
+                                    <div class="flex space-x-2">
+                                        <button id="export-articles" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors" disabled>
+                                            <i class="fas fa-download mr-1"></i>
+                                            导出
+                                        </button>
+                                        <button id="publish-articles" class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors" disabled>
+                                            <i class="fas fa-share mr-1"></i>
+                                            发布
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="articles-container">
+                                    <div class="text-center py-12">
+                                        <i class="fas fa-file-alt text-4xl text-gray-300 mb-4"></i>
+                                        <p class="text-gray-500">请设置生成参数并点击"开始生成"按钮</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="generation-records-page" class="page-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">生成记录</h2>
+                        <p class="text-gray-600">查看和管理历史生成的文章记录</p>
+                    </div>
+                    
+                    <!-- 统计卡片 -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100">
+                                    <i class="fas fa-file-alt text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">总生成文章</p>
+                                    <p class="text-2xl font-bold text-gray-900">156</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100">
+                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">已发布文章</p>
+                                    <p class="text-2xl font-bold text-gray-900">89</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100">
+                                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">待审核文章</p>
+                                    <p class="text-2xl font-bold text-gray-900">23</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100">
+                                    <i class="fas fa-eye text-purple-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">总阅读量</p>
+                                    <p class="text-2xl font-bold text-gray-900">12.5K</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 筛选和搜索 -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <div class="relative">
+                                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="search-records" class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="搜索文章标题或内容...">
+                                </div>
+                                
+                                <select id="filter-status" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <option value="">全部状态</option>
+                                    <option value="published">已发布</option>
+                                    <option value="pending">待审核</option>
+                                    <option value="draft">草稿</option>
+                                    <option value="rejected">已拒绝</option>
+                                </select>
+                                
+                                <select id="filter-type" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <option value="">全部类型</option>
+                                    <option value="knowledge">知识科普</option>
+                                    <option value="product">产品介绍</option>
+                                    <option value="case">案例分享</option>
+                                    <option value="tips">养生贴士</option>
+                                </select>
+                                
+                                <input type="date" id="filter-date" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button id="export-records" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    导出记录
+                                </button>
+                                <button id="clear-filters" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-times mr-2"></i>
+                                    清除筛选
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 记录列表 -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">生成记录列表</h3>
+                        </div>
+                        
+                        <div id="records-list" class="divide-y divide-gray-200">
+                            <!-- 记录项目 -->
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <h4 class="font-medium text-gray-900 mr-3">春季养生茶饮的中医理论基础与现代应用</h4>
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full mr-2">已发布</span>
+                                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">知识科普</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">这是一篇关于春季养生茶饮的知识科普文章，从中医养生的角度详细介绍相关知识和实践方法...</p>
+                                        <div class="flex items-center text-xs text-gray-500 space-x-6">
+                                            <span><i class="fas fa-calendar mr-1"></i>生成时间：2024-01-15 14:30</span>
+                                            <span><i class="fas fa-user mr-1"></i>生成者：系统管理员</span>
+                                            <span><i class="fas fa-eye mr-1"></i>阅读量：1,234</span>
+                                            <span><i class="fas fa-heart mr-1"></i>点赞：89</span>
+                                            <span><i class="fas font-size mr-1"></i>字数：1,256</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 ml-4">
+                                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            查看
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors">
+                                            <i class="fas fa-share mr-1"></i>
+                                            分享
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            删除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <h4 class="font-medium text-gray-900 mr-3">养生茶饮：春季养生的最佳选择</h4>
+                                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full mr-2">待审核</span>
+                                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">产品介绍</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">这是一篇关于春季养生的产品介绍文章，通过科学的理论指导和实用的操作建议，帮助读者更好地理解...</p>
+                                        <div class="flex items-center text-xs text-gray-500 space-x-6">
+                                            <span><i class="fas fa-calendar mr-1"></i>生成时间：2024-01-15 10:15</span>
+                                            <span><i class="fas fa-user mr-1"></i>生成者：系统管理员</span>
+                                            <span><i class="fas fa-eye mr-1"></i>阅读量：0</span>
+                                            <span><i class="fas fa-heart mr-1"></i>点赞：0</span>
+                                            <span><i class="fas font-size mr-1"></i>字数：987</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 ml-4">
+                                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            查看
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                            <i class="fas fa-check mr-1"></i>
+                                            审核通过
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                            <i class="fas fa-times mr-1"></i>
+                                            拒绝
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <h4 class="font-medium text-gray-900 mr-3">真实案例：春季养生如何改善生活质量</h4>
+                                            <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full mr-2">草稿</span>
+                                            <span class="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">案例分享</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">这是一篇关于春季养生的案例分享文章，通过真实的用户案例展示春季养生的实际效果和应用方法...</p>
+                                        <div class="flex items-center text-xs text-gray-500 space-x-6">
+                                            <span><i class="fas fa-calendar mr-1"></i>生成时间：2024-01-14 16:45</span>
+                                            <span><i class="fas fa-user mr-1"></i>生成者：系统管理员</span>
+                                            <span><i class="fas fa-eye mr-1"></i>阅读量：0</span>
+                                            <span><i class="fas fa-heart mr-1"></i>点赞：0</span>
+                                            <span><i class="fas font-size mr-1"></i>字数：1,145</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 ml-4">
+                                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            查看
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors">
+                                            <i class="fas fa-paper-plane mr-1"></i>
+                                            提交审核
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            删除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分页 -->
+                        <div class="p-6 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-700">
+                                    显示 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 条，共 <span class="font-medium">156</span> 条记录
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-sm bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors" disabled>
+                                        上一页
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                        1
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                                        2
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                                        3
+                                    </button>
+                                    <span class="px-3 py-1 text-sm text-gray-500">...</span>
+                                    <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                                        16
+                                    </button>
+                                    <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                                        下一页
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="system-settings-page" class="page-content hidden">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">系统设置</h2>
+                    <p class="text-gray-600">系统配置与管理</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 菜单点击事件
+            $('.menu-item').click(function(e) {
+                e.preventDefault();
+                
+                // 移除所有活动状态
+                $('.menu-item').removeClass('bg-green-100 text-green-700');
+                $('.menu-item').addClass('text-gray-700');
+                
+                // 添加当前活动状态
+                $(this).removeClass('text-gray-700');
+                $(this).addClass('bg-green-100 text-green-700');
+                
+                // 隐藏所有页面内容
+                $('.page-content').addClass('hidden');
+                
+                // 显示对应页面内容
+                const page = $(this).data('page');
+                $('#' + page + '-page').removeClass('hidden');
+            });
+            
+            // 默认激活第一个菜单项
+            $('.menu-item').first().click();
+            
+            // 自定义数量单选框事件
+            $('input[name="generate-count"]').change(function() {
+                if ($(this).val() === 'custom') {
+                    $('#custom-count').prop('disabled', false).focus();
+                } else {
+                    $('#custom-count').prop('disabled', true).val('');
+                }
+            });
+            
+            // 文章生成功能
+            $('#generate-btn').click(function() {
+                const topic = $('#article-topic').val().trim();
+                const product = $('#product-select').val();
+                const countType = $('input[name="generate-count"]:checked').val();
+                const customCount = $('#custom-count').val();
+                const articleTypes = [];
+                
+                $('input[type="checkbox"]:checked').each(function() {
+                    articleTypes.push($(this).val());
+                });
+                
+                // 表单验证
+                if (!topic) {
+                    alert('请输入文章主题');
+                    return;
+                }
+                
+                if (!product) {
+                    alert('请选择产品');
+                    return;
+                }
+                
+                if (articleTypes.length === 0) {
+                    alert('请至少选择一种文章类型');
+                    return;
+                }
+                
+                let totalCount = 5;
+                if (countType === 'custom') {
+                    if (!customCount || customCount < 1 || customCount > 20) {
+                        alert('请输入有效的自定义数量（1-20）');
+                        return;
+                    }
+                    totalCount = parseInt(customCount);
+                }
+                
+                // 开始生成
+                startGeneration(topic, product, totalCount, articleTypes);
+            });
+            
+            // 模拟文章生成过程
+            function startGeneration(topic, product, count, types) {
+                // 显示进度条
+                $('#generation-progress').removeClass('hidden');
+                $('#generate-btn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>生成中...');
+                
+                // 清空文章容器
+                $('#articles-container').html('');
+                
+                let currentProgress = 0;
+                const articles = [];
+                
+                function generateNextArticle() {
+                    if (currentProgress >= count) {
+                        // 生成完成
+                        $('#generate-btn').prop('disabled', false).html('<i class="fas fa-magic mr-2"></i>开始生成');
+                        $('#current-task').text('生成完成！');
+                        $('#export-articles, #publish-articles').prop('disabled', false);
+                        return;
+                    }
+                    
+                    currentProgress++;
+                    const progress = (currentProgress / count) * 100;
+                    
+                    // 更新进度
+                    $('#progress-bar').css('width', progress + '%');
+                    $('#progress-text').text(currentProgress + '/' + count);
+                    $('#current-task').text('正在生成第 ' + currentProgress + ' 篇文章...');
+                    
+                    // 模拟生成文章
+                    setTimeout(function() {
+                        const articleType = types[Math.floor(Math.random() * types.length)];
+                        const article = generateMockArticle(topic, product, articleType, currentProgress);
+                        articles.push(article);
+                        
+                        // 添加文章到预览区域
+                        addArticleToPreview(article);
+                        
+                        // 继续生成下一篇
+                        generateNextArticle();
+                    }, 1000 + Math.random() * 2000); // 随机延迟1-3秒
+                }
+                
+                generateNextArticle();
+            }
+            
+            // 生成模拟文章内容
+            function generateMockArticle(topic, product, type, index) {
+                const typeNames = {
+                    'knowledge': '知识科普',
+                    'product': '产品介绍',
+                    'case': '案例分享',
+                    'tips': '养生贴士'
+                };
+                
+                const productNames = {
+                    'herbal-tea': '养生茶饮',
+                    'health-supplement': '保健品',
+                    'massage-oil': '按摩精油',
+                    'herbal-medicine': '中药材',
+                    'wellness-course': '养生课程'
+                };
+                
+                const titles = {
+                    'knowledge': `${topic}的中医理论基础与现代应用`,
+                    'product': `${productNames[product]}：${topic}的最佳选择`,
+                    'case': `真实案例：${topic}如何改善生活质量`,
+                    'tips': `日常${topic}养生小贴士，简单易行`
+                };
+                
+                const content = `这是一篇关于"${topic}"的${typeNames[type]}文章。\n\n文章将从中医养生的角度，详细介绍${topic}的相关知识和实践方法。通过科学的理论指导和实用的操作建议，帮助读者更好地理解和应用${topic}相关的养生知识。\n\n本文内容包括：\n1. ${topic}的基本概念和原理\n2. 中医视角下的${topic}理论\n3. 实际应用方法和注意事项\n4. ${productNames[product]}的推荐使用\n\n希望通过本文的分享，能够为大家的健康生活提供有价值的参考。`;
+                
+                return {
+                    id: 'article-' + index,
+                    title: titles[type] || `${topic}相关文章 ${index}`,
+                    type: typeNames[type],
+                    content: content,
+                    wordCount: Math.floor(800 + Math.random() * 400),
+                    createdAt: new Date().toLocaleString()
+                };
+            }
+            
+            // 添加文章到预览区域
+            function addArticleToPreview(article) {
+                const articleHtml = `
+                    <div class="border-b border-gray-200 pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="text-lg font-semibold text-gray-900 flex-1">${article.title}</h4>
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full ml-2">${article.type}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-3">${article.content.substring(0, 150)}...</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>字数：${article.wordCount}</span>
+                            <span>生成时间：${article.createdAt}</span>
+                        </div>
+                        <div class="mt-2 flex space-x-2">
+                            <button class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100 transition-colors" onclick="previewArticle('${article.id}')">
+                                <i class="fas fa-eye mr-1"></i>预览
+                            </button>
+                            <button class="text-xs bg-green-50 text-green-600 px-2 py-1 rounded hover:bg-green-100 transition-colors" onclick="editArticle('${article.id}')">
+                                <i class="fas fa-edit mr-1"></i>编辑
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                $('#articles-container').append(articleHtml);
+            }
+        });
+        
+        // 全局函数
+        function previewArticle(articleId) {
+            alert('预览文章功能 - 文章ID: ' + articleId);
+        }
+        
+        function editArticle(articleId) {
+            alert('编辑文章功能 - 文章ID: ' + articleId);
+        }
+        
+        // 爬取数据相关功能
+        $('#add-source-btn').click(function() {
+            const platformType = $('#platform-type').val();
+            const crawlTarget = $('#crawl-target').val().trim();
+            const crawlFrequency = $('#crawl-frequency').val();
+            
+            if (!platformType || !crawlTarget) {
+                alert('请填写完整的数据源信息');
+                return;
+            }
+            
+            // 获取平台图标和名称
+            const platformInfo = {
+                'wechat': { icon: 'fab fa-weixin text-green-500', name: '微信公众号' },
+                'weibo': { icon: 'fab fa-weibo text-red-500', name: '微博' },
+                'xiaohongshu': { icon: 'fas fa-heart text-pink-500', name: '小红书' },
+                'toutiao': { icon: 'fas fa-newspaper text-orange-500', name: '今日头条' },
+                'zhihu': { icon: 'fab fa-zhihu text-blue-500', name: '知乎' }
+            };
+            
+            const frequencyText = {
+                'daily': '每日',
+                'weekly': '每周', 
+                'monthly': '每月',
+                'manual': '手动'
+            };
+            
+            const platform = platformInfo[platformType];
+            const frequency = frequencyText[crawlFrequency];
+            
+            // 添加到表格
+            const newRow = `
+                <tr>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <i class="${platform.icon} mr-2"></i>
+                            <span class="text-sm text-gray-900">${platform.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${crawlTarget}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">${frequency}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">待启动</span>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                        <button class="text-blue-600 hover:text-blue-800" onclick="editDataSource(this)">编辑</button>
+                        <button class="text-red-600 hover:text-red-800" onclick="deleteDataSource(this)">删除</button>
+                    </td>
+                </tr>
+            `;
+            
+            $('#data-sources-table').append(newRow);
+            
+            // 清空表单
+            $('#platform-type').val('');
+            $('#crawl-target').val('');
+            $('#crawl-frequency').val('daily');
+            
+            alert('数据源添加成功！');
+        });
+        
+        // 全局函数用于数据源管理
+        window.editDataSource = function(button) {
+            alert('编辑功能开发中...');
+        };
+        
+        window.deleteDataSource = function(button) {
+            if (confirm('确定要删除这个数据源吗？')) {
+                $(button).closest('tr').remove();
+            }
+        };
+        
+        // 上传内部资料页面功能
+        $(document).ready(function() {
+            initUploadMaterials();
+        });
+        
+        function initUploadMaterials() {
+            // 文件拖拽上传
+            const dropZone = $('#file-drop-zone');
+            const fileInput = $('#file-input');
+            
+            dropZone.on('click', function() {
+                fileInput.click();
+            });
+            
+            dropZone.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('border-green-500 bg-green-50');
+            });
+            
+            dropZone.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('border-green-500 bg-green-50');
+            });
+            
+            dropZone.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('border-green-500 bg-green-50');
+                const files = e.originalEvent.dataTransfer.files;
+                handleFiles(files);
+            });
+            
+            fileInput.on('change', function() {
+                const files = this.files;
+                handleFiles(files);
+            });
+            
+            // 上传资料按钮
+            $('#upload-material-btn').on('click', function() {
+                uploadMaterial();
+            });
+            
+            // 搜索功能
+            $('#search-materials').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                filterMaterials(searchTerm);
+            });
+            
+            // 分类筛选
+            $('#filter-category').on('change', function() {
+                const category = $(this).val();
+                filterMaterialsByCategory(category);
+            });
+        }
+        
+        function handleFiles(files) {
+            const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.md'];
+            const validFiles = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const extension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (allowedTypes.includes(extension)) {
+                    validFiles.push(file);
+                } else {
+                    alert(`文件 ${file.name} 格式不支持，请上传 PDF, DOC, DOCX, TXT, MD 格式的文件`);
+                }
+            }
+            
+            if (validFiles.length > 0) {
+                // 显示选中的文件
+                let fileList = '已选择文件：\n';
+                validFiles.forEach(file => {
+                    fileList += `- ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)\n`;
+                });
+                
+                $('#file-drop-zone').html(`
+                    <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
+                    <p class="text-sm text-green-600 mb-2">已选择 ${validFiles.length} 个文件</p>
+                    <p class="text-xs text-gray-500">点击重新选择文件</p>
+                `);
+            }
+        }
+        
+        function uploadMaterial() {
+            const category = $('#material-category').val();
+            const title = $('#material-title').val();
+            const description = $('#material-description').val();
+            
+            if (!category || !title) {
+                alert('请填写资料分类和标题');
+                return;
+            }
+            
+            // 模拟上传过程
+            const uploadBtn = $('#upload-material-btn');
+            uploadBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>上传中...');
+            
+            setTimeout(() => {
+                // 添加到资料列表
+                const newMaterial = `
+                    <div class="p-6 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-file-alt text-gray-500 mr-2"></i>
+                                    <h4 class="font-medium text-gray-900">${title}</h4>
+                                    <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">${getCategoryName(category)}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">${description || '暂无描述'}</p>
+                                <div class="flex items-center text-xs text-gray-500 space-x-4">
+                                    <span><i class="fas fa-calendar mr-1"></i>上传时间：${new Date().toLocaleDateString()}</span>
+                                    <span><i class="fas fa-file mr-1"></i>文件大小：1.2MB</span>
+                                    <span><i class="fas fa-eye mr-1"></i>查看次数：0</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2 ml-4">
+                                <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    预览
+                                </button>
+                                <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-1"></i>
+                                    下载
+                                </button>
+                                <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>
+                                    删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#materials-list').prepend(newMaterial);
+                
+                // 重置表单
+                $('#material-category').val('');
+                $('#material-title').val('');
+                $('#material-description').val('');
+                $('#file-drop-zone').html(`
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-gray-600 mb-2">拖拽文件到此处或点击选择</p>
+                    <p class="text-xs text-gray-500">支持 PDF, DOC, DOCX, TXT, MD 格式</p>
+                `);
+                
+                uploadBtn.prop('disabled', false).html('<i class="fas fa-upload mr-2"></i>上传资料');
+                alert('资料上传成功！');
+            }, 2000);
+        }
+        
+        function getCategoryName(category) {
+            const categories = {
+                'product-info': '产品资料',
+                'health-knowledge': '健康知识',
+                'tcm-theory': '中医理论',
+                'case-study': '案例研究',
+                'marketing': '营销素材',
+                'other': '其他'
+            };
+            return categories[category] || '其他';
+        }
+        
+        function filterMaterials(searchTerm) {
+            $('#materials-list > div').each(function() {
+                const title = $(this).find('h4').text().toLowerCase();
+                const description = $(this).find('p').text().toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+        
+        function filterMaterialsByCategory(category) {
+            if (!category) {
+                $('#materials-list > div').show();
+                return;
+            }
+            
+            const categoryName = getCategoryName(category);
+            $('#materials-list > div').each(function() {
+                const materialCategory = $(this).find('.rounded-full').text();
+                
+                if (materialCategory === categoryName) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+        
+        // 生成记录页面功能
+        function initGenerationRecords() {
+            // 搜索功能
+            $('#search-records').on('input', function() {
+                filterRecords();
+            });
+            
+            // 状态筛选
+            $('#filter-status').on('change', function() {
+                filterRecords();
+            });
+            
+            // 类型筛选
+            $('#filter-type').on('change', function() {
+                filterRecords();
+            });
+            
+            // 日期筛选
+            $('#filter-date').on('change', function() {
+                filterRecords();
+            });
+            
+            // 清除筛选
+            $('#clear-filters').on('click', function() {
+                $('#search-records').val('');
+                $('#filter-status').val('');
+                $('#filter-type').val('');
+                $('#filter-date').val('');
+                filterRecords();
+            });
+            
+            // 导出记录
+            $('#export-records').on('click', function() {
+                alert('导出记录功能开发中...');
+            });
+            
+            // 记录操作按钮
+            $(document).on('click', '#records-list .bg-green-600', function() {
+                if ($(this).find('.fa-eye').length > 0) {
+                    // 查看文章
+                    const title = $(this).closest('.p-6').find('h4').text();
+                    alert('查看文章：' + title);
+                } else if ($(this).find('.fa-check').length > 0) {
+                    // 审核通过
+                    const $record = $(this).closest('.p-6');
+                    $record.find('.bg-yellow-100').removeClass('bg-yellow-100 text-yellow-800').addClass('bg-green-100 text-green-800').text('已发布');
+                    $(this).remove();
+                    alert('文章审核通过！');
+                }
+            });
+            
+            $(document).on('click', '#records-list .bg-blue-600', function() {
+                // 编辑文章
+                const title = $(this).closest('.p-6').find('h4').text();
+                alert('编辑文章：' + title);
+            });
+            
+            $(document).on('click', '#records-list .bg-yellow-600', function() {
+                if ($(this).find('.fa-share').length > 0) {
+                    // 分享文章
+                    const title = $(this).closest('.p-6').find('h4').text();
+                    alert('分享文章：' + title);
+                } else if ($(this).find('.fa-paper-plane').length > 0) {
+                    // 提交审核
+                    const $record = $(this).closest('.p-6');
+                    $record.find('.bg-gray-100').removeClass('bg-gray-100 text-gray-800').addClass('bg-yellow-100 text-yellow-800').text('待审核');
+                    $(this).removeClass('bg-yellow-600').addClass('bg-green-600').html('<i class="fas fa-check mr-1"></i>审核通过');
+                    alert('文章已提交审核！');
+                }
+            });
+            
+            $(document).on('click', '#records-list .bg-red-600', function() {
+                if ($(this).find('.fa-trash').length > 0) {
+                    // 删除文章
+                    if (confirm('确定要删除这篇文章吗？')) {
+                        $(this).closest('.p-6').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    }
+                } else if ($(this).find('.fa-times').length > 0) {
+                    // 拒绝审核
+                    const $record = $(this).closest('.p-6');
+                    $record.find('.bg-yellow-100').removeClass('bg-yellow-100 text-yellow-800').addClass('bg-red-100 text-red-800').text('已拒绝');
+                    $(this).closest('.flex').html(`
+                        <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                            <i class="fas fa-eye mr-1"></i>查看
+                        </button>
+                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-edit mr-1"></i>编辑
+                        </button>
+                        <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                            <i class="fas fa-trash mr-1"></i>删除
+                        </button>
+                    `);
+                    alert('文章审核已拒绝！');
+                }
+            });
+        }
+        
+        function filterRecords() {
+            const searchTerm = $('#search-records').val().toLowerCase();
+            const selectedStatus = $('#filter-status').val();
+            const selectedType = $('#filter-type').val();
+            const selectedDate = $('#filter-date').val();
+            
+            $('#records-list .p-6').each(function() {
+                const $item = $(this);
+                const title = $item.find('h4').text().toLowerCase();
+                const content = $item.find('p').first().text().toLowerCase();
+                const status = getRecordStatus($item);
+                const type = getRecordType($item);
+                const date = $item.find('.fa-calendar').parent().text();
+                
+                const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
+                const matchesStatus = !selectedStatus || status === selectedStatus;
+                const matchesType = !selectedType || type === selectedType;
+                const matchesDate = !selectedDate || date.includes(selectedDate);
+                
+                if (matchesSearch && matchesStatus && matchesType && matchesDate) {
+                    $item.show();
+                } else {
+                    $item.hide();
+                }
+            });
+        }
+        
+        function getRecordStatus($item) {
+            const statusText = $item.find('span').first().text();
+            if (statusText.includes('已发布')) return 'published';
+            if (statusText.includes('待审核')) return 'pending';
+            if (statusText.includes('草稿')) return 'draft';
+            if (statusText.includes('已拒绝')) return 'rejected';
+            return '';
+        }
+        
+        function getRecordType($item) {
+            const typeText = $item.find('span').eq(1).text();
+            if (typeText.includes('知识科普')) return 'knowledge';
+            if (typeText.includes('产品介绍')) return 'product';
+            if (typeText.includes('案例分享')) return 'case';
+            if (typeText.includes('养生贴士')) return 'tips';
+            return '';
+        }
+        
+        // 初始化生成记录页面
+        $(document).ready(function() {
+            initGenerationRecords();
+        });
+    </script>
+</body>
+</html>

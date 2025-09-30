@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理财学习 - 青少年游戏消费管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="learn-styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">💰</div>
+                <h2>理财学习</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="menu-item active" data-tab="lesson1">
+                    <span class="menu-icon">📚</span>
+                    <span class="menu-text">第一课：认识金钱</span>
+                </div>
+                <div class="menu-item" data-tab="lesson2">
+                    <span class="menu-icon">💳</span>
+                    <span class="menu-text">第二课：预算规划</span>
+                </div>
+                <div class="menu-item" data-tab="lesson3">
+                    <span class="menu-icon">🎮</span>
+                    <span class="menu-text">第三课：游戏消费</span>
+                </div>
+                <div class="menu-item" data-tab="lesson4">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">第四课：理性消费</span>
+                </div>
+                <div class="menu-item" data-tab="practice">
+                    <span class="menu-icon">✏️</span>
+                    <span class="menu-text">练习题</span>
+                </div>
+                <div class="menu-item" data-tab="quiz">
+                    <span class="menu-icon">🏆</span>
+                    <span class="menu-text">小测验</span>
+                </div>
+                <div class="menu-item" data-tab="achievements">
+                    <span class="menu-icon">🎖️</span>
+                    <span class="menu-text">学习成就</span>
+                </div>
+                <div class="menu-item" data-tab="stats">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">学习统计</span>
+                </div>
+                <div class="menu-item back-to-main">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">返回主页</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 第一课：认识金钱 -->
+            <div id="lesson1" class="tab-content active">
+                <div class="lesson-header">
+                    <h1>第一课：认识金钱的价值</h1>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">进度: 0%</span>
+                    </div>
+                </div>
+
+                <div class="lesson-content">
+                    <!-- 第一部分：什么是金钱 -->
+                    <section class="lesson-section">
+                        <h2>💰 什么是金钱？</h2>
+                        <div class="content-card">
+                            <div class="money-animation">
+                                <svg width="200" height="150" viewBox="0 0 200 150">
+                                    <defs>
+                                        <linearGradient id="coinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="coin coin1" cx="50" cy="75" r="25" fill="url(#coinGradient)" />
+                                    <circle class="coin coin2" cx="100" cy="75" r="25" fill="url(#coinGradient)" />
+                                    <circle class="coin coin3" cx="150" cy="75" r="25" fill="url(#coinGradient)" />
+                                    <text x="50" y="80" text-anchor="middle" fill="#8B4513" font-size="16" font-weight="bold">¥</text>
+                                    <text x="100" y="80" text-anchor="middle" fill="#8B4513" font-size="16" font-weight="bold">¥</text>
+                                    <text x="150" y="80" text-anchor="middle" fill="#8B4513" font-size="16" font-weight="bold">¥</text>
+                                </svg>
+                            </div>
+                            <p>金钱是我们日常生活中用来购买商品和服务的工具。它就像一个"万能钥匙"，可以帮助我们获得我们想要的东西。但是，金钱并不是无限的，我们需要学会如何明智地使用它。</p>
+                            <div class="key-points">
+                                <h4>💡 重点理解：</h4>
+                                <ul>
+                                    <li>金钱是交换的媒介</li>
+                                    <li>金钱有限，需要合理分配</li>
+                                    <li>金钱可以帮助实现目标</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- 互动拖拽练习 -->
+                            <div class="interactive-exercise">
+                                <h4>🎯 互动练习：区分需要和想要</h4>
+                                <p>将下面的物品拖拽到正确的分类中：</p>
+                                
+                                <div class="drag-drop-container">
+                                    <div class="draggable-items">
+                                        <div class="draggable-item" data-category="need" draggable="true">
+                                            <span class="item-icon">🍞</span>
+                                            <span class="item-name">面包</span>
+                                        </div>
+                                        <div class="draggable-item" data-category="want" draggable="true">
+                                            <span class="item-icon">🎮</span>
+                                            <span class="item-name">游戏</span>
+                                        </div>
+                                        <div class="draggable-item" data-category="need" draggable="true">
+                                            <span class="item-icon">🏠</span>
+                                            <span class="item-name">住房</span>
+                                        </div>
+                                        <div class="draggable-item" data-category="want" draggable="true">
+                                            <span class="item-icon">🍰</span>
+                                            <span class="item-name">蛋糕</span>
+                                        </div>
+                                        <div class="draggable-item" data-category="need" draggable="true">
+                                            <span class="item-icon">👕</span>
+                                            <span class="item-name">衣服</span>
+                                        </div>
+                                        <div class="draggable-item" data-category="want" draggable="true">
+                                            <span class="item-icon">🎸</span>
+                                            <span class="item-name">吉他</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="drop-zones">
+                                        <div class="drop-zone" data-category="need">
+                                            <div class="zone-header">
+                                                <span class="zone-icon">💡</span>
+                                                <h5>需要 (Need)</h5>
+                                            </div>
+                                            <p class="zone-description">生活必需品</p>
+                                            <div class="drop-area" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                                        </div>
+                                        <div class="drop-zone" data-category="want">
+                                            <div class="zone-header">
+                                                <span class="zone-icon">🎯</span>
+                                                <h5>想要 (Want)</h5>
+                                            </div>
+                                            <p class="zone-description">非必需品</p>
+                                            <div class="drop-area" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="exercise-controls">
+                                    <button class="check-answer-btn" onclick="checkDragDropAnswer()">检查答案</button>
+                                    <button class="reset-exercise-btn" onclick="resetDragDropExercise()">重新开始</button>
+                                </div>
+                                <div class="exercise-feedback"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第二部分：金钱的来源 -->
+                    <section class="lesson-section">
+                        <h2>🏦 金钱从哪里来？</h2>
+                        <div class="content-card">
+                            <div class="money-sources">
+                                <div class="source-item">
+                                    <div class="source-icon">👨‍💼</div>
+                                    <h4>工作收入</h4>
+                                    <p>父母通过工作获得工资</p>
+                                </div>
+                                <div class="source-item">
+                                    <div class="source-icon">🎁</div>
+                                    <h4>零花钱</h4>
+                                    <p>父母给的日常零花钱</p>
+                                </div>
+                                <div class="source-item">
+                                    <div class="source-icon">🧧</div>
+                                    <h4>压岁钱</h4>
+                                    <p>节日收到的红包礼金</p>
+                                </div>
+                                <div class="source-item">
+                                    <div class="source-icon">⭐</div>
+                                    <h4>奖励</h4>
+                                    <p>表现好时获得的奖励</p>
+                                </div>
+                            </div>
+                            <p>对于青少年来说，金钱主要来源于家庭。父母辛苦工作赚取收入，然后分配一部分给我们作为零花钱。理解金钱的来源有助于我们更加珍惜每一分钱。</p>
+                        </div>
+                    </section>
+
+                    <!-- 第三部分：金钱的价值 -->
+                    <section class="lesson-section">
+                        <h2>⚖️ 理解金钱的真正价值</h2>
+                        <div class="content-card">
+                            <div class="value-comparison">
+                                <h4>💭 思考一下：</h4>
+                                <div class="comparison-grid">
+                                    <div class="comparison-item">
+                                        <div class="item-image">🍔</div>
+                                        <div class="item-info">
+                                            <h5>一顿快餐</h5>
+                                            <p class="price">¥25</p>
+                                            <p class="description">满足一次饥饿</p>
+                                        </div>
+                                    </div>
+                                    <div class="vs">VS</div>
+                                    <div class="comparison-item">
+                                        <div class="item-image">📚</div>
+                                        <div class="item-info">
+                                            <h5>一本好书</h5>
+                                            <p class="price">¥25</p>
+                                            <p class="description">终身受益的知识</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 新增理财规划案例集合 -->
+                            <div class="financial-planning-cases">
+                                <h4>📋 完整理财规划案例</h4>
+                                
+                                <!-- 案例1：初中生理财规划 -->
+                                <div class="planning-case junior-high">
+                                    <div class="case-header">
+                                        <div class="avatar">🎒</div>
+                                        <div class="case-info">
+                                            <h5>小明 - 初二学生的理财规划</h5>
+                                            <p class="basic-info">年龄：14岁 | 月收入：400元零花钱</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="planning-details">
+                                        <div class="goals-section">
+                                            <h6>🎯 理财目标设定</h6>
+                                            <div class="goals-timeline">
+                                                <div class="goal-item short-term">
+                                                    <span class="timeline-dot"></span>
+                                                    <div class="goal-content">
+                                                        <h7>短期目标（6个月）</h7>
+                                                        <p>存钱买新款游戏机 - 2400元</p>
+                                                    </div>
+                                                </div>
+                                                <div class="goal-item medium-term">
+                                                    <span class="timeline-dot"></span>
+                                                    <div class="goal-content">
+                                                        <h7>中期目标（2年）</h7>
+                                                        <p>建立大学预备金 - 10000元</p>
+                                                    </div>
+                                                </div>
+                                                <div class="goal-item long-term">
+                                                    <span class="timeline-dot"></span>
+                                                    <div class="goal-content">
+                                                        <h7>长期目标（6年）</h7>
+                                                        <p>大学四年生活费储备 - 50000元</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="budget-allocation">
+                                            <h6>💰 资金分配策略</h6>
+                                            <div class="allocation-chart">
+                                                <div class="allocation-item">
+                                                    <div class="allocation-bar">
+                                                        <div class="bar-fill savings" style="width: 40%;"></div>
+                                                    </div>
+                                                    <div class="allocation-info">
+                                                        <span class="category">储蓄投资</span>
+                                                        <span class="amount">160元 (40%)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="allocation-item">
+                                                    <div class="allocation-bar">
+                                                        <div class="bar-fill necessities" style="width: 35%;"></div>
+                                                    </div>
+                                                    <div class="allocation-info">
+                                                        <span class="category">学习用品</span>
+                                                        <span class="amount">140元 (35%)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="allocation-item">
+                                                    <div class="allocation-bar">
+                                                        <div class="bar-fill entertainment" style="width: 25%;"></div>
+                                                    </div>
+                                                    <div class="allocation-info">
+                                                        <span class="category">娱乐休闲</span>
+                                                        <span class="amount">100元 (25%)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="implementation-plan">
+                                            <h6>📅 执行计划</h6>
+                                            <div class="plan-steps">
+                                                <div class="step">
+                                                    <span class="step-icon">1️⃣</span>
+                                                    <p><strong>每月1号：</strong>收到零花钱后立即存入160元到储蓄账户</p>
+                                                </div>
+                                                <div class="step">
+                                                    <span class="step-icon">2️⃣</span>
+                                                    <p><strong>每周记账：</strong>使用手机APP记录所有支出</p>
+                                                </div>
+                                                <div class="step">
+                                                    <span class="step-icon">3️⃣</span>
+                                                    <p><strong>月底检查：</strong>分析支出情况，调整下月预算</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress-tracking">
+                                            <h6>📊 6个月后的成果</h6>
+                                            <div class="achievement-stats">
+                                                <div class="stat-item">
+                                                    <span class="stat-number">960元</span>
+                                                    <span class="stat-label">已储蓄金额</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <span class="stat-number">40%</span>
+                                                    <span class="stat-label">目标完成度</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <span class="stat-number">95%</span>
+                                                    <span class="stat-label">预算执行率</span>
+                                                </div>
+                                            </div>
+                                            <p class="progress-note">虽然游戏机目标需要延期2个月，但小明培养了良好的理财习惯，为长期目标打下了坚实基础。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 案例2：高中生理财规划 -->
+                                <div class="planning-case high-school">
+                                    <div class="case-header">
+                                        <div class="avatar">📚</div>
+                                        <div class="case-info">
+                                            <h5>小李 - 高一学生的理财规划</h5>
+                                            <p class="basic-info">年龄：16岁 | 月收入：600元零花钱 + 200元兼职</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="planning-details">
+                                        <div class="goals-section">
+                                            <h6>🎯 理财目标设定</h6>
+                                            <div class="goals-grid">
+                                                <div class="goal-card urgent">
+                                                    <h7>紧急目标（3个月）</h7>
+                                                    <p>购买学习平板电脑</p>
+                                                    <span class="goal-amount">3000元</span>
+                                                </div>
+                                                <div class="goal-card important">
+                                                    <h7>重要目标（1年）</h7>
+                                                    <p>大学入学准备金</p>
+                                                    <span class="goal-amount">8000元</span>
+                                                </div>
+                                                <div class="goal-card future">
+                                                    <h7>未来目标（4年）</h7>
+                                                    <p>大学期间生活费</p>
+                                                    <span class="goal-amount">40000元</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="investment-strategy">
+                                            <h6>📈 投资策略</h6>
+                                            <div class="strategy-breakdown">
+                                                <div class="strategy-item">
+                                                    <div class="strategy-header">
+                                                        <span class="strategy-icon">🏦</span>
+                                                        <h7>保守型储蓄 (60%)</h7>
+                                                    </div>
+                                                    <p>银行定期存款 + 货币基金，确保资金安全</p>
+                                                    <span class="amount">480元/月</span>
+                                                </div>
+                                                <div class="strategy-item">
+                                                    <div class="strategy-header">
+                                                        <span class="strategy-icon">📊</span>
+                                                        <h7>成长型投资 (25%)</h7>
+                                                    </div>
+                                                    <p>指数基金定投，长期增值</p>
+                                                    <span class="amount">200元/月</span>
+                                                </div>
+                                                <div class="strategy-item">
+                                                    <div class="strategy-header">
+                                                        <span class="strategy-icon">🎯</span>
+                                                        <h7>灵活资金 (15%)</h7>
+                                                    </div>
+                                                    <p>活期存款，应对突发需求</p>
+                                                    <span class="amount">120元/月</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="risk-management">
+                                            <h6>🛡️ 风险管理</h6>
+                                            <div class="risk-measures">
+                                                <div class="measure-item">
+                                                    <span class="measure-icon">🔄</span>
+                                                    <div class="measure-content">
+                                                        <h7>分散投资</h7>
+                                                        <p>不把所有钱投入单一产品</p>
+                                                    </div>
+                                                </div>
+                                                <div class="measure-item">
+                                                    <span class="measure-icon">📚</span>
+                                                    <div class="measure-content">
+                                                        <h7>持续学习</h7>
+                                                        <p>定期学习理财知识，提高判断力</p>
+                                                    </div>
+                                                </div>
+                                                <div class="measure-item">
+                                                    <span class="measure-icon">👨‍👩‍👧‍👦</span>
+                                                    <div class="measure-content">
+                                                        <h7>家长指导</h7>
+                                                        <p>重大投资决策与家长商量</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="one-year-results">
+                                            <h6>🏆 一年后的成果</h6>
+                                            <div class="results-comparison">
+                                                <div class="result-column">
+                                                    <h7>预期目标</h7>
+                                                    <div class="target-item">
+                                                        <span class="target-label">储蓄总额</span>
+                                                        <span class="target-value">9600元</span>
+                                                    </div>
+                                                    <div class="target-item">
+                                                        <span class="target-label">投资收益</span>
+                                                        <span class="target-value">5%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="result-column">
+                                                    <h7>实际成果</h7>
+                                                    <div class="actual-item">
+                                                        <span class="actual-label">储蓄总额</span>
+                                                        <span class="actual-value">10200元</span>
+                                                    </div>
+                                                    <div class="actual-item">
+                                                        <span class="actual-label">投资收益</span>
+                                                        <span class="actual-value">7.2%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="success-note">超额完成目标！小李不仅实现了大学入学准备金的目标，还通过合理投资获得了额外收益。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 案例3：大学生理财规划 -->
+                                <div class="planning-case college">
+                                    <div class="case-header">
+                                        <div class="avatar">🎓</div>
+                                        <div class="case-info">
+                                            <h5>小张 - 大一学生的理财规划</h5>
+                                            <p class="basic-info">年龄：18岁 | 月收入：1200元生活费 + 800元兼职</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="planning-details">
+                                        <div class="college-challenges">
+                                            <h6>🎯 大学生理财挑战</h6>
+                                            <div class="challenges-grid">
+                                                <div class="challenge-item">
+                                                    <span class="challenge-icon">💸</span>
+                                                    <div class="challenge-content">
+                                                        <h7>支出增加</h7>
+                                                        <p>社交、学习、生活成本上升</p>
+                                                    </div>
+                                                </div>
+                                                <div class="challenge-item">
+                                                    <span class="challenge-icon">⏰</span>
+                                                    <div class="challenge-content">
+                                                        <h7>时间管理</h7>
+                                                        <p>平衡学习、兼职和理财</p>
+                                                    </div>
+                                                </div>
+                                                <div class="challenge-item">
+                                                    <span class="challenge-icon">🎯</span>
+                                                    <div class="challenge-content">
+                                                        <h7>目标多元</h7>
+                                                        <p>短期享受vs长期规划的平衡</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="smart-solutions">
+                                            <h6>💡 智能解决方案</h6>
+                                            <div class="solutions-list">
+                                                <div class="solution-item">
+                                                    <div class="solution-header">
+                                                        <span class="solution-icon">🤖</span>
+                                                        <h7>自动化理财</h7>
+                                                    </div>
+                                                    <p>设置自动转账，每月固定储蓄600元</p>
+                                                    <div class="solution-benefit">减少人为干预，提高执行率</div>
+                                                </div>
+                                                <div class="solution-item">
+                                                    <div class="solution-header">
+                                                        <span class="solution-icon">📱</span>
+                                                        <h7>数字化管理</h7>
+                                                    </div>
+                                                    <p>使用理财APP追踪支出和投资收益</p>
+                                                    <div class="solution-benefit">实时监控，数据驱动决策</div>
+                                                </div>
+                                                <div class="solution-item">
+                                                    <div class="solution-header">
+                                                        <span class="solution-icon">🎯</span>
+                                                        <h7>目标导向</h7>
+                                                    </div>
+                                                    <p>为每个目标设立专门账户</p>
+                                                    <div class="solution-benefit">清晰追踪，避免挪用</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="graduation-plan">
+                                            <h6>🎓 毕业规划</h6>
+                                            <div class="graduation-timeline">
+                                                <div class="timeline-year">
+                                                    <div class="year-marker">大二</div>
+                                                    <div class="year-goals">
+                                                        <p>建立投资组合，学习股票基金知识</p>
+                                                        <span class="target-amount">储蓄目标：15000元</span>
+                                                    </div>
+                                                </div>
+                                                <div class="timeline-year">
+                                                    <div class="year-marker">大三</div>
+                                                    <div class="year-goals">
+                                                        <p>实习收入增加，扩大投资规模</p>
+                                                        <span class="target-amount">储蓄目标：30000元</span>
+                                                    </div>
+                                                </div>
+                                                <div class="timeline-year">
+                                                    <div class="year-marker">大四</div>
+                                                    <div class="year-goals">
+                                                        <p>准备就业基金，购买职业装备</p>
+                                                        <span class="target-amount">储蓄目标：50000元</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="cases-insights">
+                                    <h5>🔍 案例分析总结</h5>
+                                    <div class="insights-grid">
+                                        <div class="insight-item">
+                                            <span class="insight-icon">📈</span>
+                                            <div class="insight-content">
+                                                <h6>渐进式成长</h6>
+                                                <p>从简单储蓄到复杂投资，理财能力逐步提升</p>
+                                            </div>
+                                        </div>
+                                        <div class="insight-item">
+                                            <span class="insight-icon">🎯</span>
+                                            <div class="insight-content">
+                                                <h6>目标驱动</h6>
+                                                <p>明确的目标是坚持理财的最大动力</p>
+                                            </div>
+                                        </div>
+                                        <div class="insight-item">
+                                            <span class="insight-icon">⚖️</span>
+                                            <div class="insight-content">
+                                                <h6>平衡发展</h6>
+                                                <p>在储蓄、投资和消费之间找到平衡点</p>
+                                            </div>
+                                        </div>
+                                        <div class="insight-item">
+                                            <span class="insight-icon">🔄</span>
+                                            <div class="insight-content">
+                                                <h6>持续调整</h6>
+                                                <p>根据人生阶段变化调整理财策略</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>同样的25元，可以买一顿快餐，也可以买一本书。快餐只能满足一时的饥饿，而书籍却能给我们带来长久的知识和快乐。这就是金钱价值的不同体现。</p>
+                            
+                            <div class="interactive-calculator">
+                                <h4>🧮 价值计算器</h4>
+                                <p>如果你每天花10元买零食，一个月会花多少钱？</p>
+                                <div class="calculator">
+                                    <input type="number" id="dailySpend" value="10" min="1" max="100">
+                                    <span>元/天 × 30天 = </span>
+                                    <span id="monthlyTotal" class="result">300</span>
+                                    <span>元/月</span>
+                                </div>
+                                <p class="calculator-insight">💡 这些钱可以买到：<span id="alternatives">一双好鞋子或一个月的书籍</span></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第四部分：游戏消费的思考 -->
+                    <section class="lesson-section">
+                        <h2>🎮 游戏消费：需要还是想要？</h2>
+                        <div class="content-card">
+                            <div class="need-vs-want">
+                                <div class="need-want-grid">
+                                    <div class="need-column">
+                                        <h4 class="need-title">🔴 需要 (Need)</h4>
+                                        <ul class="need-list">
+                                            <li>🍎 食物</li>
+                                            <li>🏠 住所</li>
+                                            <li>👕 衣服</li>
+                                            <li>📚 教育</li>
+                                            <li>🏥 医疗</li>
+                                        </ul>
+                                    </div>
+                                    <div class="want-column">
+                                        <h4 class="want-title">🔵 想要 (Want)</h4>
+                                        <ul class="want-list">
+                                            <li>🎮 游戏皮肤</li>
+                                            <li>💎 游戏道具</li>
+                                            <li>🎵 音乐会员</li>
+                                            <li>🍕 高档零食</li>
+                                            <li>👟 名牌鞋子</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>在游戏中，我们经常会遇到各种诱人的商品：漂亮的皮肤、强力的装备、特殊的道具。但我们需要问自己：这些是我真正需要的，还是只是想要的？</p>
+                            
+                            <div class="game-spending-example">
+                                <h4>📱 游戏消费案例分析</h4>
+                                <div class="case-study">
+                                    <div class="character">
+                                        <div class="avatar">👦</div>
+                                        <h5>小明的故事</h5>
+                                    </div>
+                                    <div class="story">
+                                        <p>小明看到游戏里有一个限时皮肤，价格68元。他很想买，但这个月的零花钱只剩下70元了。</p>
+                                        <div class="choices">
+                                            <div class="choice good">
+                                                <span class="choice-icon">✅</span>
+                                                <div class="choice-content">
+                                                    <h6>明智选择</h6>
+                                                    <p>先考虑一周，如果还是很想要再买</p>
+                                                </div>
+                                            </div>
+                                            <div class="choice bad">
+                                                <span class="choice-icon">❌</span>
+                                                <div class="choice-content">
+                                                    <h6>冲动消费</h6>
+                                                    <p>立即购买，花光所有零花钱</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="case-result">
+                                            <h6>📊 结果分析</h6>
+                                            <p><strong>明智选择的结果：</strong>一周后小明发现自己对这个皮肤的兴趣减少了，而且正好需要买学习用品，庆幸自己没有冲动消费。</p>
+                                            <p><strong>冲动消费的后果：</strong>如果立即购买，小明就没钱买必需的学习用品，还可能需要向父母要钱，影响下个月的零花钱。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 新增案例：小红的储蓄故事 -->
+                                <div class="case-study">
+                                    <div class="character">
+                                        <div class="avatar">👧</div>
+                                        <h5>小红的储蓄挑战</h5>
+                                    </div>
+                                    <div class="story">
+                                        <p>小红每月有200元零花钱，她想买一个价值600元的平板电脑用于学习。她制定了一个储蓄计划。</p>
+                                        <div class="savings-plan">
+                                            <div class="plan-step">
+                                                <span class="step-number">1</span>
+                                                <div class="step-content">
+                                                    <h6>制定目标</h6>
+                                                    <p>3个月内存够600元</p>
+                                                </div>
+                                            </div>
+                                            <div class="plan-step">
+                                                <span class="step-number">2</span>
+                                                <div class="step-content">
+                                                    <h6>分配预算</h6>
+                                                    <p>每月储蓄200元，暂时减少娱乐支出</p>
+                                                </div>
+                                            </div>
+                                            <div class="plan-step">
+                                                <span class="step-number">3</span>
+                                                <div class="step-content">
+                                                    <h6>坚持执行</h6>
+                                                    <p>记录每日支出，抵制诱惑</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="case-outcome success">
+                                            <h6>🎉 成功结果</h6>
+                                            <p>小红成功在3个月内存够了钱，不仅买到了心仪的平板电脑，还培养了良好的储蓄习惯。更重要的是，她学会了延迟满足，体验到了通过努力实现目标的成就感。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 新增案例：小李的失败教训 -->
+                                <div class="case-study warning">
+                                    <div class="character">
+                                        <div class="avatar">👨</div>
+                                        <h5>小李的教训</h5>
+                                    </div>
+                                    <div class="story">
+                                        <p>小李每月有300元零花钱，但他从不做预算规划，看到喜欢的就买。</p>
+                                        <div class="spending-pattern">
+                                            <div class="month-spending">
+                                                <h6>第一周</h6>
+                                                <p>买游戏道具：150元</p>
+                                            </div>
+                                            <div class="month-spending">
+                                                <h6>第二周</h6>
+                                                <p>买零食和饮料：80元</p>
+                                            </div>
+                                            <div class="month-spending">
+                                                <h6>第三周</h6>
+                                                <p>和朋友聚餐：70元</p>
+                                            </div>
+                                            <div class="month-spending">
+                                                <h6>第四周</h6>
+                                                <p>没钱了，需要买学习用品时只能向父母要钱</p>
+                                            </div>
+                                        </div>
+                                        <div class="case-outcome failure">
+                                            <h6>😔 问题分析</h6>
+                                            <p>小李的问题在于：1）没有区分需要和想要；2）没有储蓄意识；3）缺乏预算规划。结果导致月底经常缺钱，无法应对突发需求。</p>
+                                            <div class="lesson-learned">
+                                                <h6>💡 改进建议</h6>
+                                                <ul>
+                                                    <li>制定月度预算，分配储蓄、必需品和娱乐资金</li>
+                                                    <li>建立"24小时冷静期"规则</li>
+                                                    <li>记录每笔支出，了解钱的去向</li>
+                                                    <li>设定储蓄目标，培养延迟满足能力</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第五部分：建立正确的金钱观 -->
+                    <section class="lesson-section">
+                        <h2>🎯 建立正确的金钱观</h2>
+                        <div class="content-card">
+                            <div class="money-principles">
+                                <div class="principle">
+                                    <div class="principle-icon">💭</div>
+                                    <h4>理性思考</h4>
+                                    <p>购买前先想想：我真的需要这个吗？它能给我带来多长时间的快乐？</p>
+                                </div>
+                                <div class="principle">
+                                    <div class="principle-icon">⏰</div>
+                                    <h4>延迟满足</h4>
+                                    <p>学会等待，好东西值得等待。冲动购买往往会后悔。</p>
+                                </div>
+                                <div class="principle">
+                                    <div class="principle-icon">📊</div>
+                                    <h4>记录消费</h4>
+                                    <p>记录每一笔花费，了解钱都花在了哪里。</p>
+                                </div>
+                                <div class="principle">
+                                    <div class="principle-icon">🎯</div>
+                                    <h4>设定目标</h4>
+                                    <p>为想要的东西设定储蓄目标，享受实现目标的成就感。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="golden-rule">
+                                <h4>🏆 理财黄金法则</h4>
+                                <div class="rule-card">
+                                    <div class="rule-content">
+                                        <h5>"24小时冷静期"</h5>
+                                        <p>当你想买超过50元的非必需品时，先等24小时再决定。很多时候，你会发现其实并不那么需要它。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 课程总结 -->
+                    <section class="lesson-section lesson-summary">
+                        <h2>📝 课程总结</h2>
+                        <div class="content-card summary-card">
+                            <div class="summary-points">
+                                <h4>本课重点回顾：</h4>
+                                <ol>
+                                    <li>金钱是有限的资源，需要合理分配</li>
+                                    <li>区分"需要"和"想要"，优先满足真正的需求</li>
+                                    <li>理解金钱的真正价值，不只是数字</li>
+                                    <li>建立理性消费的习惯，避免冲动购买</li>
+                                    <li>学会延迟满足，享受储蓄的成就感</li>
+                                </ol>
+                            </div>
+                            <div class="next-steps">
+                                <h4>💪 实践建议：</h4>
+                                <ul>
+                                    <li>开始记录你的每一笔消费</li>
+                                    <li>在购买游戏道具前，先等待24小时</li>
+                                    <li>设定一个小目标，开始储蓄</li>
+                                    <li>和父母讨论家庭的消费计划</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lesson-navigation">
+                    <button class="btn btn-secondary" id="prevSection" disabled>上一节</button>
+                    <button class="btn btn-primary" id="nextSection">下一节</button>
+                    <button class="btn btn-success" id="completeLesson" style="display: none;">完成课程</button>
+                </div>
+            </div>
+
+            <!-- 第二课：预算规划 -->
+            <div id="lesson2" class="tab-content">
+                <div class="lesson-header">
+                    <h1>第二课：预算规划基础</h1>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">进度: 0%</span>
+                    </div>
+                </div>
+
+                <div class="lesson-content">
+                    <!-- 第一部分：什么是预算 -->
+                    <section class="lesson-section">
+                        <h2>💳 什么是预算？</h2>
+                        <div class="content-card">
+                            <div class="budget-animation">
+                                <svg width="300" height="200" viewBox="0 0 300 200">
+                                    <defs>
+                                        <linearGradient id="walletGradient" x1="0%" y1="0%" x2="100" y2="100%">
+                                            <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#1a73e8;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <!-- 钱包 -->
+                                    <rect x="50" y="60" width="200" height="80" rx="10" fill="url(#walletGradient)" />
+                                    <rect x="60" y="70" width="180" height="60" rx="5" fill="#f8f9fa" stroke="#dadce0" stroke-width="2" />
+                                    <!-- 钱币 -->
+                                    <circle class="budget-coin" cx="100" cy="100" r="15" fill="#34a853" />
+                                    <text x="100" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">¥</text>
+                                    <circle class="budget-coin" cx="150" cy="100" r="15" fill="#34a853" />
+                                    <text x="150" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">¥</text>
+                                    <circle class="budget-coin" cx="200" cy="100" r="15" fill="#34a853" />
+                                    <text x="200" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">¥</text>
+                                    <!-- 标签 -->
+                                    <text x="150" y="30" text-anchor="middle" fill="#202124" font-size="16" font-weight="bold">我的预算计划</text>
+                                </svg>
+                            </div>
+                            <p>预算就像是给你的钱制定一个"使用计划"。就像你计划如何度过一天一样，预算帮助你计划如何花钱，确保重要的事情有足够的钱，同时避免乱花钱。</p>
+                            <div class="key-points">
+                                <h4>💡 预算的作用：</h4>
+                                <ul>
+                                    <li>帮助你控制花费，不会超支</li>
+                                    <li>确保重要的需求得到满足</li>
+                                    <li>让你更清楚钱的去向</li>
+                                    <li>帮助你实现储蓄目标</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第二部分：预算的基本原则 -->
+                    <section class="lesson-section">
+                        <h2>⚖️ 预算的基本原则</h2>
+                        <div class="content-card">
+                            <div class="budget-principles">
+                                <div class="principle-item">
+                                    <div class="principle-icon">📊</div>
+                                    <div class="principle-content">
+                                        <h4>收入 ≥ 支出</h4>
+                                        <p>这是预算的黄金法则！你花的钱不能超过你拥有的钱。</p>
+                                    </div>
+                                </div>
+                                <div class="principle-item">
+                                    <div class="principle-icon">🎯</div>
+                                    <div class="principle-content">
+                                        <h4>需要 > 想要</h4>
+                                        <p>优先满足真正需要的东西，然后再考虑想要的东西。</p>
+                                    </div>
+                                </div>
+                                <div class="principle-item">
+                                    <div class="principle-icon">💰</div>
+                                    <div class="principle-content">
+                                        <h4>储蓄优先</h4>
+                                        <p>每次拿到钱，先存一部分，再花剩下的。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="budget-formula">
+                                <h4>📐 简单预算公式</h4>
+                                <div class="formula-card">
+                                    <div class="formula">
+                                        <span class="formula-part income">收入</span>
+                                        <span class="formula-operator">-</span>
+                                        <span class="formula-part savings">储蓄</span>
+                                        <span class="formula-operator">-</span>
+                                        <span class="formula-part needs">必需品</span>
+                                        <span class="formula-operator">=</span>
+                                        <span class="formula-part wants">可花费</span>
+                                    </div>
+                                    <p class="formula-explanation">先存钱，再满足需要，最后才是想要的东西</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第三部分：制定个人预算 -->
+                    <section class="lesson-section">
+                        <h2>📝 制定你的第一个预算</h2>
+                        <div class="content-card">
+                            <div class="budget-steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>计算收入</h4>
+                                        <p>统计你每月的零花钱、压岁钱等所有收入</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>列出支出</h4>
+                                        <p>写下你通常会花钱的地方：学习用品、零食、游戏等</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>分配比例</h4>
+                                        <p>建议：储蓄30%，必需品40%，娱乐30%</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>记录执行</h4>
+                                        <p>每天记录花费，看看是否按预算执行</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 互动预算计算器 -->
+                            <div class="budget-calculator">
+                                <h4>🧮 预算计算器</h4>
+                                <div class="calculator-form">
+                                    <div class="input-group">
+                                        <label>每月收入（零花钱）：</label>
+                                        <input type="number" id="monthlyIncome" placeholder="输入金额" min="0">
+                                        <span class="currency">元</span>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculateBudget()">计算预算分配</button>
+                                    <div id="budgetResult" class="budget-result"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- 互动预算分配练习 -->
+                            <div class="budget-allocation-exercise">
+                                <h4>🎯 预算分配练习</h4>
+                                <p class="exercise-instruction">将下面的支出项目拖拽到正确的预算类别中：</p>
+                                
+                                <div class="allocation-container">
+                                    <!-- 可拖拽的支出项目 -->
+                                    <div class="expense-items">
+                                        <div class="expense-item" draggable="true" data-category="savings" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">💰</span>
+                                            <span class="item-text">储蓄基金</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="needs" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">📚</span>
+                                            <span class="item-text">学习用品</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="needs" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🍎</span>
+                                            <span class="item-text">营养午餐</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="wants" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🎮</span>
+                                            <span class="item-text">游戏充值</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="wants" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🍿</span>
+                                            <span class="item-text">零食饮料</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="needs" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🚌</span>
+                                            <span class="item-text">交通费用</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="wants" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🎬</span>
+                                            <span class="item-text">电影票</span>
+                                        </div>
+                                        <div class="expense-item" draggable="true" data-category="savings" ondragstart="budgetDragStart(event)">
+                                            <span class="item-icon">🎯</span>
+                                            <span class="item-text">目标储蓄</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 预算类别区域 -->
+                                    <div class="budget-categories">
+                                        <div class="budget-category savings-category" ondrop="budgetDrop(event)" ondragover="budgetAllowDrop(event)" ondragleave="budgetDragLeave(event)" data-category="savings">
+                                            <div class="category-header">
+                                                <span class="category-icon">💰</span>
+                                                <h5>储蓄 (30%)</h5>
+                                            </div>
+                                            <div class="category-description">为未来目标存钱</div>
+                                            <div class="dropped-items"></div>
+                                        </div>
+                                        
+                                        <div class="budget-category needs-category" ondrop="budgetDrop(event)" ondragover="budgetAllowDrop(event)" ondragleave="budgetDragLeave(event)" data-category="needs">
+                                            <div class="category-header">
+                                                <span class="category-icon">🏠</span>
+                                                <h5>必需品 (40%)</h5>
+                                            </div>
+                                            <div class="category-description">生活和学习必需的支出</div>
+                                            <div class="dropped-items"></div>
+                                        </div>
+                                        
+                                        <div class="budget-category wants-category" ondrop="budgetDrop(event)" ondragover="budgetAllowDrop(event)" ondragleave="budgetDragLeave(event)" data-category="wants">
+                                            <div class="category-header">
+                                                <span class="category-icon">🎉</span>
+                                                <h5>娱乐 (30%)</h5>
+                                            </div>
+                                            <div class="category-description">娱乐和享受的支出</div>
+                                            <div class="dropped-items"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 控制按钮 -->
+                                <div class="exercise-controls">
+                                    <button class="btn btn-primary" onclick="checkBudgetAllocation()">检查答案</button>
+                                    <button class="btn btn-secondary" onclick="resetBudgetExercise()">重新开始</button>
+                                </div>
+                                
+                                <!-- 反馈区域 -->
+                                <div id="budgetFeedback" class="exercise-feedback"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第四部分：预算管理技巧 -->
+                    <section class="lesson-section">
+                        <h2>🎯 预算管理小技巧</h2>
+                        <div class="content-card">
+                            <div class="tips-grid">
+                                <div class="tip-card">
+                                    <div class="tip-icon">🏺</div>
+                                    <h4>信封法</h4>
+                                    <p>准备几个信封，分别标注"储蓄"、"学习"、"娱乐"，把钱分别放入对应信封。</p>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon">📱</div>
+                                    <h4>记账APP</h4>
+                                    <p>使用手机记账软件，随时记录每一笔花费，了解钱的去向。</p>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon">⏰</div>
+                                    <h4>定期检查</h4>
+                                    <p>每周检查一次预算执行情况，看看哪里需要调整。</p>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon">🎁</div>
+                                    <h4>奖励机制</h4>
+                                    <p>如果这个月按预算执行得很好，给自己一个小奖励。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="emergency-fund">
+                                <h4>🚨 应急基金的重要性</h4>
+                                <div class="emergency-content">
+                                    <p>除了日常预算，还要准备一些"应急钱"。比如：</p>
+                                    <ul>
+                                        <li>突然需要买学习用品</li>
+                                        <li>朋友生日需要买礼物</li>
+                                        <li>家里有紧急情况需要帮忙</li>
+                                    </ul>
+                                    <div class="emergency-tip">
+                                        <strong>建议：</strong>每月存10-20元作为应急基金
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第五部分：常见预算错误 -->
+                    <section class="lesson-section">
+                        <h2>⚠️ 避免常见的预算错误</h2>
+                        <div class="content-card">
+                            <div class="mistakes-list">
+                                <div class="mistake-item">
+                                    <div class="mistake-icon">❌</div>
+                                    <div class="mistake-content">
+                                        <h4>制定不现实的预算</h4>
+                                        <p>不要设定过于严格的预算，要留一些弹性空间。</p>
+                                        <div class="solution">✅ 解决方案：预算要符合实际情况，可以逐步调整</div>
+                                    </div>
+                                </div>
+                                <div class="mistake-item">
+                                    <div class="mistake-icon">❌</div>
+                                    <div class="mistake-content">
+                                        <h4>忘记记录小额支出</h4>
+                                        <p>5元、10元的小钱也要记录，积少成多。</p>
+                                        <div class="solution">✅ 解决方案：养成随手记账的习惯</div>
+                                    </div>
+                                </div>
+                                <div class="mistake-item">
+                                    <div class="mistake-icon">❌</div>
+                                    <div class="mistake-content">
+                                        <h4>预算超支后放弃</h4>
+                                        <p>偶尔超支是正常的，不要因此放弃整个预算计划。</p>
+                                        <div class="solution">✅ 解决方案：分析超支原因，调整下月预算</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 课程总结 -->
+                    <section class="lesson-section lesson-summary">
+                        <h2>📝 课程总结</h2>
+                        <div class="content-card summary-card">
+                            <div class="summary-points">
+                                <h4>本课重点回顾：</h4>
+                                <ol>
+                                    <li>预算是管理金钱的重要工具</li>
+                                    <li>遵循"收入≥支出"的基本原则</li>
+                                    <li>优先满足需要，再考虑想要</li>
+                                    <li>储蓄应该是预算的重要组成部分</li>
+                                    <li>定期检查和调整预算计划</li>
+                                </ol>
+                            </div>
+                            <div class="next-steps">
+                                <h4>💪 实践任务：</h4>
+                                <ul>
+                                    <li>计算你的月收入，制定第一个预算</li>
+                                    <li>尝试"信封法"管理你的零花钱</li>
+                                    <li>开始记录每一笔支出</li>
+                                    <li>设立一个小目标，开始储蓄</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lesson-navigation">
+                    <button class="btn btn-secondary" id="prevSection2" disabled>上一节</button>
+                    <button class="btn btn-primary" id="nextSection2">下一节</button>
+                    <button class="btn btn-success" id="completeLesson2" style="display: none;">完成课程</button>
+                </div>
+            </div>
+
+            <!-- 第三课：储蓄与投资 -->
+            <div id="lesson3" class="tab-content">
+                <div class="lesson-header">
+                    <h1>第三课：储蓄与投资入门</h1>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">进度: 0%</span>
+                    </div>
+                </div>
+
+                <div class="lesson-content">
+                    <section class="lesson-section" data-section="1">
+                        <h2>🏦 什么是储蓄？</h2>
+                        <div class="content-card">
+                            <p class="intro-text">储蓄是理财的第一步，也是最重要的基础。它不仅能帮助我们应对突发情况，还能为未来的目标积累资金。</p>
+                            
+                            <div class="concept-box">
+                                <h3>💡 储蓄的定义</h3>
+                                <p>储蓄是指将收入中不用于消费的部分存起来，以备将来使用。简单来说，就是"今天少花一点，明天多一点选择"。</p>
+                            </div>
+
+                            <div class="benefits-grid">
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">🛡️</div>
+                                    <h4>应急保障</h4>
+                                    <p>面对突发情况时有资金支持</p>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">🎯</div>
+                                    <h4>实现目标</h4>
+                                    <p>为购买心仪物品积累资金</p>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">📈</div>
+                                    <h4>财富增长</h4>
+                                    <p>通过利息让钱生钱</p>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">🧘</div>
+                                    <h4>心理安全</h4>
+                                    <p>减少对金钱的焦虑</p>
+                                </div>
+                            </div>
+
+                            <div class="example-box">
+                                <h4>📚 案例分析：小明的储蓄计划</h4>
+                                <p>小明每月零花钱500元，他决定储蓄30%（150元）。一年后，他不仅存了1800元，还通过银行利息额外获得了36元。这笔钱帮助他买到了心仪的游戏设备。</p>
+                            </div>
+                            
+                            <!-- 新增储蓄案例集合 -->
+                            <div class="savings-cases">
+                                <h4>💼 真实储蓄案例分享</h4>
+                                
+                                <!-- 案例1：短期目标储蓄 -->
+                                <div class="savings-case short-term">
+                                    <div class="case-header">
+                                        <div class="avatar">🎮</div>
+                                        <div class="case-info">
+                                            <h5>小王的游戏机储蓄</h5>
+                                            <p class="goal">目标：购买2000元游戏机</p>
+                                        </div>
+                                    </div>
+                                    <div class="savings-timeline">
+                                        <div class="timeline-item">
+                                            <div class="month">第1个月</div>
+                                            <div class="action">开始储蓄，每月存400元</div>
+                                            <div class="balance">余额：400元</div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="month">第3个月</div>
+                                            <div class="action">坚持储蓄，抵制诱惑</div>
+                                            <div class="balance">余额：1200元</div>
+                                        </div>
+                                        <div class="timeline-item success">
+                                            <div class="month">第5个月</div>
+                                            <div class="action">达成目标！</div>
+                                            <div class="balance">余额：2000元</div>
+                                        </div>
+                                    </div>
+                                    <div class="case-insight">
+                                        <p><strong>💡 成功秘诀：</strong>"我把游戏机的图片贴在储蓄罐上，每次想乱花钱时就看看它。还设置了手机提醒，每月1号自动存钱。"</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 案例2：长期教育储蓄 -->
+                                <div class="savings-case long-term">
+                                    <div class="case-header">
+                                        <div class="avatar">🎓</div>
+                                        <div class="case-info">
+                                            <h5>小李的大学基金</h5>
+                                            <p class="goal">目标：为大学教育储蓄50000元</p>
+                                        </div>
+                                    </div>
+                                    <div class="savings-strategy">
+                                        <div class="strategy-item">
+                                            <span class="strategy-icon">📅</span>
+                                            <div class="strategy-content">
+                                                <h6>时间规划</h6>
+                                                <p>从初一开始，计划6年时间达成目标</p>
+                                            </div>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <span class="strategy-icon">💰</span>
+                                            <div class="strategy-content">
+                                                <h6>资金来源</h6>
+                                                <p>零花钱(30%) + 压岁钱(70%) + 奖学金</p>
+                                            </div>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <span class="strategy-icon">📈</span>
+                                            <div class="strategy-content">
+                                                <h6>增值方式</h6>
+                                                <p>银行定期存款 + 教育储蓄账户</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-tracking">
+                                        <h6>📊 进度追踪（第3年）</h6>
+                                        <div class="progress-bar-detailed">
+                                            <div class="progress-fill" style="width: 60%;"></div>
+                                            <span class="progress-amount">已储蓄：30,000元 / 目标：50,000元</span>
+                                        </div>
+                                        <p class="progress-note">提前完成60%，预计可提前1年达成目标</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 案例3：应急基金建立 -->
+                                <div class="savings-case emergency">
+                                    <div class="case-header">
+                                        <div class="avatar">🚨</div>
+                                        <div class="case-info">
+                                            <h5>小张的应急基金</h5>
+                                            <p class="goal">目标：建立3个月生活费的应急基金</p>
+                                        </div>
+                                    </div>
+                                    <div class="emergency-plan">
+                                        <div class="plan-phase">
+                                            <h6>第一阶段：基础建立</h6>
+                                            <p>每月存入100元，建立1000元基础应急金</p>
+                                        </div>
+                                        <div class="plan-phase">
+                                            <h6>第二阶段：逐步增加</h6>
+                                            <p>将储蓄比例提高到20%，加速积累</p>
+                                        </div>
+                                        <div class="plan-phase">
+                                            <h6>第三阶段：维持更新</h6>
+                                            <p>达到目标后，定期检查和补充</p>
+                                        </div>
+                                    </div>
+                                    <div class="emergency-benefits">
+                                        <h6>🛡️ 实际帮助</h6>
+                                        <ul>
+                                            <li>手机意外损坏时，有钱立即更换</li>
+                                            <li>朋友生日时，不用为礼物费用发愁</li>
+                                            <li>家庭临时需要时，能够提供帮助</li>
+                                            <li>心理压力减少，更有安全感</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- 案例4：失败教训 -->
+                                <div class="savings-case failure">
+                                    <div class="case-header">
+                                        <div class="avatar">😔</div>
+                                        <div class="case-info">
+                                            <h5>小陈的储蓄失败</h5>
+                                            <p class="goal">原目标：储蓄买自行车，但半途而废</p>
+                                        </div>
+                                    </div>
+                                    <div class="failure-analysis">
+                                        <div class="problem-item">
+                                            <span class="problem-icon">❌</span>
+                                            <div class="problem-content">
+                                                <h6>问题1：目标不明确</h6>
+                                                <p>只是想"存点钱"，没有具体目标和时间</p>
+                                            </div>
+                                        </div>
+                                        <div class="problem-item">
+                                            <span class="problem-icon">❌</span>
+                                            <div class="problem-content">
+                                                <h6>问题2：计划不现实</h6>
+                                                <p>想每月存80%的钱，但没考虑日常需求</p>
+                                            </div>
+                                        </div>
+                                        <div class="problem-item">
+                                            <span class="problem-icon">❌</span>
+                                            <div class="problem-content">
+                                                <h6>问题3：缺乏监督</h6>
+                                                <p>没有记录进度，容易忘记初衷</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lessons-learned">
+                                        <h6>💡 改进方案</h6>
+                                        <div class="improvement-grid">
+                                            <div class="improvement-item">
+                                                <span class="icon">🎯</span>
+                                                <p>设定具体、可达成的目标</p>
+                                            </div>
+                                            <div class="improvement-item">
+                                                <span class="icon">📊</span>
+                                                <p>制定合理的储蓄比例</p>
+                                            </div>
+                                            <div class="improvement-item">
+                                                <span class="icon">📝</span>
+                                                <p>定期记录和检查进度</p>
+                                            </div>
+                                            <div class="improvement-item">
+                                                <span class="icon">👥</span>
+                                                <p>寻求家人朋友的支持</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="cases-summary">
+                                    <h5>📋 储蓄成功要素总结</h5>
+                                    <div class="success-factors">
+                                        <div class="factor">
+                                            <span class="factor-number">1</span>
+                                            <div class="factor-content">
+                                                <h6>明确目标</h6>
+                                                <p>设定具体的储蓄目标和时间期限</p>
+                                            </div>
+                                        </div>
+                                        <div class="factor">
+                                            <span class="factor-number">2</span>
+                                            <div class="factor-content">
+                                                <h6>合理规划</h6>
+                                                <p>制定符合实际情况的储蓄计划</p>
+                                            </div>
+                                        </div>
+                                        <div class="factor">
+                                            <span class="factor-number">3</span>
+                                            <div class="factor-content">
+                                                <h6>坚持执行</h6>
+                                                <p>养成定期储蓄的好习惯</p>
+                                            </div>
+                                        </div>
+                                        <div class="factor">
+                                            <span class="factor-number">4</span>
+                                            <div class="factor-content">
+                                                <h6>灵活调整</h6>
+                                                <p>根据实际情况适时调整计划</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="2" style="display: none;">
+                        <h2>💰 储蓄工具比较</h2>
+                        <div class="content-card">
+                            <p class="intro-text">不同的储蓄工具有不同的特点，选择合适的工具能让你的储蓄更有效率。</p>
+                            
+                            <div class="comparison-table">
+                                <div class="table-header">
+                                    <div class="col-tool">储蓄工具</div>
+                                    <div class="col-rate">年利率</div>
+                                    <div class="col-access">取用便利性</div>
+                                    <div class="col-risk">风险等级</div>
+                                    <div class="col-suitable">适合人群</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="col-tool">
+                                        <strong>储蓄罐/现金</strong>
+                                        <small>传统储蓄方式</small>
+                                    </div>
+                                    <div class="col-rate">0%</div>
+                                    <div class="col-access">⭐⭐⭐⭐⭐</div>
+                                    <div class="col-risk">⭐</div>
+                                    <div class="col-suitable">储蓄初学者</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="col-tool">
+                                        <strong>银行活期存款</strong>
+                                        <small>随时存取</small>
+                                    </div>
+                                    <div class="col-rate">0.3%</div>
+                                    <div class="col-access">⭐⭐⭐⭐⭐</div>
+                                    <div class="col-risk">⭐</div>
+                                    <div class="col-suitable">日常储蓄</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="col-tool">
+                                        <strong>银行定期存款</strong>
+                                        <small>固定期限</small>
+                                    </div>
+                                    <div class="col-rate">1.5-3%</div>
+                                    <div class="col-access">⭐⭐</div>
+                                    <div class="col-risk">⭐</div>
+                                    <div class="col-suitable">长期储蓄</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="col-tool">
+                                        <strong>余额宝类产品</strong>
+                                        <small>货币基金</small>
+                                    </div>
+                                    <div class="col-rate">2-3%</div>
+                                    <div class="col-access">⭐⭐⭐⭐</div>
+                                    <div class="col-risk">⭐⭐</div>
+                                    <div class="col-suitable">灵活储蓄</div>
+                                </div>
+                            </div>
+
+                            <div class="tip-box">
+                                <h4>💡 选择建议</h4>
+                                <ul>
+                                    <li><strong>短期储蓄</strong>：选择活期存款或余额宝类产品，方便随时使用</li>
+                                    <li><strong>长期储蓄</strong>：选择定期存款，利率更高</li>
+                                    <li><strong>应急资金</strong>：保持一部分资金在活期账户，以备不时之需</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="3" style="display: none;">
+                        <h2>📊 投资基础知识</h2>
+                        <div class="content-card">
+                            <p class="intro-text">投资是让钱为你工作的方式，但需要了解基本概念和风险。</p>
+                            
+                            <div class="concept-box">
+                                <h3>🎯 什么是投资？</h3>
+                                <p>投资是指将资金投入到某种资产中，期望在未来获得收益的行为。与储蓄不同，投资通常伴随着一定的风险。</p>
+                            </div>
+
+                            <div class="investment-types">
+                                <div class="investment-item">
+                                    <div class="investment-icon">📈</div>
+                                    <h4>股票</h4>
+                                    <p>购买公司股份，分享公司成长收益</p>
+                                    <div class="risk-level">风险：⭐⭐⭐⭐</div>
+                                </div>
+                                <div class="investment-item">
+                                    <div class="investment-icon">🏢</div>
+                                    <h4>基金</h4>
+                                    <p>专业机构代为投资，分散风险</p>
+                                    <div class="risk-level">风险：⭐⭐⭐</div>
+                                </div>
+                                <div class="investment-item">
+                                    <div class="investment-icon">🏛️</div>
+                                    <h4>国债</h4>
+                                    <p>政府发行的债券，安全性高</p>
+                                    <div class="risk-level">风险：⭐⭐</div>
+                                </div>
+                                <div class="investment-item">
+                                    <div class="investment-icon">🏠</div>
+                                    <h4>房地产</h4>
+                                    <p>购买房产获得租金或升值收益</p>
+                                    <div class="risk-level">风险：⭐⭐⭐</div>
+                                </div>
+                            </div>
+
+                            <div class="risk-return-chart">
+                                <h4>📊 风险与收益关系</h4>
+                                <div class="chart-container">
+                                    <canvas id="riskReturnChart" width="400" height="200"></canvas>
+                                </div>
+                                <p class="chart-note">一般来说，风险越高，潜在收益也越高。但高风险也意味着可能的损失更大。</p>
+                            </div>
+
+                            <div class="warning-box">
+                                <h4>⚠️ 青少年投资注意事项</h4>
+                                <ul>
+                                    <li>投资前要充分学习相关知识</li>
+                                    <li>只投资自己能承受损失的资金</li>
+                                    <li>不要被高收益承诺迷惑</li>
+                                    <li>建议在家长指导下进行</li>
+                                    <li>从小额投资开始积累经验</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="4" style="display: none;">
+                        <h2>🎯 制定储蓄计划</h2>
+                        <div class="content-card">
+                            <p class="intro-text">有计划的储蓄比随意储蓄更有效果。让我们学习如何制定适合自己的储蓄计划。</p>
+                            
+                            <div class="steps-container">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>设定储蓄目标</h4>
+                                        <p>明确你想要储蓄的目的，比如买游戏、旅行或应急资金</p>
+                                        <div class="example">例如：6个月内存1000元买新手机</div>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>分析收入来源</h4>
+                                        <p>列出所有收入来源：零花钱、压岁钱、兼职收入等</p>
+                                        <div class="example">例如：每月零花钱300元 + 做家务50元</div>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>确定储蓄比例</h4>
+                                        <p>建议储蓄收入的20-30%，根据个人情况调整</p>
+                                        <div class="example">例如：350元收入 × 30% = 105元储蓄</div>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>选择储蓄方式</h4>
+                                        <p>根据目标时间和金额选择合适的储蓄工具</p>
+                                        <div class="example">例如：短期目标用活期，长期目标用定期</div>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">5</div>
+                                    <div class="step-content">
+                                        <h4>定期检查调整</h4>
+                                        <p>每月检查储蓄进度，必要时调整计划</p>
+                                        <div class="example">例如：每月底检查是否达到储蓄目标</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="interactive-calculator">
+                                <h4>🧮 储蓄计算器</h4>
+                                <div class="calculator-inputs">
+                                    <div class="input-group">
+                                        <label>月收入（元）：</label>
+                                        <input type="number" id="monthlyIncome3" value="300" min="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>储蓄比例（%）：</label>
+                                        <input type="range" id="savingsRate3" min="10" max="50" value="30">
+                                        <span id="savingsRateDisplay3">30%</span>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>储蓄期限（月）：</label>
+                                        <input type="number" id="savingsPeriod3" value="12" min="1" max="60">
+                                    </div>
+                                </div>
+                                <div class="calculator-results">
+                                    <div class="result-item">
+                                        <span>每月储蓄：</span>
+                                        <strong id="monthlySavings3">90元</strong>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>总储蓄额：</span>
+                                        <strong id="totalSavings3">1080元</strong>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>可用支出：</span>
+                                        <strong id="availableSpending3">210元</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lesson-navigation">
+                    <button class="btn btn-secondary" id="prevSection3">上一节</button>
+                    <button class="btn btn-primary" id="nextSection3">下一节</button>
+                    <button class="btn btn-success" id="completeLesson3" style="display: none;">完成课程</button>
+                </div>
+            </div>
+
+            <!-- 第四课：理财规划 -->
+            <div id="lesson4" class="tab-content">
+                <div class="lesson-header">
+                    <h1>第四课：个人理财规划</h1>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">进度: 0%</span>
+                    </div>
+                </div>
+
+                <div class="lesson-content">
+                    <section class="lesson-section" data-section="1">
+                        <h2>🎯 设定理财目标</h2>
+                        <div class="content-card">
+                            <p class="intro-text">理财规划的第一步是设定明确的目标。有了目标，你的理财行为才会有方向和动力。</p>
+                            
+                            <div class="concept-box">
+                                <h3>💡 什么是理财目标？</h3>
+                                <p>理财目标是你希望通过理财活动实现的具体愿望，比如买一台电脑、为大学存学费、或者建立应急资金等。</p>
+                            </div>
+
+                            <div class="goal-types">
+                                <div class="goal-type">
+                                    <div class="goal-icon">⚡</div>
+                                    <h4>短期目标（1年内）</h4>
+                                    <div class="goal-examples">
+                                        <span class="goal-tag">买新手机</span>
+                                        <span class="goal-tag">旅行基金</span>
+                                        <span class="goal-tag">生日礼物</span>
+                                        <span class="goal-tag">应急资金</span>
+                                    </div>
+                                    <p>特点：金额相对较小，容易实现，能快速获得成就感</p>
+                                </div>
+                                <div class="goal-type">
+                                    <div class="goal-icon">🎯</div>
+                                    <h4>中期目标（1-5年）</h4>
+                                    <div class="goal-examples">
+                                        <span class="goal-tag">大学学费</span>
+                                        <span class="goal-tag">创业资金</span>
+                                        <span class="goal-tag">技能培训</span>
+                                        <span class="goal-tag">出国交流</span>
+                                    </div>
+                                    <p>特点：需要持续储蓄，可以考虑投资增值</p>
+                                </div>
+                                <div class="goal-type">
+                                    <div class="goal-icon">🏔️</div>
+                                    <h4>长期目标（5年以上）</h4>
+                                    <div class="goal-examples">
+                                        <span class="goal-tag">买房首付</span>
+                                        <span class="goal-tag">退休储备</span>
+                                        <span class="goal-tag">子女教育</span>
+                                        <span class="goal-tag">财务自由</span>
+                                    </div>
+                                    <p>特点：金额较大，需要长期规划和投资策略</p>
+                                </div>
+                            </div>
+
+                            <div class="smart-goals">
+                                <h4>🎯 SMART目标设定法</h4>
+                                <div class="smart-grid">
+                                    <div class="smart-item">
+                                        <strong>S</strong>pecific<br>
+                                        <small>具体明确</small>
+                                    </div>
+                                    <div class="smart-item">
+                                        <strong>M</strong>easurable<br>
+                                        <small>可以衡量</small>
+                                    </div>
+                                    <div class="smart-item">
+                                        <strong>A</strong>chievable<br>
+                                        <small>可以实现</small>
+                                    </div>
+                                    <div class="smart-item">
+                                        <strong>R</strong>elevant<br>
+                                        <small>相关重要</small>
+                                    </div>
+                                    <div class="smart-item">
+                                        <strong>T</strong>ime-bound<br>
+                                        <small>有时间限制</small>
+                                    </div>
+                                </div>
+                                <div class="example-box">
+                                    <h5>❌ 模糊目标："我想存钱"</h5>
+                                    <h5>✅ SMART目标："我要在12个月内存够5000元，用于购买笔记本电脑"</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="2" style="display: none;">
+                        <h2>⚖️ 风险评估与管理</h2>
+                        <div class="content-card">
+                            <p class="intro-text">理财过程中会遇到各种风险，了解和管理这些风险是成功理财的关键。</p>
+                            
+                            <div class="risk-types">
+                                <div class="risk-item">
+                                    <div class="risk-icon">📉</div>
+                                    <h4>市场风险</h4>
+                                    <p>投资价值因市场波动而下跌的风险</p>
+                                    <div class="risk-example">例如：股票价格下跌、基金净值减少</div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon">💸</div>
+                                    <h4>通胀风险</h4>
+                                    <p>物价上涨导致购买力下降的风险</p>
+                                    <div class="risk-example">例如：现在100元能买的东西，明年可能需要105元</div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon">🏦</div>
+                                    <h4>信用风险</h4>
+                                    <p>借款人无法按时还款的风险</p>
+                                    <div class="risk-example">例如：P2P平台跑路、公司债券违约</div>
+                                </div>
+                                <div class="risk-item">
+                                    <div class="risk-icon">💧</div>
+                                    <h4>流动性风险</h4>
+                                    <p>无法及时变现资产的风险</p>
+                                    <div class="risk-example">例如：定期存款未到期、房产难以快速出售</div>
+                                </div>
+                            </div>
+
+                            <div class="risk-tolerance-test">
+                                <h4>🧪 风险承受能力测试</h4>
+                                <div class="test-question">
+                                    <p><strong>如果你的投资在一个月内下跌了20%，你会：</strong></p>
+                                    <div class="test-options">
+                                        <label><input type="radio" name="risk1" value="1"> 立即卖出，避免更大损失</label>
+                                        <label><input type="radio" name="risk1" value="2"> 观望一段时间再决定</label>
+                                        <label><input type="radio" name="risk1" value="3"> 继续持有，相信长期会回升</label>
+                                        <label><input type="radio" name="risk1" value="4"> 趁低价再买入更多</label>
+                                    </div>
+                                </div>
+                                <div class="test-question">
+                                    <p><strong>你更愿意选择哪种投资？</strong></p>
+                                    <div class="test-options">
+                                        <label><input type="radio" name="risk2" value="1"> 银行存款，年收益2%，几乎无风险</label>
+                                        <label><input type="radio" name="risk2" value="2"> 货币基金，年收益3-4%，风险很低</label>
+                                        <label><input type="radio" name="risk2" value="3"> 混合基金，年收益5-8%，中等风险</label>
+                                        <label><input type="radio" name="risk2" value="4"> 股票投资，年收益可能10%+，高风险</label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="calculateRiskTolerance">计算风险承受能力</button>
+                                <div id="riskResult" class="risk-result" style="display: none;"></div>
+                            </div>
+
+                            <div class="risk-management">
+                                <h4>🛡️ 风险管理策略</h4>
+                                <div class="strategy-grid">
+                                    <div class="strategy-item">
+                                        <h5>分散投资</h5>
+                                        <p>不要把所有鸡蛋放在一个篮子里</p>
+                                    </div>
+                                    <div class="strategy-item">
+                                        <h5>定期定额</h5>
+                                        <p>分批投资，平摊成本和风险</p>
+                                    </div>
+                                    <div class="strategy-item">
+                                        <h5>保持流动性</h5>
+                                        <p>保留一部分资金用于应急</p>
+                                    </div>
+                                    <div class="strategy-item">
+                                        <h5>长期持有</h5>
+                                        <p>时间能够平滑短期波动</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="risk-case-studies">
+                                <h4>📚 风险管理实战案例</h4>
+                                
+                                <div class="case-study-container">
+                                    <div class="case-study success-case">
+                                        <div class="case-header">
+                                            <div class="case-avatar">👨‍🎓</div>
+                                            <div class="case-info">
+                                                <h5>小王的分散投资策略</h5>
+                                                <span class="case-tag success">成功案例</span>
+                                            </div>
+                                        </div>
+                                        <div class="case-content">
+                                            <div class="case-situation">
+                                                <h6>📋 情况描述</h6>
+                                                <p>小王是高二学生，有5000元压岁钱想要投资。他没有把所有钱投入单一产品，而是采用了分散投资策略。</p>
+                                            </div>
+                                            <div class="case-strategy">
+                                                <h6>💡 投资策略</h6>
+                                                <div class="investment-allocation">
+                                                    <div class="allocation-item">
+                                                        <span class="allocation-label">货币基金</span>
+                                                        <span class="allocation-amount">2000元 (40%)</span>
+                                                        <span class="allocation-purpose">应急资金</span>
+                                                    </div>
+                                                    <div class="allocation-item">
+                                                        <span class="allocation-label">债券基金</span>
+                                                        <span class="allocation-amount">2000元 (40%)</span>
+                                                        <span class="allocation-purpose">稳健收益</span>
+                                                    </div>
+                                                    <div class="allocation-item">
+                                                        <span class="allocation-label">指数基金</span>
+                                                        <span class="allocation-amount">1000元 (20%)</span>
+                                                        <span class="allocation-purpose">长期增长</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="case-result">
+                                                <h6>📈 一年后结果</h6>
+                                                <ul>
+                                                    <li>货币基金：2000元 → 2080元 (+4%)</li>
+                                                    <li>债券基金：2000元 → 2100元 (+5%)</li>
+                                                    <li>指数基金：1000元 → 950元 (-5%)</li>
+                                                    <li><strong>总资产：5000元 → 5130元 (+2.6%)</strong></li>
+                                                </ul>
+                                                <p class="case-insight">虽然指数基金亏损，但整体投资仍然盈利，风险得到有效控制。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="case-study warning-case">
+                                        <div class="case-header">
+                                            <div class="case-avatar">👩‍🎓</div>
+                                            <div class="case-info">
+                                                <h5>小李的集中投资教训</h5>
+                                                <span class="case-tag warning">教训案例</span>
+                                            </div>
+                                        </div>
+                                        <div class="case-content">
+                                            <div class="case-situation">
+                                                <h6>📋 情况描述</h6>
+                                                <p>小李听朋友推荐，把所有3000元压岁钱都投入了一只热门股票基金，希望快速获得高收益。</p>
+                                            </div>
+                                            <div class="case-mistake">
+                                                <h6>❌ 错误做法</h6>
+                                                <ul>
+                                                    <li>把所有资金投入单一产品</li>
+                                                    <li>没有保留应急资金</li>
+                                                    <li>盲目追求高收益</li>
+                                                    <li>没有了解产品风险</li>
+                                                </ul>
+                                            </div>
+                                            <div class="case-consequence">
+                                                <h6>📉 不良后果</h6>
+                                                <ul>
+                                                    <li>6个月后基金下跌30%，损失900元</li>
+                                                    <li>急需用钱时只能亏损赎回</li>
+                                                    <li>心理压力大，影响学习</li>
+                                                    <li>对投资产生恐惧心理</li>
+                                                </ul>
+                                            </div>
+                                            <div class="case-lesson">
+                                                <h6>💡 改进建议</h6>
+                                                <ul>
+                                                    <li>采用分散投资策略</li>
+                                                    <li>保留30%资金作为应急</li>
+                                                    <li>选择风险适中的产品</li>
+                                                    <li>定期定额投资降低风险</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="case-study emergency-case">
+                                        <div class="case-header">
+                                            <div class="case-avatar">👨‍💼</div>
+                                            <div class="case-info">
+                                                <h5>小张的应急基金救急</h5>
+                                                <span class="case-tag emergency">应急案例</span>
+                                            </div>
+                                        </div>
+                                        <div class="case-content">
+                                            <div class="case-situation">
+                                                <h6>📋 突发情况</h6>
+                                                <p>小张是大一学生，平时注重理财规划。突然家里需要紧急医疗费用，需要他提供2000元支持。</p>
+                                            </div>
+                                            <div class="case-preparation">
+                                                <h6>🛡️ 事前准备</h6>
+                                                <div class="emergency-fund-structure">
+                                                    <div class="fund-item">
+                                                        <span class="fund-type">活期存款</span>
+                                                        <span class="fund-amount">1000元</span>
+                                                        <span class="fund-access">随时可取</span>
+                                                    </div>
+                                                    <div class="fund-item">
+                                                        <span class="fund-type">货币基金</span>
+                                                        <span class="fund-amount">1500元</span>
+                                                        <span class="fund-access">T+1到账</span>
+                                                    </div>
+                                                    <div class="fund-item">
+                                                        <span class="fund-type">短期理财</span>
+                                                        <span class="fund-amount">1000元</span>
+                                                        <span class="fund-access">7天后到期</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="case-response">
+                                                <h6>⚡ 应急响应</h6>
+                                                <ol>
+                                                    <li>立即取出活期存款1000元</li>
+                                                    <li>赎回货币基金1000元，次日到账</li>
+                                                    <li>成功筹集2000元，解决燃眉之急</li>
+                                                    <li>其他投资不受影响，继续增值</li>
+                                                </ol>
+                                            </div>
+                                            <div class="case-insight">
+                                                <h6>💡 经验总结</h6>
+                                                <p>应急基金的重要性在关键时刻体现，建议保持3-6个月生活费作为应急资金，分层配置确保流动性。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="case-study market-case">
+                                        <div class="case-header">
+                                            <div class="case-avatar">👩‍💻</div>
+                                            <div class="case-info">
+                                                <h5>小陈的市场波动应对</h5>
+                                                <span class="case-tag market">市场案例</span>
+                                            </div>
+                                        </div>
+                                        <div class="case-content">
+                                            <div class="case-situation">
+                                                <h6>📋 市场环境</h6>
+                                                <p>2022年初，小陈开始定投指数基金，每月投入500元。不料遇到市场大幅下跌，基金净值跌幅超过20%。</p>
+                                            </div>
+                                            <div class="case-challenge">
+                                                <h6>😰 心理挑战</h6>
+                                                <ul>
+                                                    <li>看到账户持续亏损，心理压力大</li>
+                                                    <li>周围同学劝她赶紧止损</li>
+                                                    <li>担心继续下跌损失更多</li>
+                                                    <li>怀疑定投策略是否正确</li>
+                                                </ul>
+                                            </div>
+                                            <div class="case-strategy">
+                                                <h6>🎯 应对策略</h6>
+                                                <ol>
+                                                    <li><strong>坚持定投：</strong>继续每月投入500元，不因市场波动改变</li>
+                                                    <li><strong>成本平摊：</strong>下跌时买入更多份额，降低平均成本</li>
+                                                    <li><strong>长期视角：</strong>关注3-5年长期收益，不被短期波动影响</li>
+                                                    <li><strong>学习提升：</strong>利用时间学习投资知识，提高认知</li>
+                                                </ol>
+                                            </div>
+                                            <div class="case-outcome">
+                                                <h6>🎉 最终结果</h6>
+                                                <div class="investment-timeline">
+                                                    <div class="timeline-item">
+                                                        <span class="timeline-date">2022年1-6月</span>
+                                                        <span class="timeline-action">定投3000元，市场下跌</span>
+                                                        <span class="timeline-value">账户价值：2400元</span>
+                                                    </div>
+                                                    <div class="timeline-item">
+                                                        <span class="timeline-date">2022年7-12月</span>
+                                                        <span class="timeline-action">继续定投3000元，逐步回升</span>
+                                                        <span class="timeline-value">账户价值：5800元</span>
+                                                    </div>
+                                                    <div class="timeline-item">
+                                                        <span class="timeline-date">2023年1-6月</span>
+                                                        <span class="timeline-action">市场反弹，定投显效</span>
+                                                        <span class="timeline-value">账户价值：8500元</span>
+                                                    </div>
+                                                </div>
+                                                <p class="case-insight">通过坚持定投和长期持有，小陈不仅收回了成本，还获得了可观收益，验证了风险管理策略的有效性。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="risk-management-summary">
+                                    <h5>🎯 风险管理要点总结</h5>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <div class="summary-icon">🎯</div>
+                                            <h6>分散投资</h6>
+                                            <p>不同类型、不同期限的产品组合，降低单一风险</p>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon">💧</div>
+                                            <h6>保持流动性</h6>
+                                            <p>预留应急资金，确保突发情况下有资金可用</p>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon">⏰</div>
+                                            <h6>长期投资</h6>
+                                            <p>时间是最好的朋友，长期持有平滑短期波动</p>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon">📚</div>
+                                            <h6>持续学习</h6>
+                                            <p>不断提升理财知识，做出更明智的投资决策</p>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon">🧘</div>
+                                            <h6>心态管理</h6>
+                                            <p>保持理性，不被市场情绪左右投资决策</p>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon">📊</div>
+                                            <h6>定期评估</h6>
+                                            <p>定期检查投资组合，根据情况调整策略</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="3" style="display: none;">
+                        <h2>🛠️ 理财工具选择</h2>
+                        <div class="content-card">
+                            <p class="intro-text">不同的理财工具适合不同的目标和风险偏好，选择合适的工具是理财成功的关键。</p>
+                            
+                            <div class="tools-comparison">
+                                <div class="tool-category">
+                                    <h4>🏦 保守型工具</h4>
+                                    <div class="tool-list">
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>银行存款</strong>
+                                                <span class="tool-return">1-3%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag safe">安全</span>
+                                                <span class="feature-tag liquid">流动性好</span>
+                                            </div>
+                                            <p>适合：应急资金、短期储蓄</p>
+                                        </div>
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>货币基金</strong>
+                                                <span class="tool-return">2-4%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag safe">低风险</span>
+                                                <span class="feature-tag liquid">T+1赎回</span>
+                                            </div>
+                                            <p>适合：现金管理、灵活储蓄</p>
+                                        </div>
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>国债</strong>
+                                                <span class="tool-return">3-4%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag safe">极安全</span>
+                                                <span class="feature-tag fixed">固定收益</span>
+                                            </div>
+                                            <p>适合：长期储蓄、保值需求</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tool-category">
+                                    <h4>📊 成长型工具</h4>
+                                    <div class="tool-list">
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>债券基金</strong>
+                                                <span class="tool-return">4-6%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag moderate">中低风险</span>
+                                                <span class="feature-tag stable">相对稳定</span>
+                                            </div>
+                                            <p>适合：稳健投资、中期目标</p>
+                                        </div>
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>混合基金</strong>
+                                                <span class="tool-return">5-10%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag moderate">中等风险</span>
+                                                <span class="feature-tag balanced">攻守兼备</span>
+                                            </div>
+                                            <p>适合：长期投资、平衡配置</p>
+                                        </div>
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>指数基金</strong>
+                                                <span class="tool-return">6-12%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag growth">中高风险</span>
+                                                <span class="feature-tag diversified">分散投资</span>
+                                            </div>
+                                            <p>适合：长期投资、被动投资</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tool-category">
+                                    <h4>🚀 进取型工具</h4>
+                                    <div class="tool-list">
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>股票基金</strong>
+                                                <span class="tool-return">8-15%</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag high">高风险</span>
+                                                <span class="feature-tag growth">高成长</span>
+                                            </div>
+                                            <p>适合：长期投资、高风险承受</p>
+                                        </div>
+                                        <div class="tool-item">
+                                            <div class="tool-header">
+                                                <strong>个股投资</strong>
+                                                <span class="tool-return">不确定</span>
+                                            </div>
+                                            <div class="tool-features">
+                                                <span class="feature-tag high">极高风险</span>
+                                                <span class="feature-tag volatile">波动大</span>
+                                            </div>
+                                            <p>适合：专业投资者、小额尝试</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="allocation-guide">
+                                <h4>📊 资产配置建议</h4>
+                                <div class="age-based-allocation">
+                                    <div class="allocation-item">
+                                        <h5>👶 青少年期（15-25岁）</h5>
+                                        <div class="allocation-chart">
+                                            <div class="allocation-bar">
+                                                <div class="bar-segment safe" style="width: 30%;">现金储蓄 30%</div>
+                                                <div class="bar-segment moderate" style="width: 40%;">稳健投资 40%</div>
+                                                <div class="bar-segment growth" style="width: 30%;">成长投资 30%</div>
+                                            </div>
+                                        </div>
+                                        <p>重点：学习理财知识，建立储蓄习惯</p>
+                                    </div>
+                                    <div class="allocation-item">
+                                        <h5>🎓 大学期（18-22岁）</h5>
+                                        <div class="allocation-chart">
+                                            <div class="allocation-bar">
+                                                <div class="bar-segment safe" style="width: 50%;">现金储蓄 50%</div>
+                                                <div class="bar-segment moderate" style="width: 30%;">稳健投资 30%</div>
+                                                <div class="bar-segment growth" style="width: 20%;">成长投资 20%</div>
+                                            </div>
+                                        </div>
+                                        <p>重点：保持流动性，为学费和生活费做准备</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="lesson-section" data-section="4" style="display: none;">
+                        <h2>📋 制定个人理财计划</h2>
+                        <div class="content-card">
+                            <p class="intro-text">综合前面学到的知识，现在让我们制定一个完整的个人理财计划。</p>
+                            
+                            <div class="planning-steps">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>财务现状分析</h4>
+                                        <div class="analysis-form">
+                                            <div class="form-row">
+                                                <label>月收入：</label>
+                                                <input type="number" id="monthlyIncome4" placeholder="输入月收入">
+                                                <span>元</span>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>月支出：</label>
+                                                <input type="number" id="monthlyExpense4" placeholder="输入月支出">
+                                                <span>元</span>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>现有储蓄：</label>
+                                                <input type="number" id="currentSavings4" placeholder="输入现有储蓄">
+                                                <span>元</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>设定理财目标</h4>
+                                        <div class="goal-form">
+                                            <div class="form-row">
+                                                <label>短期目标：</label>
+                                                <input type="text" id="shortTermGoal" placeholder="例如：买新手机">
+                                            </div>
+                                            <div class="form-row">
+                                                <label>目标金额：</label>
+                                                <input type="number" id="shortTermAmount" placeholder="目标金额">
+                                                <span>元</span>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>目标时间：</label>
+                                                <input type="number" id="shortTermTime" placeholder="几个月内">
+                                                <span>个月</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>制定储蓄计划</h4>
+                                        <button class="btn btn-primary" id="generatePlan">生成理财计划</button>
+                                        <div id="planResult" class="plan-result" style="display: none;">
+                                            <div class="result-section">
+                                                <h5>📊 财务分析</h5>
+                                                <div id="financialAnalysis"></div>
+                                            </div>
+                                            <div class="result-section">
+                                                <h5>💰 储蓄建议</h5>
+                                                <div id="savingsAdvice"></div>
+                                            </div>
+                                            <div class="result-section">
+                                                <h5>📈 投资配置</h5>
+                                                <div id="investmentAllocation"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>定期检查调整</h4>
+                                        <div class="review-checklist">
+                                            <div class="checklist-item">
+                                                <input type="checkbox" id="check1">
+                                                <label for="check1">每月检查收支情况</label>
+                                            </div>
+                                            <div class="checklist-item">
+                                                <input type="checkbox" id="check2">
+                                                <label for="check2">每季度评估投资表现</label>
+                                            </div>
+                                            <div class="checklist-item">
+                                                <input type="checkbox" id="check3">
+                                                <label for="check3">每年调整理财目标</label>
+                                            </div>
+                                            <div class="checklist-item">
+                                                <input type="checkbox" id="check4">
+                                                <label for="check4">根据生活变化调整计划</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="success-tips">
+                                <h4>🏆 理财成功秘诀</h4>
+                                <div class="tips-grid">
+                                    <div class="tip-item">
+                                        <div class="tip-icon">🎯</div>
+                                        <h5>目标明确</h5>
+                                        <p>设定具体、可衡量的理财目标</p>
+                                    </div>
+                                    <div class="tip-item">
+                                        <div class="tip-icon">⏰</div>
+                                        <h5>持之以恒</h5>
+                                        <p>坚持执行理财计划，不轻易放弃</p>
+                                    </div>
+                                    <div class="tip-item">
+                                        <div class="tip-icon">📚</div>
+                                        <h5>持续学习</h5>
+                                        <p>不断学习理财知识，提升投资技能</p>
+                                    </div>
+                                    <div class="tip-item">
+                                        <div class="tip-icon">🔄</div>
+                                        <h5>灵活调整</h5>
+                                        <p>根据实际情况及时调整理财策略</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lesson-navigation">
+                    <button class="btn btn-secondary" id="prevSection4">上一节</button>
+                    <button class="btn btn-primary" id="nextSection4">下一节</button>
+                    <button class="btn btn-success" id="completeLesson4" style="display: none;">完成课程</button>
+                </div>
+            </div>
+
+            <!-- 练习题页面 -->
+            <div id="practice" class="tab-content">
+                <div class="lesson-header">
+                    <h1>💪 实践练习</h1>
+                    <p class="lesson-subtitle">通过实际场景练习，巩固你的理财知识</p>
+                </div>
+
+                <div class="practice-container">
+                    <!-- 练习1：消费决策 -->
+                    <div class="practice-section">
+                        <h2>🛍️ 练习1：明智的消费选择</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>小明这个月收到了200元零花钱，他看到了以下几样东西，但钱不够全部买下。请帮他做出明智的选择：</p>
+                            </div>
+                            
+                            <div class="practice-options">
+                                <div class="option-item">
+                                    <label>
+                                        <input type="checkbox" value="game" data-price="120">
+                                        <span class="option-content">
+                                            <span class="option-name">🎮 新游戏</span>
+                                            <span class="option-price">120元</span>
+                                            <span class="option-desc">很想要，但不是必需的</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="option-item">
+                                    <label>
+                                        <input type="checkbox" value="book" data-price="35">
+                                        <span class="option-content">
+                                            <span class="option-name">📚 学习资料</span>
+                                            <span class="option-price">35元</span>
+                                            <span class="option-desc">对学习有帮助</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="option-item">
+                                    <label>
+                                        <input type="checkbox" value="clothes" data-price="80">
+                                        <span class="option-content">
+                                            <span class="option-name">👕 新衣服</span>
+                                            <span class="option-price">80元</span>
+                                            <span class="option-desc">旧衣服还能穿</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="option-item">
+                                    <label>
+                                        <input type="checkbox" value="save" data-price="0">
+                                        <span class="option-content">
+                                            <span class="option-name">🏦 存起来</span>
+                                            <span class="option-price">剩余金额</span>
+                                            <span class="option-desc">为未来做准备</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="budget-display">
+                                <span>💰 可用预算：<strong id="availableBudget">200元</strong></span>
+                                <span>💸 已选择：<strong id="selectedAmount">0元</strong></span>
+                                <span>💳 剩余：<strong id="remainingBudget">200元</strong></span>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="checkPracticeAnswer()">提交选择</button>
+                            <div id="practiceResult" class="result-area"></div>
+                        </div>
+                    </div>
+
+                    <!-- 练习2：预算分配 -->
+                    <div class="practice-section">
+                        <h2>📊 练习2：预算分配挑战</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>你每月有300元零花钱，请按照合理的比例分配到以下类别中：</p>
+                            </div>
+                            
+                            <div class="budget-allocation">
+                                <div class="allocation-item">
+                                    <label>🏦 储蓄</label>
+                                    <input type="range" id="savingsSlider" min="0" max="100" value="30" oninput="updateAllocation()">
+                                    <span id="savingsPercent">30%</span>
+                                    <span id="savingsAmount">(90元)</span>
+                                </div>
+                                <div class="allocation-item">
+                                    <label>📚 学习用品</label>
+                                    <input type="range" id="studySlider" min="0" max="100" value="25" oninput="updateAllocation()">
+                                    <span id="studyPercent">25%</span>
+                                    <span id="studyAmount">(75元)</span>
+                                </div>
+                                <div class="allocation-item">
+                                    <label>🎮 娱乐</label>
+                                    <input type="range" id="entertainmentSlider" min="0" max="100" value="25" oninput="updateAllocation()">
+                                    <span id="entertainmentPercent">25%</span>
+                                    <span id="entertainmentAmount">(75元)</span>
+                                </div>
+                                <div class="allocation-item">
+                                    <label>🍔 零食</label>
+                                    <input type="range" id="snackSlider" min="0" max="100" value="20" oninput="updateAllocation()">
+                                    <span id="snackPercent">20%</span>
+                                    <span id="snackAmount">(60元)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="allocation-summary">
+                                <div class="total-check">
+                                    <span>总计：<strong id="totalPercent">100%</strong></span>
+                                    <span id="allocationStatus" class="status-good">✅ 分配合理</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="checkAllocationAnswer()">检查分配</button>
+                            <div id="allocationResult" class="result-area"></div>
+                        </div>
+                    </div>
+
+                    <!-- 练习3：储蓄目标计划 -->
+                    <div class="practice-section">
+                        <h2>🎯 练习3：储蓄目标制定</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>小李想在6个月后买一台价值1800元的笔记本电脑，她每月零花钱500元，日常开销300元。请帮她制定储蓄计划：</p>
+                            </div>
+                            
+                            <div class="savings-calculator">
+                                <div class="calc-input">
+                                    <label>目标金额：</label>
+                                    <input type="number" id="targetAmount" value="1800" readonly>
+                                    <span>元</span>
+                                </div>
+                                <div class="calc-input">
+                                    <label>目标时间：</label>
+                                    <input type="number" id="targetMonths" value="6" readonly>
+                                    <span>个月</span>
+                                </div>
+                                <div class="calc-input">
+                                    <label>月收入：</label>
+                                    <input type="number" id="monthlyIncome" value="500">
+                                    <span>元</span>
+                                </div>
+                                <div class="calc-input">
+                                    <label>月支出：</label>
+                                    <input type="number" id="monthlyExpense" value="300">
+                                    <span>元</span>
+                                </div>
+                                <div class="calc-input">
+                                    <label>现有储蓄：</label>
+                                    <input type="number" id="currentSavings" value="0">
+                                    <span>元</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="calculateSavingsPlan()">计算储蓄计划</button>
+                            
+                            <div id="savingsResult" class="savings-result" style="display: none;">
+                                <div class="result-summary">
+                                    <h4>📊 储蓄计划分析</h4>
+                                    <div class="result-item">
+                                        <span>每月可储蓄：</span>
+                                        <strong id="monthlySavings">200元</strong>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>需要每月储蓄：</span>
+                                        <strong id="requiredSavings">300元</strong>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>计划可行性：</span>
+                                        <strong id="planFeasibility" class="status-warning">需要调整</strong>
+                                    </div>
+                                </div>
+                                <div id="savingsAdvice" class="advice-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 练习4：投资选择题 -->
+                    <div class="practice-section">
+                        <h2>📈 练习4：投资工具选择</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>以下是几种不同的理财场景，请为每种情况选择最合适的投资工具：</p>
+                            </div>
+                            
+                            <div class="investment-scenarios">
+                                <div class="scenario-item">
+                                    <h5>场景A：应急资金储备</h5>
+                                    <p>需要随时可能用到的钱，要求安全性高、流动性好</p>
+                                    <div class="scenario-options">
+                                        <label><input type="radio" name="scenarioA" value="savings"> 银行活期存款</label>
+                                        <label><input type="radio" name="scenarioA" value="fund"> 货币基金</label>
+                                        <label><input type="radio" name="scenarioA" value="stock"> 股票投资</label>
+                                        <label><input type="radio" name="scenarioA" value="bond"> 国债</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="scenario-item">
+                                    <h5>场景B：大学学费储备</h5>
+                                    <p>3年后需要用到，希望有一定收益但风险不能太高</p>
+                                    <div class="scenario-options">
+                                        <label><input type="radio" name="scenarioB" value="savings"> 银行定期存款</label>
+                                        <label><input type="radio" name="scenarioB" value="bond"> 债券基金</label>
+                                        <label><input type="radio" name="scenarioB" value="mixed"> 混合基金</label>
+                                        <label><input type="radio" name="scenarioB" value="stock"> 股票基金</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="scenario-item">
+                                    <h5>场景C：长期财富增值</h5>
+                                    <p>10年以上不用，希望获得较高收益，可以承受一定风险</p>
+                                    <div class="scenario-options">
+                                        <label><input type="radio" name="scenarioC" value="savings"> 银行存款</label>
+                                        <label><input type="radio" name="scenarioC" value="bond"> 债券基金</label>
+                                        <label><input type="radio" name="scenarioC" value="index"> 指数基金</label>
+                                        <label><input type="radio" name="scenarioC" value="individual"> 个股投资</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="checkInvestmentChoices()">提交选择</button>
+                            <div id="investmentResult" class="result-area"></div>
+                        </div>
+                    </div>
+
+                    <!-- 练习5：风险承受能力测试 -->
+                    <div class="practice-section">
+                        <h2>⚖️ 练习5：风险承受能力评估</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>通过以下问题，评估你的风险承受能力，找到适合的投资策略：</p>
+                            </div>
+                            
+                            <div class="risk-questions">
+                                <div class="risk-question">
+                                    <h5>1. 如果你的投资在短期内下跌了15%，你会：</h5>
+                                    <div class="question-options">
+                                        <label><input type="radio" name="risk1" value="1"> 立即卖出，避免更大损失</label>
+                                        <label><input type="radio" name="risk1" value="2"> 等待一段时间观察</label>
+                                        <label><input type="radio" name="risk1" value="3"> 继续持有，相信会回升</label>
+                                        <label><input type="radio" name="risk1" value="4"> 趁低价加仓买入</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="risk-question">
+                                    <h5>2. 你更愿意选择哪种投资组合？</h5>
+                                    <div class="question-options">
+                                        <label><input type="radio" name="risk2" value="1"> 100%银行存款，年收益2%</label>
+                                        <label><input type="radio" name="risk2" value="2"> 70%存款+30%债券基金，年收益3-4%</label>
+                                        <label><input type="radio" name="risk2" value="3"> 50%债券+50%股票基金，年收益5-8%</label>
+                                        <label><input type="radio" name="risk2" value="4"> 30%债券+70%股票基金，年收益8-12%</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="risk-question">
+                                    <h5>3. 对于投资，你最看重的是：</h5>
+                                    <div class="question-options">
+                                        <label><input type="radio" name="risk3" value="1"> 本金安全，不能有任何损失</label>
+                                        <label><input type="radio" name="risk3" value="2"> 稳定收益，小幅波动可以接受</label>
+                                        <label><input type="radio" name="risk3" value="3"> 长期增值，中等波动可以承受</label>
+                                        <label><input type="radio" name="risk3" value="4"> 高收益潜力，大幅波动也能接受</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="assessRiskTolerance()">评估风险承受能力</button>
+                            <div id="riskAssessmentResult" class="result-area"></div>
+                        </div>
+                    </div>
+
+                    <!-- 练习6：理财误区识别 -->
+                    <div class="practice-section">
+                        <h2>⚠️ 练习6：理财误区识别</h2>
+                        <div class="content-card">
+                            <div class="scenario">
+                                <h4>📖 情景描述</h4>
+                                <p>以下是一些常见的理财观念，请判断哪些是正确的，哪些是错误的：</p>
+                            </div>
+                            
+                            <div class="misconception-list">
+                                <div class="misconception-item">
+                                    <div class="statement">
+                                        <span class="statement-text">"我还年轻，不需要现在就开始理财"</span>
+                                        <div class="judgment-buttons">
+                                            <button class="btn-judgment correct" data-answer="false" onclick="judgeMisconception(this, false)">正确</button>
+                                            <button class="btn-judgment wrong" data-answer="true" onclick="judgeMisconception(this, true)">错误</button>
+                                        </div>
+                                    </div>
+                                    <div class="explanation" style="display: none;">
+                                        <p><strong>错误！</strong>越早开始理财，复利效应越明显。年轻时开始理财是最大的优势。</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="misconception-item">
+                                    <div class="statement">
+                                        <span class="statement-text">"投资就是赌博，风险太大了"</span>
+                                        <div class="judgment-buttons">
+                                            <button class="btn-judgment correct" data-answer="false" onclick="judgeMisconception(this, false)">正确</button>
+                                            <button class="btn-judgment wrong" data-answer="true" onclick="judgeMisconception(this, true)">错误</button>
+                                        </div>
+                                    </div>
+                                    <div class="explanation" style="display: none;">
+                                        <p><strong>错误！</strong>合理的投资是基于分析和规划的，与赌博完全不同。关键是要学习和分散风险。</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="misconception-item">
+                                    <div class="statement">
+                                        <span class="statement-text">"把所有钱都存银行是最安全的"</span>
+                                        <div class="judgment-buttons">
+                                            <button class="btn-judgment correct" data-answer="false" onclick="judgeMisconception(this, false)">正确</button>
+                                            <button class="btn-judgment wrong" data-answer="true" onclick="judgeMisconception(this, true)">错误</button>
+                                        </div>
+                                    </div>
+                                    <div class="explanation" style="display: none;">
+                                        <p><strong>错误！</strong>只存银行会面临通胀风险，购买力会逐渐下降。需要适当配置其他理财工具。</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="misconception-item">
+                                    <div class="statement">
+                                        <span class="statement-text">"分散投资可以降低风险"</span>
+                                        <div class="judgment-buttons">
+                                            <button class="btn-judgment correct" data-answer="true" onclick="judgeMisconception(this, true)">正确</button>
+                                            <button class="btn-judgment wrong" data-answer="false" onclick="judgeMisconception(this, false)">错误</button>
+                                        </div>
+                                    </div>
+                                    <div class="explanation" style="display: none;">
+                                        <p><strong>正确！</strong>分散投资是风险管理的基本原则，不要把鸡蛋放在一个篮子里。</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="misconception-item">
+                                    <div class="statement">
+                                        <span class="statement-text">"理财产品收益越高越好"</span>
+                                        <div class="judgment-buttons">
+                                            <button class="btn-judgment correct" data-answer="false" onclick="judgeMisconception(this, false)">正确</button>
+                                            <button class="btn-judgment wrong" data-answer="true" onclick="judgeMisconception(this, true)">错误</button>
+                                        </div>
+                                    </div>
+                                    <div class="explanation" style="display: none;">
+                                        <p><strong>错误！</strong>高收益往往伴随高风险。要根据自己的风险承受能力选择合适的产品。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="misconception-summary" id="misconceptionSummary" style="display: none;">
+                                <h4>📊 测试结果</h4>
+                                <p>你答对了 <span id="correctCount">0</span> / <span id="totalCount">5</span> 题</p>
+                                <div id="misconceptionAdvice"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小测验页面 -->
+            <div id="quiz" class="tab-content">
+                <div class="lesson-header">
+                    <h1>🏆 理财知识小测验</h1>
+                    <p class="lesson-subtitle">测试你的理财知识掌握程度</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <div class="quiz-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="quizProgressBar" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">
+                                第 <span id="questionNumber">1</span> 题 / 共 <span id="totalQuestions">10</span> 题
+                            </span>
+                        </div>
+                        <div class="quiz-score">
+                            <span>得分：<strong id="currentScore">0</strong> / <strong id="totalScore">0</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="quiz-question" id="quizQuestion">
+                        <div class="question-card">
+                            <h3 id="questionTitle">问题加载中...</h3>
+                            <div id="questionDescription" class="question-desc"></div>
+                            <div id="questionOptions" class="quiz-options"></div>
+                            
+                            <div class="quiz-actions">
+                                <button class="btn btn-primary" id="submitQuiz" onclick="submitQuizAnswer()">提交答案</button>
+                                <button class="btn btn-secondary" id="nextQuestion" onclick="nextQuizQuestion()" style="display: none;">下一题</button>
+                            </div>
+                            
+                            <div id="answerFeedback" class="answer-feedback" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div id="quizResult" class="quiz-result" style="display: none;">
+                        <div class="result-card">
+                            <div class="result-header">
+                                <div class="result-icon" id="resultIcon">🎉</div>
+                                <h2 id="resultTitle">测验完成！</h2>
+                            </div>
+                            
+                            <div class="result-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="finalScore">0</div>
+                                    <div class="stat-label">总得分</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="correctCount">0</div>
+                                    <div class="stat-label">答对题数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="accuracyRate">0%</div>
+                                    <div class="stat-label">正确率</div>
+                                </div>
+                            </div>
+                            
+                            <div class="result-feedback" id="overallFeedback">
+                                <h4>评价</h4>
+                                <p id="feedbackText">加载中...</p>
+                            </div>
+                            
+                            <div class="result-actions">
+                                <button class="btn btn-primary" onclick="restartQuiz()">重新测验</button>
+                                <button class="btn btn-secondary" onclick="reviewAnswers()">查看解析</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reviewSection" class="review-section" style="display: none;">
+                        <h2>📝 答案解析</h2>
+                        <div id="reviewContent" class="review-content"></div>
+                        <button class="btn btn-secondary" onclick="closeReview()">关闭解析</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习成就页面 -->
+            <div id="achievements" class="tab-content">
+                <div class="lesson-header">
+                    <h1>🎖️ 学习成就</h1>
+                    <p class="lesson-subtitle">查看你的学习进度和获得的成就徽章</p>
+                </div>
+
+                <div class="achievements-container">
+                    <!-- 用户等级区域 -->
+                    <div class="user-level-section">
+                        <div class="level-card">
+                            <div class="level-avatar">
+                                <div class="avatar-circle">
+                                    <span class="avatar-icon">👤</span>
+                                </div>
+                                <div class="level-badge">
+                                    <span id="userLevel">1</span>
+                                </div>
+                            </div>
+                            <div class="level-info">
+                                <h3 id="levelTitle">理财新手</h3>
+                                <p id="levelDescription">刚开始学习理财知识的小白</p>
+                                <div class="level-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="levelProgressBar" style="width: 25%"></div>
+                                    </div>
+                                    <span class="progress-text">
+                                        <span id="currentExp">250</span> / <span id="nextLevelExp">1000</span> 经验值
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 徽章展示区域 -->
+                    <div class="badges-section">
+                        <h2>🏅 获得的徽章</h2>
+                        <div class="badges-grid" id="badgesGrid">
+                            <!-- 徽章将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 成就列表 -->
+                    <div class="achievements-section">
+                        <h2>🎯 成就列表</h2>
+                        <div class="achievements-list" id="achievementsList">
+                            <!-- 成就将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 学习里程碑 -->
+                    <div class="milestones-section">
+                        <h2>🚀 学习里程碑</h2>
+                        <div class="milestone-timeline">
+                            <div class="milestone-item completed">
+                                <div class="milestone-icon">📚</div>
+                                <div class="milestone-content">
+                                    <h4>开始学习</h4>
+                                    <p>完成第一课学习</p>
+                                    <span class="milestone-date">2024-01-15</span>
+                                </div>
+                            </div>
+                            <div class="milestone-item current">
+                                <div class="milestone-icon">💰</div>
+                                <div class="milestone-content">
+                                    <h4>预算达人</h4>
+                                    <p>掌握预算规划技能</p>
+                                    <span class="milestone-date">进行中</span>
+                                </div>
+                            </div>
+                            <div class="milestone-item">
+                                <div class="milestone-icon">🎮</div>
+                                <div class="milestone-content">
+                                    <h4>理性消费</h4>
+                                    <p>学会控制游戏消费</p>
+                                    <span class="milestone-date">待完成</span>
+                                </div>
+                            </div>
+                            <div class="milestone-item">
+                                <div class="milestone-icon">🏆</div>
+                                <div class="milestone-content">
+                                    <h4>理财专家</h4>
+                                    <p>完成所有课程学习</p>
+                                    <span class="milestone-date">待完成</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习统计页面 -->
+            <div id="stats" class="tab-content">
+                <div class="lesson-header">
+                    <h1>📊 学习统计</h1>
+                    <p class="lesson-subtitle">详细的学习数据分析和进度跟踪</p>
+                </div>
+
+                <div class="stats-container">
+                    <!-- 总体统计 -->
+                    <div class="stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="totalStudyTime">2.5</div>
+                                <div class="stat-label">学习时长 (小时)</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📖</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="completedLessons">2</div>
+                                <div class="stat-label">完成课程</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="correctAnswers">85</div>
+                                <div class="stat-label">正确率 (%)</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="totalQuizzes">5</div>
+                                <div class="stat-label">完成测验</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学习进度图表 -->
+                    <div class="progress-charts">
+                        <div class="chart-section">
+                            <h3>📈 学习进度</h3>
+                            <div class="chart-container">
+                                <canvas id="progressChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-section">
+                            <h3>🎯 测验成绩</h3>
+                            <div class="chart-container">
+                                <canvas id="quizScoreChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 详细统计 -->
+                    <div class="detailed-stats">
+                        <h3>📋 详细统计</h3>
+                        <div class="stats-table">
+                            <div class="table-header">
+                                <div class="table-cell">课程</div>
+                                <div class="table-cell">完成状态</div>
+                                <div class="table-cell">学习时长</div>
+                                <div class="table-cell">测验成绩</div>
+                                <div class="table-cell">完成日期</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">第一课：认识金钱</div>
+                                <div class="table-cell"><span class="status completed">已完成</span></div>
+                                <div class="table-cell">45分钟</div>
+                                <div class="table-cell">90分</div>
+                                <div class="table-cell">2024-01-15</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">第二课：预算规划</div>
+                                <div class="table-cell"><span class="status completed">已完成</span></div>
+                                <div class="table-cell">60分钟</div>
+                                <div class="table-cell">85分</div>
+                                <div class="table-cell">2024-01-16</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">第三课：游戏消费</div>
+                                <div class="table-cell"><span class="status in-progress">学习中</span></div>
+                                <div class="table-cell">25分钟</div>
+                                <div class="table-cell">-</div>
+                                <div class="table-cell">-</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="table-cell">第四课：理性消费</div>
+                                <div class="table-cell"><span class="status pending">未开始</span></div>
+                                <div class="table-cell">-</div>
+                                <div class="table-cell">-</div>
+                                <div class="table-cell">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学习建议 -->
+                    <div class="learning-suggestions">
+                        <h3>💡 学习建议</h3>
+                        <div class="suggestion-cards">
+                            <div class="suggestion-card">
+                                <div class="suggestion-icon">🎯</div>
+                                <div class="suggestion-content">
+                                    <h4>保持学习节奏</h4>
+                                    <p>建议每天学习30分钟，保持连续学习习惯</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-card">
+                                <div class="suggestion-icon">📝</div>
+                                <div class="suggestion-content">
+                                    <h4>多做练习</h4>
+                                    <p>完成更多练习题来巩固所学知识</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-card">
+                                <div class="suggestion-icon">🔄</div>
+                                <div class="suggestion-content">
+                                    <h4>复习巩固</h4>
+                                    <p>定期回顾已学内容，加深理解</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="learn.js"></script>
+</body>
+</html>

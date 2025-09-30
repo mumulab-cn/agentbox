@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI营收趋势分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart {
+            width: 100%;
+            height: 350px;
+        }
+
+        .bottom-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .stats-panel {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI营收趋势分析</h1>
+            <p>全球人工智能行业收入增长与市场分析</p>
+        </div>
+
+        <div class="chart-grid">
+            <!-- 左上角：柱状图 -->
+            <div class="chart-container">
+                <div class="chart-title">📊 AI公司年度营收对比</div>
+                <div id="barChart" class="chart"></div>
+            </div>
+
+            <!-- 右上角：折线图 -->
+            <div class="chart-container">
+                <div class="chart-title">📈 AI市场规模增长趋势</div>
+                <div id="lineChart" class="chart"></div>
+            </div>
+
+            <!-- 中间左：饼图 -->
+            <div class="chart-container">
+                <div class="chart-title">🥧 AI应用领域市场份额</div>
+                <div id="pieChart" class="chart"></div>
+            </div>
+
+            <!-- 中间右：雷达图 -->
+            <div class="chart-container">
+                <div class="chart-title">🎯 AI技术能力评估</div>
+                <div id="radarChart" class="chart"></div>
+            </div>
+        </div>
+
+        <div class="bottom-charts">
+            <!-- 散点图 -->
+            <div class="chart-container">
+                <div class="chart-title">💰 投资回报率分析</div>
+                <div id="scatterChart" class="chart"></div>
+            </div>
+
+            <!-- 漏斗图 -->
+            <div class="chart-container">
+                <div class="chart-title">🔽 AI项目转化漏斗</div>
+                <div id="funnelChart" class="chart"></div>
+            </div>
+
+            <!-- 仪表盘 -->
+            <div class="chart-container">
+                <div class="chart-title">⚡ AI市场成熟度指数</div>
+                <div id="gaugeChart" class="chart"></div>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="chart-title">📋 关键指标概览</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">$2.8T</div>
+                    <div class="stat-label">预计2030年市场规模</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">42%</div>
+                    <div class="stat-label">年复合增长率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">独角兽AI公司</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">$890B</div>
+                    <div class="stat-label">2024年总投资额</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 柱状图：AI公司年度营收对比
+        const barChart = echarts.init(document.getElementById('barChart'));
+        const barOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    return params[0].name + '<br/>' + 
+                           params[0].seriesName + ': $' + params[0].value + 'B';
+                }
+            },
+            legend: {
+                data: ['2023营收', '2024预测']
+            },
+            xAxis: {
+                type: 'category',
+                data: ['OpenAI', 'Google AI', 'Microsoft', 'Amazon', 'Meta', 'NVIDIA'],
+                axisLabel: {
+                    rotate: 45
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '营收 (十亿美元)'
+            },
+            series: [
+                {
+                    name: '2023营收',
+                    type: 'bar',
+                    data: [1.6, 31.4, 211.9, 514.0, 117.9, 60.9],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#667eea'},
+                            {offset: 1, color: '#764ba2'}
+                        ])
+                    }
+                },
+                {
+                    name: '2024预测',
+                    type: 'bar',
+                    data: [2.8, 45.2, 245.1, 574.8, 134.9, 79.2],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#f093fb'},
+                            {offset: 1, color: '#f5576c'}
+                        ])
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 折线图：AI市场规模增长趋势
+        const lineChart = echarts.init(document.getElementById('lineChart'));
+        const lineOption = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    let result = params[0].name + '<br/>';
+                    params.forEach(param => {
+                        result += param.seriesName + ': $' + param.value + 'B<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['全球AI市场', '中国AI市场', '美国AI市场']
+            },
+            xAxis: {
+                type: 'category',
+                data: ['2019', '2020', '2021', '2022', '2023', '2024', '2025']
+            },
+            yAxis: {
+                type: 'value',
+                name: '市场规模 (十亿美元)'
+            },
+            series: [
+                {
+                    name: '全球AI市场',
+                    type: 'line',
+                    data: [39.9, 51.8, 95.6, 136.6, 207.9, 298.2, 420.5],
+                    smooth: true,
+                    lineStyle: {
+                        width: 3,
+                        color: '#667eea'
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: 'rgba(102, 126, 234, 0.3)'},
+                            {offset: 1, color: 'rgba(102, 126, 234, 0.1)'}
+                        ])
+                    }
+                },
+                {
+                    name: '中国AI市场',
+                    type: 'line',
+                    data: [7.9, 10.1, 17.6, 25.7, 38.3, 54.8, 76.1],
+                    smooth: true,
+                    lineStyle: {
+                        width: 3,
+                        color: '#f093fb'
+                    }
+                },
+                {
+                    name: '美国AI市场',
+                    type: 'line',
+                    data: [15.2, 19.8, 36.2, 52.1, 79.5, 113.8, 160.2],
+                    smooth: true,
+                    lineStyle: {
+                        width: 3,
+                        color: '#764ba2'
+                    }
+                }
+            ]
+        };
+        lineChart.setOption(lineOption);
+
+        // 饼图：AI应用领域市场份额
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        const pieOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c}% ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: 'AI应用领域',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        {value: 28.5, name: '自然语言处理'},
+                        {value: 22.3, name: '计算机视觉'},
+                        {value: 18.7, name: '机器学习平台'},
+                        {value: 12.1, name: '语音识别'},
+                        {value: 8.9, name: '推荐系统'},
+                        {value: 5.2, name: '自动驾驶'},
+                        {value: 4.3, name: '其他'}
+                    ],
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#a8edea'];
+                            return colors[params.dataIndex];
+                        }
+                    }
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 雷达图：AI技术能力评估
+        const radarChart = echarts.init(document.getElementById('radarChart'));
+        const radarOption = {
+            tooltip: {},
+            legend: {
+                data: ['OpenAI', 'Google', 'Microsoft']
+            },
+            radar: {
+                indicator: [
+                    { name: '算法创新', max: 100 },
+                    { name: '数据处理', max: 100 },
+                    { name: '计算能力', max: 100 },
+                    { name: '商业化', max: 100 },
+                    { name: '生态建设', max: 100 },
+                    { name: '人才储备', max: 100 }
+                ],
+                shape: 'circle',
+                splitNumber: 5,
+                axisName: {
+                    color: '#333'
+                }
+            },
+            series: [{
+                name: 'AI技术能力',
+                type: 'radar',
+                data: [
+                    {
+                        value: [95, 85, 80, 90, 75, 88],
+                        name: 'OpenAI',
+                        areaStyle: {
+                            color: 'rgba(102, 126, 234, 0.3)'
+                        }
+                    },
+                    {
+                        value: [88, 95, 92, 85, 90, 92],
+                        name: 'Google',
+                        areaStyle: {
+                            color: 'rgba(240, 147, 251, 0.3)'
+                        }
+                    },
+                    {
+                        value: [82, 88, 95, 88, 85, 85],
+                        name: 'Microsoft',
+                        areaStyle: {
+                            color: 'rgba(118, 75, 162, 0.3)'
+                        }
+                    }
+                ]
+            }]
+        };
+        radarChart.setOption(radarOption);
+
+        // 散点图：投资回报率分析
+        const scatterChart = echarts.init(document.getElementById('scatterChart'));
+        const scatterOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    return params.seriesName + '<br/>' +
+                           '投资额: $' + params.value[0] + 'M<br/>' +
+                           '回报率: ' + params.value[1] + '%<br/>' +
+                           '公司规模: ' + params.value[2];
+                }
+            },
+            legend: {
+                data: ['初创公司', '成长期公司', '成熟公司']
+            },
+            xAxis: {
+                type: 'value',
+                name: '投资额 (百万美元)',
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '投资回报率 (%)',
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '初创公司',
+                    type: 'scatter',
+                    data: [[10, 150, 50], [25, 120, 80], [15, 180, 60], [30, 110, 90], [20, 160, 70]],
+                    symbolSize: function(data) {
+                        return Math.sqrt(data[2]) / 2;
+                    },
+                    itemStyle: {
+                        color: '#667eea'
+                    }
+                },
+                {
+                    name: '成长期公司',
+                    type: 'scatter',
+                    data: [[50, 80, 200], [75, 90, 250], [60, 85, 180], [80, 75, 300], [65, 95, 220]],
+                    symbolSize: function(data) {
+                        return Math.sqrt(data[2]) / 2;
+                    },
+                    itemStyle: {
+                        color: '#f093fb'
+                    }
+                },
+                {
+                    name: '成熟公司',
+                    type: 'scatter',
+                    data: [[200, 45, 800], [300, 50, 1000], [250, 40, 900], [350, 55, 1200], [280, 48, 950]],
+                    symbolSize: function(data) {
+                        return Math.sqrt(data[2]) / 2;
+                    },
+                    itemStyle: {
+                        color: '#764ba2'
+                    }
+                }
+            ]
+        };
+        scatterChart.setOption(scatterOption);
+
+        // 漏斗图：AI项目转化漏斗
+        const funnelChart = echarts.init(document.getElementById('funnelChart'));
+        const funnelOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c}%'
+            },
+            series: [
+                {
+                    name: 'AI项目转化',
+                    type: 'funnel',
+                    left: '10%',
+                    top: 60,
+                    bottom: 60,
+                    width: '80%',
+                    min: 0,
+                    max: 100,
+                    minSize: '0%',
+                    maxSize: '100%',
+                    sort: 'descending',
+                    gap: 2,
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    },
+                    labelLine: {
+                        length: 10,
+                        lineStyle: {
+                            width: 1,
+                            type: 'solid'
+                        }
+                    },
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    },
+                    emphasis: {
+                        label: {
+                            fontSize: 20
+                        }
+                    },
+                    data: [
+                        {value: 100, name: '项目立项'},
+                        {value: 75, name: '概念验证'},
+                        {value: 55, name: '原型开发'},
+                        {value: 35, name: '测试部署'},
+                        {value: 20, name: '商业化'}
+                    ]
+                }
+            ]
+        };
+        funnelChart.setOption(funnelOption);
+
+        // 仪表盘：AI市场成熟度指数
+        const gaugeChart = echarts.init(document.getElementById('gaugeChart'));
+        const gaugeOption = {
+            tooltip: {
+                formatter: '{a} <br/>{b}: {c}%'
+            },
+            series: [
+                {
+                    name: 'AI市场成熟度',
+                    type: 'gauge',
+                    progress: {
+                        show: true
+                    },
+                    detail: {
+                        valueAnimation: true,
+                        formatter: '{value}%'
+                    },
+                    data: [
+                        {
+                            value: 73,
+                            name: '成熟度指数'
+                        }
+                    ],
+                    axisLine: {
+                        lineStyle: {
+                            width: 30,
+                            color: [
+                                [0.3, '#fd666d'],
+                                [0.7, '#37a2da'],
+                                [1, '#67e0e3']
+                            ]
+                        }
+                    },
+                    pointer: {
+                        itemStyle: {
+                            color: 'auto'
+                        }
+                    },
+                    axisTick: {
+                        distance: -30,
+                        length: 8,
+                        lineStyle: {
+                            color: '#fff',
+                            width: 2
+                        }
+                    },
+                    splitLine: {
+                        distance: -30,
+                        length: 30,
+                        lineStyle: {
+                            color: '#fff',
+                            width: 4
+                        }
+                    },
+                    axisLabel: {
+                        color: 'auto',
+                        distance: 40,
+                        fontSize: 12
+                    },
+                    detail: {
+                        valueAnimation: true,
+                        formatter: '{value}%',
+                        color: 'auto',
+                        fontSize: 20
+                    }
+                }
+            ]
+        };
+        gaugeChart.setOption(gaugeOption);
+
+        // 响应式处理
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            lineChart.resize();
+            pieChart.resize();
+            radarChart.resize();
+            scatterChart.resize();
+            funnelChart.resize();
+            gaugeChart.resize();
+        });
+
+        // 定时更新数据（模拟实时数据）
+        setInterval(function() {
+            const newValue = Math.floor(Math.random() * 20) + 65;
+            gaugeOption.series[0].data[0].value = newValue;
+            gaugeChart.setOption(gaugeOption, true);
+        }, 5000);
+    </script>
+</body>
+</html>

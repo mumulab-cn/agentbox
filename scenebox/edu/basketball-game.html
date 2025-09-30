@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>篮球模拟游戏 - 投篮挑战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+
+        .title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .score-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .court {
+            position: relative;
+            flex: 1;
+            background: linear-gradient(to bottom, #4a90e2 0%, #87ceeb 50%, #228b22 50%, #32cd32 100%);
+            overflow: hidden;
+        }
+
+        .court-lines {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background-image: 
+                linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .basketball-hoop {
+            position: absolute;
+            right: 100px;
+            top: 30%;
+            width: 120px;
+            height: 80px;
+        }
+
+        .hoop-rim {
+            width: 100px;
+            height: 8px;
+            background: #ff6b35;
+            border-radius: 50px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hoop-net {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 80px;
+            height: 40px;
+            border-left: 3px solid rgba(255,255,255,0.7);
+            border-right: 3px solid rgba(255,255,255,0.7);
+            border-bottom: 3px solid rgba(255,255,255,0.7);
+            border-radius: 0 0 40px 40px;
+        }
+
+        .hoop-net::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            width: 0;
+            height: 35px;
+            border-left: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .hoop-net::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 20px;
+            width: 0;
+            height: 35px;
+            border-right: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .hoop-backboard {
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 20px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #333;
+        }
+
+        .basketball {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ff8c42, #ff6b35, #d2691e);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .basketball::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #8b4513;
+            transform: translateY(-50%);
+        }
+
+        .basketball::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #8b4513;
+            transform: translateX(-50%);
+        }
+
+        .basketball:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .player {
+            position: absolute;
+            bottom: 100px;
+            left: 150px;
+            width: 60px;
+            height: 100px;
+            z-index: 5;
+        }
+
+        .player-body {
+            width: 40px;
+            height: 60px;
+            background: #4169e1;
+            border-radius: 20px 20px 5px 5px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .player-head {
+            width: 30px;
+            height: 30px;
+            background: #deb887;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+        }
+
+        .player-arms {
+            position: absolute;
+            top: 10px;
+            left: -15px;
+            right: -15px;
+            height: 8px;
+            background: #deb887;
+            border-radius: 4px;
+        }
+
+        .player-legs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .leg {
+            width: 12px;
+            height: 25px;
+            background: #000080;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: rgba(255, 107, 53, 0.8);
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 107, 53, 1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .power-meter {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 200px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .power-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
+            transition: height 0.1s ease;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .trajectory {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 107, 53, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .message.show {
+            animation: messageShow 2s ease-out;
+        }
+
+        @keyframes messageShow {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes ballFly {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(var(--dx), var(--dy)) rotate(720deg); }
+        }
+
+        .instructions {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 250px;
+        }
+
+        .instructions h3 {
+            color: #ff6b35;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.8em;
+            }
+            
+            .basketball-hoop {
+                right: 50px;
+                transform: scale(0.8);
+            }
+            
+            .player {
+                left: 80px;
+                transform: scale(0.8);
+            }
+            
+            .instructions {
+                font-size: 12px;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">🏀 篮球投篮挑战</h1>
+            <div class="score-board">
+                <div class="score-item">
+                    <strong>得分: <span id="score">0</span></strong>
+                </div>
+                <div class="score-item">
+                    <strong>投篮: <span id="shots">0</span></strong>
+                </div>
+                <div class="score-item">
+                    <strong>命中率: <span id="accuracy">0%</span></strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>游戏说明</h3>
+            <ul>
+                <li>🎯 点击篮球开始瞄准</li>
+                <li>⚡ 按住鼠标蓄力</li>
+                <li>🚀 松开鼠标投篮</li>
+                <li>🏆 投中篮筐得分</li>
+                <li>📊 挑战你的命中率</li>
+            </ul>
+        </div>
+
+        <div class="court">
+            <div class="court-lines"></div>
+            
+            <div class="basketball-hoop">
+                <div class="hoop-backboard"></div>
+                <div class="hoop-rim"></div>
+                <div class="hoop-net"></div>
+            </div>
+
+            <div class="player">
+                <div class="player-head"></div>
+                <div class="player-body">
+                    <div class="player-arms"></div>
+                </div>
+                <div class="player-legs">
+                    <div class="leg"></div>
+                    <div class="leg"></div>
+                </div>
+            </div>
+
+            <div class="basketball" id="basketball"></div>
+
+            <div class="power-meter" id="powerMeter">
+                <div class="power-fill" id="powerFill"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="resetGame()">🔄 重新开始</button>
+            <button class="control-btn" onclick="showTips()">💡 投篮技巧</button>
+            <button class="control-btn" onclick="goBack()">🏠 返回主页</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        let score = 0;
+        let shots = 0;
+        let isAiming = false;
+        let power = 0;
+        let powerInterval;
+        let basketball = document.getElementById('basketball');
+        let powerMeter = document.getElementById('powerMeter');
+        let powerFill = document.getElementById('powerFill');
+        let message = document.getElementById('message');
+
+        // 初始化篮球位置
+        function initBall() {
+            basketball.style.left = '200px';
+            basketball.style.bottom = '160px';
+            basketball.style.transform = 'none';
+            basketball.style.transition = 'all 0.1s ease';
+        }
+
+        // 开始瞄准
+        function startAiming() {
+            if (isAiming) return;
+            isAiming = true;
+            power = 0;
+            powerMeter.style.display = 'block';
+            
+            powerInterval = setInterval(() => {
+                power += 2;
+                if (power > 100) power = 0;
+                powerFill.style.height = power + '%';
+            }, 50);
+        }
+
+        // 投篮
+        function shoot() {
+            if (!isAiming) return;
+            
+            clearInterval(powerInterval);
+            isAiming = false;
+            powerMeter.style.display = 'none';
+            shots++;
+            
+            // 计算投篮轨迹
+            let hoopX = window.innerWidth - 200; // 篮筐X位置
+            let hoopY = window.innerHeight * 0.3; // 篮筐Y位置
+            let ballX = 220; // 篮球当前X位置
+            let ballY = window.innerHeight - 200; // 篮球当前Y位置
+            
+            let dx = hoopX - ballX;
+            let dy = ballY - hoopY;
+            
+            // 根据力度调整轨迹
+            let powerFactor = power / 100;
+            let accuracy = 0.7 + (powerFactor * 0.3); // 力度影响准确性
+            
+            // 添加随机性
+            dx += (Math.random() - 0.5) * 100 * (1 - accuracy);
+            dy += (Math.random() - 0.5) * 50 * (1 - accuracy);
+            
+            // 执行投篮动画
+            basketball.style.transition = 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            basketball.style.transform = `translate(${dx}px, ${-dy}px) rotate(720deg)`;
+            
+            // 检查是否命中
+            setTimeout(() => {
+                checkScore(ballX + dx, ballY - dy);
+                setTimeout(initBall, 1000);
+            }, 1500);
+            
+            updateStats();
+        }
+
+        // 检查得分
+        function checkScore(x, y) {
+            let hoopX = window.innerWidth - 200;
+            let hoopY = window.innerHeight * 0.3;
+            
+            let distance = Math.sqrt(Math.pow(x - hoopX, 2) + Math.pow(y - hoopY, 2));
+            
+            if (distance < 60) {
+                score += 2;
+                showMessage('🎉 投篮命中！+2分', '#00ff00');
+                playSuccessAnimation();
+            } else {
+                showMessage('😅 没投中，继续加油！', '#ff6b35');
+            }
+        }
+
+        // 显示消息
+        function showMessage(text, color) {
+            message.textContent = text;
+            message.style.color = color;
+            message.classList.add('show');
+            
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        }
+
+        // 成功动画
+        function playSuccessAnimation() {
+            // 添加篮网摆动效果
+            let net = document.querySelector('.hoop-net');
+            net.style.animation = 'none';
+            setTimeout(() => {
+                net.style.animation = 'swing 0.5s ease-in-out';
+            }, 10);
+        }
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('shots').textContent = shots;
+            let accuracy = shots > 0 ? Math.round((score / 2 / shots) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // 重新开始游戏
+        function resetGame() {
+            score = 0;
+            shots = 0;
+            updateStats();
+            initBall();
+            showMessage('🔄 游戏重新开始！', '#4169e1');
+        }
+
+        // 显示投篮技巧
+        function showTips() {
+            let tips = [
+                '💡 力度在70-90%时命中率最高',
+                '🎯 瞄准篮筐中心位置',
+                '⏰ 掌握好投篮节奏',
+                '🏀 多练习找到手感',
+                '💪 保持稳定的投篮姿势'
+            ];
+            let randomTip = tips[Math.floor(Math.random() * tips.length)];
+            showMessage(randomTip, '#f7931e');
+        }
+
+        // 返回主页
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // 事件监听
+        basketball.addEventListener('mousedown', startAiming);
+        basketball.addEventListener('mouseup', shoot);
+        basketball.addEventListener('mouseleave', () => {
+            if (isAiming) {
+                clearInterval(powerInterval);
+                isAiming = false;
+                powerMeter.style.display = 'none';
+            }
+        });
+
+        // 触摸设备支持
+        basketball.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startAiming();
+        });
+        
+        basketball.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            shoot();
+        });
+
+        // 添加摆动动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes swing {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(5deg); }
+                75% { transform: rotate(-5deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化游戏
+        initBall();
+        updateStats();
+        
+        // 欢迎消息
+        setTimeout(() => {
+            showMessage('🏀 欢迎来到篮球挑战！点击篮球开始游戏', '#4169e1');
+        }, 500);
+    </script>
+</body>
+</html>

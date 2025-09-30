@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金融行业AI Agent百景图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .scenario-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .scenario-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .scenario-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 金融行业AI Agent百景图</h1>
+            <p>探索人工智能在金融领域的无限可能</p>
+        </div>
+        
+        <div class="scenarios-grid">
+            <div class="scenario-card" onclick="openDemo('robot-marketing')">
+                <div class="scenario-icon">📞</div>
+                <div class="scenario-title">机器人营销外呼</div>
+                <div class="scenario-desc">
+                    智能语音机器人自动进行客户外呼，提供个性化产品推荐和营销服务，提升营销效率和客户体验。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+            
+            <div class="scenario-card" onclick="openDemo('risk-assessment')">
+                <div class="scenario-icon">🛡️</div>
+                <div class="scenario-title">智能风险评估</div>
+                <div class="scenario-desc">
+                    基于大数据和机器学习算法，实时评估客户信用风险，为放贷决策提供科学依据。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+            
+            <div class="scenario-card" onclick="openDemo('customer-service')">
+                <div class="scenario-icon">💬</div>
+                <div class="scenario-title">智能客服助手</div>
+                <div class="scenario-desc">
+                    7x24小时在线智能客服，快速响应客户咨询，提供专业的金融服务解答。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+            
+            <div class="scenario-card" onclick="openDemo('fraud-detection')">
+                <div class="scenario-icon">🔍</div>
+                <div class="scenario-title">反欺诈检测</div>
+                <div class="scenario-desc">
+                    实时监控交易行为，识别异常模式，有效防范金融欺诈风险。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+            
+            <div class="scenario-card" onclick="openDemo('investment-advisor')">
+                <div class="scenario-icon">📈</div>
+                <div class="scenario-title">智能投资顾问</div>
+                <div class="scenario-desc">
+                    基于客户风险偏好和市场分析，提供个性化投资建议和资产配置方案。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+            
+            <div class="scenario-card" onclick="openDemo('credit-scoring')">
+                <div class="scenario-icon">⭐</div>
+                <div class="scenario-title">信用评分系统</div>
+                <div class="scenario-desc">
+                    多维度数据分析，构建精准的信用评分模型，支持快速授信决策。
+                </div>
+                <button class="demo-btn">查看Demo</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 金融行业AI解决方案 | 让AI赋能金融创新</p>
+        </div>
+    </div>
+    
+    <script>
+        function openDemo(scenario) {
+            switch(scenario) {
+                case 'robot-marketing':
+                    window.open('robot-marketing-demo.html', '_blank');
+                    break;
+                case 'risk-assessment':
+                    alert('风险评估Demo即将上线，敬请期待！');
+                    break;
+                case 'customer-service':
+                    alert('智能客服Demo即将上线，敬请期待！');
+                    break;
+                case 'fraud-detection':
+                    alert('反欺诈检测Demo即将上线，敬请期待！');
+                    break;
+                case 'investment-advisor':
+                    alert('投资顾问Demo即将上线，敬请期待！');
+                    break;
+                case 'credit-scoring':
+                    alert('信用评分Demo即将上线，敬请期待！');
+                    break;
+                default:
+                    alert('Demo页面正在开发中...');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>错误 {{ error_code }}
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    {% if error_code == 404 %}
+                        <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+                    {% elif error_code == 500 %}
+                        <i class="fas fa-server text-muted" style="font-size: 4rem;"></i>
+                    {% else %}
+                        <i class="fas fa-exclamation-circle text-muted" style="font-size: 4rem;"></i>
+                    {% endif %}
+                </div>
+                
+                <h5 class="text-danger mb-3">{{ error_message }}</h5>
+                
+                {% if error_code == 404 %}
+                    <p class="text-muted mb-4">
+                        抱歉，您访问的页面不存在。可能是链接错误或页面已被移动。
+                    </p>
+                {% elif error_code == 500 %}
+                    <p class="text-muted mb-4">
+                        服务器遇到了一个错误，无法完成您的请求。我们正在努力修复这个问题。
+                    </p>
+                {% else %}
+                    <p class="text-muted mb-4">
+                        发生了一个意外错误，请稍后再试。
+                    </p>
+                {% endif %}
+                
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-1"></i>返回首页
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回上页
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 帮助信息 -->
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>需要帮助？
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">您可以尝试以下操作：</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        检查URL地址是否正确
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        使用导航菜单浏览其他页面
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        使用搜索功能查找内容
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        联系管理员获取支持
+                    </li>
+                </ul>
+                
+                <div class="mt-3">
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fas fa-search me-1"></i>搜索
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-info me-1"></i>关于
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 自动刷新功能（仅对500错误）
+{% if error_code == 500 %}
+let countdown = 30;
+const refreshBtn = document.createElement('button');
+refreshBtn.className = 'btn btn-warning btn-sm mt-3';
+refreshBtn.innerHTML = `<i class="fas fa-sync-alt me-1"></i>自动刷新 (${countdown}s)`;
+
+const cardBody = document.querySelector('.card-body');
+cardBody.appendChild(refreshBtn);
+
+const timer = setInterval(() => {
+    countdown--;
+    refreshBtn.innerHTML = `<i class="fas fa-sync-alt me-1"></i>自动刷新 (${countdown}s)`;
+    
+    if (countdown <= 0) {
+        clearInterval(timer);
+        location.reload();
+    }
+}, 1000);
+
+refreshBtn.addEventListener('click', () => {
+    clearInterval(timer);
+    location.reload();
+});
+{% endif %}
+
+// 错误报告功能
+function reportError() {
+    const errorInfo = {
+        code: {{ error_code }},
+        message: '{{ error_message }}',
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('错误信息:', errorInfo);
+    alert('错误信息已记录到控制台');
+}
+
+// 添加错误报告按钮
+const reportBtn = document.createElement('button');
+reportBtn.className = 'btn btn-outline-warning btn-sm mt-2';
+reportBtn.innerHTML = '<i class="fas fa-bug me-1"></i>报告错误';
+reportBtn.onclick = reportError;
+
+const helpCard = document.querySelector('.card-body:last-child');
+if (helpCard) {
+    helpCard.appendChild(reportBtn);
+}
+</script>
+{% endblock %}

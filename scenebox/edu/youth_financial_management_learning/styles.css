@@ -1,0 +1,3448 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Google Sans', 'Roboto', 'Microsoft YaHei', Arial, sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+    color: #202124;
+    overflow-x: hidden;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* 左侧边栏样式 */
+.sidebar {
+    width: 280px;
+    background: #ffffff;
+    border-right: 1px solid #e8eaed;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.sidebar-menu {
+    padding: 16px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    gap: 16px;
+}
+
+.menu-item:hover {
+    background: #f1f3f4;
+}
+
+.menu-item.active {
+    background: #e8f0fe;
+    border-left-color: #1a73e8;
+    color: #1a73e8;
+}
+
+.menu-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.menu-text {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* 主内容区域 */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.main-header {
+    background: #ffffff;
+    padding: 24px 32px;
+    border-bottom: 1px solid #e8eaed;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.main-header h1 {
+    font-size: 20px;
+    font-weight: 400;
+    color: #5f6368;
+    margin: 0;
+}
+
+/* 移除原有的导航标签样式，因为现在使用左侧菜单 */
+
+/* 内容区域样式 */
+.tab-content {
+    display: none;
+    padding: 32px;
+    background: #f8f9fa;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 仪表板网格 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* 卡片样式 - Google Cloud风格 */
+.card {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #5f6368;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.amount {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #1a73e8;
+}
+
+.trend {
+    font-size: 18px;
+    font-weight: 400;
+    color: #34a853;
+}
+
+/* 进度条样式 - Google Cloud风格 */
+.progress-bar {
+    background: #e8eaed;
+    height: 6px;
+    border-radius: 3px;
+    margin: 16px 0;
+    overflow: hidden;
+}
+
+.progress {
+    background: #1a73e8;
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* 警告卡片 - Google Cloud风格 */
+.alert-card {
+    background: #fef7e0;
+    border: 1px solid #fbbc04;
+    border-left: 4px solid #fbbc04;
+}
+
+.alert-card h3 {
+    color: #ea8600;
+}
+
+.alert-card #alertMessage {
+    color: #ea8600;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 图表容器 - Google Cloud风格 */
+.chart-container {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 24px;
+}
+
+/* 按钮样式 - Google Cloud风格 */
+.btn {
+    padding: 10px 24px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    background: #ffffff;
+    color: #1a73e8;
+}
+
+.btn-primary {
+    background: #1a73e8;
+    color: #ffffff;
+    border-color: #1a73e8;
+}
+
+.btn:hover {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+    background: #1557b0;
+    border-color: #1557b0;
+}
+
+/* 表单样式 - Google Cloud风格 */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #202124;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #ffffff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8;
+}
+
+/* 记录列表样式 - Google Cloud风格 */
+.records-list {
+    max-height: 500px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+}
+
+.record-item {
+    background: #ffffff;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e8eaed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.record-item:last-child {
+    border-bottom: none;
+}
+
+.record-item:hover {
+    background: #f8f9fa;
+}
+
+.record-info h4 {
+    color: #202124;
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.record-info p {
+    color: #5f6368;
+    font-size: 14px;
+    margin: 0;
+}
+
+.record-amount {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+/* 预算管理样式 - Google Cloud风格 */
+.budget-form {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.budget-status {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.budget-status h3 {
+    color: #202124;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.budget-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.budget-item span:first-child {
+    color: #5f6368;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.budget-bar {
+    flex: 1;
+    background: #e8eaed;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.budget-used {
+    background: #1a73e8;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+#budgetPercentage {
+    color: #1a73e8;
+    font-weight: 500;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* 分析网格 - Google Cloud风格 */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.analysis-grid .card {
+    background: #ffffff;
+    color: #202124;
+    text-align: left;
+    padding: 20px;
+}
+
+.analysis-grid .card h3 {
+    text-align: left;
+    margin-bottom: 12px;
+}
+
+.analysis-grid .card div {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+/* 建议列表样式 - Google Cloud风格 */
+.suggestion-item {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    border-left: 4px solid #34a853;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.suggestion-item h4 {
+    color: #202124;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.suggestion-item p {
+    color: #5f6368;
+    line-height: 1.6;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 模态框样式 - Google Cloud风格 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 8% auto;
+    padding: 32px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: modalSlideIn 0.2s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h3 {
+    color: #202124;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    margin-top: 0;
+}
+
+.close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #5f6368;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.close:hover {
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
+/* 过滤器样式 - Google Cloud风格 */
+.filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+}
+
+.filters select {
+    padding: 8px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background: #ffffff;
+    font-size: 14px;
+    color: #202124;
+}
+
+.filters select:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .tab-nav {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        margin: 5px;
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+    }
+    
+    .record-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .budget-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 成功/错误消息样式 */
+.message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: #666;
+}
+
+.empty-state h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* 新增页面组件样式 */
+
+/* 统计卡片样式 */
+.budget-overview,/* 学习中心样式 */
+.learning-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* 第二课：预算规划样式 */
+.budget-animation {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.budget-coin {
+    animation: budgetPulse 2s ease-in-out infinite;
+}
+
+@keyframes budgetPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.budget-principles {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.principle-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4285f4;
+}
+
+.principle-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.principle-content h4 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 16px;
+}
+
+.principle-content p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.budget-formula {
+    margin-top: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #e8f0fe 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+}
+
+.budget-formula h4 {
+    margin: 0 0 16px 0;
+    color: #202124;
+    text-align: center;
+}
+
+.formula-card {
+    text-align: center;
+}
+
+.formula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.formula-part {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+}
+
+.formula-part.income {
+    background: #34a853;
+}
+
+.formula-part.savings {
+    background: #4285f4;
+}
+
+.formula-part.needs {
+    background: #ea4335;
+}
+
+.formula-part.wants {
+    background: #fbbc04;
+    color: #202124;
+}
+
+.formula-operator {
+    font-size: 18px;
+    font-weight: bold;
+    color: #5f6368;
+}
+
+.formula-explanation {
+    margin: 0;
+    color: #5f6368;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.budget-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    position: relative;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 23px;
+    bottom: -16px;
+    width: 2px;
+    height: 16px;
+    background: #dadce0;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: #4285f4;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 16px;
+}
+
+.step-content p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.budget-calculator {
+    margin-top: 24px;
+    padding: 20px;
+    background: #e8f0fe;
+    border-radius: 12px;
+    border: 1px solid #4285f4;
+}
+
+.budget-calculator h4 {
+    margin: 0 0 16px 0;
+    color: #1a73e8;
+    text-align: center;
+}
+
+.calculator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.input-group label {
+    font-weight: 500;
+    color: #202124;
+    min-width: 140px;
+}
+
+.input-group input {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input-group .currency {
+    color: #5f6368;
+    font-weight: 500;
+}
+
+.budget-result {
+    margin-top: 16px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    display: none;
+}
+
+.budget-result.show {
+    display: block;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-weight: 500;
+    color: #202124;
+}
+
+.result-amount {
+    font-weight: 600;
+    color: #34a853;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tip-card {
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #4285f4;
+}
+
+.tip-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.tip-card h4 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 16px;
+}
+
+.tip-card p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.emergency-fund {
+    margin-top: 24px;
+    padding: 20px;
+    background: #fef7e0;
+    border-radius: 12px;
+    border: 1px solid #fbbc04;
+}
+
+.emergency-fund h4 {
+    margin: 0 0 12px 0;
+    color: #ea8600;
+}
+
+.emergency-content p {
+    margin: 0 0 12px 0;
+    color: #202124;
+}
+
+.emergency-content ul {
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+    color: #5f6368;
+}
+
+.emergency-tip {
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border-left: 4px solid #fbbc04;
+    color: #202124;
+}
+
+.mistakes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mistake-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #fce8e6;
+    border-radius: 8px;
+    border-left: 4px solid #ea4335;
+}
+
+.mistake-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.mistake-content h4 {
+    margin: 0 0 8px 0;
+    color: #d93025;
+    font-size: 16px;
+}
+
+.mistake-content p {
+    margin: 0 0 8px 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.solution {
+    padding: 8px 12px;
+    background: #e6f4ea;
+    border-radius: 6px;
+    color: #137333;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* 即将推出内容样式 */
+.coming-soon {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%);
+    border-radius: 12px;
+    border: 2px dashed #dadce0;
+}
+
+.coming-soon-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.coming-soon h3 {
+    margin: 0 0 16px 0;
+    color: #5f6368;
+    font-size: 24px;
+}
+
+.coming-soon p {
+    margin: 0 0 16px 0;
+    color: #5f6368;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.coming-soon ul {
+    text-align: left;
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+    color: #5f6368;
+}
+
+.coming-soon ul li {
+    margin-bottom: 8px;
+    padding-left: 8px;
+}
+
+.coming-soon-note {
+    font-weight: 600;
+    color: #4285f4 !important;
+    font-size: 18px !important;
+    margin: 0 !important;
+}
+
+/* 练习页面样式 */
+.lesson-subtitle {
+    color: #5f6368;
+    font-size: 16px;
+    margin: 8px 0 0 0;
+    font-weight: normal;
+}
+
+.practice-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.practice-section {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    overflow: hidden;
+}
+
+.practice-section h2 {
+    margin: 0;
+    padding: 20px 24px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dadce0;
+    color: #202124;
+    font-size: 18px;
+}
+
+.scenario {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #e8f0fe;
+    border-radius: 8px;
+    border-left: 4px solid #4285f4;
+}
+
+.scenario h4 {
+    margin: 0 0 8px 0;
+    color: #1a73e8;
+    font-size: 16px;
+}
+
+.scenario p {
+    margin: 0;
+    color: #202124;
+    line-height: 1.5;
+}
+
+.practice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.option-item {
+    border: 2px solid #dadce0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    border-color: #4285f4;
+    background: #f8f9fa;
+}
+
+.option-item label {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.option-item input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.option-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.option-name {
+    font-weight: 600;
+    color: #202124;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.option-price {
+    font-weight: 500;
+    color: #34a853;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.option-desc {
+    color: #5f6368;
+    font-size: 13px;
+}
+
+.budget-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.budget-display span {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.budget-display strong {
+    color: #202124;
+}
+
+.budget-allocation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.allocation-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.allocation-item label {
+    min-width: 100px;
+    font-weight: 500;
+    color: #202124;
+    margin: 0;
+}
+
+.allocation-item input[type="range"] {
+    flex: 1;
+    margin: 0 12px;
+}
+
+.allocation-item span {
+    min-width: 60px;
+    text-align: center;
+    font-weight: 500;
+    color: #5f6368;
+}
+
+.allocation-summary {
+    padding: 16px;
+    background: #e8f0fe;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.total-check {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-good {
+    color: #34a853;
+    font-weight: 500;
+}
+
+.status-warning {
+    color: #ea8600;
+    font-weight: 500;
+}
+
+.status-error {
+    color: #ea4335;
+    font-weight: 500;
+}
+
+.result-area {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 8px;
+    display: none;
+}
+
+.result-area.show {
+    display: block;
+}
+
+.result-area.success {
+    background: #e6f4ea;
+    border: 1px solid #34a853;
+    color: #137333;
+}
+
+.result-area.warning {
+    background: #fef7e0;
+    border: 1px solid #fbbc04;
+    color: #ea8600;
+}
+
+.result-area.error {
+    background: #fce8e6;
+    border: 1px solid #ea4335;
+    color: #d93025;
+}
+
+/* 测验页面样式 */
+.quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+}
+
+.quiz-progress {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.quiz-score {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.quiz-score strong {
+    color: #202124;
+}
+
+.question-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.question-card h3 {
+    margin: 0 0 16px 0;
+    color: #202124;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+.question-desc {
+    color: #5f6368;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.quiz-options label {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #dadce0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.quiz-options label:hover {
+    border-color: #4285f4;
+    background: #f8f9fa;
+}
+
+.quiz-options input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.answer-feedback {
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.answer-feedback.correct {
+    background: #e6f4ea;
+    border: 1px solid #34a853;
+    color: #137333;
+}
+
+.answer-feedback.incorrect {
+    background: #fce8e6;
+    border: 1px solid #ea4335;
+    color: #d93025;
+}
+
+.result-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    padding: 32px;
+    text-align: center;
+}
+
+.result-header {
+    margin-bottom: 32px;
+}
+
+.result-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.result-header h2 {
+    margin: 0;
+    color: #202124;
+    font-size: 28px;
+}
+
+.result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 32px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4285f4;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.result-feedback {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.result-feedback h4 {
+    margin: 0 0 12px 0;
+    color: #202124;
+}
+
+.result-feedback p {
+    margin: 0;
+    color: #5f6368;
+    line-height: 1.5;
+}
+
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.review-section {
+    margin-top: 32px;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+}
+
+.review-content {
+    margin-bottom: 24px;
+}
+
+.review-item {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4285f4;
+}
+
+.review-question {
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 12px;
+}
+
+.review-answer {
+    margin-bottom: 8px;
+}
+
+.review-answer.correct {
+    color: #34a853;
+    font-weight: 500;
+}
+
+.review-answer.incorrect {
+    color: #ea4335;
+    font-weight: 500;
+}
+
+.review-explanation {
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #dadce0;
+}
+
+.budget-card, .stat-card {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+}
+
+.budget-card:hover, .stat-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-color: #1a73e8;
+}
+
+.budget-icon, .stat-icon {
+    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+
+.budget-info, .stat-info {
+    flex: 1;
+}
+
+.budget-amount, .stat-number {
+    font-size: 24px;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 4px;
+}
+
+.budget-status-text, .stat-label {
+    font-size: 14px;
+    color: #5f6368;
+}
+
+/* 设置区域样式 */
+.budget-settings, .learning-path {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.settings-header, .path-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.settings-header h3, .path-header h3 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 18px;
+}
+
+.settings-header p, .path-header p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+/* 表单行样式 */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-hint {
+    display: block;
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-icon {
+    margin-right: 8px;
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+}
+
+.btn-secondary:hover {
+    background: #e8eaed;
+    border-color: #5f6368;
+}
+
+/* 进度卡片样式 */
+.budget-progress-section, .budget-analysis {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.progress-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-title {
+    font-weight: 500;
+    color: #202124;
+}
+
+.progress-percentage {
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.progress-bar-container {
+    margin-bottom: 12px;
+}
+
+.progress-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.detail-item {
+    color: #5f6368;
+}
+
+/* 小贴士样式 */
+.budget-tips {
+    margin-top: 20px;
+}
+
+.tips-header h4 {
+    margin: 0 0 16px 0;
+    color: #202124;
+    font-size: 16px;
+}
+
+.tips-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #1a73e8;
+}
+
+.tip-icon {
+    font-size: 16px;
+}
+
+.tip-text {
+    font-size: 14px;
+    color: #5f6368;
+}
+
+/* 学习模块样式 */
+.learning-modules {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.module-card {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.module-card.active {
+    border-color: #1a73e8;
+    box-shadow: 0 2px 12px rgba(26, 115, 232, 0.1);
+}
+
+.module-card.coming-soon {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.module-card:hover:not(.coming-soon) {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.module-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.module-badge.level-1 {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+.module-badge.level-2 {
+    background: #fef7e0;
+    color: #f9ab00;
+}
+
+.module-badge.level-3 {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.module-content h3 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 18px;
+}
+
+.module-content p {
+    margin: 0 0 16px 0;
+    color: #5f6368;
+    line-height: 1.5;
+}
+
+.module-features {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.feature-tag {
+    padding: 4px 8px;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.feature-tag.disabled {
+    background: #f1f3f4;
+    color: #9aa0a6;
+}
+
+.module-progress {
+    margin-bottom: 20px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.progress-label {
+    color: #5f6368;
+}
+
+.module-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.module-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-item {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.coming-soon-info {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.coming-soon-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: #f1f3f4;
+    color: #5f6368;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.coming-soon-text {
+    font-size: 14px;
+    color: #9aa0a6;
+    margin: 0;
+}
+
+/* 成就系统样式 */
+.learning-achievements {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.achievements-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.achievements-header h3 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-size: 18px;
+}
+
+.achievements-header p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+}
+
+.achievement-item.locked {
+    opacity: 0.5;
+}
+
+.achievement-item.unlocked {
+    background: #e8f0fe;
+    border-color: #1a73e8;
+}
+
+.achievement-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+}
+
+.achievement-info h4 {
+    margin: 0 0 4px 0;
+    color: #202124;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.achievement-info p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 12px;
+}
+
+/* 新练习题样式 */
+.savings-calculator {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.calc-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calc-input label {
+    font-weight: 500;
+    color: #202124;
+    min-width: 80px;
+}
+
+.calc-input input[type="number"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.savings-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+}
+
+.result-summary {
+    margin-bottom: 20px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.status-good {
+    color: #34a853;
+    font-weight: 500;
+}
+
+.status-warning {
+    color: #fbbc04;
+    font-weight: 500;
+}
+
+.advice-box {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.advice-good {
+    background: #e8f5e8;
+    border-left: 4px solid #34a853;
+}
+
+.advice-warning {
+    background: #fef7e0;
+    border-left: 4px solid #fbbc04;
+}
+
+.suggestions h6 {
+    margin: 12px 0 8px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.suggestions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.suggestions li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+/* 投资选择样式 */
+.investment-scenarios {
+    margin: 20px 0;
+}
+
+.scenario-item {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4285f4;
+}
+
+.scenario-item h5 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.scenario-item p {
+    margin: 0 0 16px 0;
+    color: #5f6368;
+    line-height: 1.5;
+}
+
+.scenario-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.scenario-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.scenario-options label:hover {
+    background: #f1f3f4;
+    border-color: #4285f4;
+}
+
+.scenario-options input[type="radio"] {
+    margin: 0;
+}
+
+.investment-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+}
+
+.score-summary {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.score-bar {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    margin: 12px 0;
+    overflow: hidden;
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #34a853, #4285f4);
+    transition: width 0.5s ease;
+}
+
+.detailed-results {
+    margin-bottom: 24px;
+}
+
+.result-item.correct {
+    background: #e8f5e8;
+    border-left: 4px solid #34a853;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.result-item.incorrect {
+    background: #fce8e6;
+    border-left: 4px solid #ea4335;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.key-principles {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.key-principles h6 {
+    margin: 0 0 12px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.key-principles ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.key-principles li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+/* 风险评估样式 */
+.risk-questions {
+    margin: 20px 0;
+}
+
+.risk-question {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.risk-question h5 {
+    margin: 0 0 16px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.question-options {
+    display: grid;
+    gap: 8px;
+}
+
+.question-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.question-options label:hover {
+    background: #f1f3f4;
+    border-color: #4285f4;
+}
+
+.risk-assessment-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+}
+
+.risk-profile {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.risk-level {
+    margin: 16px 0;
+}
+
+.risk-label {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.risk-type {
+    color: #4285f4;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.risk-desc {
+    color: #5f6368;
+    margin: 12px 0;
+    line-height: 1.5;
+}
+
+.risk-score {
+    color: #202124;
+    font-weight: 500;
+}
+
+.risk-conservative, .risk-moderate, .risk-aggressive {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.risk-conservative {
+    background: #e8f5e8;
+    border-left: 4px solid #34a853;
+}
+
+.risk-moderate {
+    background: #fff3e0;
+    border-left: 4px solid #ff9800;
+}
+
+.risk-aggressive {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.allocation-suggestion, .suitable-products {
+    margin-bottom: 16px;
+}
+
+.allocation-suggestion h6, .suitable-products h6 {
+    margin: 0 0 8px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.risk-reminder {
+    margin-top: 20px;
+    padding: 16px;
+    background: #fef7e0;
+    border-left: 4px solid #fbbc04;
+    border-radius: 4px;
+}
+
+.risk-reminder h5 {
+    margin: 0 0 12px 0;
+    color: #202124;
+    font-weight: 600;
+}
+
+.risk-reminder ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.risk-reminder li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+/* 理财误区样式 */
+.misconception-list {
+    margin: 20px 0;
+}
+
+.misconception-item {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+}
+
+.statement {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.statement-text {
+    flex: 1;
+    font-weight: 500;
+    color: #202124;
+    margin-right: 16px;
+}
+
+.judgment-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-judgment {
+    padding: 8px 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background: white;
+    color: #202124;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-judgment:hover:not(:disabled) {
+    background: #f1f3f4;
+    border-color: #4285f4;
+}
+
+.btn-judgment:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-judgment.selected-correct {
+    background: #34a853;
+    color: white;
+    border-color: #34a853;
+}
+
+.btn-judgment.selected-wrong {
+    background: #ea4335;
+    color: white;
+    border-color: #ea4335;
+}
+
+.btn-judgment.highlight-correct {
+    background: #34a853;
+    color: white;
+    border-color: #34a853;
+    animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.explanation {
+    margin-top: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 4px;
+    border-left: 4px solid #4285f4;
+}
+
+.explanation p {
+    margin: 0;
+    color: #5f6368;
+    line-height: 1.5;
+}
+
+.misconception-summary {
+    margin-top: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    text-align: center;
+}
+
+.advice-excellent {
+    background: #e8f5e8;
+    border-left: 4px solid #34a853;
+    padding: 16px;
+    border-radius: 4px;
+    margin-top: 16px;
+}
+
+.advice-need-improvement {
+    background: #fce8e6;
+    border-left: 4px solid #ea4335;
+    padding: 16px;
+    border-radius: 4px;
+    margin-top: 16px;
+}
+
+/* 理财规划案例样式 */
+.financial-planning-cases {
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+}
+
+.financial-planning-cases h4 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.planning-case {
+    background: white;
+    border-radius: 15px;
+    margin: 25px 0;
+    padding: 25px;
+    color: #2d3748;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.planning-case:hover {
+    transform: translateY(-5px);
+}
+
+.case-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.case-header .avatar {
+    font-size: 48px;
+    margin-right: 20px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+}
+
+.case-info h5 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.basic-info {
+    color: #718096;
+    font-size: 16px;
+    margin: 0;
+}
+
+.planning-details {
+    display: grid;
+    gap: 25px;
+}
+
+/* 目标设定样式 */
+.goals-section h6,
+.budget-allocation h6,
+.implementation-plan h6,
+.progress-tracking h6,
+.investment-strategy h6,
+.risk-management h6,
+.one-year-results h6,
+.college-challenges h6,
+.smart-solutions h6,
+.graduation-plan h6 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.goals-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.goals-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+}
+
+.goal-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: #f7fafc;
+    border-radius: 10px;
+    border-left: 4px solid #4facfe;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -37px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    background: #4facfe;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px #4facfe;
+}
+
+.goal-content h7 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.goal-content p {
+    margin: 0;
+    color: #4a5568;
+}
+
+/* 目标卡片网格 */
+.goals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.goal-card {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.goal-card.urgent {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+}
+
+.goal-card.important {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    color: white;
+}
+
+.goal-card.future {
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    color: #2d3748;
+}
+
+.goal-amount {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+/* 资金分配图表 */
+.allocation-chart {
+    display: grid;
+    gap: 15px;
+}
+
+.allocation-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.allocation-bar {
+    flex: 1;
+    height: 25px;
+    background: #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.8s ease;
+}
+
+.bar-fill.savings {
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+}
+
+.bar-fill.necessities {
+    background: linear-gradient(90deg, #43e97b, #38f9d7);
+}
+
+.bar-fill.entertainment {
+    background: linear-gradient(90deg, #fa709a, #fee140);
+}
+
+.allocation-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+    text-align: right;
+}
+
+.category {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.amount {
+    color: #718096;
+    font-size: 14px;
+}
+
+/* 执行计划步骤 */
+.plan-steps {
+    display: grid;
+    gap: 15px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 10px;
+    border-left: 4px solid #4facfe;
+}
+
+.step-icon {
+    font-size: 24px;
+    min-width: 30px;
+}
+
+.step p {
+    margin: 0;
+    color: #4a5568;
+}
+
+/* 成果统计 */
+.achievement-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    color: white;
+}
+
+.stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.progress-note {
+    background: #e6fffa;
+    border: 1px solid #81e6d9;
+    border-radius: 8px;
+    padding: 15px;
+    color: #234e52;
+    margin: 0;
+    font-style: italic;
+}
+
+/* 投资策略样式 */
+.strategy-breakdown {
+    display: grid;
+    gap: 20px;
+}
+
+.strategy-item {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #4facfe;
+}
+
+.strategy-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.strategy-icon {
+    font-size: 24px;
+}
+
+.strategy-header h7 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.strategy-item .amount {
+    display: inline-block;
+    background: #4facfe;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* 风险管理措施 */
+.risk-measures {
+    display: grid;
+    gap: 15px;
+}
+
+.measure-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #fff5f5;
+    border-radius: 10px;
+    border-left: 4px solid #fc8181;
+}
+
+.measure-icon {
+    font-size: 24px;
+    min-width: 30px;
+    color: #fc8181;
+}
+
+.measure-content h7 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 5px 0;
+}
+
+.measure-content p {
+    margin: 0;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+/* 结果对比 */
+.results-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.result-column h7 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.target-item,
+.actual-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.target-item {
+    background: #f0f4f8;
+    border-left: 4px solid #90cdf4;
+}
+
+.actual-item {
+    background: #f0fff4;
+    border-left: 4px solid #68d391;
+}
+
+.target-label,
+.actual-label {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.target-value,
+.actual-value {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.target-value {
+    color: #3182ce;
+}
+
+.actual-value {
+    color: #38a169;
+}
+
+.success-note {
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    border-radius: 8px;
+    padding: 15px;
+    color: #22543d;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* 大学生挑战和解决方案 */
+.challenges-grid,
+.solutions-list {
+    display: grid;
+    gap: 15px;
+}
+
+.challenge-item,
+.solution-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f7fafc;
+}
+
+.challenge-item {
+    border-left: 4px solid #f56565;
+}
+
+.solution-item {
+    border-left: 4px solid #48bb78;
+}
+
+.challenge-icon,
+.solution-icon {
+    font-size: 28px;
+    min-width: 35px;
+}
+
+.challenge-content h7,
+.solution-header h7 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 5px 0;
+}
+
+.solution-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.solution-benefit {
+    background: #e6fffa;
+    color: #234e52;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+/* 毕业规划时间线 */
+.graduation-timeline {
+    display: grid;
+    gap: 20px;
+}
+
+.timeline-year {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    color: white;
+}
+
+.year-marker {
+    font-size: 20px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    border-radius: 25px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.year-goals {
+    flex: 1;
+}
+
+.year-goals p {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.target-amount {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 案例洞察总结 */
+.cases-insights {
+    margin-top: 40px;
+    padding: 25px;
+    background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    border-radius: 15px;
+}
+
+.cases-insights h5 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.insight-item:hover {
+    transform: translateY(-3px);
+}
+
+.insight-icon {
+    font-size: 32px;
+    min-width: 40px;
+}
+
+.insight-content h6 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.insight-content p {
+    margin: 0;
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .tab-nav {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        margin: 5px;
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+    }
+    
+    .record-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .budget-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .budget-overview, .learning-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .module-actions {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .module-stats {
+        justify-content: center;
+    }
+    
+    .savings-calculator {
+        grid-template-columns: 1fr;
+    }
+    
+    .scenario-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .statement {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .statement-text {
+        margin-right: 0;
+    }
+    
+    .judgment-buttons {
+        align-self: stretch;
+        justify-content: center;
+    }
+    
+    .financial-planning-cases {
+        padding: 15px;
+    }
+    
+    .case-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .case-header .avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .goals-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .timeline-year {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .year-marker {
+        margin-bottom: 15px;
+    }
+    
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 风险管理案例样式 */
+.risk-case-studies {
+    margin-top: 30px;
+}
+
+.risk-case-studies h4 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.case-study-container {
+    display: grid;
+    gap: 25px;
+}
+
+.case-study {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #3498db;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.case-study:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.case-study.success-case {
+    border-left-color: #27ae60;
+}
+
+.case-study.warning-case {
+    border-left-color: #e74c3c;
+}
+
+.case-study.emergency-case {
+    border-left-color: #f39c12;
+}
+
+.case-study.market-case {
+    border-left-color: #9b59b6;
+}
+
+.case-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.case-avatar {
+    font-size: 2.5em;
+    margin-right: 15px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+
+.case-info h5 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 1.3em;
+}
+
+.case-tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.case-tag.success {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.case-tag.warning {
+    background: #fdeaea;
+    color: #e74c3c;
+}
+
+.case-tag.emergency {
+    background: #fef9e7;
+    color: #f39c12;
+}
+
+.case-tag.market {
+    background: #f4ecf7;
+    color: #9b59b6;
+}
+
+.case-content > div {
+    margin-bottom: 20px;
+}
+
+.case-content h6 {
+    color: #34495e;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.case-situation,
+.case-strategy,
+.case-preparation {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #3498db;
+}
+
+.case-mistake,
+.case-consequence {
+    background: #fdf2f2;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #e74c3c;
+}
+
+.case-lesson,
+.case-result,
+.case-response,
+.case-outcome {
+    background: #f0f9f0;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #27ae60;
+}
+
+.case-insight {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #f39c12;
+}
+
+/* 投资配置样式 */
+.investment-allocation {
+    display: grid;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.allocation-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.allocation-label {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.allocation-amount {
+    color: #27ae60;
+    font-weight: bold;
+    text-align: center;
+}
+
+.allocation-purpose {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+/* 应急基金结构样式 */
+.emergency-fund-structure {
+    display: grid;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.fund-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.fund-type {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.fund-amount {
+    color: #f39c12;
+    font-weight: bold;
+    text-align: center;
+}
+
+.fund-access {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+/* 投资时间线样式 */
+.investment-timeline {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.timeline-item {
+    display: grid;
+    grid-template-columns: 120px 1fr 120px;
+    gap: 15px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    align-items: center;
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '↓';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #3498db;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.timeline-date {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 0.9em;
+}
+
+.timeline-action {
+    color: #34495e;
+    text-align: center;
+}
+
+.timeline-value {
+    color: #27ae60;
+    font-weight: bold;
+    text-align: right;
+    font-size: 0.9em;
+}
+
+/* 风险管理总结样式 */
+.risk-management-summary {
+    margin-top: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
+}
+
+.risk-management-summary h5 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.summary-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.summary-item:hover {
+    transform: translateY(-5px);
+}
+
+.summary-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.summary-item h6 {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.summary-item p {
+    font-size: 0.9em;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+/* 响应式设计 - 风险管理案例 */
+@media (max-width: 768px) {
+    .case-study {
+        padding: 15px;
+    }
+    
+    .case-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .case-avatar {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .allocation-item,
+    .fund-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .timeline-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园食品安全监管系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- 高德地图API - 需要替换YOUR_API_KEY为真实的API密钥 -->
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=YOUR_API_KEY&plugin=AMap.Scale,AMap.OverView,AMap.ToolBar,AMap.MapType,AMap.PolyEditor,AMap.CircleEditor"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航菜单 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">
+                        <h2>校园食品安全监管系统</h2>
+                        <p>上海市第一中学</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <button class="nav-btn active" data-section="home">
+                            <span class="nav-icon">🏠</span>
+                            <span class="nav-text">概览</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="scan">
+                            <span class="nav-icon">📱</span>
+                            <span class="nav-text">扫码查询</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="map">
+                            <span class="nav-icon">🗺️</span>
+                            <span class="nav-text">安全地图</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="monitor">
+                            <span class="nav-icon">🚨</span>
+                            <span class="nav-text">监管报警</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="knowledge">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-text">知识百科</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="report">
+                            <span class="nav-icon">🚨</span>
+                            <span class="nav-text">举报中心</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="points">
+                            <span class="nav-icon">🏆</span>
+                            <span class="nav-text">积分奖励</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="community">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-text">社区互动</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="health">
+                            <span class="nav-icon">📈</span>
+                            <span class="nav-text">健康档案</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="challenges">
+                            <span class="nav-icon">🏆</span>
+                            <span class="nav-text">健康挑战</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="safety-alerts">
+                            <span class="nav-icon">📢</span>
+                            <span class="nav-text">安全通报</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="nutrition-tips">
+                            <span class="nav-icon">👩‍⚕️</span>
+                            <span class="nav-text">营养师建议</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="smart-recommendations">
+                            <span class="nav-icon">🤖</span>
+                            <span class="nav-text">智能推荐</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="daily-tasks">
+                            <span class="nav-icon">📋</span>
+                            <span class="nav-text">每日任务</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="health-profile">
+                            <span class="nav-icon">👤</span>
+                            <span class="nav-text">健康档案</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">👨‍🎓</div>
+                    <div class="user-details">
+                        <div class="user-name">姚仕展</div>
+                        <div class="user-role">系统管理员</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部工具栏 -->
+            <header class="top-bar">
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item active" id="currentPage">概览</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="action-btn" id="refreshBtn">
+                        <span class="btn-icon">🔄</span>
+                        刷新
+                    </button>
+                    <button class="action-btn" id="settingsBtn">
+                        <span class="btn-icon">⚙️</span>
+                        设置
+                    </button>
+                </div>
+            </header>
+
+        <!-- 首页部分 -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h2>守护校园食品安全，AI助力健康成长</h2>
+                <p>通过AI技术解决校园周围"三无食品"监管困难问题，确保学生避免误食不合格食品</p>
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>扫码查询</h3>
+                        <p>扫描食品包装上的二维码或条形码，快速获取食品安全信息、生产日期、营养成分等详细数据。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🗺️</div>
+                        <h3>安全地图</h3>
+                        <p>查看校园周边商户的安全等级分布，避开不安全的"三无"食品销售点，选择可信赖的商家。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>监管报警</h3>
+                        <p>实时监控校园食品安全状况，及时发现和处理食品安全隐患，保障师生饮食健康。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>知识百科</h3>
+                        <p>学习食品安全知识，了解营养搭配，掌握识别"三无"食品的技巧，成为食品安全小专家。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚨</div>
+                        <h3>举报中心</h3>
+                        <p>发现问题食品或不良商家？一键举报，共同维护校园食品安全环境，保护同学健康。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>积分奖励</h3>
+                        <p>参与食品安全活动，完成每日任务，获得积分奖励，兑换精美礼品和荣誉称号。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>社区互动</h3>
+                        <p>与同学分享健康饮食心得，参与食品安全讨论，建设和谐的校园食品安全社区。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>健康档案</h3>
+                        <p>记录个人饮食习惯，分析营养摄入，生成健康报告，科学指导日常饮食选择。</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>健康挑战</h3>
+                        <p>参与各种健康饮食挑战活动，与同学一起养成好习惯</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📢</div>
+                        <h3>安全通报</h3>
+                        <p>实时了解校园食品安全动态，第一时间获取重要信息</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👩‍⚕️</div>
+                        <h3>营养师建议</h3>
+                        <p>专业营养师提供个性化饮食指导和健康建议</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>智能推荐</h3>
+                        <p>基于个人喜好和健康需求，推荐最适合的食物选择</p>
+                    </div>
+                </div>
+                
+                <!-- 快捷功能区 -->
+                <div class="quick-actions" style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px;">
+                    <h3 style="text-align: center; margin: 0 0 25px 0; color: #202124;">🚀 快捷功能</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <button class="quiz-btn" style="padding: 15px 20px; background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: transform 0.2s;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">🧠</div>
+                            <div style="font-weight: bold; margin-bottom: 3px;">知识竞赛</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">测试食品安全知识</div>
+                        </button>
+                        
+                        <button class="checkin-btn" style="padding: 15px 20px; background: linear-gradient(135deg, #34a853, #4caf50); color: white; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: transform 0.2s;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">✅</div>
+                            <div style="font-weight: bold; margin-bottom: 3px;">健康打卡</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">记录每日健康状态</div>
+                        </button>
+                        
+                        <button class="report-food-btn" style="padding: 15px 20px; background: linear-gradient(135deg, #ea4335, #f44336); color: white; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: transform 0.2s;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">🚨</div>
+                            <div style="font-weight: bold; margin-bottom: 3px;">安全举报</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">举报食品安全问题</div>
+                        </button>
+                        
+                        <button onclick="$('.nav-btn[data-section=\"daily-tasks\"]').click()" style="padding: 15px 20px; background: linear-gradient(135deg, #ff9800, #ffc107); color: white; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: transform 0.2s;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">📋</div>
+                            <div style="font-weight: bold; margin-bottom: 3px;">每日任务</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">完成健康任务获积分</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 扫码查询部分 -->
+        <section id="scan" class="section">
+            <div class="scan-container">
+                <h2>🔍 食品安全扫码查询</h2>
+                <div class="scan-area">
+                    <div class="qr-scanner">
+                        <div class="scanner-frame">
+                            <div class="scanner-line"></div>
+                            <p>将二维码对准扫描框</p>
+                        </div>
+                        <button id="startScan" class="scan-btn">开始扫描</button>
+                        <input type="text" id="manualInput" placeholder="或手动输入商品编号" class="manual-input">
+                        <button id="queryBtn" class="query-btn">查询</button>
+                    </div>
+                    <div class="result-panel" id="scanResult">
+                        <h3>查询结果</h3>
+                        <div class="result-content">
+                            <p>请扫描二维码或输入商品编号进行查询</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 安全地图部分 -->
+        <section id="map" class="section">
+            <div class="map-container">
+                <h2>🗺️ 校园周边安全地图</h2>
+                <div class="map-controls">
+                    <button class="filter-btn active" data-filter="all">显示全部</button>
+                    <button class="filter-btn" data-filter="safe">安全商户</button>
+                    <button class="filter-btn" data-filter="warning">警告商户</button>
+                    <button class="filter-btn" data-filter="danger">危险商户</button>
+                    <button class="refresh-btn" onclick="updateMapData()">🔄 刷新数据</button>
+                </div>
+                <div class="map-notice" style="background: #e8f4fd; border: 1px solid #1a73e8; border-radius: 4px; padding: 12px; margin-bottom: 16px; font-size: 0.875em; color: #1a73e8;">
+                    📍 <strong>地图说明：</strong>当前显示玉林市第十中学周边安全地图。如需显示真实地图，请在代码中配置高德地图API密钥。
+                </div>
+                <div class="map-area">
+                    <div id="mapContainer" style="width: 100%; height: 400px;"></div>
+                </div>
+                <div class="merchant-info" id="merchantInfo">
+                    <h3>商户信息</h3>
+                    <p>点击地图上的商户标记查看详细信息</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 监管报警部分 -->
+        <section id="monitor" class="section">
+            <div class="monitor-container">
+                <h2>🚨 AI监管报警系统</h2>
+                <div class="monitor-dashboard">
+                    <div class="stats-panel">
+                        <div class="stat-card">
+                            <h3>今日检测</h3>
+                            <div class="stat-number">156</div>
+                            <p>次摊位扫描</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>发现违规</h3>
+                            <div class="stat-number">3</div>
+                            <p>个问题摊位</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>处理完成</h3>
+                            <div class="stat-number">2</div>
+                            <p>个违规摊位</p>
+                        </div>
+                    </div>
+                    <div class="alert-panel">
+                        <h3>实时报警</h3>
+                        <div class="alert-list" id="alertList">
+                            <div class="alert-item high">
+                                <span class="alert-time">14:32</span>
+                                <span class="alert-content">发现无包装食品摊位 - 学校东门</span>
+                                <button class="handle-btn">处理</button>
+                            </div>
+                            <div class="alert-item medium">
+                                <span class="alert-time">13:45</span>
+                                <span class="alert-content">检测到无标识商品 - 学校南门小卖部</span>
+                                <button class="handle-btn">处理</button>
+                            </div>
+                            <div class="alert-item low">
+                                <span class="alert-time">12:20</span>
+                                <span class="alert-content">商户证照即将过期提醒</span>
+                                <button class="handle-btn">处理</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-panel">
+                    <h3>监控画面</h3>
+                    <div class="camera-grid">
+                        <div class="camera-view">
+                            <div class="camera-placeholder">
+                                <p>📹 东门监控</p>
+                                <div class="detection-overlay">检测中...</div>
+                            </div>
+                        </div>
+                        <div class="camera-view">
+                            <div class="camera-placeholder">
+                                <p>📹 南门监控</p>
+                                <div class="detection-overlay">正常</div>
+                            </div>
+                        </div>
+                        <div class="camera-view">
+                            <div class="camera-placeholder">
+                                <p>📹 西门监控</p>
+                                <div class="detection-overlay">正常</div>
+                            </div>
+                        </div>
+                        <div class="camera-view">
+                            <div class="camera-placeholder">
+                                <p>📹 北门监控</p>
+                                <div class="detection-overlay">正常</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+            <!-- 知识百科页面 -->
+            <section id="knowledge" class="section">
+                <div class="knowledge-container">
+                    <h2>📚 食品安全知识百科</h2>
+                    
+                    <div class="knowledge-tabs">
+                        <button class="tab-btn active" data-tab="basics">基础知识</button>
+                        <button class="tab-btn" data-tab="identification">识别技巧</button>
+                        <button class="tab-btn" data-tab="nutrition">营养搭配</button>
+                        <button class="tab-btn" data-tab="quiz">知识问答</button>
+                    </div>
+
+                    <div class="tab-content active" id="basics">
+                        <div class="knowledge-grid">
+                            <div class="knowledge-card">
+                                <div class="knowledge-icon">🚫</div>
+                                <h3>什么是"三无"食品？</h3>
+                                <p>"三无"食品是指无生产厂家、无生产日期、无保质期的食品。这类食品存在严重的食品安全隐患，可能含有有害物质。</p>
+                                <div class="knowledge-tips">
+                                    <strong>识别要点：</strong>
+                                    <ul>
+                                        <li>包装上没有厂家名称和地址</li>
+                                        <li>没有明确的生产日期</li>
+                                        <li>缺少保质期标注</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="knowledge-card">
+                                <div class="knowledge-icon">🏷️</div>
+                                <h3>食品标签怎么看？</h3>
+                                <p>正规食品标签包含产品名称、配料表、净含量、生产日期、保质期、生产者信息等必要信息。</p>
+                                <div class="knowledge-tips">
+                                    <strong>查看顺序：</strong>
+                                    <ul>
+                                        <li>先看生产日期和保质期</li>
+                                        <li>查看配料表（按含量多少排序）</li>
+                                        <li>注意营养成分表</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="knowledge-card">
+                                <div class="knowledge-icon">⚠️</div>
+                                <h3>常见食品安全隐患</h3>
+                                <p>了解常见的食品安全问题，提高自我保护意识，避免食用有害食品。</p>
+                                <div class="knowledge-tips">
+                                    <strong>注意事项：</strong>
+                                    <ul>
+                                        <li>过期变质食品</li>
+                                        <li>颜色异常鲜艳的食品</li>
+                                        <li>无证摊贩销售的食品</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="identification">
+                        <div class="identification-guide">
+                            <h3>🔍 "三无"食品识别指南</h3>
+                            <div class="guide-steps">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>检查包装</h4>
+                                        <p>观察食品包装是否完整，有无破损、漏气等现象</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>查看标签</h4>
+                                        <p>仔细阅读食品标签，确认生产信息是否齐全</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>验证证照</h4>
+                                        <p>查看商家是否有营业执照和食品经营许可证</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="nutrition">
+                        <div class="nutrition-guide">
+                            <h3>🥗 健康饮食搭配建议</h3>
+                            <div class="nutrition-cards">
+                                <div class="nutrition-card">
+                                    <h4>早餐搭配</h4>
+                                    <p>谷物 + 蛋白质 + 维生素</p>
+                                    <div class="food-examples">如：全麦面包 + 牛奶 + 水果</div>
+                                </div>
+                                <div class="nutrition-card">
+                                    <h4>午餐搭配</h4>
+                                    <p>主食 + 蔬菜 + 肉类</p>
+                                    <div class="food-examples">如：米饭 + 青菜 + 瘦肉</div>
+                                </div>
+                                <div class="nutrition-card">
+                                    <h4>晚餐搭配</h4>
+                                    <p>清淡为主 + 易消化</p>
+                                    <div class="food-examples">如：粥类 + 蔬菜 + 少量蛋白质</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="quiz">
+                        <div class="quiz-container">
+                            <h3>🧠 食品安全知识问答</h3>
+                            <div class="quiz-question">
+                                <h4>问题 1：以下哪种食品属于"三无"食品？</h4>
+                                <div class="quiz-options">
+                                    <label><input type="radio" name="q1" value="a"> A. 有完整包装和标签的饼干</label>
+                                    <label><input type="radio" name="q1" value="b"> B. 散装无标签的糖果</label>
+                                    <label><input type="radio" name="q1" value="c"> C. 超市购买的面包</label>
+                                </div>
+                            </div>
+                            <button class="quiz-submit">提交答案</button>
+                            <div class="quiz-result" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 举报中心页面 -->
+            <section id="report" class="section">
+                <div class="report-container">
+                    <h2>🚨 举报中心</h2>
+                    
+                    <div class="report-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">156</div>
+                            <div class="stat-label">本月举报</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">89</div>
+                            <div class="stat-label">已处理</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">67</div>
+                            <div class="stat-label">处理中</div>
+                        </div>
+                    </div>
+
+                    <div class="report-form">
+                        <h3>📝 提交举报</h3>
+                        <form id="reportForm">
+                            <div class="form-group">
+                                <label>举报类型</label>
+                                <select id="reportType">
+                                    <option value="">请选择举报类型</option>
+                                    <option value="sanwu">"三无"食品</option>
+                                    <option value="expired">过期食品</option>
+                                    <option value="fake">假冒伪劣</option>
+                                    <option value="hygiene">卫生问题</option>
+                                    <option value="other">其他问题</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>商家名称</label>
+                                <input type="text" id="merchantName" placeholder="请输入商家名称">
+                            </div>
+                            <div class="form-group">
+                                <label>详细地址</label>
+                                <input type="text" id="merchantAddress" placeholder="请输入详细地址">
+                            </div>
+                            <div class="form-group">
+                                <label>问题描述</label>
+                                <textarea id="reportDescription" placeholder="请详细描述发现的问题..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>上传照片</label>
+                                <div class="upload-area">
+                                    <div class="upload-placeholder">📷 点击上传照片证据</div>
+                                    <input type="file" id="reportImage" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn">提交举报</button>
+                        </form>
+                    </div>
+
+                    <div class="report-history">
+                        <h3>📋 我的举报记录</h3>
+                        <div class="report-list">
+                            <div class="report-item">
+                                <div class="report-info">
+                                    <h4>校门口小卖部销售过期食品</h4>
+                                    <p>举报时间：2024-01-15 14:30</p>
+                                    <p>处理状态：<span class="status processing">处理中</span></p>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <div class="report-info">
+                                    <h4>流动摊贩销售"三无"零食</h4>
+                                    <p>举报时间：2024-01-10 09:15</p>
+                                    <p>处理状态：<span class="status completed">已处理</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 积分奖励页面 -->
+            <section id="points" class="section">
+                <div class="points-container">
+                    <h2>🏆 积分奖励系统</h2>
+                    
+                    <div class="points-header">
+                        <div class="user-points">
+                            <div class="points-display">
+                                <div class="points-number">1,250</div>
+                                <div class="points-label">我的积分</div>
+                            </div>
+                            <div class="user-level">
+                                <div class="level-badge">🥇 食品安全卫士</div>
+                                <div class="level-progress">
+                                    <div class="progress-bar" style="width: 75%;"></div>
+                                </div>
+                                <div class="level-text">距离下一级还需要250积分</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="points-tabs">
+                        <button class="tab-btn active" data-tab="tasks">每日任务</button>
+                        <button class="tab-btn" data-tab="rewards">积分商城</button>
+                        <button class="tab-btn" data-tab="ranking">排行榜</button>
+                    </div>
+
+                    <div class="tab-content active" id="tasks">
+                        <div class="tasks-list">
+                            <div class="task-item completed">
+                                <div class="task-icon">✅</div>
+                                <div class="task-info">
+                                    <h4>每日签到</h4>
+                                    <p>连续签到获得积分奖励</p>
+                                </div>
+                                <div class="task-reward">+10积分</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-icon">📱</div>
+                                <div class="task-info">
+                                    <h4>扫码查询食品</h4>
+                                    <p>使用扫码功能查询3次食品信息</p>
+                                    <div class="task-progress">进度：1/3</div>
+                                </div>
+                                <div class="task-reward">+20积分</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-icon">🚨</div>
+                                <div class="task-info">
+                                    <h4>提交举报</h4>
+                                    <p>发现并举报一个食品安全问题</p>
+                                    <div class="task-progress">进度：0/1</div>
+                                </div>
+                                <div class="task-reward">+50积分</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-icon">📚</div>
+                                <div class="task-info">
+                                    <h4>学习知识</h4>
+                                    <p>完成一次食品安全知识问答</p>
+                                    <div class="task-progress">进度：0/1</div>
+                                </div>
+                                <div class="task-reward">+30积分</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="rewards">
+                        <div class="rewards-grid">
+                            <div class="reward-item">
+                                <div class="reward-image">🎁</div>
+                                <h4>精美文具套装</h4>
+                                <div class="reward-price">500积分</div>
+                                <button class="exchange-btn">兑换</button>
+                            </div>
+                            <div class="reward-item">
+                                <div class="reward-image">📚</div>
+                                <h4>健康饮食指南</h4>
+                                <div class="reward-price">300积分</div>
+                                <button class="exchange-btn">兑换</button>
+                            </div>
+                            <div class="reward-item">
+                                <div class="reward-image">🏅</div>
+                                <h4>食品安全小专家证书</h4>
+                                <div class="reward-price">1000积分</div>
+                                <button class="exchange-btn disabled">积分不足</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="ranking">
+                        <div class="ranking-list">
+                            <div class="ranking-item top">
+                                <div class="rank-number">🥇</div>
+                                <div class="user-info">
+                                    <div class="username">张小明</div>
+                                    <div class="user-class">高一(3)班</div>
+                                </div>
+                                <div class="user-points">2,580积分</div>
+                            </div>
+                            <div class="ranking-item top">
+                                <div class="rank-number">🥈</div>
+                                <div class="user-info">
+                                    <div class="username">李小红</div>
+                                    <div class="user-class">高二(1)班</div>
+                                </div>
+                                <div class="user-points">2,340积分</div>
+                            </div>
+                            <div class="ranking-item top">
+                                <div class="rank-number">🥉</div>
+                                <div class="user-info">
+                                    <div class="username">王小华</div>
+                                    <div class="user-class">高一(2)班</div>
+                                </div>
+                                <div class="user-points">1,890积分</div>
+                            </div>
+                            <div class="ranking-item current">
+                                <div class="rank-number">4</div>
+                                <div class="user-info">
+                                    <div class="username">我</div>
+                                    <div class="user-class">高一(5)班</div>
+                                </div>
+                                <div class="user-points">1,250积分</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 社区互动页面 -->
+            <section id="community" class="section">
+                <div class="community-container">
+                    <h2>👥 社区互动</h2>
+                    
+                    <div class="community-tabs">
+                        <button class="tab-btn active" data-tab="posts">最新动态</button>
+                        <button class="tab-btn" data-tab="discussions">热门讨论</button>
+                        <button class="tab-btn" data-tab="tips">健康贴士</button>
+                    </div>
+
+                    <div class="post-form">
+                        <h3>✍️ 发布动态</h3>
+                        <textarea placeholder="分享你的健康饮食心得或食品安全发现..."></textarea>
+                        <div class="post-actions">
+                            <button class="add-image">📷 添加图片</button>
+                            <button class="publish-btn">发布</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content active" id="posts">
+                        <div class="posts-list">
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="user-avatar">👤</div>
+                                    <div class="post-info">
+                                        <div class="username">李同学</div>
+                                        <div class="post-time">2小时前</div>
+                                    </div>
+                                </div>
+                                <div class="post-content">
+                                    <p>今天在学校附近发现了一家新开的健康餐厅，食材新鲜，证照齐全，推荐给大家！</p>
+                                    <div class="post-image">🍽️</div>
+                                </div>
+                                <div class="post-actions">
+                                    <button class="like-btn">👍 12</button>
+                                    <button class="comment-btn">💬 3</button>
+                                    <button class="share-btn">🔗 分享</button>
+                                </div>
+                            </div>
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="user-avatar">👤</div>
+                                    <div class="post-info">
+                                        <div class="username">王同学</div>
+                                        <div class="post-time">5小时前</div>
+                                    </div>
+                                </div>
+                                <div class="post-content">
+                                    <p>提醒大家注意：校门口有摊贩在卖没有包装的糖果，大家要小心"三无"食品！</p>
+                                </div>
+                                <div class="post-actions">
+                                    <button class="like-btn">👍 25</button>
+                                    <button class="comment-btn">💬 8</button>
+                                    <button class="share-btn">🔗 分享</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="discussions">
+                        <div class="discussion-list">
+                            <div class="discussion-item">
+                                <h4>🔥 如何识别染色食品？</h4>
+                                <p>最近听说有些食品会用色素染色，大家知道怎么识别吗？</p>
+                                <div class="discussion-stats">
+                                    <span>👥 45人参与</span>
+                                    <span>💬 23条回复</span>
+                                </div>
+                            </div>
+                            <div class="discussion-item">
+                                <h4>🔥 学校食堂菜品建议</h4>
+                                <p>大家觉得学校食堂还可以增加哪些健康菜品？</p>
+                                <div class="discussion-stats">
+                                    <span>👥 32人参与</span>
+                                    <span>💬 18条回复</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tips">
+                        <div class="tips-list">
+                            <div class="tip-item">
+                                <div class="tip-icon">💡</div>
+                                <div class="tip-content">
+                                    <h4>选购零食小贴士</h4>
+                                    <p>购买零食时要注意查看配料表，尽量选择添加剂较少的产品。</p>
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">💡</div>
+                                <div class="tip-content">
+                                    <h4>饮水健康提醒</h4>
+                                    <p>每天要保证充足的饮水量，建议多喝白开水，少喝含糖饮料。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 健康档案页面 -->
+            <section id="health" class="section">
+                <div class="health-container">
+                    <h2>📈 个人健康档案</h2>
+                    
+                    <div class="health-overview">
+                        <div class="health-card">
+                            <h3>📊 本周饮食分析</h3>
+                            <div class="health-chart">
+                                <div class="chart-item">
+                                    <div class="chart-label">蛋白质</div>
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 85%;"></div>
+                                    </div>
+                                    <div class="chart-value">85%</div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">维生素</div>
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 70%;"></div>
+                                    </div>
+                                    <div class="chart-value">70%</div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-label">膳食纤维</div>
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 60%;"></div>
+                                    </div>
+                                    <div class="chart-value">60%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-card">
+                            <h3>🎯 健康目标</h3>
+                            <div class="goals-list">
+                                <div class="goal-item completed">
+                                    <span class="goal-icon">✅</span>
+                                    <span>每天8杯水</span>
+                                </div>
+                                <div class="goal-item">
+                                    <span class="goal-icon">⏳</span>
+                                    <span>每天5种蔬果</span>
+                                </div>
+                                <div class="goal-item">
+                                    <span class="goal-icon">⏳</span>
+                                    <span>减少零食摄入</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="health-tabs">
+                        <button class="tab-btn active" data-tab="diary">饮食日记</button>
+                        <button class="tab-btn" data-tab="analysis">营养分析</button>
+                        <button class="tab-btn" data-tab="suggestions">健康建议</button>
+                    </div>
+
+                    <div class="tab-content active" id="diary">
+                        <div class="diary-form">
+                            <h3>📝 记录今日饮食</h3>
+                            <div class="meal-tabs">
+                                <button class="meal-btn active" data-meal="breakfast">早餐</button>
+                                <button class="meal-btn" data-meal="lunch">午餐</button>
+                                <button class="meal-btn" data-meal="dinner">晚餐</button>
+                                <button class="meal-btn" data-meal="snack">零食</button>
+                            </div>
+                            <div class="food-input">
+                                <input type="text" placeholder="输入食物名称...">
+                                <button class="add-food">添加</button>
+                            </div>
+                        </div>
+                        
+                        <div class="diary-history">
+                            <h3>📅 最近记录</h3>
+                            <div class="diary-item">
+                                <div class="diary-date">今天</div>
+                                <div class="diary-meals">
+                                    <div class="meal-record">
+                                        <strong>早餐：</strong>牛奶、全麦面包、鸡蛋
+                                    </div>
+                                    <div class="meal-record">
+                                        <strong>午餐：</strong>米饭、青菜、鸡肉
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="analysis">
+                        <div class="analysis-charts">
+                            <div class="chart-container">
+                                <h3>📊 营养摄入趋势</h3>
+                                <div class="trend-chart">
+                                    <div class="chart-placeholder">📈 营养趋势图表</div>
+                                </div>
+                            </div>
+                            <div class="nutrition-summary">
+                                <h3>📋 营养摘要</h3>
+                                <div class="summary-item">
+                                    <span class="nutrient">热量：</span>
+                                    <span class="value">1,850 kcal</span>
+                                    <span class="status normal">正常</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="nutrient">蛋白质：</span>
+                                    <span class="value">65g</span>
+                                    <span class="status good">良好</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="nutrient">维生素C：</span>
+                                    <span class="value">45mg</span>
+                                    <span class="status low">偏低</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="suggestions">
+                        <div class="suggestions-list">
+                            <div class="suggestion-item">
+                                <div class="suggestion-icon">🥬</div>
+                                <div class="suggestion-content">
+                                    <h4>增加蔬菜摄入</h4>
+                                    <p>建议每天摄入300-500g蔬菜，特别是深色蔬菜，富含维生素和矿物质。</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-item">
+                                <div class="suggestion-icon">🥛</div>
+                                <div class="suggestion-content">
+                                    <h4>保证钙质摄入</h4>
+                                    <p>青少年正处于生长发育期，建议每天喝1-2杯牛奶，补充钙质。</p>
+                                </div>
+                            </div>
+                            <div class="suggestion-item">
+                                <div class="suggestion-icon">🚫</div>
+                                <div class="suggestion-content">
+                                    <h4>控制零食摄入</h4>
+                                    <p>减少高糖、高盐、高脂肪零食的摄入，选择坚果、水果等健康零食。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 健康挑战页面 -->
+            <section id="challenges" class="section">
+                <div class="challenges-container">
+                    <div class="section-header">
+                        <h2>🏆 健康挑战活动</h2>
+                        <p>参与挑战，养成健康习惯，赢取丰厚奖励！</p>
+                    </div>
+                    
+                    <div class="challenges-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">156</div>
+                            <div class="stat-label">参与人数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">23</div>
+                            <div class="stat-label">进行中挑战</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">89</div>
+                            <div class="stat-label">已完成挑战</div>
+                        </div>
+                    </div>
+                    
+                    <div class="challenges-grid">
+                        <!-- 挑战活动将通过JavaScript动态加载 -->
+                    </div>
+                    
+                    <div class="my-challenges">
+                        <h3>我的挑战进度</h3>
+                        <div class="progress-list">
+                            <div class="progress-item">
+                                <div class="progress-info">
+                                    <h4>21天健康饮食打卡</h4>
+                                    <p>已坚持 14/21 天</p>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 67%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 安全通报页面 -->
+            <section id="safety-alerts" class="section">
+                <div class="alerts-container">
+                    <div class="section-header">
+                        <h2>📢 食品安全通报</h2>
+                        <p>及时了解校园食品安全动态，保障饮食健康</p>
+                    </div>
+                    
+                    <div class="alert-filters">
+                        <button class="filter-btn active" data-severity="all">全部</button>
+                        <button class="filter-btn" data-severity="high">高风险</button>
+                        <button class="filter-btn" data-severity="medium">中风险</button>
+                        <button class="filter-btn" data-severity="low">低风险</button>
+                    </div>
+                    
+                    <div class="alerts-list">
+                        <!-- 安全事件将通过JavaScript动态加载 -->
+                    </div>
+                    
+                    <div class="safety-tips">
+                        <h3>🛡️ 安全提醒</h3>
+                        <div class="tips-grid">
+                            <div class="tip-card">
+                                <div class="tip-icon">🌡️</div>
+                                <h4>夏季食品安全</h4>
+                                <p>高温天气下，食品容易变质，购买时要特别注意保质期</p>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">🧼</div>
+                                <h4>个人卫生</h4>
+                                <p>饭前便后要洗手，使用公共餐具前要清洁</p>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">🏪</div>
+                                <h4>选择商家</h4>
+                                <p>优先选择证照齐全、卫生条件好的正规商家</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 营养师建议页面 -->
+            <section id="nutrition-tips" class="section">
+                <div class="nutrition-container">
+                    <div class="section-header">
+                        <h2>👩‍⚕️ 营养师专业建议</h2>
+                        <p>专业营养师为中学生量身定制的健康饮食指导</p>
+                    </div>
+                    
+                    <div class="nutritionist-profile">
+                        <div class="profile-card">
+                            <div class="profile-avatar">👩‍⚕️</div>
+                            <div class="profile-info">
+                                <h3>李营养师</h3>
+                                <p>国家注册营养师 | 10年青少年营养经验</p>
+                                <div class="profile-stats">
+                                    <span>已服务学生: 2000+</span>
+                                    <span>好评率: 98%</span>
+                                </div>
+                            </div>
+                            <button class="consult-btn">在线咨询</button>
+                        </div>
+                    </div>
+                    
+                    <div class="nutrition-tabs">
+                        <button class="tab-btn active" data-tab="daily-tips">每日建议</button>
+                        <button class="tab-btn" data-tab="meal-guide">用餐指南</button>
+                        <button class="tab-btn" data-tab="special-needs">特殊需求</button>
+                        <button class="tab-btn" data-tab="qa-section">问答专区</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="daily-tips">
+                        <div class="tips-timeline">
+                            <!-- 营养建议将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="meal-guide">
+                        <div class="meal-guide-grid">
+                            <div class="guide-card">
+                                <div class="guide-icon">🌅</div>
+                                <h4>早餐指南</h4>
+                                <ul>
+                                    <li>占全天热量的25-30%</li>
+                                    <li>包含蛋白质、碳水、维生素</li>
+                                    <li>建议时间：7:00-9:00</li>
+                                </ul>
+                            </div>
+                            <div class="guide-card">
+                                <div class="guide-icon">🍽️</div>
+                                <h4>午餐指南</h4>
+                                <ul>
+                                    <li>占全天热量的35-40%</li>
+                                    <li>荤素搭配，营养均衡</li>
+                                    <li>建议时间：11:30-13:00</li>
+                                </ul>
+                            </div>
+                            <div class="guide-card">
+                                <div class="guide-icon">🌙</div>
+                                <h4>晚餐指南</h4>
+                                <ul>
+                                    <li>占全天热量的25-30%</li>
+                                    <li>清淡易消化</li>
+                                    <li>建议时间：17:30-19:00</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="special-needs">
+                        <div class="needs-categories">
+                            <div class="category-card">
+                                <h4>🏃‍♂️ 运动型学生</h4>
+                                <p>增加蛋白质摄入，注意运动前后营养补充</p>
+                                <ul>
+                                    <li>运动前：香蕉、燕麦</li>
+                                    <li>运动后：牛奶、鸡蛋</li>
+                                    <li>日常：瘦肉、豆类</li>
+                                </ul>
+                            </div>
+                            <div class="category-card">
+                                <h4>📚 学习压力大</h4>
+                                <p>补充大脑营养，提高记忆力和注意力</p>
+                                <ul>
+                                    <li>坚果类：核桃、杏仁</li>
+                                    <li>鱼类：三文鱼、带鱼</li>
+                                    <li>蔬果：蓝莓、菠菜</li>
+                                </ul>
+                            </div>
+                            <div class="category-card">
+                                <h4>😴 睡眠不足</h4>
+                                <p>调节生物钟，改善睡眠质量</p>
+                                <ul>
+                                    <li>晚餐：小米粥、牛奶</li>
+                                    <li>避免：咖啡、浓茶</li>
+                                    <li>补充：维生素B族</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="qa-section">
+                        <div class="qa-list">
+                            <div class="qa-item">
+                                <div class="question">
+                                    <h4>Q: 中学生每天需要喝多少水？</h4>
+                                </div>
+                                <div class="answer">
+                                    <p>A: 中学生每天应该喝1500-2000ml的水，相当于6-8杯水。运动量大或天气炎热时需要增加。建议少量多次饮用，不要等到口渴才喝水。</p>
+                                </div>
+                            </div>
+                            <div class="qa-item">
+                                <div class="question">
+                                    <h4>Q: 可以完全不吃零食吗？</h4>
+                                </div>
+                                <div class="answer">
+                                    <p>A: 不建议完全禁止零食，关键是选择健康的零食。推荐坚果、水果、酸奶等，避免高糖、高盐、高脂肪的加工食品。零食应控制在总热量的10%以内。</p>
+                                </div>
+                            </div>
+                            <div class="qa-item">
+                                <div class="question">
+                                    <h4>Q: 如何判断自己的营养状况？</h4>
+                                </div>
+                                <div class="answer">
+                                    <p>A: 可以通过以下指标判断：1）体重是否在正常范围 2）精神状态是否良好 3）免疫力是否正常 4）学习效率是否稳定。建议定期体检，必要时咨询营养师。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 智能推荐页面 -->
+            <section id="smart-recommendations" class="section">
+                <div class="recommendations-container">
+                    <div class="section-header">
+                        <h2>🤖 智能推荐</h2>
+                        <p>基于个人喜好和健康需求，为您推荐最适合的食物选择</p>
+                    </div>
+                    
+                    <div class="smart-recommendations-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #202124;">🎯 个性化推荐</h3>
+                        <div>
+                            <button class="personalize-btn" style="padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">个性化设置</button>
+                            <button class="nutrition-query-btn" style="padding: 8px 16px; background: #34a853; color: white; border: none; border-radius: 4px; cursor: pointer;">营养查询</button>
+                        </div>
+                    </div>
+                    
+                    <div class="seasonal-recommendations">
+                        <!-- 季节性推荐将通过JavaScript动态加载 -->
+                    </div>
+                    
+                    <div class="smart-recommendations">
+                        <!-- 智能推荐内容将通过JavaScript动态加载 -->
+                    </div>
+                    
+                    <div class="safety-tips-section">
+                        <h3 style="margin: 20px 0; color: #202124;">💡 每日安全小贴士</h3>
+                        <div class="safety-tips-grid">
+                            <!-- 安全小贴士将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 每日任务页面 -->
+            <section id="daily-tasks" class="section">
+                <div class="tasks-container">
+                    <div class="section-header">
+                        <h2>📋 每日健康任务</h2>
+                        <p>完成每日健康任务，养成良好饮食习惯，获得积分奖励</p>
+                    </div>
+                    
+                    <div class="daily-tasks-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #202124;">🎯 今日目标</h3>
+                        <div class="points-display" style="background: #f8f9fa; padding: 10px 15px; border-radius: 20px; border: 1px solid #dadce0;">
+                            <span style="color: #5f6368; font-size: 0.9rem;">今日积分：</span>
+                            <span class="current-points" style="color: #1a73e8; font-weight: bold; font-size: 1.1rem;">120</span>
+                        </div>
+                    </div>
+                    
+                    <div class="daily-tasks">
+                        <!-- 每日任务内容将通过JavaScript动态加载 -->
+                    </div>
+                    
+                    <div class="task-stats" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h3 style="margin: 0 0 15px 0; color: #202124;">📊 本周统计</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; color: #1a73e8; font-weight: bold;">5</div>
+                                <div style="color: #5f6368; font-size: 0.9rem;">已完成任务</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; color: #34a853; font-weight: bold;">350</div>
+                                <div style="color: #5f6368; font-size: 0.9rem;">获得积分</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; color: #ea4335; font-weight: bold;">7</div>
+                                <div style="color: #5f6368; font-size: 0.9rem;">连续签到</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 学生健康档案 -->
+            <section id="health-profile" class="section">
+                <div class="profile-container">
+                    <div class="section-header">
+                        <h2>👤 我的健康档案</h2>
+                        <p>管理个人健康信息，建立完整的健康档案</p>
+                        <button class="edit-profile-btn" style="float: right; background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                            ✏️ 编辑档案
+                        </button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 30px;">
+                        <!-- 基本信息卡片 -->
+                        <div class="profile-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h3 style="color: #202124; margin-bottom: 20px; display: flex; align-items: center;">
+                                <span style="margin-right: 10px;">📊</span>基本信息
+                            </h3>
+                            <div class="profile-info">
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
+                                    <span style="color: #5f6368;">姓名:</span>
+                                    <span id="profile-name" style="font-weight: bold;">张小明</span>
+                                </div>
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
+                                    <span style="color: #5f6368;">年龄:</span>
+                                    <span id="profile-age" style="font-weight: bold;">16岁</span>
+                                </div>
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
+                                    <span style="color: #5f6368;">身高:</span>
+                                    <span id="profile-height" style="font-weight: bold;">168cm</span>
+                                </div>
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
+                                    <span style="color: #5f6368;">体重:</span>
+                                    <span id="profile-weight" style="font-weight: bold;">55kg</span>
+                                </div>
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
+                                    <span style="color: #5f6368;">BMI:</span>
+                                    <span id="profile-bmi" style="font-weight: bold; color: #34a853;">19.5 (正常)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 健康状态概览 -->
+                        <div class="health-overview" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h3 style="color: #202124; margin-bottom: 20px; display: flex; align-items: center;">
+                                <span style="margin-right: 10px;">💚</span>健康状态概览
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div class="health-metric" style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; color: #34a853; margin-bottom: 5px;">85%</div>
+                                    <div style="color: #5f6368; font-size: 0.9rem;">营养均衡度</div>
+                                </div>
+                                <div class="health-metric" style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; color: #1a73e8; margin-bottom: 5px;">92%</div>
+                                    <div style="color: #5f6368; font-size: 0.9rem;">饮食安全度</div>
+                                </div>
+                                <div class="health-metric" style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; color: #ff9800; margin-bottom: 5px;">7.5h</div>
+                                    <div style="color: #5f6368; font-size: 0.9rem;">平均睡眠</div>
+                                </div>
+                                <div class="health-metric" style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; color: #ea4335; margin-bottom: 5px;">6500</div>
+                                    <div style="color: #5f6368; font-size: 0.9rem;">日均步数</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 过敏信息和饮食偏好 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                        <div class="allergy-info" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h3 style="color: #202124; margin-bottom: 20px; display: flex; align-items: center;">
+                                <span style="margin-right: 10px;">⚠️</span>过敏信息
+                            </h3>
+                            <div class="allergy-list">
+                                <div class="allergy-item" style="display: inline-block; background: #fef7e0; color: #f57c00; padding: 8px 12px; border-radius: 20px; margin: 5px; font-size: 0.9rem;">
+                                    🥜 坚果类
+                                </div>
+                                <div class="allergy-item" style="display: inline-block; background: #fef7e0; color: #f57c00; padding: 8px 12px; border-radius: 20px; margin: 5px; font-size: 0.9rem;">
+                                    🦐 海鲜类
+                                </div>
+                                <div class="no-allergy" style="color: #5f6368; font-style: italic; margin-top: 10px; display: none;">
+                                    暂无已知过敏源
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="diet-preferences" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h3 style="color: #202124; margin-bottom: 20px; display: flex; align-items: center;">
+                                <span style="margin-right: 10px;">🍽️</span>饮食偏好
+                            </h3>
+                            <div class="preference-list">
+                                <div class="preference-item" style="display: inline-block; background: #e8f5e8; color: #2e7d32; padding: 8px 12px; border-radius: 20px; margin: 5px; font-size: 0.9rem;">
+                                    🥗 清淡饮食
+                                </div>
+                                <div class="preference-item" style="display: inline-block; background: #e8f5e8; color: #2e7d32; padding: 8px 12px; border-radius: 20px; margin: 5px; font-size: 0.9rem;">
+                                    🍎 多吃水果
+                                </div>
+                                <div class="preference-item" style="display: inline-block; background: #e8f5e8; color: #2e7d32; padding: 8px 12px; border-radius: 20px; margin: 5px; font-size: 0.9rem;">
+                                    🥛 低脂饮食
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 健康目标 -->
+                    <div class="health-goals" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 30px;">
+                        <h3 style="color: #202124; margin-bottom: 20px; display: flex; align-items: center;">
+                            <span style="margin-right: 10px;">🎯</span>我的健康目标
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div class="goal-item" style="padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1a73e8;">
+                                <div style="font-weight: bold; color: #202124; margin-bottom: 8px;">💧 每日饮水目标</div>
+                                <div style="color: #5f6368; margin-bottom: 10px;">目标: 8杯水 (约2000ml)</div>
+                                <div class="progress-bar" style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: #1a73e8; height: 100%; width: 75%; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 0.9rem; color: #5f6368; margin-top: 5px;">已完成 75% (6/8杯)</div>
+                            </div>
+                            
+                            <div class="goal-item" style="padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #34a853;">
+                                <div style="font-weight: bold; color: #202124; margin-bottom: 8px;">🚶 每日步数目标</div>
+                                <div style="color: #5f6368; margin-bottom: 10px;">目标: 8000步</div>
+                                <div class="progress-bar" style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: #34a853; height: 100%; width: 81%; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 0.9rem; color: #5f6368; margin-top: 5px;">已完成 81% (6500/8000步)</div>
+                            </div>
+                            
+                            <div class="goal-item" style="padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #ff9800;">
+                                <div style="font-weight: bold; color: #202124; margin-bottom: 8px;">😴 睡眠目标</div>
+                                <div style="color: #5f6368; margin-bottom: 10px;">目标: 8小时优质睡眠</div>
+                                <div class="progress-bar" style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: #ff9800; height: 100%; width: 94%; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 0.9rem; color: #5f6368; margin-top: 5px;">已完成 94% (7.5/8小时)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer架构可视化 - SVG详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .section p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .svg-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .dual-svg {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .svg-wrapper {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .svg-title {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .formula-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            text-align: center;
+            color: #1976d2;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .interactive-note {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .interactive-note h4 {
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+
+        .interactive-note p {
+            color: #666;
+            margin: 0;
+            text-align: left;
+        }
+
+        /* SVG动画 */
+        .attention-flow {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .data-flow {
+            animation: flow 3s infinite;
+        }
+
+        @keyframes flow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .dual-svg {
+                grid-template-columns: 1fr;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Transformer架构可视化</h1>
+            <p>通过精美的SVG图形深度解析Transformer的每个组件</p>
+        </div>
+
+        <div class="content">
+            <!-- 整体架构图 -->
+            <div class="section">
+                <h2>🏗️ 整体架构概览</h2>
+                <p>Transformer的完整编码器-解码器架构，展示数据流向和组件关系</p>
+                
+                <div class="svg-container">
+                    <svg width="1200" height="700" viewBox="0 0 1200 700">
+                        <!-- 背景网格 -->
+                        <defs>
+                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+                            </pattern>
+                            <linearGradient id="encoderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e3f2fd;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#bbdefb;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="decoderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#fff3e0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ffcc02;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="shadow">
+                                <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+                            </filter>
+                        </defs>
+                        
+                        <rect width="1200" height="700" fill="url(#grid)"/>
+                        
+                        <!-- 编码器栈 -->
+                        <g id="encoder-stack">
+                            <rect x="100" y="150" width="400" height="500" fill="url(#encoderGrad)" stroke="#1976d2" stroke-width="3" rx="15" filter="url(#shadow)"/>
+                            <text x="300" y="130" text-anchor="middle" font-size="24" font-weight="bold" fill="#1976d2">编码器 (Encoder)</text>
+                            
+                            <!-- 编码器层 -->
+                            <g id="encoder-layers">
+                                <!-- 第6层 -->
+                                <rect x="120" y="170" width="360" height="70" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="8"/>
+                                <text x="300" y="195" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">多头自注意力</text>
+                                <text x="300" y="215" text-anchor="middle" font-size="12" fill="#1565c0">Multi-Head Self-Attention</text>
+                                
+                                <rect x="120" y="250" width="360" height="50" fill="#64b5f6" stroke="#1976d2" stroke-width="2" rx="8"/>
+                                <text x="300" y="280" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">前馈网络 (FFN)</text>
+                                
+                                <!-- 第5层 -->
+                                <rect x="120" y="320" width="360" height="70" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="8"/>
+                                <text x="300" y="345" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">多头自注意力</text>
+                                <text x="300" y="365" text-anchor="middle" font-size="12" fill="#1565c0">Multi-Head Self-Attention</text>
+                                
+                                <rect x="120" y="400" width="360" height="50" fill="#64b5f6" stroke="#1976d2" stroke-width="2" rx="8"/>
+                                <text x="300" y="430" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">前馈网络 (FFN)</text>
+                                
+                                <!-- 省略号 -->
+                                <text x="300" y="480" text-anchor="middle" font-size="18" fill="#666">⋮</text>
+                                <text x="300" y="500" text-anchor="middle" font-size="12" fill="#666">× N 层 (N=6)</text>
+                                
+                                <!-- 残差连接箭头 -->
+                                <path d="M 480 205 Q 520 205 520 280 Q 520 355 480 355" fill="none" stroke="#ff9800" stroke-width="3" marker-end="url(#arrowOrange)"/>
+                                <text x="540" y="280" font-size="12" fill="#ff9800">残差连接</text>
+                            </g>
+                        </g>
+                        
+                        <!-- 解码器栈 -->
+                        <g id="decoder-stack">
+                            <rect x="700" y="150" width="400" height="500" fill="url(#decoderGrad)" stroke="#f57c00" stroke-width="3" rx="15" filter="url(#shadow)"/>
+                            <text x="900" y="130" text-anchor="middle" font-size="24" font-weight="bold" fill="#f57c00">解码器 (Decoder)</text>
+                            
+                            <!-- 解码器层 -->
+                            <g id="decoder-layers">
+                                <!-- 第6层 -->
+                                <rect x="720" y="170" width="360" height="60" fill="#ffb74d" stroke="#f57c00" stroke-width="2" rx="8"/>
+                                <text x="900" y="195" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">掩码多头自注意力</text>
+                                <text x="900" y="215" text-anchor="middle" font-size="11" fill="#f57c00">Masked Multi-Head Self-Attention</text>
+                                
+                                <rect x="720" y="240" width="360" height="60" fill="#ff9800" stroke="#f57c00" stroke-width="2" rx="8"/>
+                                <text x="900" y="265" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">编码器-解码器注意力</text>
+                                <text x="900" y="285" text-anchor="middle" font-size="11" fill="#f57c00">Encoder-Decoder Attention</text>
+                                
+                                <rect x="720" y="310" width="360" height="50" fill="#ffcc02" stroke="#f57c00" stroke-width="2" rx="8"/>
+                                <text x="900" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">前馈网络 (FFN)</text>
+                                
+                                <!-- 第5层 -->
+                                <rect x="720" y="380" width="360" height="60" fill="#ffb74d" stroke="#f57c00" stroke-width="2" rx="8"/>
+                                <text x="900" y="405" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">掩码多头自注意力</text>
+                                
+                                <!-- 省略号 -->
+                                <text x="900" y="480" text-anchor="middle" font-size="18" fill="#666">⋮</text>
+                                <text x="900" y="500" text-anchor="middle" font-size="12" fill="#666">× N 层 (N=6)</text>
+                            </g>
+                        </g>
+                        
+                        <!-- 输入输出 -->
+                        <rect x="120" y="670" width="360" height="40" fill="#c8e6c9" stroke="#4caf50" stroke-width="2" rx="8"/>
+                        <text x="300" y="695" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">输入嵌入 + 位置编码</text>
+                        
+                        <rect x="720" y="670" width="360" height="40" fill="#f8bbd9" stroke="#e91e63" stroke-width="2" rx="8"/>
+                        <text x="900" y="695" text-anchor="middle" font-size="16" font-weight="bold" fill="#c2185b">线性层 + Softmax</text>
+                        
+                        <!-- 连接箭头 -->
+                        <defs>
+                            <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2"/>
+                            </marker>
+                            <marker id="arrowOrange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#ff9800"/>
+                            </marker>
+                            <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#4caf50"/>
+                            </marker>
+                        </defs>
+                        
+                        <!-- 编码器到解码器的连接 -->
+                        <path d="M 500 270 Q 600 270 700 270" fill="none" stroke="#ff5722" stroke-width="4" stroke-dasharray="5,5" marker-end="url(#arrowOrange)" class="data-flow"/>
+                        <text x="600" y="260" text-anchor="middle" font-size="14" font-weight="bold" fill="#ff5722">K, V</text>
+                        
+                        <!-- 输入箭头 -->
+                        <path d="M 300 670 L 300 650" fill="none" stroke="#4caf50" stroke-width="3" marker-end="url(#arrowGreen)"/>
+                        
+                        <!-- 输出箭头 -->
+                        <path d="M 900 150 L 900 120" fill="none" stroke="#e91e63" stroke-width="3" marker-end="url(#arrowOrange)"/>
+                        <text x="900" y="110" text-anchor="middle" font-size="14" font-weight="bold" fill="#e91e63">输出概率</text>
+                    </svg>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #90caf9;"></div>
+                        <span>多头注意力层</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #64b5f6;"></div>
+                        <span>前馈网络层</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffb74d;"></div>
+                        <span>掩码注意力层</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff9800;"></div>
+                        <span>编码器-解码器注意力</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注意力机制详解 -->
+            <div class="section">
+                <h2>🎯 多头注意力机制</h2>
+                <p>详细展示注意力机制的计算过程和多头并行处理</p>
+                
+                <div class="dual-svg">
+                    <div class="svg-wrapper">
+                        <div class="svg-title">注意力计算流程</div>
+                        <svg width="500" height="400" viewBox="0 0 500 400">
+                            <!-- 输入序列 -->
+                            <rect x="50" y="50" width="400" height="40" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="5"/>
+                            <text x="250" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#0277bd">输入序列 X</text>
+                            
+                            <!-- 线性变换 -->
+                            <g id="linear-transforms">
+                                <rect x="50" y="120" width="120" height="60" fill="#ffecb3" stroke="#f57c00" stroke-width="2" rx="5"/>
+                                <text x="110" y="145" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">W^Q</text>
+                                <text x="110" y="165" text-anchor="middle" font-size="12" fill="#f57c00">查询矩阵</text>
+                                
+                                <rect x="190" y="120" width="120" height="60" fill="#ffecb3" stroke="#f57c00" stroke-width="2" rx="5"/>
+                                <text x="250" y="145" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">W^K</text>
+                                <text x="250" y="165" text-anchor="middle" font-size="12" fill="#f57c00">键矩阵</text>
+                                
+                                <rect x="330" y="120" width="120" height="60" fill="#ffecb3" stroke="#f57c00" stroke-width="2" rx="5"/>
+                                <text x="390" y="145" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">W^V</text>
+                                <text x="390" y="165" text-anchor="middle" font-size="12" fill="#f57c00">值矩阵</text>
+                            </g>
+                            
+                            <!-- 箭头 -->
+                            <path d="M 110 90 L 110 120" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 250 90 L 250 120" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 390 90 L 390 120" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <!-- Q, K, V -->
+                            <rect x="50" y="210" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                            <text x="110" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="#2e7d32">Q</text>
+                            
+                            <rect x="190" y="210" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                            <text x="250" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="#2e7d32">K</text>
+                            
+                            <rect x="330" y="210" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                            <text x="390" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="#2e7d32">V</text>
+                            
+                            <!-- 箭头 -->
+                            <path d="M 110 180 L 110 210" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 250 180 L 250 210" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 390 180 L 390 210" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <!-- 注意力计算 -->
+                            <rect x="150" y="280" width="200" height="60" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="5"/>
+                            <text x="250" y="305" text-anchor="middle" font-size="12" font-weight="bold" fill="#4a148c">Attention(Q,K,V)</text>
+                            <text x="250" y="325" text-anchor="middle" font-size="11" fill="#7b1fa2">softmax(QK^T/√d_k)V</text>
+                            
+                            <!-- 连接线 -->
+                            <path d="M 170 250 Q 200 265 220 280" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 250 250 L 250 280" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 330 250 Q 300 265 280 280" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <!-- 输出 -->
+                            <rect x="150" y="360" width="200" height="30" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5"/>
+                            <text x="250" y="380" text-anchor="middle" font-size="14" font-weight="bold" fill="#c62828">注意力输出</text>
+                            
+                            <path d="M 250 340 L 250 360" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <defs>
+                                <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    
+                    <div class="svg-wrapper">
+                        <div class="svg-title">多头并行处理</div>
+                        <svg width="500" height="400" viewBox="0 0 500 400">
+                            <!-- 输入 -->
+                            <rect x="150" y="30" width="200" height="30" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="5"/>
+                            <text x="250" y="50" text-anchor="middle" font-size="14" font-weight="bold" fill="#0277bd">输入 X</text>
+                            
+                            <!-- 多个注意力头 -->
+                            <g id="attention-heads">
+                                <!-- Head 1 -->
+                                <rect x="50" y="100" width="80" height="80" fill="#fff3e0" stroke="#ff9800" stroke-width="2" rx="8"/>
+                                <text x="90" y="125" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">Head 1</text>
+                                <circle cx="90" cy="140" r="15" fill="#ffcc02" class="attention-flow"/>
+                                <text x="90" y="165" text-anchor="middle" font-size="10" fill="#f57c00">d_k=64</text>
+                                
+                                <!-- Head 2 -->
+                                <rect x="150" y="100" width="80" height="80" fill="#e8f5e8" stroke="#4caf50" stroke-width="2" rx="8"/>
+                                <text x="190" y="125" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">Head 2</text>
+                                <circle cx="190" cy="140" r="15" fill="#66bb6a" class="attention-flow"/>
+                                <text x="190" y="165" text-anchor="middle" font-size="10" fill="#388e3c">d_k=64</text>
+                                
+                                <!-- Head 3 -->
+                                <rect x="250" y="100" width="80" height="80" fill="#fce4ec" stroke="#e91e63" stroke-width="2" rx="8"/>
+                                <text x="290" y="125" text-anchor="middle" font-size="12" font-weight="bold" fill="#c2185b">Head 3</text>
+                                <circle cx="290" cy="140" r="15" fill="#f06292" class="attention-flow"/>
+                                <text x="290" y="165" text-anchor="middle" font-size="10" fill="#ad1457">d_k=64</text>
+                                
+                                <!-- Head 8 -->
+                                <rect x="370" y="100" width="80" height="80" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2" rx="8"/>
+                                <text x="410" y="125" text-anchor="middle" font-size="12" font-weight="bold" fill="#6a1b9a">Head 8</text>
+                                <circle cx="410" cy="140" r="15" fill="#ba68c8" class="attention-flow"/>
+                                <text x="410" y="165" text-anchor="middle" font-size="10" fill="#7b1fa2">d_k=64</text>
+                            </g>
+                            
+                            <!-- 省略号 -->
+                            <text x="340" y="145" text-anchor="middle" font-size="20" fill="#666">⋯</text>
+                            
+                            <!-- 连接线 -->
+                            <path d="M 200 60 L 90 100" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 230 60 L 190 100" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 270 60 L 290 100" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 300 60 L 410 100" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            
+                            <!-- 拼接 -->
+                            <rect x="150" y="220" width="200" height="40" fill="#e0f2f1" stroke="#00695c" stroke-width="2" rx="5"/>
+                            <text x="250" y="240" text-anchor="middle" font-size="12" font-weight="bold" fill="#004d40">Concat</text>
+                            <text x="250" y="255" text-anchor="middle" font-size="10" fill="#00695c">拼接所有头的输出</text>
+                            
+                            <!-- 连接线到拼接 -->
+                            <path d="M 90 180 Q 90 200 150 230" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 190 180 L 190 220" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 290 180 L 290 220" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            <path d="M 410 180 Q 410 200 350 230" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            
+                            <!-- 线性变换 -->
+                            <rect x="150" y="290" width="200" height="40" fill="#fff8e1" stroke="#ffa000" stroke-width="2" rx="5"/>
+                            <text x="250" y="310" text-anchor="middle" font-size="12" font-weight="bold" fill="#ff8f00">W^O</text>
+                            <text x="250" y="325" text-anchor="middle" font-size="10" fill="#ffa000">输出线性变换</text>
+                            
+                            <path d="M 250 260 L 250 290" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            
+                            <!-- 最终输出 -->
+                            <rect x="150" y="350" width="200" height="30" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5"/>
+                            <text x="250" y="370" text-anchor="middle" font-size="14" font-weight="bold" fill="#c62828">多头注意力输出</text>
+                            
+                            <path d="M 250 330 L 250 350" stroke="#666" stroke-width="2" marker-end="url(#arrow2)"/>
+                            
+                            <defs>
+                                <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    MultiHead(Q,K,V) = Concat(head₁, head₂, ..., head₈)W^O<br>
+                    其中 headᵢ = Attention(QWᵢ^Q, KWᵢ^K, VWᵢ^V)
+                </div>
+            </div>
+
+            <!-- 位置编码可视化 -->
+            <div class="section">
+                <h2>📍 位置编码机制</h2>
+                <p>展示正弦余弦位置编码如何为序列添加位置信息</p>
+                
+                <div class="svg-container">
+                    <svg width="1000" height="500" viewBox="0 0 1000 500">
+                        <!-- 位置编码热力图 -->
+                        <g id="position-encoding">
+                            <text x="500" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">位置编码可视化 (前10个位置，前64个维度)</text>
+                            
+                            <!-- 坐标轴 -->
+                            <line x1="100" y1="450" x2="900" y2="450" stroke="#333" stroke-width="2"/>
+                            <line x1="100" y1="450" x2="100" y2="80" stroke="#333" stroke-width="2"/>
+                            
+                            <!-- 轴标签 -->
+                            <text x="500" y="480" text-anchor="middle" font-size="14" fill="#666">维度 (Dimension)</text>
+                            <text x="50" y="265" text-anchor="middle" font-size="14" fill="#666" transform="rotate(-90 50 265)">位置 (Position)</text>
+                            
+                            <!-- 位置编码矩阵 -->
+                            <g id="encoding-matrix">
+                                <!-- 生成位置编码的可视化 -->
+                                <script>
+                                    // 这里用矩形来模拟位置编码的值
+                                </script>
+                                
+                                <!-- 手动绘制一些示例 -->
+                                <!-- 位置0 -->
+                                <g id="pos-0">
+                                    <rect x="120" y="400" width="12" height="30" fill="#ff5722" opacity="0.8"/>
+                                    <rect x="140" y="400" width="12" height="30" fill="#ff9800" opacity="0.6"/>
+                                    <rect x="160" y="400" width="12" height="30" fill="#ffc107" opacity="0.4"/>
+                                    <rect x="180" y="400" width="12" height="30" fill="#ffeb3b" opacity="0.2"/>
+                                    <rect x="200" y="400" width="12" height="30" fill="#cddc39" opacity="0.3"/>
+                                    <rect x="220" y="400" width="12" height="30" fill="#8bc34a" opacity="0.5"/>
+                                    <rect x="240" y="400" width="12" height="30" fill="#4caf50" opacity="0.7"/>
+                                    <rect x="260" y="400" width="12" height="30" fill="#009688" opacity="0.9"/>
+                                </g>
+                                
+                                <!-- 位置1 -->
+                                <g id="pos-1">
+                                    <rect x="120" y="370" width="12" height="30" fill="#ff9800" opacity="0.7"/>
+                                    <rect x="140" y="370" width="12" height="30" fill="#ffc107" opacity="0.5"/>
+                                    <rect x="160" y="370" width="12" height="30" fill="#ffeb3b" opacity="0.3"/>
+                                    <rect x="180" y="370" width="12" height="30" fill="#cddc39" opacity="0.1"/>
+                                    <rect x="200" y="370" width="12" height="30" fill="#8bc34a" opacity="0.2"/>
+                                    <rect x="220" y="370" width="12" height="30" fill="#4caf50" opacity="0.4"/>
+                                    <rect x="240" y="370" width="12" height="30" fill="#009688" opacity="0.6"/>
+                                    <rect x="260" y="370" width="12" height="30" fill="#00bcd4" opacity="0.8"/>
+                                </g>
+                                
+                                <!-- 位置2 -->
+                                <g id="pos-2">
+                                    <rect x="120" y="340" width="12" height="30" fill="#ffc107" opacity="0.6"/>
+                                    <rect x="140" y="340" width="12" height="30" fill="#ffeb3b" opacity="0.4"/>
+                                    <rect x="160" y="340" width="12" height="30" fill="#cddc39" opacity="0.2"/>
+                                    <rect x="180" y="340" width="12" height="30" fill="#8bc34a" opacity="0.1"/>
+                                    <rect x="200" y="340" width="12" height="30" fill="#4caf50" opacity="0.3"/>
+                                    <rect x="220" y="340" width="12" height="30" fill="#009688" opacity="0.5"/>
+                                    <rect x="240" y="340" width="12" height="30" fill="#00bcd4" opacity="0.7"/>
+                                    <rect x="260" y="340" width="12" height="30" fill="#03a9f4" opacity="0.9"/>
+                                </g>
+                                
+                                <!-- 继续其他位置... -->
+                                <g id="pos-3">
+                                    <rect x="120" y="310" width="12" height="30" fill="#ffeb3b" opacity="0.5"/>
+                                    <rect x="140" y="310" width="12" height="30" fill="#cddc39" opacity="0.3"/>
+                                    <rect x="160" y="310" width="12" height="30" fill="#8bc34a" opacity="0.1"/>
+                                    <rect x="180" y="310" width="12" height="30" fill="#4caf50" opacity="0.2"/>
+                                    <rect x="200" y="310" width="12" height="30" fill="#009688" opacity="0.4"/>
+                                    <rect x="220" y="310" width="12" height="30" fill="#00bcd4" opacity="0.6"/>
+                                    <rect x="240" y="310" width="12" height="30" fill="#03a9f4" opacity="0.8"/>
+                                    <rect x="260" y="310" width="12" height="30" fill="#2196f3" opacity="1.0"/>
+                                </g>
+                            </g>
+                            
+                            <!-- 波形图 -->
+                            <g id="sine-wave" transform="translate(400, 100)">
+                                <text x="200" y="-10" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">正弦波 (偶数维度)</text>
+                                <path d="M 0 50 Q 50 20 100 50 Q 150 80 200 50 Q 250 20 300 50 Q 350 80 400 50" 
+                                      fill="none" stroke="#e91e63" stroke-width="3"/>
+                                <circle cx="0" cy="50" r="4" fill="#e91e63"/>
+                                <circle cx="100" cy="50" r="4" fill="#e91e63"/>
+                                <circle cx="200" cy="50" r="4" fill="#e91e63"/>
+                                <circle cx="300" cy="50" r="4" fill="#e91e63"/>
+                                <circle cx="400" cy="50" r="4" fill="#e91e63"/>
+                            </g>
+                            
+                            <g id="cosine-wave" transform="translate(400, 200)">
+                                <text x="200" y="-10" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">余弦波 (奇数维度)</text>
+                                <path d="M 0 20 Q 50 50 100 80 Q 150 50 200 20 Q 250 50 300 80 Q 350 50 400 20" 
+                                      fill="none" stroke="#2196f3" stroke-width="3"/>
+                                <circle cx="0" cy="20" r="4" fill="#2196f3"/>
+                                <circle cx="100" cy="80" r="4" fill="#2196f3"/>
+                                <circle cx="200" cy="20" r="4" fill="#2196f3"/>
+                                <circle cx="300" cy="80" r="4" fill="#2196f3"/>
+                                <circle cx="400" cy="20" r="4" fill="#2196f3"/>
+                            </g>
+                            
+                            <!-- 位置标签 -->
+                            <g id="position-labels">
+                                <text x="126" y="470" text-anchor="middle" font-size="12" fill="#666">0</text>
+                                <text x="146" y="470" text-anchor="middle" font-size="12" fill="#666">2</text>
+                                <text x="166" y="470" text-anchor="middle" font-size="12" fill="#666">4</text>
+                                <text x="186" y="470" text-anchor="middle" font-size="12" fill="#666">6</text>
+                                <text x="206" y="470" text-anchor="middle" font-size="12" fill="#666">8</text>
+                                <text x="226" y="470" text-anchor="middle" font-size="12" fill="#666">10</text>
+                                <text x="246" y="470" text-anchor="middle" font-size="12" fill="#666">12</text>
+                                <text x="266" y="470" text-anchor="middle" font-size="12" fill="#666">14</text>
+                            </g>
+                            
+                            <!-- 位置编号 -->
+                            <g id="position-numbers">
+                                <text x="90" y="420" text-anchor="middle" font-size="12" fill="#666">0</text>
+                                <text x="90" y="390" text-anchor="middle" font-size="12" fill="#666">1</text>
+                                <text x="90" y="360" text-anchor="middle" font-size="12" fill="#666">2</text>
+                                <text x="90" y="330" text-anchor="middle" font-size="12" fill="#666">3</text>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                
+                <div class="formula-box">
+                    PE(pos, 2i) = sin(pos / 10000^(2i/d_model))<br>
+                    PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+                </div>
+                
+                <div class="interactive-note">
+                    <h4>💡 位置编码的作用</h4>
+                    <p>• <strong>唯一性：</strong>每个位置都有独特的编码模式</p>
+                    <p>• <strong>相对位置：</strong>模型可以学习到相对位置关系</p>
+                    <p>• <strong>外推性：</strong>可以处理比训练时更长的序列</p>
+                </div>
+            </div>
+
+            <!-- 前馈网络结构 -->
+            <div class="section">
+                <h2>🧠 前馈网络结构</h2>
+                <p>展示Transformer中前馈网络的内部结构和数据流</p>
+                
+                <div class="svg-container">
+                    <svg width="800" height="400" viewBox="0 0 800 400">
+                        <!-- 输入层 -->
+                        <g id="input-layer">
+                            <rect x="50" y="180" width="120" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+                            <text x="110" y="205" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">输入</text>
+                            <text x="110" y="240" text-anchor="middle" font-size="12" fill="#1976d2">d_model = 512</text>
+                        </g>
+                        
+                        <!-- 第一个线性层 -->
+                        <g id="linear1">
+                            <rect x="220" y="120" width="120" height="160" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+                            <text x="280" y="145" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">线性层 1</text>
+                            <text x="280" y="165" text-anchor="middle" font-size="12" fill="#f57c00">W₁, b₁</text>
+                            
+                            <!-- 神经元 -->
+                            <circle cx="260" cy="190" r="8" fill="#ffcc02"/>
+                            <circle cx="300" cy="190" r="8" fill="#ffcc02"/>
+                            <circle cx="260" cy="220" r="8" fill="#ffcc02"/>
+                            <circle cx="300" cy="220" r="8" fill="#ffcc02"/>
+                            <circle cx="260" cy="250" r="8" fill="#ffcc02"/>
+                            <circle cx="300" cy="250" r="8" fill="#ffcc02"/>
+                            <text x="280" y="275" text-anchor="middle" font-size="10" fill="#666">⋮</text>
+                            
+                            <text x="280" y="300" text-anchor="middle" font-size="12" fill="#f57c00">d_ff = 2048</text>
+                        </g>
+                        
+                        <!-- ReLU激活 -->
+                        <g id="relu">
+                            <rect x="390" y="160" width="80" height="80" fill="#e8f5e8" stroke="#4caf50" stroke-width="2" rx="5"/>
+                            <text x="430" y="190" text-anchor="middle" font-size="14" font-weight="bold" fill="#2e7d32">ReLU</text>
+                            <text x="430" y="210" text-anchor="middle" font-size="12" fill="#388e3c">max(0,x)</text>
+                            
+                            <!-- ReLU函数图 -->
+                            <path d="M 405 230 L 415 230 L 445 210" fill="none" stroke="#4caf50" stroke-width="2"/>
+                        </g>
+                        
+                        <!-- 第二个线性层 -->
+                        <g id="linear2">
+                            <rect x="520" y="120" width="120" height="160" fill="#fce4ec" stroke="#e91e63" stroke-width="2" rx="5"/>
+                            <text x="580" y="145" text-anchor="middle" font-size="14" font-weight="bold" fill="#c2185b">线性层 2</text>
+                            <text x="580" y="165" text-anchor="middle" font-size="12" fill="#e91e63">W₂, b₂</text>
+                            
+                            <!-- 神经元 -->
+                            <circle cx="560" cy="190" r="8" fill="#f48fb1"/>
+                            <circle cx="600" cy="190" r="8" fill="#f48fb1"/>
+                            <circle cx="560" cy="220" r="8" fill="#f48fb1"/>
+                            <circle cx="600" cy="220" r="8" fill="#f48fb1"/>
+                            <circle cx="560" cy="250" r="8" fill="#f48fb1"/>
+                            <circle cx="600" cy="250" r="8" fill="#f48fb1"/>
+                            
+                            <text x="580" y="300" text-anchor="middle" font-size="12" fill="#e91e63">d_model = 512</text>
+                        </g>
+                        
+                        <!-- 输出层 -->
+                        <g id="output-layer">
+                            <rect x="690" y="180" width="120" height="40" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2" rx="5"/>
+                            <text x="750" y="205" text-anchor="middle" font-size="14" font-weight="bold" fill="#6a1b9a">输出</text>
+                            <text x="750" y="240" text-anchor="middle" font-size="12" fill="#9c27b0">d_model = 512</text>
+                        </g>
+                        
+                        <!-- 连接线 -->
+                        <g id="connections">
+                            <!-- 输入到线性层1 -->
+                            <path d="M 170 200 L 220 200" stroke="#666" stroke-width="3" marker-end="url(#arrow3)"/>
+                            
+                            <!-- 线性层1到ReLU -->
+                            <path d="M 340 200 L 390 200" stroke="#666" stroke-width="3" marker-end="url(#arrow3)"/>
+                            
+                            <!-- ReLU到线性层2 -->
+                            <path d="M 470 200 L 520 200" stroke="#666" stroke-width="3" marker-end="url(#arrow3)"/>
+                            
+                            <!-- 线性层2到输出 -->
+                            <path d="M 640 200 L 690 200" stroke="#666" stroke-width="3" marker-end="url(#arrow3)"/>
+                        </g>
+                        
+                        <!-- 残差连接 -->
+                        <path d="M 110 180 Q 110 100 750 100 Q 750 180 750 180" 
+                              fill="none" stroke="#ff5722" stroke-width="3" stroke-dasharray="8,4" marker-end="url(#arrow3)"/>
+                        <text x="400" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="#ff5722">残差连接 (Residual Connection)</text>
+                        
+                        <!-- 加法符号 -->
+                        <circle cx="750" cy="150" r="20" fill="#ffeb3b" stroke="#f57c00" stroke-width="2"/>
+                        <text x="750" y="158" text-anchor="middle" font-size="18" font-weight="bold" fill="#e65100">+</text>
+                        
+                        <defs>
+                            <marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="formula-box">
+                    FFN(x) = max(0, xW₁ + b₁)W₂ + b₂<br>
+                    输出 = LayerNorm(x + FFN(x))
+                </div>
+            </div>
+
+            <!-- 训练过程可视化 -->
+            <div class="section">
+                <h2>🎓 训练过程可视化</h2>
+                <p>展示Transformer的训练流程和关键步骤</p>
+                
+                <div class="grid-layout">
+                    <div class="svg-wrapper">
+                        <div class="svg-title">编码器训练</div>
+                        <svg width="400" height="300" viewBox="0 0 400 300">
+                            <!-- 输入序列 -->
+                            <rect x="50" y="50" width="300" height="30" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="5"/>
+                            <text x="200" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#0277bd">源语言句子</text>
+                            
+                            <!-- 编码器 -->
+                            <rect x="100" y="120" width="200" height="80" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="8"/>
+                            <text x="200" y="150" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">编码器</text>
+                            <text x="200" y="170" text-anchor="middle" font-size="12" fill="#1565c0">6层 × 多头注意力</text>
+                            <text x="200" y="185" text-anchor="middle" font-size="12" fill="#1565c0">+ 前馈网络</text>
+                            
+                            <!-- 输出表示 -->
+                            <rect x="50" y="230" width="300" height="30" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                            <text x="200" y="250" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">上下文表示向量</text>
+                            
+                            <!-- 箭头 -->
+                            <path d="M 200 80 L 200 120" stroke="#666" stroke-width="2" marker-end="url(#arrow4)"/>
+                            <path d="M 200 200 L 200 230" stroke="#666" stroke-width="2" marker-end="url(#arrow4)"/>
+                            
+                            <defs>
+                                <marker id="arrow4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    
+                    <div class="svg-wrapper">
+                        <div class="svg-title">解码器训练</div>
+                        <svg width="400" height="300" viewBox="0 0 400 300">
+                            <!-- 目标序列输入 -->
+                            <rect x="50" y="30" width="300" height="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+                            <text x="200" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">目标语言句子 (shifted)</text>
+                            
+                            <!-- 编码器输出 -->
+                            <rect x="50" y="65" width="300" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                            <text x="200" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">编码器输出</text>
+                            
+                            <!-- 解码器 -->
+                            <rect x="100" y="120" width="200" height="100" fill="#ffcc02" stroke="#f57c00" stroke-width="2" rx="8"/>
+                            <text x="200" y="140" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">解码器</text>
+                            <text x="200" y="160" text-anchor="middle" font-size="11" fill="#f57c00">掩码自注意力</text>
+                            <text x="200" y="175" text-anchor="middle" font-size="11" fill="#f57c00">编码器-解码器注意力</text>
+                            <text x="200" y="190" text-anchor="middle" font-size="11" fill="#f57c00">前馈网络</text>
+                            <text x="200" y="205" text-anchor="middle" font-size="11" fill="#f57c00">× 6层</text>
+                            
+                            <!-- 输出概率 -->
+                            <rect x="50" y="250" width="300" height="30" fill="#f8bbd9" stroke="#e91e63" stroke-width="2" rx="5"/>
+                            <text x="200" y="270" text-anchor="middle" font-size="12" font-weight="bold" fill="#c2185b">输出概率分布</text>
+                            
+                            <!-- 箭头 -->
+                            <path d="M 150 90 L 150 120" stroke="#666" stroke-width="2" marker-end="url(#arrow5)"/>
+                            <path d="M 250 90 L 250 120" stroke="#666" stroke-width="2" marker-end="url(#arrow5)"/>
+                            <path d="M 200 220 L 200 250" stroke="#666" stroke-width="2" marker-end="url(#arrow5)"/>
+                            
+                            <defs>
+                                <marker id="arrow5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="interactive-note">
+                    <h4>🔄 训练技巧</h4>
+                    <p>• <strong>Teacher Forcing：</strong>训练时使用真实目标序列作为解码器输入</p>
+                    <p>• <strong>学习率预热：</strong>前4000步逐渐增加学习率，然后按比例衰减</p>
+                    <p>• <strong>标签平滑：</strong>使用0.1的标签平滑减少过拟合</p>
+                    <p>• <strong>Dropout：</strong>在注意力权重和前馈网络中使用0.1的dropout</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

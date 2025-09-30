@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞书API配置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .console-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+    </style>
+</head>
+<body class="console-bg text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 头部 -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-blue-400 mb-2">
+                        <i class="fas fa-rocket mr-3"></i>
+                        飞书API配置
+                    </h1>
+                    <p class="text-slate-400">配置飞书应用信息以启用真实API功能</p>
+                </div>
+                <a href="index.html" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    返回主页
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 配置表单 -->
+            <div class="bg-slate-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-blue-300">
+                    <i class="fas fa-cog mr-2"></i>
+                    API配置
+                </h2>
+                
+                <form id="config-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">App ID</label>
+                        <input type="text" id="app_id" name="app_id" 
+                               class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                               placeholder="请输入飞书应用的App ID">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">App Secret</label>
+                        <input type="password" id="app_secret" name="app_secret" 
+                               class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                               placeholder="请输入飞书应用的App Secret">
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" id="save-config" 
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-save mr-2"></i>
+                            保存配置
+                        </button>
+                        
+                        <button type="button" id="test-connection" 
+                                class="flex-1 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-plug mr-2"></i>
+                            测试连接
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- 当前配置状态 -->
+                <div class="mt-6 p-4 bg-slate-700 rounded-lg">
+                    <h3 class="text-sm font-medium text-slate-300 mb-2">当前配置状态</h3>
+                    <div id="config-status" class="text-sm text-slate-400">
+                        <i class="fas fa-circle text-red-500 mr-2"></i>
+                        未配置
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 使用说明 -->
+            <div class="bg-slate-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-green-300">
+                    <i class="fas fa-book mr-2"></i>
+                    配置说明
+                </h2>
+                
+                <div class="space-y-4 text-sm text-slate-300">
+                    <div>
+                        <h3 class="font-semibold text-blue-300 mb-2">1. 创建飞书应用</h3>
+                        <p class="text-slate-400 mb-2">访问 <a href="https://open.feishu.cn/" target="_blank" class="text-blue-400 hover:underline">飞书开放平台</a> 创建企业自建应用</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-blue-300 mb-2">2. 获取应用凭证</h3>
+                        <p class="text-slate-400 mb-2">在应用管理页面获取 App ID 和 App Secret</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-blue-300 mb-2">3. 配置权限</h3>
+                        <p class="text-slate-400 mb-2">为应用添加以下权限：</p>
+                        <ul class="list-disc list-inside text-slate-400 ml-4 space-y-1">
+                            <li>获取与发送单聊、群组消息</li>
+                            <li>读取通讯录</li>
+                            <li>获取群组信息</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-blue-300 mb-2">4. 发布应用</h3>
+                        <p class="text-slate-400 mb-2">将应用发布到企业内部使用</p>
+                    </div>
+                </div>
+                
+                <!-- 测试结果 -->
+                <div class="mt-6">
+                    <h3 class="font-semibold text-yellow-300 mb-2">
+                        <i class="fas fa-flask mr-2"></i>
+                        测试结果
+                    </h3>
+                    <div id="test-result" class="p-3 bg-slate-700 rounded text-sm text-slate-400">
+                        点击"测试连接"按钮来验证API配置
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API文档链接 -->
+        <div class="mt-8 bg-slate-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-purple-300">
+                <i class="fas fa-link mr-2"></i>
+                相关链接
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="https://open.feishu.cn/" target="_blank" 
+                   class="block p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors duration-200">
+                    <i class="fas fa-external-link-alt text-blue-400 mb-2"></i>
+                    <h3 class="font-semibold text-white mb-1">飞书开放平台</h3>
+                    <p class="text-sm text-slate-400">创建和管理应用</p>
+                </a>
+                
+                <a href="https://open.feishu.cn/document/" target="_blank" 
+                   class="block p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors duration-200">
+                    <i class="fas fa-book text-green-400 mb-2"></i>
+                    <h3 class="font-semibold text-white mb-1">API文档</h3>
+                    <p class="text-sm text-slate-400">查看详细API文档</p>
+                </a>
+                
+                <a href="https://open.feishu.cn/document/ukTMukTMukTM/uYDNxYjL2QTM24iN0EjN/trouble-shooting/how-to-obtain-app-id-and-app-secret" target="_blank" 
+                   class="block p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors duration-200">
+                    <i class="fas fa-question-circle text-yellow-400 mb-2"></i>
+                    <h3 class="font-semibold text-white mb-1">获取凭证</h3>
+                    <p class="text-sm text-slate-400">如何获取App ID和Secret</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // 加载当前配置
+            loadCurrentConfig();
+            
+            // 保存配置
+            $('#save-config').click(function() {
+                saveConfig();
+            });
+            
+            // 测试连接
+            $('#test-connection').click(function() {
+                testConnection();
+            });
+        });
+        
+        function loadCurrentConfig() {
+            // 这里可以从服务器加载当前配置
+            // 暂时使用localStorage模拟
+            const appId = localStorage.getItem('feishu_app_id');
+            const appSecret = localStorage.getItem('feishu_app_secret');
+            
+            if (appId) {
+                $('#app_id').val(appId);
+            }
+            
+            if (appSecret) {
+                $('#app_secret').val('••••••••••••••••'); // 隐藏真实密钥
+            }
+            
+            updateConfigStatus(appId && appSecret);
+        }
+        
+        function saveConfig() {
+            const appId = $('#app_id').val().trim();
+            const appSecret = $('#app_secret').val().trim();
+            
+            if (!appId || !appSecret) {
+                showNotification('请填写完整的App ID和App Secret', 'error');
+                return;
+            }
+            
+            // 显示保存中状态
+            const $btn = $('#save-config');
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>保存中...');
+            
+            // 调用保存配置API
+            $.ajax({
+                url: 'api/save_config.php',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    platform: 'feishu',
+                    app_id: appId,
+                    app_secret: appSecret,
+                    enabled: true
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        showNotification('配置保存成功！', 'success');
+                        updateConfigStatus(true);
+                        // 保存成功后可以测试连接
+                        $('#test-connection').prop('disabled', false);
+                        // 保存到本地存储作为备份
+                        localStorage.setItem('feishu_app_id', appId);
+                        if (appSecret !== '••••••••••••••••') {
+                            localStorage.setItem('feishu_app_secret', appSecret);
+                        }
+                    } else {
+                        showNotification('保存失败: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showNotification('保存失败: 网络错误', 'error');
+                    // 网络错误时仍保存到本地
+                    localStorage.setItem('feishu_app_id', appId);
+                    if (appSecret !== '••••••••••••••••') {
+                        localStorage.setItem('feishu_app_secret', appSecret);
+                    }
+                    updateConfigStatus(true);
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('<i class="fas fa-save mr-2"></i>保存配置');
+                }
+            });
+        }
+        
+        function testConnection() {
+            const $btn = $('#test-connection');
+            const $result = $('#test-result');
+            
+            const appId = $('#app_id').val().trim() || localStorage.getItem('feishu_app_id');
+            const appSecret = $('#app_secret').val().trim() || localStorage.getItem('feishu_app_secret');
+            
+            if (!appId || !appSecret) {
+                $result.html('<i class="fas fa-times text-red-500 mr-2"></i>请先配置App ID和App Secret');
+                showNotification('请先填写配置信息', 'error');
+                return;
+            }
+            
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>测试中...');
+            $result.html('<i class="fas fa-spinner fa-spin mr-2"></i>正在测试连接...');
+            
+            // 调用测试连接API
+            $.ajax({
+                url: 'api/test_feishu.php?action=full_test',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const summary = response.data.summary;
+                        $result.html(`
+                            <div class="space-y-2">
+                                <div><i class="fas fa-check text-green-500 mr-2"></i>连接测试成功</div>
+                                <div class="text-xs text-slate-500">总测试数: ${summary.total_tests}</div>
+                                <div class="text-xs text-slate-500">通过测试: ${summary.passed_tests}</div>
+                                <div class="text-xs text-slate-500">状态: ${summary.overall_status}</div>
+                                <div class="text-xs text-slate-500">App ID: ${appId.substring(0, 8)}...</div>
+                                <div class="text-xs text-slate-500">测试时间: ${new Date().toLocaleString()}</div>
+                            </div>
+                        `);
+                        showNotification('API连接测试成功', 'success');
+                    } else {
+                        $result.html(`<i class="fas fa-times text-red-500 mr-2"></i>连接测试失败: ${response.message}`);
+                        showNotification('连接测试失败: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $result.html('<i class="fas fa-times text-red-500 mr-2"></i>连接测试失败: 网络错误');
+                    showNotification('连接测试失败: 网络错误', 'error');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('<i class="fas fa-plug mr-2"></i>测试连接');
+                }
+            });
+        }
+        
+        function updateConfigStatus(isConfigured) {
+            const $status = $('#config-status');
+            
+            if (isConfigured) {
+                $status.html('<i class="fas fa-circle text-green-500 mr-2"></i>已配置');
+            } else {
+                $status.html('<i class="fas fa-circle text-red-500 mr-2"></i>未配置');
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+            
+            const $notification = $(`
+                <div class="fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300">
+                    <div class="flex items-center">
+                        <i class="fas ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info'} mr-2"></i>
+                        <span>${message}</span>
+                    </div>
+                </div>
+            `);
+            
+            $('body').append($notification);
+            
+            setTimeout(() => {
+                $notification.removeClass('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                $notification.addClass('translate-x-full');
+                setTimeout(() => {
+                    $notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

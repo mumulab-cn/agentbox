@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt评分系统 - 专业评估与优化建议</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .score-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+        
+        .score-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+        
+        .input-section, .result-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .section-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: #667eea;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+        
+        .prompt-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .score-number {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .score-label {
+            font-size: 1.2rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        
+        .score-bar {
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48bb78);
+            border-radius: 6px;
+            transition: width 0.8s ease;
+        }
+        
+        .score-grade {
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .grade-excellent { background: #48bb78; color: white; }
+        .grade-good { background: #feca57; color: white; }
+        .grade-fair { background: #ff9f43; color: white; }
+        .grade-poor { background: #ff6b6b; color: white; }
+        
+        .analysis-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .analysis-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .analysis-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .analysis-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .strength-item {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .weakness-item {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+        }
+        
+        .suggestion-item {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+        }
+        
+        .framework-check {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .framework-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .framework-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .framework-icon {
+            font-size: 1.2rem;
+        }
+        
+        .framework-present { color: #48bb78; }
+        .framework-missing { color: #a0aec0; }
+        
+        .improvement-suggestions {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .improvement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .improvement-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .improvement-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .improvement-item:last-child {
+            border-bottom: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .score-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-brain"></i>
+                <span>Prompt学习中心</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">首页</a></li>
+                <li><a href="index.html#cards" class="nav-link">Prompt卡片</a></li>
+                <li><a href="templates.html" class="nav-link">打印模板</a></li>
+                <li><a href="poetry.html" class="nav-link">古诗词学习</a></li>
+                <li><a href="score.html" class="nav-link">Prompt评分</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="score-page">
+        <div class="score-container">
+            <!-- 输入区域 -->
+            <div class="input-section">
+                <div class="section-header">
+                    <i class="fas fa-edit section-icon"></i>
+                    <h2 class="section-title">Prompt输入与分析</h2>
+                </div>
+                
+                <textarea 
+                    id="promptInput" 
+                    class="prompt-textarea" 
+                    placeholder="请在此输入您的Prompt，我们将基于专业的Prompt框架为您提供详细的评分和改善建议...\n\n示例：\n你是一位资深的市场营销专家，拥有10年电商经验。请为我的咖啡店写一段吸引年轻人的营销文案，要求：\n1. 突出咖啡的品质和独特性\n2. 体现年轻、时尚的品牌调性\n3. 包含具体的行动召唤\n4. 字数控制在100-150字"
+                ></textarea>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="analyzePrompt()">
+                        <i class="fas fa-chart-line"></i>
+                        开始评分
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateSuggestions()">
+                        <i class="fas fa-lightbulb"></i>
+                        优化建议
+                    </button>
+                    <button class="btn btn-outline" onclick="clearInput()">
+                        <i class="fas fa-eraser"></i>
+                        清空
+                    </button>
+                </div>
+                
+                <div class="framework-check">
+                    <div class="framework-title">
+                        <i class="fas fa-check-circle"></i>
+                        Prompt框架要素检查
+                    </div>
+                    <div class="framework-grid" id="frameworkGrid">
+                        <div class="framework-item">
+                            <i class="fas fa-user framework-icon framework-missing"></i>
+                            <span>角色设定</span>
+                        </div>
+                        <div class="framework-item">
+                            <i class="fas fa-map framework-icon framework-missing"></i>
+                            <span>上下文背景</span>
+                        </div>
+                        <div class="framework-item">
+                            <i class="fas fa-tasks framework-icon framework-missing"></i>
+                            <span>任务描述</span>
+                        </div>
+                        <div class="framework-item">
+                            <i class="fas fa-list framework-icon framework-missing"></i>
+                            <span>输出格式</span>
+                        </div>
+                        <div class="framework-item">
+                            <i class="fas fa-example framework-icon framework-missing"></i>
+                            <span>示例引导</span>
+                        </div>
+                        <div class="framework-item">
+                            <i class="fas fa-ruler framework-icon framework-missing"></i>
+                            <span>约束条件</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 结果区域 -->
+            <div class="result-section">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar section-icon"></i>
+                    <h2 class="section-title">评分结果与建议</h2>
+                </div>
+                
+                <div id="resultContent">
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list empty-icon"></i>
+                        <h3>等待分析</h3>
+                        <p>请在左侧输入您的Prompt，点击"开始评分"按钮获取详细的分析报告</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="score.js"></script>
+</body>
+</html>

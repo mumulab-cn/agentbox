@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合合信息产品展示平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    </style>
+</head>
+<body class="bg-gray-50 h-screen overflow-hidden">
+    <!-- 顶部标题栏 -->
+    <div class="bg-white border-b border-gray-200 p-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40'%3E%3Ctext x='10' y='25' font-family='Arial' font-size='16' fill='%23333'%3E合合信息%3C/text%3E%3C/svg%3E" alt="合合信息" class="h-8">
+                <h1 class="text-xl font-bold text-gray-800">AI+DATA 产品展示平台</h1>
+            </div>
+            <div class="text-sm text-gray-600">
+                <span class="font-medium">通过API来调用当前能力</span>
+                <div class="mt-1">
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">POST</span>
+                    <code class="text-xs bg-gray-100 px-2 py-1 rounded">https://api.mumulab.cn/v1/data</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex h-full">
+        <!-- 左侧数据管理区域 -->
+        <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">数据管理中心</h2>
+                
+                <!-- 文件上传区域 -->
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors cursor-pointer mb-6">
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                        <p class="text-sm font-medium text-gray-900 mb-1">拖拽或点击上传</p>
+                        <p class="text-xs text-gray-500">支持多种格式</p>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" class="hidden">
+                    </div>
+                </div>
+                
+                <!-- 示例数据集 -->
+                <div class="mb-6">
+                    <h3 class="text-md font-medium text-gray-700 mb-3">示例数据集</h3>
+                    <div class="space-y-2">
+                        <div class="data-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" draggable="true" data-type="dataset" data-name="企业信息数据">
+                            <div class="flex items-center">
+                                <i class="fas fa-building text-blue-600 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">企业信息数据</p>
+                                    <p class="text-xs text-gray-500">10,000+ 企业记录</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" draggable="true" data-type="dataset" data-name="财务报表数据">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-bar text-green-600 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">财务报表数据</p>
+                                    <p class="text-xs text-gray-500">5,000+ 报表样本</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" draggable="true" data-type="dataset" data-name="证件识别样本">
+                            <div class="flex items-center">
+                                <i class="fas fa-id-card text-purple-600 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">证件识别样本</p>
+                                    <p class="text-xs text-gray-500">2,000+ 证件图片</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item bg-yellow-50 border border-yellow-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" draggable="true" data-type="dataset" data-name="票据扫描数据">
+                            <div class="flex items-center">
+                                <i class="fas fa-receipt text-yellow-600 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">票据扫描数据</p>
+                                    <p class="text-xs text-gray-500">8,000+ 票据样本</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item bg-red-50 border border-red-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" draggable="true" data-type="dataset" data-name="风险评估数据">
+                            <div class="flex items-center">
+                                <i class="fas fa-shield-alt text-red-600 mr-2"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">风险评估数据</p>
+                                    <p class="text-xs text-gray-500">3,000+ 风险案例</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 已上传文件列表 -->
+                <div>
+                    <h3 class="text-md font-medium text-gray-700 mb-3">已上传文件</h3>
+                    <div id="uploadedFiles" class="space-y-2"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        <span>文件数: <span id="fileCount">0</span></span> | 
+                        <span>总大小: <span id="totalSize">0 MB</span></span>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <!-- 中间画布区域 -->
+        <div class="flex-1 flex flex-col">
+            <!-- 画布工具栏 -->
+            <div class="bg-white border-b border-gray-200 p-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <h3 class="text-lg font-semibold text-gray-800">产品组合画布</h3>
+                        <div class="flex items-center space-x-2">
+                            <button id="clearCanvas" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm">
+                                <i class="fas fa-trash mr-1"></i>清空
+                            </button>
+                            <button id="saveCanvas" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                <i class="fas fa-save mr-1"></i>保存
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        已添加组件: <span id="componentCount" class="font-semibold text-blue-600">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 画布主体 -->
+            <div class="flex-1 bg-gray-100 p-6 overflow-auto relative">
+                <!-- 工具栏 -->
+                <div class="absolute top-4 left-4 z-10 flex space-x-2">
+                    <button id="connectionMode" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-link mr-2"></i>
+                        <span>连线模式</span>
+                    </button>
+                    <button id="clearConnections" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-unlink mr-2"></i>
+                        <span>清除连线</span>
+                    </button>
+                </div>
+                
+                <svg id="connectionSvg" class="absolute inset-0 pointer-events-none" style="z-index: 1;">
+                    <!-- 连线将在这里绘制 -->
+                </svg>
+                <div id="canvas" class="min-h-full bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 p-6 relative" style="min-height:600px; z-index: 2;">
+                    <div class="text-center text-gray-500 mt-20">
+                        <i class="fas fa-mouse-pointer text-4xl mb-4"></i>
+                        <p class="text-lg">将数据和产品模块拖拽到此处开始构建您的解决方案</p>
+                        <p class="text-sm mt-2">支持拖拽排序和组合不同的产品功能，点击组件边缘进行连线</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧AI助手侧边栏 -->
+        <div id="aiSidebar" class="w-80 bg-white border-l border-gray-200 flex flex-col transition-transform duration-300 transform translate-x-full" style="height:700px;">
+            <!-- 侧边栏头部 -->
+            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-purple-600">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-white">
+                        <i class="fas fa-robot text-xl mr-2"></i>
+                        <h3 class="font-semibold">AI助手</h3>
+                    </div>
+                    <button id="closeSidebar" class="text-white hover:text-gray-200 transition-colors">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 聊天消息区域 -->
+            <div id="sidebarChatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-50">
+                <div class="bg-blue-100 rounded-lg p-3 mb-3">
+                    <div class="flex items-start">
+                        <i class="fas fa-robot text-blue-600 mr-2 mt-1"></i>
+                        <div>
+                            <p class="text-sm text-gray-800">您好！我是合合信息AI助手，可以帮您：</p>
+                            <ul class="text-xs text-gray-600 mt-2 space-y-1">
+                                <li>• 解答产品功能问题</li>
+                                <li>• 提供技术支持</li>
+                                <li>• 协助数据分析</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <div class="flex space-x-2">
+                    <input type="text" id="sidebarChatInput" placeholder="输入您的问题..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <button id="sidebarSendMessage" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI助手触发按钮 -->
+        <button id="aiToggle" class="fixed right-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-l-lg shadow-lg hover:shadow-xl transition-all duration-300 z-50">
+            <i class="fas fa-robot text-lg"></i>
+        </button>
+    </div>
+
+    <!-- 底部产品工具栏 -->
+    <div id="bottom-block" class="bg-white shadow-lg border-t border-gray-200 p-4" style="width:100%; height: 180px; position:fixed; bottom:0px; z-index:9999; overflow-y: hidden;">
+        <div class=" mx-auto h-full">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">合合信息产品组件</h3>
+            <div class="flex justify-center space-x-6 overflow-x-auto pb-2 h-full items-start" style="width:100%;">
+                <!-- 新增组件（优先显示） -->
+                <div class="flex space-x-3">
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="通用文字识别">
+                        <i class="fas fa-font text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">通用文字识别</h4>
+                        <p class="text-xs text-gray-600">50+语言识别</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="通用表格识别">
+                        <i class="fas fa-table text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">通用表格识别</h4>
+                        <p class="text-xs text-gray-600">结构化表格</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="印章检测识别">
+                        <i class="fas fa-stamp text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">印章检测识别</h4>
+                        <p class="text-xs text-gray-600">红章黑章</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="办公文档识别">
+                        <i class="fas fa-file-alt text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">办公文档识别</h4>
+                        <p class="text-xs text-gray-600">版面分析</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="通用NLP信息抽取">
+                        <i class="fas fa-brain text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">NLP信息抽取</h4>
+                        <p class="text-xs text-gray-600">智能抽取</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="二维码识别">
+                        <i class="fas fa-qrcode text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">二维码识别</h4>
+                        <p class="text-xs text-gray-600">多码解析</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="专项优化教育题库解析">
+                        <i class="fas fa-graduation-cap text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">教育题库解析</h4>
+                        <p class="text-xs text-gray-600">题目分离</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="在线文档问答">
+                        <i class="fas fa-question-circle text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">在线文档问答</h4>
+                        <p class="text-xs text-gray-600">智能问答</p>
+                    </div>
+                    
+                    <div class="component-item bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="文档解析优化RPA自动化">
+                        <i class="fas fa-robot text-orange-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">RPA自动化</h4>
+                        <p class="text-xs text-gray-600">文档解析</p>
+                    </div>
+                </div>
+                
+                <!-- 分隔线 -->
+                <div class="border-l border-gray-300 h-20 self-center"></div>
+                
+                <!-- 智能文字识别 -->
+                <div class="flex space-x-3">
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="证件识别">
+                        <i class="fas fa-id-card text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">证件识别</h4>
+                        <p class="text-xs text-gray-600">身份证、护照等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="票据识别">
+                        <i class="fas fa-receipt text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">票据识别</h4>
+                        <p class="text-xs text-gray-600">发票、收据等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="文档扫描">
+                        <i class="fas fa-file-alt text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">文档扫描</h4>
+                        <p class="text-xs text-gray-600">合同、报告等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="多语言识别">
+                        <i class="fas fa-globe text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">多语言识别</h4>
+                        <p class="text-xs text-gray-600">中英日韩等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="手写识别">
+                        <i class="fas fa-pen text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">手写识别</h4>
+                        <p class="text-xs text-gray-600">手写文字等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="表格识别">
+                        <i class="fas fa-table text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">表格识别</h4>
+                        <p class="text-xs text-gray-600">结构化表格</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="印章识别">
+                        <i class="fas fa-stamp text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">印章识别</h4>
+                        <p class="text-xs text-gray-600">公章私章等</p>
+                    </div>
+                    
+                    <div class="component-item bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="ocr" data-name="版面分析">
+                        <i class="fas fa-layout text-blue-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">版面分析</h4>
+                        <p class="text-xs text-gray-600">文档结构等</p>
+                    </div>
+                </div>
+                
+                <!-- 分隔线 -->
+                <div class="border-l border-gray-300 h-20 self-center"></div>
+                
+                <!-- 商业大数据服务 -->
+                <div class="flex space-x-3">
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="企业信息查询">
+                        <i class="fas fa-building text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">企业信息查询</h4>
+                        <p class="text-xs text-gray-600">工商信息等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="风险评估">
+                        <i class="fas fa-shield-alt text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">风险评估</h4>
+                        <p class="text-xs text-gray-600">信用风险等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="产业链分析">
+                        <i class="fas fa-sitemap text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">产业链分析</h4>
+                        <p class="text-xs text-gray-600">上下游关系</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="营销拓客">
+                        <i class="fas fa-users text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">营销拓客</h4>
+                        <p class="text-xs text-gray-600">客户画像等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="知识产权">
+                        <i class="fas fa-copyright text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">知识产权</h4>
+                        <p class="text-xs text-gray-600">专利商标等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="司法信息">
+                        <i class="fas fa-gavel text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">司法信息</h4>
+                        <p class="text-xs text-gray-600">诉讼仲裁等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="舆情监控">
+                        <i class="fas fa-eye text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">舆情监控</h4>
+                        <p class="text-xs text-gray-600">网络舆情等</p>
+                    </div>
+                    
+                    <div class="component-item bg-green-50 border border-green-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="data" data-name="行业分析">
+                        <i class="fas fa-chart-line text-green-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">行业分析</h4>
+                        <p class="text-xs text-gray-600">市场趋势等</p>
+                    </div>
+                </div>
+                
+                <!-- 分隔线 -->
+                <div class="border-l border-gray-300 h-20 self-center"></div>
+                
+                <!-- 行业解决方案 -->
+                <div class="flex space-x-3">
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="银行数字化">
+                        <i class="fas fa-university text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">银行数字化</h4>
+                        <p class="text-xs text-gray-600">智能风控等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="保险数字化">
+                        <i class="fas fa-shield text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">保险数字化</h4>
+                        <p class="text-xs text-gray-600">理赔自动化</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="智慧政务">
+                        <i class="fas fa-landmark text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">智慧政务</h4>
+                        <p class="text-xs text-gray-600">证照识别等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="供应链金融">
+                        <i class="fas fa-link text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">供应链金融</h4>
+                        <p class="text-xs text-gray-600">企业征信等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="智慧医疗">
+                        <i class="fas fa-hospital text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">智慧医疗</h4>
+                        <p class="text-xs text-gray-600">病历识别等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="智慧教育">
+                        <i class="fas fa-graduation-cap text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">智慧教育</h4>
+                        <p class="text-xs text-gray-600">作业批改等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="智慧零售">
+                        <i class="fas fa-shopping-cart text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">智慧零售</h4>
+                        <p class="text-xs text-gray-600">客流分析等</p>
+                    </div>
+                    
+                    <div class="component-item bg-purple-50 border border-purple-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow min-w-[120px] text-center" draggable="true" data-type="solution" data-name="智慧物流">
+                        <i class="fas fa-truck text-purple-600 text-xl mb-2"></i>
+                        <h4 class="font-medium text-gray-900 text-sm mb-1">智慧物流</h4>
+                        <p class="text-xs text-gray-600">运单识别等</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古诗词学习Prompt卡片集</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #48bb78;
+        }
+        
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+        
+        .difficulty-filter {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .difficulty-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .difficulty-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .difficulty-btn.active:hover {
+            color: white;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .prompt-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prompt-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .difficulty-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .difficulty-1 { background: #c6f6d5; color: #22543d; }
+        .difficulty-2 { background: #bee3f8; color: #2a4365; }
+        .difficulty-3 { background: #fbb6ce; color: #702459; }
+        .difficulty-4 { background: #fbd38d; color: #744210; }
+        .difficulty-5 { background: #fc8181; color: #742a2a; }
+        
+        .prompt-content {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-tag {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .action-btn.secondary {
+            background: #48bb78;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #38a169;
+        }
+        
+        .learning-tips {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .learning-tips h3 {
+            color: #234e52;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .tip-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .tip-item h4 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .tip-item p {
+            color: #718096;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 10px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-scroll"></i> 古诗词学习Prompt卡片集</h1>
+            <p>从基础到进阶，10个精心设计的古诗词学习Prompt，逐步提升学习效果</p>
+        </div>
+        
+        <div class="controls">
+            <a href="index.html" class="btn">
+                <i class="fas fa-arrow-left"></i> 返回主页
+            </a>
+            <button class="btn btn-secondary" onclick="copyAllPrompts()">
+                <i class="fas fa-copy"></i> 复制所有Prompt
+            </button>
+            <button class="btn" onclick="exportPrompts()">
+                <i class="fas fa-download"></i> 导出为文档
+            </button>
+        </div>
+        
+        <div class="difficulty-filter">
+            <button class="difficulty-btn active" onclick="filterByDifficulty('all')">全部</button>
+            <button class="difficulty-btn" onclick="filterByDifficulty(1)">入门级</button>
+            <button class="difficulty-btn" onclick="filterByDifficulty(2)">基础级</button>
+            <button class="difficulty-btn" onclick="filterByDifficulty(3)">进阶级</button>
+            <button class="difficulty-btn" onclick="filterByDifficulty(4)">高级</button>
+            <button class="difficulty-btn" onclick="filterByDifficulty(5)">专家级</button>
+        </div>
+        
+        <div class="cards-grid" id="cardsGrid">
+            <!-- 卡片将通过JavaScript生成 -->
+        </div>
+        
+        <div class="learning-tips">
+            <h3><i class="fas fa-lightbulb"></i> 古诗词学习进阶指南</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <h4>📚 基础阶段</h4>
+                    <p>从简单的字词理解开始，掌握诗词的基本含义和背景知识。</p>
+                </div>
+                <div class="tip-item">
+                    <h4>🎨 技法分析</h4>
+                    <p>学习诗词的修辞手法、韵律格式和表现技巧。</p>
+                </div>
+                <div class="tip-item">
+                    <h4>💭 意境体悟</h4>
+                    <p>深入理解诗词的情感内涵和意境美感。</p>
+                </div>
+                <div class="tip-item">
+                    <h4>🔄 反思提升</h4>
+                    <p>通过反思和比较，形成自己的诗词鉴赏能力。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 古诗词学习Prompt数据 - 递进式结构设计
+        const poetryPrompts = [
+            {
+                id: 1,
+                title: "基础Prompt编写",
+                difficulty: 1,
+                features: ["简单提问"],
+                prompt: `请帮我理解这首古诗词：
+
+[在此处输入古诗词]`
+            },
+            {
+                id: 2,
+                title: "增加角色设定",
+                difficulty: 1,
+                features: ["角色设定"],
+                prompt: `你是一位专业的古诗词老师。
+
+请帮我理解这首古诗词：
+
+[在此处输入古诗词]`
+            },
+            {
+                id: 3,
+                title: "增加任务描述",
+                difficulty: 2,
+                features: ["角色设定", "任务描述"],
+                prompt: `你是一位专业的古诗词老师。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景`
+            },
+            {
+                id: 4,
+                title: "增加举例说明",
+                difficulty: 2,
+                features: ["角色设定", "任务描述", "举例说明"],
+                prompt: `你是一位专业的古诗词老师。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。`
+            },
+            {
+                id: 5,
+                title: "增加输出格式",
+                difficulty: 3,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式"],
+                prompt: `你是一位专业的古诗词老师。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]`
+            },
+            {
+                id: 6,
+                title: "增加上下文信息",
+                difficulty: 3,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式", "上下文"],
+                prompt: `你是一位专业的古诗词老师，拥有丰富的教学经验，擅长用通俗易懂的方式解释古诗词。
+
+当前学习目标：帮助初学者全面理解古诗词的基本含义和文化背景。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]`
+            },
+            {
+                id: 7,
+                title: "增加约束条件",
+                difficulty: 4,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式", "上下文", "约束条件"],
+                prompt: `你是一位专业的古诗词老师，拥有丰富的教学经验，擅长用通俗易懂的方式解释古诗词。
+
+当前学习目标：帮助初学者全面理解古诗词的基本含义和文化背景。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+约束条件：
+- 语言要通俗易懂，避免过于学术化的表达
+- 字词解释不超过3个字词
+- 背景介绍控制在100字以内
+- 必须准确，不得编造信息
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]`
+            },
+            {
+                id: 8,
+                title: "增加质量检查",
+                difficulty: 4,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式", "上下文", "约束条件", "质量检查"],
+                prompt: `你是一位专业的古诗词老师，拥有丰富的教学经验，擅长用通俗易懂的方式解释古诗词。
+
+当前学习目标：帮助初学者全面理解古诗词的基本含义和文化背景。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+约束条件：
+- 语言要通俗易懂，避免过于学术化的表达
+- 字词解释不超过3个字词
+- 背景介绍控制在100字以内
+- 必须准确，不得编造信息
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]
+
+## 质量检查
+请检查以上分析是否：
+- 字词解释准确无误
+- 翻译符合原意
+- 背景信息真实可靠
+- 语言表达清晰易懂`
+            },
+            {
+                id: 9,
+                title: "增加反向验证",
+                difficulty: 5,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式", "上下文", "约束条件", "质量检查", "反向验证"],
+                prompt: `你是一位专业的古诗词老师，拥有丰富的教学经验，擅长用通俗易懂的方式解释古诗词。
+
+当前学习目标：帮助初学者全面理解古诗词的基本含义和文化背景。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+约束条件：
+- 语言要通俗易懂，避免过于学术化的表达
+- 字词解释不超过3个字词
+- 背景介绍控制在100字以内
+- 必须准确，不得编造信息
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]
+
+## 质量检查
+请检查以上分析是否：
+- 字词解释准确无误
+- 翻译符合原意
+- 背景信息真实可靠
+- 语言表达清晰易懂
+
+## 反向验证
+请从以下角度验证分析的正确性：
+- 如果按照我的翻译理解，能否还原出原诗的意境？
+- 我提供的背景信息是否与诗词内容相符？
+- 是否存在其他可能的理解角度？`
+            },
+            {
+                id: 10,
+                title: "完整反思机制",
+                difficulty: 5,
+                features: ["角色设定", "任务描述", "举例说明", "输出格式", "上下文", "约束条件", "质量检查", "反向验证", "反思机制"],
+                prompt: `你是一位专业的古诗词老师，拥有丰富的教学经验，擅长用通俗易懂的方式解释古诗词。
+
+当前学习目标：帮助初学者全面理解古诗词的基本含义和文化背景。
+
+请帮我理解这首古诗词，包括字词含义、整体翻译和基本背景：
+
+[在此处输入古诗词]
+
+任务要求：
+1. 解释重点字词
+2. 翻译整首诗的意思
+3. 简要介绍创作背景
+
+约束条件：
+- 语言要通俗易懂，避免过于学术化的表达
+- 字词解释不超过3个字词
+- 背景介绍控制在100字以内
+- 必须准确，不得编造信息
+
+举例说明：
+比如分析李白的《静夜思》时，要解释"举头"、"低头"等关键词，翻译为现代汉语，并说明这是李白在异乡思念家乡的作品。
+
+请按以下格式输出：
+## 重点字词解释
+[字词解释内容]
+
+## 现代汉语翻译
+[翻译内容]
+
+## 创作背景
+[背景介绍]
+
+## 质量检查
+请检查以上分析是否：
+- 字词解释准确无误
+- 翻译符合原意
+- 背景信息真实可靠
+- 语言表达清晰易懂
+
+## 反向验证
+请从以下角度验证分析的正确性：
+- 如果按照我的翻译理解，能否还原出原诗的意境？
+- 我提供的背景信息是否与诗词内容相符？
+- 是否存在其他可能的理解角度？
+
+## 反思与改进
+请反思整个分析过程：
+1. 我的分析方法是否合适？
+2. 还有哪些重要信息可能被遗漏？
+3. 如何让这个解释对初学者更有帮助？
+4. 基于以上反思，请提供一个改进版本的简要说明
+
+最后，请问我："你对这个分析还有什么疑问吗？还希望我从哪个角度进一步解释？"`
+            }
+        ];
+        
+        // 渲染卡片
+        function renderCards(prompts = poetryPrompts) {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = prompts.map(prompt => `
+                <div class="prompt-card" data-difficulty="${prompt.difficulty}">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-scroll"></i>
+                            ${prompt.title}
+                        </div>
+                        <div class="difficulty-badge difficulty-${prompt.difficulty}">
+                            ${getDifficultyText(prompt.difficulty)}
+                        </div>
+                    </div>
+                    
+                    <div class="card-features">
+                        ${prompt.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                    </div>
+                    
+                    <div class="prompt-content">${prompt.prompt}</div>
+                    
+                    <div class="card-actions">
+                        <button class="action-btn" onclick="copyPrompt(${prompt.id})">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                        <button class="action-btn secondary" onclick="usePrompt(${prompt.id})">
+                            <i class="fas fa-play"></i> 使用
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 获取难度文本
+        function getDifficultyText(difficulty) {
+            const texts = {
+                1: '入门级',
+                2: '基础级', 
+                3: '进阶级',
+                4: '高级',
+                5: '专家级'
+            };
+            return texts[difficulty] || '未知';
+        }
+        
+        // 按难度筛选
+        function filterByDifficulty(difficulty) {
+            // 更新按钮状态
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 筛选卡片
+            const filteredPrompts = difficulty === 'all' 
+                ? poetryPrompts 
+                : poetryPrompts.filter(prompt => prompt.difficulty === difficulty);
+            
+            renderCards(filteredPrompts);
+        }
+        
+        // 复制单个Prompt
+        function copyPrompt(id) {
+            const prompt = poetryPrompts.find(p => p.id === id);
+            if (prompt) {
+                navigator.clipboard.writeText(prompt.prompt).then(() => {
+                    showToast(`已复制「${prompt.title}」Prompt`);
+                });
+            }
+        }
+        
+        // 使用Prompt（可以扩展为跳转到AI对话界面）
+        function usePrompt(id) {
+            const prompt = poetryPrompts.find(p => p.id === id);
+            if (prompt) {
+                // 这里可以扩展为跳转到AI对话界面或其他操作
+                showToast(`正在使用「${prompt.title}」Prompt...`);
+                // 示例：可以跳转到ChatGPT或其他AI平台
+                // window.open(`https://chat.openai.com/?prompt=${encodeURIComponent(prompt.prompt)}`);
+            }
+        }
+        
+        // 复制所有Prompt
+        function copyAllPrompts() {
+            const allPrompts = poetryPrompts.map(prompt => 
+                `## ${prompt.title} (${getDifficultyText(prompt.difficulty)})\n\n${prompt.prompt}\n\n`
+            ).join('---\n\n');
+            
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('已复制所有Prompt到剪贴板！');
+            });
+        }
+        
+        // 导出为文档
+        function exportPrompts() {
+            const content = `# 古诗词学习Prompt卡片集\n\n` +
+                `> 从基础到进阶，10个精心设计的古诗词学习Prompt\n\n` +
+                poetryPrompts.map(prompt => 
+                    `## ${prompt.title}\n\n` +
+                    `**难度等级：** ${getDifficultyText(prompt.difficulty)}\n\n` +
+                    `**功能特点：** ${prompt.features.join('、')}\n\n` +
+                    `**Prompt内容：**\n\n\`\`\`\n${prompt.prompt}\n\`\`\`\n\n`
+                ).join('---\n\n');
+            
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `古诗词学习Prompt集-${new Date().toISOString().split('T')[0]}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Prompt集已导出为Markdown文件！');
+        }
+        
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCards();
+        });
+    </script>
+</body>
+</html>

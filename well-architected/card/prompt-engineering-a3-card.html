@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt提示词工程 - A3完整版技术卡片</title>
+    <style>
+        @page {
+            size: A3 landscape;
+            margin: 8mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 8px;
+            font-size: 9px;
+        }
+
+        /* A3纸张设置 */
+        .container {
+            width: 420mm;
+            height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            padding: 15mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 11px;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+
+        /* 标签页导航 */
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            border-radius: 6px 6px 0 0;
+            margin-right: 3px;
+        }
+
+        .tab:last-child {
+            margin-right: 0;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        /* 内容区域 */
+        .content {
+            min-height: 200px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 流程图样式 */
+        .workflow-diagram {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .workflow-svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 3px solid #667eea;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: #5a6c7d;
+            line-height: 1.4;
+            font-size: 8px;
+        }
+
+        .card ul {
+            color: #5a6c7d;
+            line-height: 1.4;
+            padding-left: 12px;
+            font-size: 8px;
+        }
+
+        .card li {
+            margin-bottom: 4px;
+        }
+
+        /* 表格样式 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            font-size: 8px;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        /* 高亮样式 */
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* 技巧标签 */
+        .technique-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 12px;
+            font-size: 7px;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        /* 底部详细说明样式 */
+        .bottom-details {
+            margin-top: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .bottom-details h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            font-size: 8px;
+            line-height: 1.3;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .detail-item h4 {
+            color: #495057;
+            font-size: 9px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 3px;
+        }
+
+        .detail-item p {
+            margin-bottom: 4px;
+            text-align: justify;
+        }
+
+        .detail-item strong {
+            color: #343a40;
+            font-weight: 600;
+        }
+        
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            
+            .container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                min-height: auto !important;
+            }
+            
+            .tab.active {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bottom-details {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Prompt提示词工程</h1>
+            <p class="subtitle">AI时代的核心技能 | 从入门到精通的完整指南</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('workflow')">工作流程</button>
+            <button class="tab" onclick="showTab('principles')">设计原则</button>
+            <button class="tab" onclick="showTab('techniques')">核心技巧</button>
+            <button class="tab" onclick="showTab('examples')">实战案例</button>
+        </div>
+
+        <div class="content">
+            <!-- 工作流程标签页 -->
+            <div id="workflow" class="tab-content active">
+                <div class="workflow-diagram">
+                    <svg width="760" height="400" viewBox="0 0 760 400" class="workflow-svg">
+                        <!-- 背景渐变 -->
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+                        
+                        <!-- 主要阶段 -->
+                        <g id="main-stages">
+                            <!-- 需求分析 -->
+                            <rect x="50" y="50" width="120" height="60" fill="#28a745" rx="10"/>
+                            <text x="110" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">需求分析</text>
+                            <text x="110" y="90" text-anchor="middle" fill="white" font-size="10">明确目标</text>
+                            
+                            <!-- 结构设计 -->
+                            <rect x="220" y="50" width="120" height="60" fill="#007bff" rx="10"/>
+                            <text x="280" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">结构设计</text>
+                            <text x="280" y="90" text-anchor="middle" fill="white" font-size="10">框架规划</text>
+                            
+                            <!-- 内容编写 -->
+                            <rect x="390" y="50" width="120" height="60" fill="#ffc107" rx="10"/>
+                            <text x="450" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">内容编写</text>
+                            <text x="450" y="90" text-anchor="middle" fill="white" font-size="10">具体实现</text>
+                            
+                            <!-- 测试优化 -->
+                            <rect x="560" y="50" width="120" height="60" fill="#6f42c1" rx="10"/>
+                            <text x="620" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">测试优化</text>
+                            <text x="620" y="90" text-anchor="middle" fill="white" font-size="10">效果验证</text>
+                        </g>
+                        
+                        <!-- 详细步骤 -->
+                        <g id="detailed-steps">
+                            <!-- 需求分析详细步骤 -->
+                            <rect x="50" y="180" width="90" height="60" fill="#d4edda" rx="8"/>
+                            <text x="95" y="200" text-anchor="middle" fill="#155724" font-size="10" font-weight="bold">目标定义</text>
+                            <text x="95" y="215" text-anchor="middle" fill="#155724" font-size="8">确定AI任务</text>
+                            <text x="95" y="225" text-anchor="middle" fill="#155724" font-size="8">分析用户需求</text>
+                            
+                            <!-- 结构设计详细步骤 -->
+                            <rect x="220" y="180" width="90" height="60" fill="#cce5ff" rx="8"/>
+                            <text x="265" y="200" text-anchor="middle" fill="#004085" font-size="10" font-weight="bold">框架搭建</text>
+                            <text x="265" y="215" text-anchor="middle" fill="#004085" font-size="8">角色设定</text>
+                            <text x="265" y="225" text-anchor="middle" fill="#004085" font-size="8">输出格式</text>
+                            
+                            <rect x="320" y="180" width="90" height="60" fill="#cce5ff" rx="8"/>
+                            <text x="365" y="200" text-anchor="middle" fill="#004085" font-size="10" font-weight="bold">逻辑设计</text>
+                            <text x="365" y="215" text-anchor="middle" fill="#004085" font-size="8">流程规划</text>
+                            <text x="365" y="225" text-anchor="middle" fill="#004085" font-size="8">约束条件</text>
+                            
+                            <!-- 内容编写详细步骤 -->
+                            <rect x="420" y="180" width="90" height="60" fill="#fff3cd" rx="8"/>
+                            <text x="465" y="200" text-anchor="middle" fill="#856404" font-size="10" font-weight="bold">语言优化</text>
+                            <text x="465" y="215" text-anchor="middle" fill="#856404" font-size="8">精确表达</text>
+                            <text x="465" y="225" text-anchor="middle" fill="#856404" font-size="8">示例添加</text>
+                            
+                            <rect x="520" y="180" width="90" height="60" fill="#fff3cd" rx="8"/>
+                            <text x="565" y="200" text-anchor="middle" fill="#856404" font-size="10" font-weight="bold">格式规范</text>
+                            <text x="565" y="215" text-anchor="middle" fill="#856404" font-size="8">结构清晰</text>
+                            <text x="565" y="225" text-anchor="middle" fill="#856404" font-size="8">易于理解</text>
+                            
+                            <!-- 部署应用 -->
+                            <rect x="320" y="310" width="120" height="60" fill="#dc3545" rx="10"/>
+                            <text x="380" y="335" text-anchor="middle" fill="white" font-size="12" font-weight="bold">部署应用</text>
+                            <text x="380" y="350" text-anchor="middle" fill="white" font-size="10">生产环境</text>
+                        </g>
+                        
+                        <!-- 连接线 -->
+                        <g id="connections" stroke="#6c757d" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+                                </marker>
+                            </defs>
+                            
+                            <!-- 主流程连接 -->
+                            <line x1="170" y1="80" x2="220" y2="80"/>
+                            <line x1="340" y1="80" x2="390" y2="80"/>
+                            <line x1="510" y1="80" x2="560" y2="80"/>
+                            
+                            <!-- 垂直连接 -->
+                            <line x1="280" y1="110" x2="280" y2="140"/>
+                            <line x1="280" y1="140" x2="195" y2="140"/>
+                            <line x1="195" y1="140" x2="195" y2="180"/>
+                            
+                            <line x1="450" y1="110" x2="450" y2="140"/>
+                            <line x1="450" y1="140" x2="365" y2="140"/>
+                            <line x1="365" y1="140" x2="365" y2="180"/>
+                            
+                            <line x1="620" y1="110" x2="620" y2="140"/>
+                            <line x1="620" y1="140" x2="535" y2="140"/>
+                            <line x1="535" y1="140" x2="535" y2="180"/>
+                            
+                            <!-- 汇聚到部署 -->
+                            <line x1="195" y1="240" x2="195" y2="270"/>
+                            <line x1="195" y1="270" x2="380" y2="270"/>
+                            <line x1="380" y1="270" x2="380" y2="310"/>
+                            
+                            <line x1="365" y1="240" x2="365" y2="270"/>
+                            <line x1="535" y1="240" x2="535" y2="270"/>
+                            <line x1="535" y1="270" x2="380" y2="270"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>🎯 需求分析阶段</h3>
+                        <p>明确AI任务目标，分析用户需求，确定输出格式和质量标准。这是整个提示词工程的基础环节。</p>
+                    </div>
+                    <div class="card">
+                        <h3>🏗️ 结构设计阶段</h3>
+                        <p>设计提示词的整体框架，包括角色设定、任务描述、输出格式等核心组件的布局。</p>
+                    </div>
+                    <div class="card">
+                        <h3>✍️ 内容编写阶段</h3>
+                        <p>基于设计框架，编写具体的提示词内容，注重语言的准确性和指令的清晰度。</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔧 测试优化阶段</h3>
+                        <p>通过多轮测试验证效果，根据反馈持续优化提示词，直到达到预期目标。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 设计原则标签页 -->
+            <div id="principles" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>🎯 明确性原则</h3>
+                        <p><span class="highlight">清晰具体</span>的指令是成功的关键。避免模糊表达，使用精确的词汇和明确的要求。</p>
+                        <ul>
+                            <li>使用具体的动词和名词</li>
+                            <li>避免歧义和模糊表达</li>
+                            <li>提供明确的成功标准</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>📋 结构化原则</h3>
+                        <p>采用<span class="highlight">逻辑清晰</span>的结构组织提示词，便于AI理解和执行。</p>
+                        <ul>
+                            <li>角色定义 → 任务描述 → 输出要求</li>
+                            <li>使用分隔符区分不同部分</li>
+                            <li>采用编号或标题组织内容</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🎭 角色扮演原则</h3>
+                        <p>为AI设定<span class="highlight">专业角色</span>，提升回答的专业性和针对性。</p>
+                        <ul>
+                            <li>明确专业背景和经验</li>
+                            <li>设定合适的语言风格</li>
+                            <li>提供角色相关的知识背景</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>📝 示例驱动原则</h3>
+                        <p>通过<span class="highlight">具体示例</span>展示期望的输出格式和质量标准。</p>
+                        <ul>
+                            <li>提供1-3个高质量示例</li>
+                            <li>展示完整的输入输出对</li>
+                            <li>覆盖不同场景和边界情况</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🔄 迭代优化原则</h3>
+                        <p>基于<span class="highlight">反馈循环</span>持续改进提示词效果。</p>
+                        <ul>
+                            <li>建立测试和评估机制</li>
+                            <li>收集用户反馈和使用数据</li>
+                            <li>定期更新和优化内容</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>⚖️ 平衡性原则</h3>
+                        <p>在<span class="highlight">详细程度</span>和<span class="highlight">简洁性</span>之间找到最佳平衡点。</p>
+                        <ul>
+                            <li>避免过度复杂的指令</li>
+                            <li>保持核心信息的完整性</li>
+                            <li>根据任务复杂度调整详细程度</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心技巧标签页 -->
+            <div id="techniques" class="tab-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>技巧名称</th>
+                            <th>适用场景</th>
+                            <th>实现方法</th>
+                            <th>效果评价</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Zero-shot</strong></td>
+                            <td>简单任务，无需示例</td>
+                            <td>直接描述任务要求</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Few-shot</strong></td>
+                            <td>复杂任务，需要格式示例</td>
+                            <td>提供1-5个示例</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chain-of-Thought</strong></td>
+                            <td>推理任务，需要思考过程</td>
+                            <td>要求展示推理步骤</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Role Playing</strong></td>
+                            <td>专业领域，需要专业视角</td>
+                            <td>设定专家角色身份</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Template-based</strong></td>
+                            <td>标准化输出，批量处理</td>
+                            <td>使用固定模板格式</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Constraint-based</strong></td>
+                            <td>有特定限制的任务</td>
+                            <td>明确约束条件</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🔗 思维链技巧 (CoT)</h3>
+                        <p>引导AI展示<span class="highlight">推理过程</span>，提高复杂问题的解决质量。</p>
+                        <div style="margin-top: 6px;">
+                            <span class="technique-badge">逐步思考</span>
+                            <span class="technique-badge">推理展示</span>
+                            <span class="technique-badge">逻辑清晰</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🎯 精确指令技巧</h3>
+                        <p>使用<span class="highlight">具体数字</span>和<span class="highlight">明确要求</span>限定输出范围。</p>
+                        <div style="margin-top: 6px;">
+                            <span class="technique-badge">字数限制</span>
+                            <span class="technique-badge">格式要求</span>
+                            <span class="technique-badge">质量标准</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🔄 迭代改进技巧</h3>
+                        <p>通过<span class="highlight">多轮对话</span>逐步完善和优化结果。</p>
+                        <div style="margin-top: 6px;">
+                            <span class="technique-badge">反馈循环</span>
+                            <span class="technique-badge">渐进优化</span>
+                            <span class="technique-badge">持续改进</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实战案例标签页 -->
+            <div id="examples" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>📝 文本生成案例</h3>
+                        <p><strong>任务：</strong>生成产品营销文案</p>
+                        <p><strong>提示词：</strong>"你是一位资深的营销文案专家，请为[产品名称]撰写一份吸引人的营销文案，要求：1）突出产品核心优势 2）使用情感化语言 3）包含行动召唤 4）字数控制在200字以内"</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔍 数据分析案例</h3>
+                        <p><strong>任务：</strong>分析销售数据趋势</p>
+                        <p><strong>提示词：</strong>"作为数据分析师，请分析以下销售数据：[数据]。要求：1）识别关键趋势 2）提供具体数字支撑 3）给出3个可行建议 4）用表格形式展示核心指标"</p>
+                    </div>
+                    <div class="card">
+                        <h3>💻 代码生成案例</h3>
+                        <p><strong>任务：</strong>编写Python函数</p>
+                        <p><strong>提示词：</strong>"你是Python专家，请编写一个函数实现[功能描述]。要求：1）包含完整的文档字符串 2）添加类型提示 3）处理异常情况 4）提供使用示例"</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎓 教育培训案例</h3>
+                        <p><strong>任务：</strong>制作学习计划</p>
+                        <p><strong>提示词：</strong>"作为教育专家，为[学习目标]制定30天学习计划。要求：1）分阶段设计 2）每日具体任务 3）评估检查点 4）资源推荐列表"</p>
+                    </div>
+                    <div class="card">
+                        <h3>🏢 商业咨询案例</h3>
+                        <p><strong>任务：</strong>市场进入策略</p>
+                        <p><strong>提示词：</strong>"你是战略咨询顾问，为[公司]进入[目标市场]制定策略。分析：1）市场机会与挑战 2）竞争格局 3）进入策略选择 4）风险控制措施"</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎨 创意设计案例</h3>
+                        <p><strong>任务：</strong>品牌视觉设计</p>
+                        <p><strong>提示词：</strong>"作为品牌设计师，为[品牌名称]设计视觉识别系统。包括：1）色彩方案说明 2）字体选择理由 3）Logo设计理念 4）应用场景展示"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部详细说明文字 -->
+    <div class="bottom-details">
+        <h3>Prompt提示词工程核心技术详解</h3>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <h4>🎯 需求分析与目标设定</h4>
+                <p>深入理解业务需求和用户期望，明确AI任务的具体目标和成功标准。分析输入数据的特点和输出要求的格式，确定评估指标和质量基准。建立清晰的项目范围和约束条件，为后续设计提供明确的指导方向。</p>
+            </div>
+            <div class="detail-item">
+                <h4>🏗️ 结构化设计与框架构建</h4>
+                <p>设计逻辑清晰的提示词架构，包括角色定义、背景信息、任务描述、输出格式等核心组件。采用模块化的设计思路，确保各部分功能明确且相互协调。建立标准化的模板和规范，提高复用性和维护效率。</p>
+            </div>
+            <div class="detail-item">
+                <h4>✍️ 内容编写与语言优化</h4>
+                <p>掌握精确的语言表达技巧，使用清晰、具体、无歧义的词汇。注重指令的逻辑性和完整性，避免冗余信息。采用合适的语言风格和专业术语，确保AI能够准确理解和执行任务要求。</p>
+            </div>
+            <div class="detail-item">
+                <h4>🔧 测试验证与效果评估</h4>
+                <p>建立系统性的测试流程，包括功能测试、边界测试、压力测试等。设计多样化的测试用例，覆盖不同场景和输入类型。建立量化的评估指标，如准确率、完整性、一致性等，持续监控和改进效果。</p>
+            </div>
+            <div class="detail-item">
+                <h4>📊 技巧应用与策略选择</h4>
+                <p>根据任务特点选择合适的提示词技巧，如Few-shot Learning、Chain-of-Thought、Role Playing等。掌握不同技巧的适用场景和实现方法，灵活组合使用多种策略，最大化提升AI输出质量。</p>
+            </div>
+            <div class="detail-item">
+                <h4>🔄 版本管理与持续优化</h4>
+                <p>建立提示词的版本控制体系，记录每次修改的原因和效果。收集用户反馈和使用数据，识别优化机会。建立A/B测试机制，科学验证改进效果。形成持续迭代的优化循环，确保长期效果稳定。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有标签内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签的active状态
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 激活对应的标签
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

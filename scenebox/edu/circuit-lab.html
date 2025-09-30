@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学生电路实验室 - 拖拽式电路搭建</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            display: flex;
+            height: 80vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 2px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .component-library {
+            margin-bottom: 30px;
+        }
+
+        .component-library h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .component-item {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .component-item:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .component-item.selected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .component-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .workspace {
+            flex: 1;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workspace-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .placed-component {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: grab;
+            user-select: none;
+            z-index: 10;
+            transition: transform 0.1s ease;
+        }
+
+        .placed-component:hover {
+            transform: scale(1.05);
+            border-color: #0056b3;
+        }
+
+        .placed-component:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .placed-component.battery {
+            background: #ffeaa7;
+            border-color: #fdcb6e;
+        }
+
+        .placed-component.bulb {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .placed-component.bulb.on {
+            background: #ffeb3b;
+            box-shadow: 0 0 20px #ffeb3b;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px #ffeb3b; }
+            to { box-shadow: 0 0 30px #ffeb3b, 0 0 40px #ffeb3b; }
+        }
+
+        .placed-component.switch {
+            background: #e17055;
+            border-color: #d63031;
+        }
+
+        .placed-component.switch.on {
+            background: #00b894;
+            border-color: #00a085;
+        }
+
+        .wire {
+            position: absolute;
+            background: #007bff;
+            z-index: 5;
+            border-radius: 2px;
+        }
+
+        .wire.horizontal {
+            height: 4px;
+        }
+
+        .wire.vertical {
+            width: 4px;
+        }
+
+        .connection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #dc3545;
+            border-radius: 50%;
+            z-index: 15;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .connection-point:hover {
+            transform: scale(1.3);
+            background: #28a745;
+        }
+
+        .connection-point.connected {
+            background: #28a745;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .status-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+        }
+
+        .status-panel h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .status-text.success {
+            color: #28a745;
+        }
+
+        .status-text.error {
+            color: #dc3545;
+        }
+
+        .suggestions {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .suggestions h5 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .suggestions ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .circuit-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .circuit-info h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .mode-selector {
+            margin-bottom: 20px;
+        }
+
+        .mode-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .mode-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 小学生电路实验室</h1>
+            <p>拖拽元件，搭建电路，让两个小灯泡发光！</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="circuit-info">
+                    <h4>📚 学习目标</h4>
+                    <p>通过拖拽电子元件，学习串联和并联电路的搭建，观察两个小灯泡的发光效果。</p>
+                </div>
+
+                <div class="mode-selector">
+                    <label for="circuitMode">选择电路类型：</label>
+                    <select id="circuitMode">
+                        <option value="series">串联电路</option>
+                        <option value="parallel">并联电路</option>
+                        <option value="mixed">混合电路</option>
+                    </select>
+                </div>
+
+                <div class="component-library">
+                    <h3>🔧 电子元件库</h3>
+                    <div class="component-grid">
+                        <div class="component-item" data-type="battery">
+                            <span class="component-icon">🔋</span>
+                            <div>电池</div>
+                        </div>
+                        <div class="component-item" data-type="bulb">
+                            <span class="component-icon">💡</span>
+                            <div>灯泡</div>
+                        </div>
+                        <div class="component-item" data-type="switch">
+                            <span class="component-icon">🔘</span>
+                            <div>开关</div>
+                        </div>
+                        <div class="component-item" data-type="wire">
+                            <span class="component-icon">➖</span>
+                            <div>导线</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-panel">
+                    <h4>📊 电路状态</h4>
+                    <div id="circuitStatus" class="status-text">请开始搭建电路</div>
+                    <div id="bulbCount">灯泡数量: 0/2</div>
+                    <div id="connectionStatus">连接状态: 未连接</div>
+                </div>
+
+                <div id="suggestions" class="suggestions" style="display: none;">
+                    <h5>💡 修改建议</h5>
+                    <ul id="suggestionList"></ul>
+                </div>
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="workspace-grid"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-buttons">
+                <button class="btn btn-primary" onclick="testCircuit()">🔍 测试电路</button>
+                <button class="btn btn-success" onclick="autoConnect()">🔗 自动连线</button>
+                <button class="btn btn-warning" onclick="showHint()">💡 获取提示</button>
+                <button class="btn btn-danger" onclick="clearWorkspace()">🗑️ 清空工作台</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedComponent = null;
+        let placedComponents = [];
+        let connections = [];
+        let isConnecting = false;
+        let connectionStart = null;
+        let componentCounter = 0;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWorkspace();
+            updateStatus();
+        });
+
+        function initializeWorkspace() {
+            const workspace = document.getElementById('workspace');
+            const componentItems = document.querySelectorAll('.component-item');
+
+            // 元件选择
+            componentItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 清除之前的选择
+                    componentItems.forEach(i => i.classList.remove('selected'));
+                    // 选择当前元件
+                    this.classList.add('selected');
+                    selectedComponent = this.dataset.type;
+                });
+            });
+
+            // 工作区点击放置元件
+            workspace.addEventListener('click', function(e) {
+                if (selectedComponent && e.target === workspace) {
+                    placeComponent(e.offsetX, e.offsetY, selectedComponent);
+                }
+            });
+        }
+
+        function placeComponent(x, y, type) {
+            // 网格对齐
+            const gridSize = 30;
+            const alignedX = Math.round(x / gridSize) * gridSize;
+            const alignedY = Math.round(y / gridSize) * gridSize;
+
+            const component = {
+                id: ++componentCounter,
+                type: type,
+                x: alignedX,
+                y: alignedY,
+                connections: [],
+                state: type === 'switch' ? false : null
+            };
+
+            placedComponents.push(component);
+            renderComponent(component);
+            updateStatus();
+        }
+
+        function renderComponent(component) {
+            const workspace = document.getElementById('workspace');
+            const element = document.createElement('div');
+            element.className = `placed-component ${component.type}`;
+            element.style.left = component.x + 'px';
+            element.style.top = component.y + 'px';
+            element.dataset.id = component.id;
+
+            // 设置图标
+            const icons = {
+                battery: '🔋',
+                bulb: '💡',
+                switch: '🔘',
+                wire: '➖'
+            };
+            element.innerHTML = icons[component.type];
+
+            // 添加连接点
+            if (component.type !== 'wire') {
+                addConnectionPoints(element, component);
+            }
+
+            // 开关点击事件
+            if (component.type === 'switch') {
+                element.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleSwitch(component.id);
+                });
+            }
+
+            // 拖拽功能
+            makeDraggable(element, component);
+
+            workspace.appendChild(element);
+        }
+
+        function addConnectionPoints(element, component) {
+            const points = [
+                { x: -6, y: 24 }, // 左
+                { x: 54, y: 24 }, // 右
+                { x: 24, y: -6 }, // 上
+                { x: 24, y: 54 }  // 下
+            ];
+
+            points.forEach((point, index) => {
+                const connectionPoint = document.createElement('div');
+                connectionPoint.className = 'connection-point';
+                connectionPoint.style.left = point.x + 'px';
+                connectionPoint.style.top = point.y + 'px';
+                connectionPoint.dataset.componentId = component.id;
+                connectionPoint.dataset.pointIndex = index;
+
+                connectionPoint.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    handleConnectionClick(component.id, index);
+                });
+
+                element.appendChild(connectionPoint);
+            });
+        }
+
+        function handleConnectionClick(componentId, pointIndex) {
+            if (!isConnecting) {
+                // 开始连接
+                isConnecting = true;
+                connectionStart = { componentId, pointIndex };
+                updateConnectionPointStyles();
+            } else {
+                // 完成连接
+                if (connectionStart.componentId !== componentId) {
+                    createConnection(connectionStart, { componentId, pointIndex });
+                }
+                isConnecting = false;
+                connectionStart = null;
+                updateConnectionPointStyles();
+            }
+        }
+
+        function createConnection(start, end) {
+            const connection = {
+                id: Date.now(),
+                start: start,
+                end: end
+            };
+
+            connections.push(connection);
+            renderConnection(connection);
+            updateStatus();
+        }
+
+        function renderConnection(connection) {
+            const workspace = document.getElementById('workspace');
+            const startComponent = placedComponents.find(c => c.id == connection.start.componentId);
+            const endComponent = placedComponents.find(c => c.id == connection.end.componentId);
+
+            if (!startComponent || !endComponent) return;
+
+            const startPos = getConnectionPointPosition(startComponent, connection.start.pointIndex);
+            const endPos = getConnectionPointPosition(endComponent, connection.end.pointIndex);
+
+            // 创建导线
+            const wire = document.createElement('div');
+            wire.className = 'wire';
+            wire.dataset.connectionId = connection.id;
+
+            const deltaX = endPos.x - startPos.x;
+            const deltaY = endPos.y - startPos.y;
+            const length = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+
+            wire.style.left = startPos.x + 'px';
+            wire.style.top = startPos.y + 'px';
+            wire.style.width = length + 'px';
+            wire.style.height = '4px';
+            wire.style.transform = `rotate(${angle}deg)`;
+            wire.style.transformOrigin = '0 50%';
+
+            workspace.appendChild(wire);
+        }
+
+        function getConnectionPointPosition(component, pointIndex) {
+            const points = [
+                { x: component.x - 6, y: component.y + 24 }, // 左
+                { x: component.x + 54, y: component.y + 24 }, // 右
+                { x: component.x + 24, y: component.y - 6 }, // 上
+                { x: component.x + 24, y: component.y + 54 }  // 下
+            ];
+            return points[pointIndex];
+        }
+
+        function updateConnectionPointStyles() {
+            const points = document.querySelectorAll('.connection-point');
+            points.forEach(point => {
+                if (isConnecting) {
+                    point.style.background = '#28a745';
+                    point.style.transform = 'scale(1.2)';
+                } else {
+                    point.style.background = '#dc3545';
+                    point.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function toggleSwitch(componentId) {
+            const component = placedComponents.find(c => c.id == componentId);
+            if (component && component.type === 'switch') {
+                component.state = !component.state;
+                const element = document.querySelector(`[data-id="${componentId}"]`);
+                if (component.state) {
+                    element.classList.add('on');
+                } else {
+                    element.classList.remove('on');
+                }
+                updateStatus();
+            }
+        }
+
+        function testCircuit() {
+            const analysis = analyzeCircuit();
+            updateCircuitVisualization(analysis);
+            showSuggestions(analysis);
+        }
+
+        function analyzeCircuit() {
+            const batteries = placedComponents.filter(c => c.type === 'battery');
+            const bulbs = placedComponents.filter(c => c.type === 'bulb');
+            const switches = placedComponents.filter(c => c.type === 'switch');
+
+            const analysis = {
+                hasBattery: batteries.length > 0,
+                bulbCount: bulbs.length,
+                hasRequiredBulbs: bulbs.length >= 2,
+                switchesOn: switches.filter(s => s.state).length,
+                totalSwitches: switches.length,
+                isComplete: false,
+                circuitType: document.getElementById('circuitMode').value,
+                suggestions: []
+            };
+
+            // 检查电路完整性
+            if (analysis.hasBattery && analysis.hasRequiredBulbs) {
+                // 简化的电路分析 - 检查是否有足够的连接
+                const totalConnections = connections.length;
+                const requiredConnections = Math.max(3, bulbs.length + 1); // 最少需要的连接数
+
+                if (totalConnections >= requiredConnections) {
+                    // 检查开关状态
+                    const allSwitchesOn = switches.length === 0 || switches.every(s => s.state);
+                    analysis.isComplete = allSwitchesOn;
+                }
+            }
+
+            // 生成建议
+            if (!analysis.hasBattery) {
+                analysis.suggestions.push('需要添加电池作为电源');
+            }
+            if (analysis.bulbCount < 2) {
+                analysis.suggestions.push(`需要添加${2 - analysis.bulbCount}个灯泡`);
+            }
+            if (connections.length < 3) {
+                analysis.suggestions.push('需要用导线连接各个元件');
+            }
+            if (switches.some(s => !s.state)) {
+                analysis.suggestions.push('请打开所有开关');
+            }
+            if (analysis.isComplete) {
+                analysis.suggestions.push('电路搭建完成！两个灯泡都会发光！');
+            }
+
+            return analysis;
+        }
+
+        function updateCircuitVisualization(analysis) {
+            const bulbs = document.querySelectorAll('.placed-component.bulb');
+            bulbs.forEach(bulb => {
+                if (analysis.isComplete) {
+                    bulb.classList.add('on');
+                } else {
+                    bulb.classList.remove('on');
+                }
+            });
+        }
+
+        function showSuggestions(analysis) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            const suggestionList = document.getElementById('suggestionList');
+
+            if (analysis.suggestions.length > 0) {
+                suggestionList.innerHTML = '';
+                analysis.suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    suggestionList.appendChild(li);
+                });
+                suggestionsDiv.style.display = 'block';
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+        }
+
+        function updateStatus() {
+            const analysis = analyzeCircuit();
+            const statusElement = document.getElementById('circuitStatus');
+            const bulbCountElement = document.getElementById('bulbCount');
+            const connectionStatusElement = document.getElementById('connectionStatus');
+
+            // 更新状态文本
+            if (analysis.isComplete) {
+                statusElement.textContent = '电路连通 - 灯泡发光！';
+                statusElement.className = 'status-text success';
+            } else {
+                statusElement.textContent = '电路未完成';
+                statusElement.className = 'status-text error';
+            }
+
+            bulbCountElement.textContent = `灯泡数量: ${analysis.bulbCount}/2`;
+            connectionStatusElement.textContent = `连接数量: ${connections.length}`;
+        }
+
+        function autoConnect() {
+            const circuitMode = document.getElementById('circuitMode').value;
+            const batteries = placedComponents.filter(c => c.type === 'battery');
+            const bulbs = placedComponents.filter(c => c.type === 'bulb');
+
+            if (batteries.length > 0 && bulbs.length >= 2) {
+                // 清除现有连接
+                connections = [];
+                document.querySelectorAll('.wire').forEach(wire => wire.remove());
+
+                // 根据电路类型自动连接
+                if (circuitMode === 'series') {
+                    createSeriesCircuit(batteries[0], bulbs.slice(0, 2));
+                } else if (circuitMode === 'parallel') {
+                    createParallelCircuit(batteries[0], bulbs.slice(0, 2));
+                }
+
+                updateStatus();
+            } else {
+                alert('请先放置1个电池和至少2个灯泡！');
+            }
+        }
+
+        function createSeriesCircuit(battery, bulbs) {
+            // 串联电路：电池 -> 灯泡1 -> 灯泡2 -> 电池
+            if (bulbs.length >= 2) {
+                createConnection(
+                    { componentId: battery.id, pointIndex: 1 },
+                    { componentId: bulbs[0].id, pointIndex: 0 }
+                );
+                createConnection(
+                    { componentId: bulbs[0].id, pointIndex: 1 },
+                    { componentId: bulbs[1].id, pointIndex: 0 }
+                );
+                createConnection(
+                    { componentId: bulbs[1].id, pointIndex: 1 },
+                    { componentId: battery.id, pointIndex: 0 }
+                );
+            }
+        }
+
+        function createParallelCircuit(battery, bulbs) {
+            // 并联电路：电池分别连接两个灯泡
+            if (bulbs.length >= 2) {
+                createConnection(
+                    { componentId: battery.id, pointIndex: 1 },
+                    { componentId: bulbs[0].id, pointIndex: 0 }
+                );
+                createConnection(
+                    { componentId: battery.id, pointIndex: 1 },
+                    { componentId: bulbs[1].id, pointIndex: 0 }
+                );
+                createConnection(
+                    { componentId: bulbs[0].id, pointIndex: 1 },
+                    { componentId: battery.id, pointIndex: 0 }
+                );
+                createConnection(
+                    { componentId: bulbs[1].id, pointIndex: 1 },
+                    { componentId: battery.id, pointIndex: 0 }
+                );
+            }
+        }
+
+        function showHint() {
+            const circuitMode = document.getElementById('circuitMode').value;
+            let hint = '';
+
+            if (circuitMode === 'series') {
+                hint = '串联电路提示：\n1. 放置1个电池和2个灯泡\n2. 用导线将它们依次连接成一个回路\n3. 电流会依次通过每个元件';
+            } else if (circuitMode === 'parallel') {
+                hint = '并联电路提示：\n1. 放置1个电池和2个灯泡\n2. 将两个灯泡分别连接到电池的两端\n3. 每个灯泡都有独立的回路';
+            } else {
+                hint = '混合电路提示：\n1. 可以结合串联和并联的特点\n2. 尝试不同的连接方式\n3. 观察灯泡的亮度变化';
+            }
+
+            alert(hint);
+        }
+
+        function clearWorkspace() {
+            if (confirm('确定要清空工作台吗？')) {
+                placedComponents = [];
+                connections = [];
+                componentCounter = 0;
+                
+                const workspace = document.getElementById('workspace');
+                const components = workspace.querySelectorAll('.placed-component, .wire');
+                components.forEach(component => component.remove());
+                
+                updateStatus();
+                document.getElementById('suggestions').style.display = 'none';
+            }
+        }
+
+        function makeDraggable(element, component) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            let dragOffset = { x: 0, y: 0 };
+
+            element.addEventListener('mousedown', function(e) {
+                // 如果点击的是连接点，不启动拖拽
+                if (e.target.classList.contains('connection-point')) return;
+                
+                isDragging = true;
+                
+                // 获取鼠标相对于工作区的位置
+                const workspace = document.getElementById('workspace');
+                const workspaceRect = workspace.getBoundingClientRect();
+                
+                startX = e.clientX - workspaceRect.left;
+                startY = e.clientY - workspaceRect.top;
+                initialX = component.x;
+                initialY = component.y;
+                
+                // 计算鼠标相对于元件的偏移
+                dragOffset.x = startX - component.x;
+                dragOffset.y = startY - component.y;
+                
+                element.style.cursor = 'grabbing';
+                element.style.zIndex = '1000';
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+
+                // 获取鼠标相对于工作区的位置
+                const workspace = document.getElementById('workspace');
+                const workspaceRect = workspace.getBoundingClientRect();
+                
+                const mouseX = e.clientX - workspaceRect.left;
+                const mouseY = e.clientY - workspaceRect.top;
+                
+                // 计算新位置（减去偏移量）
+                let newX = mouseX - dragOffset.x;
+                let newY = mouseY - dragOffset.y;
+                
+                // 边界检查
+                const workspaceWidth = workspace.offsetWidth;
+                const workspaceHeight = workspace.offsetHeight;
+                const elementWidth = 60;
+                const elementHeight = 60;
+                
+                newX = Math.max(0, Math.min(newX, workspaceWidth - elementWidth));
+                newY = Math.max(0, Math.min(newY, workspaceHeight - elementHeight));
+                
+                // 网格对齐
+                const gridSize = 30;
+                component.x = Math.round(newX / gridSize) * gridSize;
+                component.y = Math.round(newY / gridSize) * gridSize;
+                
+                element.style.left = component.x + 'px';
+                element.style.top = component.y + 'px';
+                
+                // 更新连接线
+                updateConnections();
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    element.style.cursor = 'grab';
+                    element.style.zIndex = '10';
+                }
+            });
+            
+            // 添加触摸支持（移动设备）
+            element.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('connection-point')) return;
+                
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                element.dispatchEvent(mouseEvent);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                document.dispatchEvent(mouseEvent);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                if (isDragging) {
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    document.dispatchEvent(mouseEvent);
+                }
+            });
+        }
+
+        function updateConnections() {
+            connections.forEach(connection => {
+                const wireElement = document.querySelector(`[data-connection-id="${connection.id}"]`);
+                if (wireElement) {
+                    wireElement.remove();
+                    renderConnection(connection);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS AI 大富翁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .board {
+            width: 800px;
+            height: 800px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 4px solid #1e40af;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .property {
+            position: absolute;
+            background: white;
+            border: 2px solid #374151;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 10px;
+            text-align: center;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .property:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .property.owned {
+            border-color: #059669;
+            background: linear-gradient(145deg, #d1fae5, #a7f3d0);
+        }
+        
+        .property.owned-by-ai {
+            border-color: #dc2626;
+            background: linear-gradient(145deg, #fee2e2, #fecaca);
+        }
+        
+        /* 棋盘边缘属性位置 */
+        .bottom-row { bottom: 10px; height: 80px; width: 70px; }
+        .right-row { right: 10px; width: 80px; height: 70px; }
+        .top-row { top: 10px; height: 80px; width: 70px; }
+        .left-row { left: 10px; width: 80px; height: 70px; }
+        
+        /* 角落特殊位置 */
+        .corner { width: 90px; height: 90px; }
+        .corner.start { bottom: 10px; right: 10px; background: linear-gradient(145deg, #10b981, #059669); }
+        .corner.jail { bottom: 10px; left: 10px; background: linear-gradient(145deg, #f59e0b, #d97706); }
+        .corner.parking { top: 10px; left: 10px; background: linear-gradient(145deg, #8b5cf6, #7c3aed); }
+        .corner.go-to-jail { top: 10px; right: 10px; background: linear-gradient(145deg, #ef4444, #dc2626); }
+        
+        .player {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            transition: all 0.5s ease;
+            z-index: 10;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+        }
+        
+        .player.human { background: #3b82f6; }
+        .player.ai { background: #ef4444; }
+        
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 2px solid #374151;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .dice:hover {
+            transform: scale(1.1);
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .dice.rolling {
+            animation: roll 1s ease-in-out;
+        }
+        
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .info-panel {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .money-display {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* AWS服务分类颜色 */
+        .compute { border-left-color: #ff6b35; }
+        .storage { border-left-color: #4285f4; }
+        .database { border-left-color: #9c27b0; }
+        .ai-ml { border-left-color: #e91e63; }
+        .networking { border-left-color: #00bcd4; }
+        .security { border-left-color: #795548; }
+        .analytics { border-left-color: #ff9800; }
+        .devtools { border-left-color: #8bc34a; }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .floating-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 1001;
+            animation: fadeInOut 3s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-purple-900 min-h-screen">
+    <header class="text-center py-6 text-white">
+        <h1 class="text-4xl font-bold mb-2">☁️ AWS AI 大富翁 ☁️</h1>
+        <p class="text-lg">购买AWS服务，建立云架构帝国！</p>
+    </header>
+
+    <div class="container mx-auto px-4">
+        <div class="flex justify-center gap-8">
+            <!-- 游戏棋盘 -->
+            <div class="board" id="game-board">
+                <!-- 起点 -->
+                <div class="property corner start" data-position="0">
+                    <div class="text-white font-bold text-xs">开始</div>
+                    <div class="text-white text-xs">获得$200</div>
+                </div>
+                
+                <!-- 底边属性 -->
+                <div class="property bottom-row compute" data-position="1" style="right: 110px;">
+                    <div class="font-bold text-xs">EC2</div>
+                    <div class="text-xs">$60</div>
+                </div>
+                <div class="property bottom-row" data-position="2" style="right: 190px;">
+                    <div class="font-bold text-xs">社区基金</div>
+                </div>
+                <div class="property bottom-row compute" data-position="3" style="right: 270px;">
+                    <div class="font-bold text-xs">Lambda</div>
+                    <div class="text-xs">$60</div>
+                </div>
+                <div class="property bottom-row" data-position="4" style="right: 350px;">
+                    <div class="font-bold text-xs">税收</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                <div class="property bottom-row networking" data-position="5" style="right: 430px;">
+                    <div class="font-bold text-xs">VPC</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                <div class="property bottom-row storage" data-position="6" style="right: 510px;">
+                    <div class="font-bold text-xs">S3</div>
+                    <div class="text-xs">$100</div>
+                </div>
+                <div class="property bottom-row" data-position="7" style="right: 590px;">
+                    <div class="font-bold text-xs">机会</div>
+                </div>
+                <div class="property bottom-row storage" data-position="8" style="right: 670px;">
+                    <div class="font-bold text-xs">EBS</div>
+                    <div class="text-xs">$100</div>
+                </div>
+                <div class="property bottom-row storage" data-position="9" style="right: 750px;">
+                    <div class="font-bold text-xs">EFS</div>
+                    <div class="text-xs">$120</div>
+                </div>
+                
+                <!-- 监狱 -->
+                <div class="property corner jail" data-position="10">
+                    <div class="text-white font-bold text-xs">监狱</div>
+                    <div class="text-white text-xs">访问</div>
+                </div>
+                
+                <!-- 左边属性 -->
+                <div class="property left-row database" data-position="11" style="bottom: 110px;">
+                    <div class="font-bold text-xs">RDS</div>
+                    <div class="text-xs">$140</div>
+                </div>
+                <div class="property left-row networking" data-position="12" style="bottom: 190px;">
+                    <div class="font-bold text-xs">CloudFront</div>
+                    <div class="text-xs">$150</div>
+                </div>
+                <div class="property left-row database" data-position="13" style="bottom: 270px;">
+                    <div class="font-bold text-xs">DynamoDB</div>
+                    <div class="text-xs">$140</div>
+                </div>
+                <div class="property left-row database" data-position="14" style="bottom: 350px;">
+                    <div class="font-bold text-xs">Aurora</div>
+                    <div class="text-xs">$160</div>
+                </div>
+                <div class="property left-row networking" data-position="15" style="bottom: 430px;">
+                    <div class="font-bold text-xs">Route53</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                <div class="property left-row ai-ml" data-position="16" style="bottom: 510px;">
+                    <div class="font-bold text-xs">SageMaker</div>
+                    <div class="text-xs">$180</div>
+                </div>
+                <div class="property left-row" data-position="17" style="bottom: 590px;">
+                    <div class="font-bold text-xs">社区基金</div>
+                </div>
+                <div class="property left-row ai-ml" data-position="18" style="bottom: 670px;">
+                    <div class="font-bold text-xs">Rekognition</div>
+                    <div class="text-xs">$180</div>
+                </div>
+                <div class="property left-row ai-ml" data-position="19" style="bottom: 750px;">
+                    <div class="font-bold text-xs">Comprehend</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                
+                <!-- 免费停车 -->
+                <div class="property corner parking" data-position="20">
+                    <div class="text-white font-bold text-xs">免费</div>
+                    <div class="text-white text-xs">停车</div>
+                </div>
+                
+                <!-- 顶边属性 -->
+                <div class="property top-row security" data-position="21" style="left: 110px;">
+                    <div class="font-bold text-xs">IAM</div>
+                    <div class="text-xs">$220</div>
+                </div>
+                <div class="property top-row" data-position="22" style="left: 190px;">
+                    <div class="font-bold text-xs">机会</div>
+                </div>
+                <div class="property top-row security" data-position="23" style="left: 270px;">
+                    <div class="font-bold text-xs">KMS</div>
+                    <div class="text-xs">$220</div>
+                </div>
+                <div class="property top-row security" data-position="24" style="left: 350px;">
+                    <div class="font-bold text-xs">WAF</div>
+                    <div class="text-xs">$240</div>
+                </div>
+                <div class="property top-row networking" data-position="25" style="left: 430px;">
+                    <div class="font-bold text-xs">ELB</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                <div class="property top-row analytics" data-position="26" style="left: 510px;">
+                    <div class="font-bold text-xs">Redshift</div>
+                    <div class="text-xs">$260</div>
+                </div>
+                <div class="property top-row analytics" data-position="27" style="left: 590px;">
+                    <div class="font-bold text-xs">Kinesis</div>
+                    <div class="text-xs">$260</div>
+                </div>
+                <div class="property top-row networking" data-position="28" style="left: 670px;">
+                    <div class="font-bold text-xs">API Gateway</div>
+                    <div class="text-xs">$150</div>
+                </div>
+                <div class="property top-row analytics" data-position="29" style="left: 750px;">
+                    <div class="font-bold text-xs">EMR</div>
+                    <div class="text-xs">$280</div>
+                </div>
+                
+                <!-- 去监狱 -->
+                <div class="property corner go-to-jail" data-position="30">
+                    <div class="text-white font-bold text-xs">去</div>
+                    <div class="text-white text-xs">监狱</div>
+                </div>
+                
+                <!-- 右边属性 -->
+                <div class="property right-row devtools" data-position="31" style="top: 110px;">
+                    <div class="font-bold text-xs">CodeCommit</div>
+                    <div class="text-xs">$300</div>
+                </div>
+                <div class="property right-row devtools" data-position="32" style="top: 190px;">
+                    <div class="font-bold text-xs">CodeBuild</div>
+                    <div class="text-xs">$300</div>
+                </div>
+                <div class="property right-row" data-position="33" style="top: 270px;">
+                    <div class="font-bold text-xs">社区基金</div>
+                </div>
+                <div class="property right-row devtools" data-position="34" style="top: 350px;">
+                    <div class="font-bold text-xs">CodeDeploy</div>
+                    <div class="text-xs">$320</div>
+                </div>
+                <div class="property right-row networking" data-position="35" style="top: 430px;">
+                    <div class="font-bold text-xs">Direct Connect</div>
+                    <div class="text-xs">$200</div>
+                </div>
+                <div class="property right-row" data-position="36" style="top: 510px;">
+                    <div class="font-bold text-xs">机会</div>
+                </div>
+                <div class="property right-row compute" data-position="37" style="top: 590px;">
+                    <div class="font-bold text-xs">EKS</div>
+                    <div class="text-xs">$350</div>
+                </div>
+                <div class="property right-row" data-position="38" style="top: 670px;">
+                    <div class="font-bold text-xs">奢侈税</div>
+                    <div class="text-xs">$100</div>
+                </div>
+                <div class="property right-row compute" data-position="39" style="top: 750px;">
+                    <div class="font-bold text-xs">Fargate</div>
+                    <div class="text-xs">$400</div>
+                </div>
+                
+                <!-- 玩家棋子 -->
+                <div class="player human" id="player-human" style="bottom: 50px; right: 50px;"></div>
+                <div class="player ai" id="player-ai" style="bottom: 30px; right: 30px;"></div>
+                
+                <!-- 中央控制区域 -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="flex justify-center gap-4 mb-4">
+                            <div class="dice" id="dice1">1</div>
+                            <div class="dice" id="dice2">1</div>
+                        </div>
+                        <button id="roll-dice" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                            投掷骰子
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 信息面板 -->
+            <div class="info-panel w-80">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">游戏信息</h3>
+                
+                <!-- 玩家状态 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-lg mb-2 text-blue-600">玩家状态</h4>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">你的资金:</span>
+                        <div class="money-display" id="player-money">$1500</div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">AI对手资金:</span>
+                        <div class="money-display bg-red-500" id="ai-money">$1500</div>
+                    </div>
+                </div>
+                
+                <!-- 当前回合 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-lg mb-2 text-green-600">当前回合</h4>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold" id="current-player">你的回合</div>
+                    </div>
+                </div>
+                
+                <!-- 拥有的服务 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-lg mb-2 text-purple-600">你的AWS服务</h4>
+                    <div id="owned-services" class="max-h-40 overflow-y-auto">
+                        <p class="text-gray-500 text-sm">暂无拥有的服务</p>
+                    </div>
+                </div>
+                
+                <!-- 游戏日志 -->
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-orange-600">游戏日志</h4>
+                    <div id="game-log" class="max-h-32 overflow-y-auto bg-gray-50 p-3 rounded text-sm">
+                        <p>游戏开始！你和AI对手各有$1500启动资金。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏规则说明 -->
+        <div class="mt-8 bg-white rounded-lg p-6">
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">🎮 游戏规则</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-blue-600">基本玩法</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>投掷骰子在棋盘上移动</li>
+                        <li>购买AWS服务建立云架构</li>
+                        <li>收取其他玩家的服务使用费</li>
+                        <li>通过策略投资成为云服务大亨</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-green-600">特殊格子</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>🏠 起点：经过获得$200</li>
+                        <li>🎯 机会/社区基金：抽取事件卡</li>
+                        <li>💰 税收：支付相应费用</li>
+                        <li>🔒 监狱：暂停一回合</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h4 class="font-bold text-lg mb-2 text-purple-600">AWS服务分类</h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">计算服务</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">存储服务</span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">数据库</span>
+                    <span class="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm">AI/ML</span>
+                    <span class="px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-sm">网络服务</span>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">分析服务</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">开发工具</span>
+                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">安全服务</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 text-white mt-8">
+        <p>&copy; 2024 AWS AI 大富翁 - 在游戏中学习云服务架构</p>
+    </footer>
+
+    <script>
+        // 游戏状态
+        let gameState = {
+            currentPlayer: 'human', // 'human' or 'ai'
+            playerMoney: 1500,
+            aiMoney: 1500,
+            playerPosition: 0,
+            aiPosition: 0,
+            ownedProperties: {
+                human: [],
+                ai: []
+            },
+            gameLog: []
+        };
+
+        // AWS服务属性定义
+        const properties = {
+            1: { name: 'EC2', price: 60, rent: 6, category: 'compute', color: '#ff6b35' },
+            3: { name: 'Lambda', price: 60, rent: 8, category: 'compute', color: '#ff6b35' },
+            6: { name: 'S3', price: 100, rent: 10, category: 'storage', color: '#4285f4' },
+            8: { name: 'EBS', price: 100, rent: 10, category: 'storage', color: '#4285f4' },
+            9: { name: 'EFS', price: 120, rent: 12, category: 'storage', color: '#4285f4' },
+            11: { name: 'RDS', price: 140, rent: 14, category: 'database', color: '#9c27b0' },
+            13: { name: 'DynamoDB', price: 140, rent: 14, category: 'database', color: '#9c27b0' },
+            14: { name: 'Aurora', price: 160, rent: 16, category: 'database', color: '#9c27b0' },
+            16: { name: 'SageMaker', price: 180, rent: 18, category: 'ai-ml', color: '#e91e63' },
+            18: { name: 'Rekognition', price: 180, rent: 18, category: 'ai-ml', color: '#e91e63' },
+            19: { name: 'Comprehend', price: 200, rent: 20, category: 'ai-ml', color: '#e91e63' },
+            21: { name: 'IAM', price: 220, rent: 22, category: 'security', color: '#795548' },
+            23: { name: 'KMS', price: 220, rent: 22, category: 'security', color: '#795548' },
+            24: { name: 'WAF', price: 240, rent: 24, category: 'security', color: '#795548' },
+            26: { name: 'Redshift', price: 260, rent: 26, category: 'analytics', color: '#ff9800' },
+            27: { name: 'Kinesis', price: 260, rent: 26, category: 'analytics', color: '#ff9800' },
+            29: { name: 'EMR', price: 280, rent: 28, category: 'analytics', color: '#ff9800' },
+            31: { name: 'CodeCommit', price: 300, rent: 30, category: 'devtools', color: '#8bc34a' },
+            32: { name: 'CodeBuild', price: 300, rent: 30, category: 'devtools', color: '#8bc34a' },
+            34: { name: 'CodeDeploy', price: 320, rent: 32, category: 'devtools', color: '#8bc34a' },
+            37: { name: 'EKS', price: 350, rent: 35, category: 'compute', color: '#ff6b35' },
+            39: { name: 'Fargate', price: 400, rent: 40, category: 'compute', color: '#ff6b35' },
+            5: { name: 'VPC', price: 200, rent: 20, category: 'networking', color: '#00bcd4' },
+            12: { name: 'CloudFront', price: 150, rent: 15, category: 'networking', color: '#00bcd4' },
+            15: { name: 'Route53', price: 200, rent: 20, category: 'networking', color: '#00bcd4' },
+            25: { name: 'ELB', price: 200, rent: 20, category: 'networking', color: '#00bcd4' },
+            28: { name: 'API Gateway', price: 150, rent: 15, category: 'networking', color: '#00bcd4' },
+            35: { name: 'Direct Connect', price: 200, rent: 20, category: 'networking', color: '#00bcd4' }
+        };
+
+        // 特殊格子定义
+        const specialSpaces = {
+            0: { type: 'start', name: '开始' },
+            2: { type: 'community', name: '社区基金' },
+            4: { type: 'tax', name: '税收', amount: 200 },
+            7: { type: 'chance', name: '机会' },
+            10: { type: 'jail', name: '监狱' },
+            17: { type: 'community', name: '社区基金' },
+            20: { type: 'parking', name: '免费停车' },
+            22: { type: 'chance', name: '机会' },
+            30: { type: 'go-to-jail', name: '去监狱' },
+            33: { type: 'community', name: '社区基金' },
+            36: { type: 'chance', name: '机会' },
+            38: { type: 'tax', name: '奢侈税', amount: 100 }
+        };
+
+        // 机会卡和社区基金卡
+        const chanceCards = [
+            { text: "AWS技术峰会奖励！获得$200", money: 200 },
+            { text: "云服务优化成功！获得$150", money: 150 },
+            { text: "系统维护费用，支付$100", money: -100 },
+            { text: "获得免费AWS培训，前进到SageMaker", moveTo: 16 },
+            { text: "网络故障，后退3格", moveBy: -3 },
+            { text: "获得云架构师认证奖励$300", money: 300 }
+        ];
+
+        const communityCards = [
+            { text: "开源贡献奖励！获得$100", money: 100 },
+            { text: "参加AWS re:Invent，获得$250", money: 250 },
+            { text: "服务器宕机损失，支付$150", money: -150 },
+            { text: "获得AWS积分，前进到起点", moveTo: 0 },
+            { text: "安全审计费用，支付$50", money: -50 },
+            { text: "成功部署应用，获得$180", money: 180 }
+        ];
+
+        // 玩家位置坐标映射
+        const positionCoords = {
+            0: { x: 750, y: 750 },   // 开始
+            1: { x: 670, y: 750 },   // EC2
+            2: { x: 590, y: 750 },   // 社区基金
+            3: { x: 510, y: 750 },   // Lambda
+            4: { x: 430, y: 750 },   // 税收
+            5: { x: 350, y: 750 },   // VPC
+            6: { x: 270, y: 750 },   // S3
+            7: { x: 190, y: 750 },   // 机会
+            8: { x: 110, y: 750 },   // EBS
+            9: { x: 30, y: 750 },    // EFS
+            10: { x: 30, y: 670 },   // 监狱
+            11: { x: 30, y: 590 },   // RDS
+            12: { x: 30, y: 510 },   // CloudFront
+            13: { x: 30, y: 430 },   // DynamoDB
+            14: { x: 30, y: 350 },   // Aurora
+            15: { x: 30, y: 270 },   // Route53
+            16: { x: 30, y: 190 },   // SageMaker
+            17: { x: 30, y: 110 },   // 社区基金
+            18: { x: 30, y: 30 },    // Rekognition
+            19: { x: 110, y: 30 },   // Comprehend
+            20: { x: 190, y: 30 },   // 免费停车
+            21: { x: 270, y: 30 },   // IAM
+            22: { x: 350, y: 30 },   // 机会
+            23: { x: 430, y: 30 },   // KMS
+            24: { x: 510, y: 30 },   // WAF
+            25: { x: 590, y: 30 },   // ELB
+            26: { x: 670, y: 30 },   // Redshift
+            27: { x: 750, y: 30 },   // Kinesis
+            28: { x: 750, y: 110 },  // API Gateway
+            29: { x: 750, y: 190 },  // EMR
+            30: { x: 750, y: 270 },  // 去监狱
+            31: { x: 750, y: 350 },  // CodeCommit
+            32: { x: 750, y: 430 },  // CodeBuild
+            33: { x: 750, y: 510 },  // 社区基金
+            34: { x: 750, y: 590 },  // CodeDeploy
+            35: { x: 750, y: 670 },  // Direct Connect
+            36: { x: 670, y: 110 },  // 机会
+            37: { x: 590, y: 110 },  // EKS
+            38: { x: 510, y: 110 },  // 奢侈税
+            39: { x: 430, y: 110 }   // Fargate
+        };
+
+        // 初始化游戏
+        function initGame() {
+            updateDisplay();
+            addToLog("游戏开始！你和AI对手各有$1500启动资金。");
+        }
+
+        // 投掷骰子
+        function rollDice() {
+            if (gameState.currentPlayer !== 'human') return;
+            
+            $('#roll-dice').prop('disabled', true);
+            $('.dice').addClass('rolling');
+            
+            setTimeout(() => {
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+                const total = dice1 + dice2;
+                
+                $('#dice1').text(dice1);
+                $('#dice2').text(dice2);
+                $('.dice').removeClass('rolling');
+                
+                addToLog(`你投掷出 ${dice1} + ${dice2} = ${total}`);
+                movePlayer('human', total);
+                
+                setTimeout(() => {
+                    if (gameState.currentPlayer === 'ai') {
+                        aiTurn();
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        // 移动玩家
+        function movePlayer(player, steps) {
+            const currentPos = player === 'human' ? gameState.playerPosition : gameState.aiPosition;
+            let newPos = (currentPos + steps) % 40;
+            
+            // 检查是否经过起点
+            if (newPos < currentPos) {
+                const money = player === 'human' ? gameState.playerMoney : gameState.aiMoney;
+                if (player === 'human') {
+                    gameState.playerMoney += 200;
+                    addToLog("经过起点，获得$200！");
+                } else {
+                    gameState.aiMoney += 200;
+                    addToLog("AI经过起点，获得$200！");
+                }
+            }
+            
+            if (player === 'human') {
+                gameState.playerPosition = newPos;
+                animatePlayerMovement('player-human', newPos);
+            } else {
+                gameState.aiPosition = newPos;
+                animatePlayerMovement('player-ai', newPos);
+            }
+            
+            setTimeout(() => {
+                handleLanding(player, newPos);
+            }, 500);
+        }
+
+        // 动画移动玩家棋子
+        function animatePlayerMovement(playerId, position) {
+            const coords = positionCoords[position];
+            const offset = playerId === 'player-human' ? 0 : 20;
+            
+            $(`#${playerId}`).css({
+                left: coords.x + offset + 'px',
+                top: coords.y + offset + 'px'
+            });
+        }
+
+        // 处理玩家落地
+        function handleLanding(player, position) {
+            const property = properties[position];
+            const special = specialSpaces[position];
+            
+            if (property) {
+                handlePropertyLanding(player, position, property);
+            } else if (special) {
+                handleSpecialSpace(player, special);
+            }
+            
+            // 切换回合
+            gameState.currentPlayer = gameState.currentPlayer === 'human' ? 'ai' : 'human';
+            updateDisplay();
+            
+            if (gameState.currentPlayer === 'human') {
+                $('#roll-dice').prop('disabled', false);
+            }
+        }
+
+        // 处理属性落地
+        function handlePropertyLanding(player, position, property) {
+            const owner = getPropertyOwner(position);
+            
+            if (!owner) {
+                // 无人拥有，可以购买
+                if (player === 'human') {
+                    showPurchaseModal(position, property);
+                } else {
+                    // AI自动购买
+                    if (gameState.aiMoney >= property.price) {
+                        gameState.aiMoney -= property.price;
+                        gameState.ownedProperties.ai.push(position);
+                        addToLog(`AI购买了${property.name}，花费$${property.price}`);
+                        updatePropertyDisplay(position, 'ai');
+                    }
+                }
+            } else if (owner !== player) {
+                // 需要支付租金
+                const rent = calculateRent(position, property);
+                if (player === 'human') {
+                    gameState.playerMoney -= rent;
+                    gameState.aiMoney += rent;
+                    addToLog(`你向AI支付${property.name}的租金$${rent}`);
+                } else {
+                    gameState.aiMoney -= rent;
+                    gameState.playerMoney += rent;
+                    addToLog(`AI向你支付${property.name}的租金$${rent}`);
+                }
+            }
+        }
+
+        // 处理特殊格子
+        function handleSpecialSpace(player, special) {
+            switch (special.type) {
+                case 'tax':
+                    if (player === 'human') {
+                        gameState.playerMoney -= special.amount;
+                        addToLog(`你支付了${special.name}$${special.amount}`);
+                    } else {
+                        gameState.aiMoney -= special.amount;
+                        addToLog(`AI支付了${special.name}$${special.amount}`);
+                    }
+                    break;
+                case 'chance':
+                    handleChanceCard(player);
+                    break;
+                case 'community':
+                    handleCommunityCard(player);
+                    break;
+                case 'go-to-jail':
+                    // 简化处理，直接移动到监狱
+                    if (player === 'human') {
+                        gameState.playerPosition = 10;
+                        animatePlayerMovement('player-human', 10);
+                        addToLog("你被送进了监狱！");
+                    } else {
+                        gameState.aiPosition = 10;
+                        animatePlayerMovement('player-ai', 10);
+                        addToLog("AI被送进了监狱！");
+                    }
+                    break;
+            }
+        }
+
+        // 处理机会卡
+        function handleChanceCard(player) {
+            const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
+            showFloatingMessage(`机会：${card.text}`);
+            
+            if (card.money) {
+                if (player === 'human') {
+                    gameState.playerMoney += card.money;
+                } else {
+                    gameState.aiMoney += card.money;
+                }
+            }
+            
+            if (card.moveTo !== undefined) {
+                if (player === 'human') {
+                    gameState.playerPosition = card.moveTo;
+                    animatePlayerMovement('player-human', card.moveTo);
+                } else {
+                    gameState.aiPosition = card.moveTo;
+                    animatePlayerMovement('player-ai', card.moveTo);
+                }
+            }
+            
+            if (card.moveBy) {
+                movePlayer(player, card.moveBy);
+            }
+            
+            addToLog(`${player === 'human' ? '你' : 'AI'}抽到机会卡：${card.text}`);
+        }
+
+        // 处理社区基金卡
+        function handleCommunityCard(player) {
+            const card = communityCards[Math.floor(Math.random() * communityCards.length)];
+            showFloatingMessage(`社区基金：${card.text}`);
+            
+            if (card.money) {
+                if (player === 'human') {
+                    gameState.playerMoney += card.money;
+                } else {
+                    gameState.aiMoney += card.money;
+                }
+            }
+            
+            if (card.moveTo !== undefined) {
+                if (player === 'human') {
+                    gameState.playerPosition = card.moveTo;
+                    animatePlayerMovement('player-human', card.moveTo);
+                } else {
+                    gameState.aiPosition = card.moveTo;
+                    animatePlayerMovement('player-ai', card.moveTo);
+                }
+            }
+            
+            addToLog(`${player === 'human' ? '你' : 'AI'}抽到社区基金卡：${card.text}`);
+        }
+
+        // 显示购买模态框
+        function showPurchaseModal(position, property) {
+            const modal = $(`
+                <div class="modal">
+                    <div class="modal-content">
+                        <h3 class="text-2xl font-bold mb-4">购买AWS服务</h3>
+                        <div class="service-card ${property.category}">
+                            <h4 class="font-bold text-lg">${property.name}</h4>
+                            <p class="text-gray-600">价格: $${property.price}</p>
+                            <p class="text-gray-600">租金: $${property.rent}</p>
+                            <p class="text-gray-600">类别: ${getCategoryName(property.category)}</p>
+                        </div>
+                        <div class="flex justify-end gap-4 mt-6">
+                            <button id="decline-purchase" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                不购买
+                            </button>
+                            <button id="confirm-purchase" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                购买 ($${property.price})
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            $('body').append(modal);
+            
+            $('#confirm-purchase').click(() => {
+                if (gameState.playerMoney >= property.price) {
+                    gameState.playerMoney -= property.price;
+                    gameState.ownedProperties.human.push(position);
+                    addToLog(`你购买了${property.name}，花费$${property.price}`);
+                    updatePropertyDisplay(position, 'human');
+                } else {
+                    addToLog("资金不足，无法购买！");
+                }
+                modal.remove();
+                updateDisplay();
+            });
+            
+            $('#decline-purchase').click(() => {
+                addToLog(`你选择不购买${property.name}`);
+                modal.remove();
+            });
+        }
+
+        // AI回合
+        function aiTurn() {
+            setTimeout(() => {
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+                const total = dice1 + dice2;
+                
+                $('#dice1').text(dice1);
+                $('#dice2').text(dice2);
+                
+                addToLog(`AI投掷出 ${dice1} + ${dice2} = ${total}`);
+                movePlayer('ai', total);
+            }, 1000);
+        }
+
+        // 获取属性拥有者
+        function getPropertyOwner(position) {
+            if (gameState.ownedProperties.human.includes(position)) {
+                return 'human';
+            }
+            if (gameState.ownedProperties.ai.includes(position)) {
+                return 'ai';
+            }
+            return null;
+        }
+
+        // 计算租金
+        function calculateRent(position, property) {
+            // 简化租金计算，后续可以添加更复杂的逻辑
+            return property.rent;
+        }
+
+        // 更新属性显示
+        function updatePropertyDisplay(position, owner) {
+            const propertyElement = $(`.property[data-position="${position}"]`);
+            if (owner === 'human') {
+                propertyElement.addClass('owned');
+            } else {
+                propertyElement.addClass('owned-by-ai');
+            }
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            $('#player-money').text(`$${gameState.playerMoney}`);
+            $('#ai-money').text(`$${gameState.aiMoney}`);
+            $('#current-player').text(gameState.currentPlayer === 'human' ? '你的回合' : 'AI的回合');
+            
+            // 更新拥有的服务
+            const ownedServicesDiv = $('#owned-services');
+            ownedServicesDiv.empty();
+            
+            if (gameState.ownedProperties.human.length === 0) {
+                ownedServicesDiv.html('<p class="text-gray-500 text-sm">暂无拥有的服务</p>');
+            } else {
+                gameState.ownedProperties.human.forEach(position => {
+                    const property = properties[position];
+                    if (property) {
+                        const serviceDiv = $(`
+                            <div class="service-card ${property.category}">
+                                <div class="font-bold">${property.name}</div>
+                                <div class="text-sm text-gray-600">租金: $${property.rent}</div>
+                            </div>
+                        `);
+                        ownedServicesDiv.append(serviceDiv);
+                    }
+                });
+            }
+        }
+
+        // 添加游戏日志
+        function addToLog(message) {
+            gameState.gameLog.push(message);
+            const logDiv = $('#game-log');
+            logDiv.append(`<p>${message}</p>`);
+            logDiv.scrollTop(logDiv[0].scrollHeight);
+        }
+
+        // 显示浮动消息
+        function showFloatingMessage(message) {
+            const floatingMsg = $(`<div class="floating-message">${message}</div>`);
+            $('body').append(floatingMsg);
+            
+            setTimeout(() => {
+                floatingMsg.remove();
+            }, 3000);
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const names = {
+                'compute': '计算服务',
+                'storage': '存储服务',
+                'database': '数据库',
+                'ai-ml': 'AI/ML',
+                'networking': '网络服务',
+                'security': '安全服务',
+                'analytics': '分析服务',
+                'devtools': '开发工具'
+            };
+            return names[category] || category;
+        }
+
+        // 事件绑定
+        $(document).ready(function() {
+            initGame();
+            
+            $('#roll-dice').click(rollDice);
+            
+            // 属性点击事件
+            $('.property').click(function() {
+                const position = parseInt($(this).data('position'));
+                const property = properties[position];
+                
+                if (property) {
+                    const owner = getPropertyOwner(position);
+                    const ownerText = owner === 'human' ? '你' : owner === 'ai' ? 'AI' : '无人';
+                    
+                    showFloatingMessage(`${property.name} - 价格:$${property.price} 租金:$${property.rent} 拥有者:${ownerText}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

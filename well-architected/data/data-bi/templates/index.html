@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- 欢迎横幅 -->
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <h1 class="display-4 mb-4">
+                    <i class="fas fa-flask text-primary me-3"></i>
+                    欢迎使用 Flask 示例应用
+                </h1>
+                <p class="lead mb-4">这是一个功能完整的 Flask Web 应用示例，展示了现代 Web 开发的最佳实践</p>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <p class="text-muted">
+                            本应用演示了 Flask 框架的核心功能，包括路由管理、模板渲染、表单处理、
+                            API 接口、数据库操作模拟、错误处理等。适合学习和参考。
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('users_list') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-users me-2"></i>用户管理
+                    </a>
+                    <a href="{{ url_for('posts_list') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-blog me-2"></i>博客文章
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 功能特性 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-center mb-4 text-white">
+            <i class="fas fa-star me-2"></i>应用特性
+        </h2>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- 用户管理 -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h5 class="card-title">用户管理</h5>
+                <p class="card-text">完整的用户CRUD操作，包括用户列表、详情查看、添加新用户等功能。</p>
+                <div class="mt-auto">
+                    <span class="badge bg-primary">{{ users_count }} 个用户</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 博客系统 -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-blog"></i>
+                </div>
+                <h5 class="card-title">博客系统</h5>
+                <p class="card-text">文章展示系统，支持文章列表、详情查看，展示内容管理功能。</p>
+                <div class="mt-auto">
+                    <span class="badge bg-success">{{ posts_count }} 篇文章</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API接口 -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h5 class="card-title">RESTful API</h5>
+                <p class="card-text">提供完整的API接口，支持JSON数据交换，便于前后端分离开发。</p>
+                <div class="mt-auto">
+                    <a href="/api/users" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fas fa-external-link-alt me-1"></i>查看API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 搜索功能 -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h5 class="card-title">智能搜索</h5>
+                <p class="card-text">全站搜索功能，支持用户和文章的模糊搜索，提升用户体验。</p>
+                <div class="mt-auto">
+                    <a href="{{ url_for('search') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-search me-1"></i>试试搜索
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 技术栈 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>技术栈
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">后端技术</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fab fa-python me-2 text-success"></i>Python 3.x</li>
+                            <li><i class="fas fa-flask me-2 text-danger"></i>Flask 框架</li>
+                            <li><i class="fas fa-database me-2 text-info"></i>数据模拟存储</li>
+                            <li><i class="fas fa-route me-2 text-warning"></i>RESTful 路由</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">前端技术</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fab fa-html5 me-2 text-danger"></i>HTML5</li>
+                            <li><i class="fab fa-css3-alt me-2 text-primary"></i>CSS3</li>
+                            <li><i class="fab fa-js-square me-2 text-warning"></i>JavaScript</li>
+                            <li><i class="fab fa-bootstrap me-2 text-purple"></i>Bootstrap 5</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速开始 -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-rocket me-2"></i>快速开始
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon text-primary">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <h6>1. 安装依赖</h6>
+                            <code>pip install flask</code>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon text-success">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <h6>2. 运行应用</h6>
+                            <code>python app.py</code>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon text-info">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h6>3. 访问应用</h6>
+                            <code>http://localhost:5000</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
