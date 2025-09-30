@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天机器人 - </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+            padding: 32px;
+        }
+
+        .demo-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .demo-card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 聊天机器人样式 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 500;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .chat-sidebar {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border: 1px solid #e8eaed;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .model-selector {
+            margin-bottom: 20px;
+        }
+
+        .model-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #202124;
+        }
+
+        .model-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e8eaed;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 12px;
+            background: white;
+        }
+
+        .chat-session {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-session:hover {
+            background: #f1f3f4;
+        }
+
+        .chat-session.active {
+            background: #e8f0fe;
+            border-left: 3px solid #4285f4;
+        }
+
+        .session-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: #202124;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .session-time {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .new-chat-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .new-chat-btn:hover {
+            background: #1a73e8;
+        }
+
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e8eaed;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 18px;
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.bot .message-content {
+            background: #e8f0fe;
+            color: #174ea6;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            background: #4285f4;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #5f6368;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.bot .message-time {
+            text-align: left;
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid #e8eaed;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e8eaed;
+            border-radius: 24px;
+            font-size: 14px;
+            resize: none;
+            max-height: 120px;
+            min-height: 48px;
+            overflow-y: auto;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .send-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .send-btn:hover {
+            background: #1a73e8;
+        }
+
+        .send-btn:disabled {
+            background: #e8eaed;
+            cursor: not-allowed;
+        }
+
+        /* 功能面板 */
+        .features-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 16px;
+        }
+
+        .feature-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .feature-stat-value {
+            font-weight: 500;
+            color: #4285f4;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-sidebar {
+                display: none;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">98.7%</div>
+            <div class="stat-label">用户满意度</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">12.5K</div>
+            <div class="stat-label">日对话量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0.8s</div>
+            <div class="stat-label">平均响应时间</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">15+</div>
+            <div class="stat-label">支持语言</div>
+        </div>
+    </div>
+
+    <div class="demo-card">
+        <h3 class="demo-card-title">💬 智能对话</h3>
+        <div class="chat-container">
+            <div class="chat-sidebar">
+                <div class="model-selector">
+                    <div class="model-label">选择模型</div>
+                    <select class="model-select" id="model-select">
+                        <option value="gpt-4">-GPT-4</option>
+                        <option value="llama-3">-LLaMA-3</option>
+                        <option value="claude-3">-Claude-3</option>
+                        <option value="gemini-pro">-Gemini-Pro</option>
+                        <option value="qwen-max">-Qwen-Max</option>
+                    </select>
+                </div>
+                <div class="chat-history" id="chat-history">
+                    <div class="chat-session active">
+                        <div class="session-title">产品功能咨询</div>
+                        <div class="session-time">今天 14:32</div>
+                    </div>
+                    <div class="chat-session">
+                        <div class="session-title">技术支持对话</div>
+                        <div class="session-time">今天 11:15</div>
+                    </div>
+                    <div class="chat-session">
+                        <div class="session-title">市场分析报告</div>
+                        <div class="session-time">昨天 16:48</div>
+                    </div>
+                    <div class="chat-session">
+                        <div class="session-title">用户反馈处理</div>
+                        <div class="session-time">昨天 09:23</div>
+                    </div>
+                </div>
+                <button class="new-chat-btn" id="new-chat-btn">
+                    <span>+</span> 新建对话
+                </button>
+            </div>
+            <div class="chat-main">
+                <div class="chat-header">
+                    <div class="chat-title">产品功能咨询</div>
+                    <div class="chat-actions">
+                        <button class="action-btn" title="导出对话">📤</button>
+                        <button class="action-btn" title="设置">⚙️</button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot">
+                        <div class="message-content">
+                            您好！我是智能助手，很高兴为您服务。请问有什么可以帮助您的？
+                        </div>
+                        <div class="message-time">14:32:05</div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-content">
+                            平台有哪些核心功能？
+                        </div>
+                        <div class="message-time">14:32:18</div>
+                    </div>
+                    <div class="message bot">
+                        <div class="message-content">
+                            平台的核心功能包括：<br><br>
+                            1. <b>vGPU智能切分</b>：动态分配GPU资源，提高利用率<br>
+                            2. <b>云原生引擎</b>：支持容器化部署和Kubernetes集成<br>
+                            3. <b>多机多卡支持</b>：分布式训练和推理能力<br>
+                            4. <b>国产算力适配</b>：支持多种国产芯片和加速卡<br>
+                            5. <b>模型管理</b>：一站式模型部署、版本控制和监控<br>
+                            6. <b>数据管理</b>：高效数据处理和存储方案<br>
+                            7. <b>Prompt管理</b>：提示词优化和管理工具<br><br>
+                            您对哪个功能特别感兴趣？我可以提供更详细的信息。
+                        </div>
+                        <div class="message-time">14:32:45</div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <textarea class="chat-input" id="chat-input" placeholder="输入您的问题..." rows="1"></textarea>
+                    <button class="send-btn" id="send-btn">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-panel">
+        <div class="feature-card">
+            <div class="feature-icon" style="background: #e8f0fe; color: #4285f4;">🌐</div>
+            <div class="feature-title">多语言支持</div>
+            <div class="feature-description">支持15+种语言的实时翻译和对话，满足全球用户需求。</div>
+            <div class="feature-stat">
+                <span>准确率：</span>
+                <span class="feature-stat-value">96.8%</span>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon" style="background: #fef7e0; color: #f9ab00;">🧠</div>
+            <div class="feature-title">知识库集成</div>
+            <div class="feature-description">连接企业内部知识库，提供精准的领域专业回答。</div>
+            <div class="feature-stat">
+                <span>知识覆盖：</span>
+                <span class="feature-stat-value">50万+文档</span>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon" style="background: #e6f4ea; color: #34a853;">📊</div>
+            <div class="feature-title">对话分析</div>
+            <div class="feature-description">智能分析用户意图和情感，持续优化对话体验。</div>
+            <div class="feature-stat">
+                <span>意图识别率：</span>
+                <span class="feature-stat-value">94.3%</span>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon" style="background: #fce8e6; color: #ea4335;">🔒</div>
+            <div class="feature-title">安全合规</div>
+            <div class="feature-description">企业级数据安全保障，支持私有化部署和数据隔离。</div>
+            <div class="feature-stat">
+                <span>合规认证：</span>
+                <span class="feature-stat-value">ISO27001/GDPR</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 聊天输入框自动调整高度
+        const chatInput = document.getElementById('chat-input');
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // 发送消息
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            // 禁用发送按钮，模拟加载状态
+            sendBtn.disabled = true;
+            
+            // 模拟机器人回复
+            setTimeout(() => {
+                const responses = [
+                    "感谢您的问题！平台的vGPU智能切分技术可以将单个物理GPU动态划分为多个虚拟GPU，根据工作负载自动调整资源分配，大幅提高GPU利用率，降低成本。",
+                    "的云原生引擎完全兼容Kubernetes生态，支持容器化部署和弹性伸缩，让AI应用可以像云服务一样按需使用。",
+                    "我们的多机多卡支持功能采用高效的分布式训练算法，可以在集群环境中协调多台服务器的计算资源，加速大规模模型训练。",
+                    "已经完成了对国内主流AI芯片的适配，包括昆仑、天机、海光等，保证模型在不同硬件上都能高效运行。",
+                    "我们提供了全面的模型生命周期管理，从训练、微调到部署、监控、更新的一站式解决方案，大幅简化AI应用开发流程。"
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+                sendBtn.disabled = false;
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 新建对话
+        document.getElementById('new-chat-btn').addEventListener('click', function() {
+            // 清空聊天记录
+            chatMessages.innerHTML = '';
+            
+            // 添加欢迎消息
+            const welcomeMessages = [
+                "您好！我是智能助手，有什么可以帮助您的？",
+                "欢迎使用智能对话系统，请问您有什么需求？",
+                "您好，很高兴为您服务。请问有什么问题需要解答？",
+                "智能助手已就绪，请问您想了解什么？"
+            ];
+            
+            const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+            addMessage(randomWelcome, 'bot');
+            
+            // 更新对话标题
+            document.querySelector('.chat-title').textContent = "新对话 " + new Date().toLocaleTimeString();
+        });
+
+        // 切换对话
+        const chatSessions = document.querySelectorAll('.chat-session');
+        chatSessions.forEach(session => {
+            session.addEventListener('click', function() {
+                // 移除其他会话的active类
+                chatSessions.forEach(s => s.classList.remove('active'));
+                // 添加当前会话的active类
+                this.classList.add('active');
+                
+                // 更新对话标题
+                const sessionTitle = this.querySelector('.session-title').textContent;
+                document.querySelector('.chat-title').textContent = sessionTitle;
+                
+                // 这里可以添加加载对应会话历史记录的逻辑
+            });
+        });
+
+        // 模拟实时更新统计数据
+        function updateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            // 更新日对话量
+            const dailyChats = statNumbers[1];
+            const currentValue = parseFloat(dailyChats.textContent.replace(/[^\d.-]/g, ''));
+            const newValue = currentValue + Math.floor(Math.random() * 10);
+            dailyChats.textContent = newValue.toFixed(1) + 'K';
+            
+            // 更新响应时间
+            const responseTime = statNumbers[2];
+            const currentTime = parseFloat(responseTime.textContent.replace(/[^\d.-]/g, ''));
+            const newTime = currentTime + (Math.random() - 0.5) * 0.1;
+            responseTime.textContent = Math.max(0.1, Math.min(2.0, newTime)).toFixed(1) + 's';
+        }
+
+        // 每30秒更新一次统计数据
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html>

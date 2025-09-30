@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI应用场景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+            padding: 32px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #5f6368;
+        }
+
+        .ai-scenario-section {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            height: calc(100vh - 200px);
+        }
+
+        .ai-scenario-sidebar {
+            background: #ffffff;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            overflow-y: auto;
+        }
+
+        .ai-scenario-content {
+            background: #ffffff;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .ai-app-card {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ai-app-card:hover {
+            background: #e8f0fe;
+            border-color: #4285f4;
+        }
+
+        .ai-app-card.active {
+            background: #e8f0fe;
+            border-color: #4285f4;
+        }
+
+        .app-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .ai-app-card.active .app-title {
+            color: #1a73e8;
+        }
+
+        .app-description {
+            font-size: 12px;
+            color: #5f6368;
+            margin-bottom: 8px;
+        }
+
+        .app-metrics {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .app-status {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #137333;
+        }
+
+        .status-demo {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .app-demo-preview {
+            color: #5f6368;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #5f6368;
+            font-size: 16px;
+            margin-top: 100px;
+        }
+
+        .scenario-detail {
+            color: #202124;
+        }
+
+        .scenario-detail h2 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: #202124;
+        }
+
+        .scenario-detail h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 24px 0 12px 0;
+            color: #202124;
+        }
+
+        .scenario-detail p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            color: #5f6368;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .feature-card h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #202124;
+        }
+
+        .feature-card p {
+            font-size: 12px;
+            color: #5f6368;
+            margin: 0;
+        }
+
+        .demo-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 20px;
+            font-weight: 500;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .demo-button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background 0.2s ease;
+        }
+
+        .demo-button:hover {
+            background: #1a73e8;
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: #fff3e0;
+            padding: 16px;
+            border-left: 4px solid #fbbc04;
+            border-radius: 4px;
+            margin: 16px 0;
+        }
+
+        .highlight h4 {
+            color: #ef6c00;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .highlight p {
+            color: #5f6368;
+            margin: 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">AI应用场景</h1>
+        <p class="page-subtitle">各个领域的智能应用解决方案</p>
+    </div>
+
+    <div class="ai-scenario-section">
+        <div class="ai-scenario-sidebar">
+            <h3 class="sidebar-title">应用场景</h3>
+            
+            <div class="ai-app-card" onclick="selectAppScenario('nlp')">
+                <div class="app-title">🔤 自然语言处理</div>
+                <div class="app-description">智能文本分析、机器翻译、情感分析</div>
+                <div class="app-metrics">
+                    <span class="app-status status-active">生产环境</span>
+                    <span class="app-demo-preview">99.2% 准确率</span>
+                </div>
+            </div>
+
+            <div class="ai-app-card" onclick="selectAppScenario('cv')">
+                <div class="app-title">👁️ 计算机视觉</div>
+                <div class="app-description">图像识别、目标检测、人脸识别</div>
+                <div class="app-metrics">
+                    <span class="app-status status-active">生产环境</span>
+                    <span class="app-demo-preview">实时处理</span>
+                </div>
+            </div>
+
+            <div class="ai-app-card" onclick="selectAppScenario('speech')">
+                <div class="app-title">🎤 语音技术</div>
+                <div class="app-description">语音识别、语音合成、声纹识别</div>
+                <div class="app-metrics">
+                    <span class="app-status status-active">生产环境</span>
+                    <span class="app-demo-preview">多语言支持</span>
+                </div>
+            </div>
+
+            <div class="ai-app-card" onclick="selectAppScenario('recommendation')">
+                <div class="app-title">🎯 推荐系统</div>
+                <div class="app-description">个性化推荐、协同过滤、内容推荐</div>
+                <div class="app-metrics">
+                    <span class="app-status status-active">生产环境</span>
+                    <span class="app-demo-preview">千万级用户</span>
+                </div>
+            </div>
+
+            <div class="ai-app-card" onclick="selectAppScenario('autonomous')">
+                <div class="app-title">🚗 自动驾驶</div>
+                <div class="app-description">路径规划、障碍检测、决策控制</div>
+                <div class="app-metrics">
+                    <span class="app-status status-demo">演示版本</span>
+                    <span class="app-demo-preview">L4级别</span>
+                </div>
+            </div>
+
+            <div class="ai-app-card" onclick="selectAppScenario('medical')">
+                <div class="app-title">🏥 医疗诊断</div>
+                <div class="app-description">影像诊断、病理分析、药物发现</div>
+                <div class="app-metrics">
+                    <span class="app-status status-demo">演示版本</span>
+                    <span class="app-demo-preview">FDA认证</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-scenario-content" id="scenario-content">
+            <div class="welcome-message">
+                <p>👈 请从左侧选择一个AI应用场景来查看详细信息</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = {
+            nlp: {
+                title: '自然语言处理',
+                description: '强大的自然语言处理能力，支持多种语言模型和文本分析任务。',
+                features: [
+                    { title: '智能文本分析', desc: '支持情感分析、实体识别、关键词提取等多种文本分析功能' },
+                    { title: '机器翻译', desc: '支持100+语言对的高质量机器翻译，准确率达99%以上' },
+                    { title: '对话系统', desc: '基于大语言模型的智能对话系统，支持多轮对话和上下文理解' },
+                    { title: '文本生成', desc: '支持文章写作、摘要生成、代码生成等多种文本生成任务' }
+                ],
+                stats: [
+                    { number: '99.2%', label: '翻译准确率' },
+                    { number: '50ms', label: '响应时间' },
+                    { number: '100+', label: '支持语言' },
+                    { number: '1M+', label: '日处理量' }
+                ],
+                highlight: {
+                    title: '核心优势',
+                    content: 'NLP引擎基于最新的Transformer架构，支持多模态输入，具备强大的上下文理解能力。'
+                },
+                code: `#  NLP API 示例\nfrom import NLP\n\n# 初始化NLP引擎\nnlp = NLP()\n\n# 文本分析\nresult = nlp.analyze(\n    text="是一个强大的AI操作系统",\n    tasks=["sentiment", "entities", "keywords"]\n)\n\nprint(result)`
+            },
+            cv: {
+                title: '计算机视觉',
+                description: '计算机视觉模块提供全面的图像和视频分析能力，支持实时处理和批量分析。',
+                features: [
+                    { title: '图像分类', desc: '支持1000+类别的图像分类，准确率达98%以上' },
+                    { title: '目标检测', desc: '实时检测图像中的多个目标，支持80+常见物体类别' },
+                    { title: '人脸识别', desc: '高精度人脸检测和识别，支持活体检测和表情分析' },
+                    { title: 'OCR文字识别', desc: '支持多语言文字识别，包括手写体和印刷体' }
+                ],
+                stats: [
+                    { number: '98.5%', label: '识别准确率' },
+                    { number: '30fps', label: '实时处理' },
+                    { number: '80+', label: '检测类别' },
+                    { number: '10M+', label: '日处理图片' }
+                ],
+                highlight: {
+                    title: '技术特色',
+                    content: '采用最新的YOLO和ResNet架构，支持边缘计算部署，具备毫秒级响应能力。'
+                },
+                code: `#  CV API 示例\nfrom  import ComputerVision\n\n# 初始化CV引擎\ncv = ComputerVision()\n\n# 图像分析\nresult = cv.analyze_image(\n    image_path="/path/to/image.jpg",\n    tasks=["classification", "detection", "ocr"]\n)\n\nprint(result)`
+            },
+            speech: {
+                title: '语音技术',
+                description: '语音技术模块提供完整的语音处理解决方案，包括识别、合成和分析功能。',
+                features: [
+                    { title: '语音识别', desc: '支持多语言语音转文字，准确率达97%以上' },
+                    { title: '语音合成', desc: '自然流畅的文字转语音，支持多种音色和语调' },
+                    { title: '声纹识别', desc: '基于声纹特征的身份认证，安全可靠' },
+                    { title: '语音增强', desc: '噪声抑制和语音增强，提升音质清晰度' }
+                ],
+                stats: [
+                    { number: '97.3%', label: '识别准确率' },
+                    { number: '200ms', label: '响应延迟' },
+                    { number: '20+', label: '支持语言' },
+                    { number: '500K+', label: '日处理时长' }
+                ],
+                highlight: {
+                    title: '应用场景',
+                    content: '广泛应用于智能客服、语音助手、会议转录、语音导航等场景。'
+                },
+                code: `#  Speech API 示例\nfrom  import Speech\n\n# 初始化语音引擎\nspeech = Speech()\n\n# 语音识别\nresult = speech.recognize(\n    audio_file="/path/to/audio.wav",\n    language="zh-CN"\n)\n\nprint(result.text)`
+            },
+            recommendation: {
+                title: '推荐系统',
+                description: '推荐系统基于深度学习和协同过滤算法，提供精准的个性化推荐服务。',
+                features: [
+                    { title: '协同过滤', desc: '基于用户行为和物品特征的协同过滤推荐' },
+                    { title: '内容推荐', desc: '基于内容特征和用户偏好的智能推荐' },
+                    { title: '实时推荐', desc: '毫秒级实时推荐响应，支持在线学习' },
+                    { title: '多场景适配', desc: '支持电商、视频、新闻等多种业务场景' }
+                ],
+                stats: [
+                    { number: '35%', label: '点击率提升' },
+                    { number: '50ms', label: '推荐延迟' },
+                    { number: '1000万+', label: '用户规模' },
+                    { number: '99.9%', label: '系统可用性' }
+                ],
+                highlight: {
+                    title: '核心算法',
+                    content: '结合深度学习、矩阵分解和图神经网络等先进算法，实现精准推荐。'
+                },
+                code: `#  Recommendation API 示例\nfrom  import Recommendation\n\n# 初始化推荐引擎\nrec = Recommendation()\n\n# 获取推荐\nresult = rec.get_recommendations(\n    user_id="user123",\n    num_items=10,\n    scenario="ecommerce"\n)\n\nprint(result.items)`
+            },
+            autonomous: {
+                title: '自动驾驶',
+                description: '自动驾驶模块提供L4级别的自动驾驶解决方案，包括感知、决策和控制。',
+                features: [
+                    { title: '环境感知', desc: '融合摄像头、激光雷达、毫米波雷达的多传感器感知' },
+                    { title: '路径规划', desc: '基于高精地图和实时路况的智能路径规划' },
+                    { title: '决策控制', desc: '毫秒级决策响应，确保行驶安全' },
+                    { title: '仿真测试', desc: '完整的仿真测试环境，支持各种驾驶场景' }
+                ],
+                stats: [
+                    { number: 'L4', label: '自动驾驶等级' },
+                    { number: '10ms', label: '决策延迟' },
+                    { number: '360°', label: '感知范围' },
+                    { number: '100万+', label: '测试里程' }
+                ],
+                highlight: {
+                    title: '安全保障',
+                    content: '通过多重安全机制和冗余设计，确保自动驾驶系统的安全可靠性。'
+                },
+                code: `#  Autonomous API 示例\nfrom  import Autonomous\n\n# 初始化自动驾驶系统\nauto = Autonomous()\n\n# 环境感知\nperception = auto.perceive(\n    sensors=["camera", "lidar", "radar"]\n)\n\n# 路径规划\npath = auto.plan_path(perception)\nprint(path)`
+            },
+            medical: {
+                title: '医疗诊断',
+                description: '医疗诊断模块基于深度学习技术，提供精准的医学影像分析和辅助诊断。',
+                features: [
+                    { title: '影像诊断', desc: 'CT、MRI、X光等医学影像的智能分析和诊断' },
+                    { title: '病理分析', desc: '病理切片的自动分析和疾病识别' },
+                    { title: '药物发现', desc: '基于AI的药物分子设计和筛选' },
+                    { title: '健康监测', desc: '生理指标监测和健康风险评估' }
+                ],
+                stats: [
+                    { number: '95.8%', label: '诊断准确率' },
+                    { number: '30s', label: '分析时间' },
+                    { number: '50+', label: '疾病类型' },
+                    { number: 'FDA', label: '认证标准' }
+                ],
+                highlight: {
+                    title: '临床应用',
+                    content: '已在多家三甲医院部署应用，显著提升诊断效率和准确性。'
+                },
+                code: `#  Medical API 示例\nfrom  import Medical\n\n# 初始化医疗诊断系统\nmed = Medical()\n\n# 影像分析\nresult = med.analyze_image(\n    image_path="/path/to/ct_scan.dcm",\n    modality="CT",\n    body_part="chest"\n)\n\nprint(result.diagnosis)`
+            }
+        };
+
+        function selectAppScenario(scenarioId) {
+            // 移除所有active类
+            document.querySelectorAll('.ai-app-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // 添加active类到当前选中的卡片
+            event.target.closest('.ai-app-card').classList.add('active');
+            
+            const scenario = scenarios[scenarioId];
+            if (!scenario) return;
+            
+            const content = document.getElementById('scenario-content');
+            
+            const featuresHtml = scenario.features.map(feature => `
+                <div class="feature-card">
+                    <h4>${feature.title}</h4>
+                    <p>${feature.desc}</p>
+                </div>
+            `).join('');
+            
+            const statsHtml = scenario.stats.map(stat => `
+                <div class="stat-card">
+                    <div class="number">${stat.number}</div>
+                    <div class="label">${stat.label}</div>
+                </div>
+            `).join('');
+            
+            content.innerHTML = `
+                <div class="scenario-detail">
+                    <h2>${scenario.title}</h2>
+                    <p>${scenario.description}</p>
+                    
+                    <div class="highlight">
+                        <h4>${scenario.highlight.title}</h4>
+                        <p>${scenario.highlight.content}</p>
+                    </div>
+                    
+                    <h3>核心功能</h3>
+                    <div class="feature-grid">
+                        ${featuresHtml}
+                    </div>
+                    
+                    <h3>性能指标</h3>
+                    <div class="demo-stats">
+                        ${statsHtml}
+                    </div>
+                    
+                    <h3>API示例</h3>
+                    <div class="code-example">${scenario.code}</div>
+                    
+                    <button class="demo-button" onclick="startDemo('${scenarioId}')">
+                        🚀 启动演示
+                    </button>
+                </div>
+            `;
+        }
+        
+        function startDemo(scenarioId) {
+            alert(`正在启动 ${scenarios[scenarioId].title} 演示...\n\n这将打开一个新的演示环境，展示该场景的实际应用效果。`);
+        }
+    </script>
+</body>
+</html>

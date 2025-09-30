@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗助手 - AI智能平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #4facfe;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .demo-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .demo-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .chat-interface {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: #4facfe;
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: #f1f3f4;
+            color: #333;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-area button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .input-area button:hover {
+            background: #3d8bfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 医疗助手</h1>
+            <p>智能医疗咨询与健康管理平台</p>
+        </div>
+        
+        <div class="content">
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <div class="feature-title">症状分析</div>
+                    <div class="feature-desc">基于症状描述提供初步的健康评估和建议，帮助用户了解可能的健康状况。</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💊</div>
+                    <div class="feature-title">用药指导</div>
+                    <div class="feature-desc">提供药物信息查询、用药提醒和药物相互作用检查等服务。</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">健康档案</div>
+                    <div class="feature-desc">建立个人健康档案，跟踪健康指标变化，提供个性化健康建议。</div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏃‍♂️</div>
+                    <div class="feature-title">健康管理</div>
+                    <div class="feature-desc">制定个性化的运动计划、饮食建议和生活方式改善方案。</div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <div class="demo-title">智能医疗咨询演示</div>
+                <div class="chat-interface" id="chatInterface">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            您好！我是您的医疗助手，可以为您提供健康咨询、症状分析和用药指导。请描述您的症状或健康问题。
+                        </div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-content">
+                            最近总是感觉头痛，特别是下午的时候，这是什么原因？
+                        </div>
+                    </div>
+                    <div class="message assistant">
+                        <div class="message-content">
+                            下午头痛可能有多种原因：<br>
+                            1. 紧张性头痛 - 工作压力、长时间用眼<br>
+                            2. 脱水 - 下午水分摄入不足<br>
+                            3. 血糖波动 - 午餐后血糖变化<br>
+                            4. 颈椎问题 - 长期低头工作<br><br>
+                            建议：适当休息、多喝水、做颈部运动。如症状持续，请就医检查。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <input type="text" placeholder="请描述您的症状或健康问题..." id="userInput">
+                    <button onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatInterface = document.getElementById('chatInterface');
+            
+            if (input.value.trim()) {
+                // 添加用户消息
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.innerHTML = `<div class="message-content">${input.value}</div>`;
+                chatInterface.appendChild(userMessage);
+                
+                // 模拟AI回复
+                setTimeout(() => {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'message assistant';
+                    aiMessage.innerHTML = `<div class="message-content">感谢您的咨询。基于您的描述，我建议您注意休息，保持良好的生活习惯。如有严重不适，请及时就医。</div>`;
+                    chatInterface.appendChild(aiMessage);
+                    chatInterface.scrollTop = chatInterface.scrollHeight;
+                }, 1000);
+                
+                input.value = '';
+                chatInterface.scrollTop = chatInterface.scrollHeight;
+            }
+        }
+        
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

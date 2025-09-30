@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多机多卡调度 - </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+            padding: 32px;
+        }
+
+        .demo-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .demo-card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 多机多卡样式 */
+        .cluster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .server-node {
+            background: #ffffff;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .server-node:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .server-title {
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #202124;
+        }
+
+        .gpu-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .gpu-item {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .gpu-load {
+            width: 100%;
+            height: 4px;
+            background: #e8eaed;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .load-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbc04, #f9ab00);
+            transition: width 0.5s ease;
+        }
+
+        /* 负载分发器样式 */
+        .load-balancer {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e8eaed;
+        }
+
+        .balancer-title {
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #1a73e8;
+        }
+
+        .balancer-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 100px;
+            font-size: 14px;
+        }
+
+        .flow-node.source {
+            background: #4285f4;
+            color: white;
+        }
+
+        .flow-node. {
+            background: #ea4335;
+            color: white;
+            animation: Pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes Pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .flow-arrow {
+            width: 30px;
+            height: 2px;
+            background: #5f6368;
+            position: relative;
+        }
+
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #5f6368;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        .flow-arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .flow-arrow.multi {
+            width: 24px;
+            height: 1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 500;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .control-panel {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e8eaed;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a73e8;
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaed;
+        }
+
+        .task-queue {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .task-details {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .task-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .status-running {
+            background: #e8f5e8;
+            color: #137333;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-completed {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">16</div>
+            <div class="stat-label">计算节点</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">128</div>
+            <div class="stat-label">GPU总数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">87.3%</div>
+            <div class="stat-label">集群利用率</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">42</div>
+            <div class="stat-label">运行任务</div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <h3 class="demo-card-title">🎯 任务调度控制</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="control-group">
+                <label class="control-label">任务类型</label>
+                <select class="control-input" id="task-type">
+                    <option value="training">模型训练</option>
+                    <option value="inference">推理服务</option>
+                    <option value="data-processing">数据处理</option>
+                    <option value="fine-tuning">模型微调</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="control-label">GPU需求</label>
+                <input type="number" class="control-input" id="gpu-requirement" value="4" min="1" max="8">
+            </div>
+            <div class="control-group">
+                <label class="control-label">调度策略</label>
+                <select class="control-input" id="schedule-strategy">
+                    <option value="balanced">负载均衡</option>
+                    <option value="performance">性能优先</option>
+                    <option value="cost">成本优先</option>
+                    <option value="locality">数据本地性</option>
+                </select>
+            </div>
+            <div class="control-group" style="display: flex; align-items: end; gap: 8px;">
+                <button class="btn btn-primary" onclick="submitTask()">提交任务</button>
+                <button class="btn btn-secondary" onclick="refreshCluster()">刷新状态</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-card">
+        <h3 class="demo-card-title">🖥️ 计算集群状态</h3>
+        <div class="cluster-grid" id="cluster-grid">
+            <!-- 服务器节点将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <div class="load-balancer">
+        <div class="balancer-title">🔄 智能负载分发</div>
+        <div class="balancer-flow">
+            <div class="flow-node source">用户请求</div>
+            <div class="flow-arrow"></div>
+            <div class="flow-node ">调度器</div>
+            <div class="flow-arrows">
+                <div class="flow-arrow multi"></div>
+                <div class="flow-arrow multi"></div>
+                <div class="flow-arrow multi"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="flow-node" style="background: #34a853; color: white; font-size: 12px;">节点1-4</div>
+                <div class="flow-node" style="background: #fbbc04; color: white; font-size: 12px;">节点5-8</div>
+                <div class="flow-node" style="background: #ea4335; color: white; font-size: 12px;">节点9-16</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="task-queue">
+        <h3 class="demo-card-title">📋 任务队列</h3>
+        <div id="task-list">
+            <!-- 任务列表将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 集群节点数据
+        const clusterNodes = [
+            { name: 'Node-01', gpus: [85, 72, 90, 68, 45, 88, 76, 92] },
+            { name: 'Node-02', gpus: [78, 65, 82, 91, 55, 73, 89, 67] },
+            { name: 'Node-03', gpus: [92, 88, 76, 84, 69, 95, 81, 74] },
+            { name: 'Node-04', gpus: [65, 78, 85, 72, 90, 68, 83, 77] },
+            { name: 'Node-05', gpus: [88, 92, 74, 86, 79, 91, 65, 82] },
+            { name: 'Node-06', gpus: [76, 84, 91, 68, 85, 79, 93, 71] },
+            { name: 'Node-07', gpus: [82, 75, 89, 94, 67, 81, 78, 86] },
+            { name: 'Node-08', gpus: [91, 68, 83, 77, 92, 74, 87, 80] },
+            { name: 'Node-09', gpus: [74, 87, 80, 93, 71, 84, 76, 89] },
+            { name: 'Node-10', gpus: [89, 72, 95, 68, 81, 78, 85, 92] },
+            { name: 'Node-11', gpus: [68, 85, 79, 91, 74, 87, 82, 76] },
+            { name: 'Node-12', gpus: [95, 71, 84, 78, 89, 72, 86, 93] },
+            { name: 'Node-13', gpus: [78, 89, 72, 85, 91, 68, 84, 77] },
+            { name: 'Node-14', gpus: [85, 92, 68, 81, 74, 87, 79, 94] },
+            { name: 'Node-15', gpus: [72, 86, 93, 71, 88, 75, 82, 89] },
+            { name: 'Node-16', gpus: [91, 74, 87, 80, 95, 68, 83, 76] }
+        ];
+
+        // 任务队列数据
+        const taskQueue = [
+            { name: 'BERT模型训练', type: 'training', gpus: 8, status: 'running', node: 'Node-01,02' },
+            { name: 'GPT推理服务', type: 'inference', gpus: 4, status: 'running', node: 'Node-03' },
+            { name: '图像分类训练', type: 'training', gpus: 2, status: 'running', node: 'Node-04' },
+            { name: '数据预处理', type: 'data-processing', gpus: 1, status: 'running', node: 'Node-05' },
+            { name: 'LLaMA微调', type: 'fine-tuning', gpus: 6, status: 'pending', node: '等待调度' },
+            { name: '语音识别训练', type: 'training', gpus: 4, status: 'pending', node: '等待调度' },
+            { name: '推荐系统推理', type: 'inference', gpus: 2, status: 'completed', node: 'Node-06' }
+        ];
+
+        // 渲染集群节点
+        function renderCluster() {
+            const container = document.getElementById('cluster-grid');
+            container.innerHTML = '';
+
+            clusterNodes.forEach(node => {
+                const nodeElement = document.createElement('div');
+                nodeElement.className = 'server-node';
+                
+                const gpuElements = node.gpus.map((load, index) => `
+                    <div class="gpu-item">
+                        GPU-${index + 1}
+                        <div class="gpu-load">
+                            <div class="load-bar" style="width: ${load}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                nodeElement.innerHTML = `
+                    <div class="server-title">${node.name}</div>
+                    <div class="gpu-list">
+                        ${gpuElements}
+                    </div>
+                `;
+                
+                container.appendChild(nodeElement);
+            });
+        }
+
+        // 渲染任务队列
+        function renderTaskQueue() {
+            const container = document.getElementById('task-list');
+            container.innerHTML = '';
+
+            taskQueue.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task-item';
+                
+                taskElement.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-details">类型: ${task.type} | GPU需求: ${task.gpus} | 节点: ${task.node}</div>
+                    </div>
+                    <div class="task-status status-${task.status}">${task.status}</div>
+                `;
+                
+                container.appendChild(taskElement);
+            });
+        }
+
+        // 提交任务
+        function submitTask() {
+            const taskType = document.getElementById('task-type').value;
+            const gpuRequirement = parseInt(document.getElementById('gpu-requirement').value);
+            const scheduleStrategy = document.getElementById('schedule-strategy').value;
+
+            // 创建新任务
+            const newTask = {
+                name: `${taskType}-${Math.floor(Math.random() * 1000)}`,
+                type: taskType,
+                gpus: gpuRequirement,
+                status: 'pending',
+                node: '等待调度'
+            };
+            
+            taskQueue.unshift(newTask);
+            renderTaskQueue();
+            
+            // 模拟调度过程
+            setTimeout(() => {
+                // 找到合适的节点
+                const availableNodes = clusterNodes.filter(node => {
+                    const availableGPUs = node.gpus.filter(load => load < 80).length;
+                    return availableGPUs >= gpuRequirement;
+                });
+                
+                if (availableNodes.length > 0) {
+                    const selectedNode = availableNodes[0];
+                    newTask.status = 'running';
+                    newTask.node = selectedNode.name;
+                    
+                    // 更新节点GPU负载
+                    for (let i = 0; i < gpuRequirement; i++) {
+                        const availableGPUIndex = selectedNode.gpus.findIndex(load => load < 80);
+                        if (availableGPUIndex !== -1) {
+                            selectedNode.gpus[availableGPUIndex] = Math.min(95, selectedNode.gpus[availableGPUIndex] + 20 + Math.random() * 10);
+                        }
+                    }
+                    
+                    renderCluster();
+                    renderTaskQueue();
+                    
+                    alert(`任务已成功调度到 ${selectedNode.name}！\n调度策略: ${scheduleStrategy}`);
+                } else {
+                    alert('当前没有足够的GPU资源，任务已加入等待队列。');
+                }
+            }, 1500);
+        }
+
+        // 刷新集群状态
+        function refreshCluster() {
+            // 随机更新GPU负载
+            clusterNodes.forEach(node => {
+                node.gpus = node.gpus.map(load => {
+                    const change = (Math.random() - 0.5) * 10;
+                    return Math.max(10, Math.min(95, load + change));
+                });
+            });
+            
+            renderCluster();
+            alert('集群状态已刷新！');
+        }
+
+        // 模拟实时数据更新
+        function updateClusterData() {
+            clusterNodes.forEach(node => {
+                node.gpus = node.gpus.map(load => {
+                    const change = (Math.random() - 0.5) * 3;
+                    return Math.max(10, Math.min(95, load + change));
+                });
+            });
+            renderCluster();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCluster();
+            renderTaskQueue();
+            
+            // 每10秒更新一次数据
+            setInterval(updateClusterData, 10000);
+        });
+    </script>
+</body>
+</html>

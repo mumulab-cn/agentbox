@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中英文翻译对比页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .input-section, .output-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-right: 3px solid #e9ecef;
+        }
+        
+        .output-section {
+            background: #ffffff;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .flag {
+            font-size: 1.8em;
+        }
+        
+        .text-area {
+            flex: 1;
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 300px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        .text-area:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .output-area {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 300px;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #2196F3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .tech-link {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tech-link:hover {
+            color: #2196F3;
+            border-bottom-color: #2196F3;
+            background: rgba(79, 172, 254, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .word-count {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .sample-texts {
+            margin: 20px 0;
+        }
+        
+        .sample-texts h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .sample-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sample-item:hover {
+            background: #f0f8ff;
+            transform: translateX(5px);
+        }
+        
+        .sample-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .sample-preview {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .tech-terms {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .tech-terms h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .tech-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-item:hover {
+            background: #e3f2fd;
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 3px solid #e9ecef;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 中英文翻译对比工具</h1>
+            <p>专业的技术文档翻译助手，支持云计算、虚拟化等技术词汇智能识别</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">
+                    <span class="flag">🇨🇳</span>
+                    中文输入
+                </div>
+                
+                <textarea 
+                    class="text-area" 
+                    id="chineseInput" 
+                    placeholder="请在此输入中文内容...\n\n支持技术词汇自动识别：\n• 云计算\n• 虚拟化\n• 人工智能\n• 大数据\n• 区块链\n• 物联网\n等等..."
+                    oninput="translateText()"
+                ></textarea>
+                
+                <div class="word-count" id="inputWordCount">字符数: 0</div>
+                
+                <div class="controls">
+                    <button class="btn" onclick="translateText()">
+                        <span>🔄</span> 立即翻译
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearText()">
+                        <span>🗑️</span> 清空内容
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyToClipboard('chineseInput')">
+                        <span>📋</span> 复制中文
+                    </button>
+                </div>
+                
+                <div class="sample-texts">
+                    <h3>📝 示例文本</h3>
+                    <div class="sample-item" onclick="loadSample(0)">
+                        <div class="sample-title">云计算基础介绍</div>
+                        <div class="sample-preview">云计算是一种通过互联网提供计算服务的模式...</div>
+                    </div>
+                    <div class="sample-item" onclick="loadSample(1)">
+                        <div class="sample-title">虚拟化技术概述</div>
+                        <div class="sample-preview">虚拟化技术允许在单一物理硬件上运行多个虚拟系统...</div>
+                    </div>
+                    <div class="sample-item" onclick="loadSample(2)">
+                        <div class="sample-title">人工智能发展</div>
+                        <div class="sample-preview">人工智能正在改变我们的生活和工作方式...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="section-title">
+                    <span class="flag">🇺🇸</span>
+                    英文翻译
+                </div>
+                
+                <div class="output-area" id="englishOutput">
+                    <p style="color: #999; text-align: center; margin-top: 100px;">
+                        💡 在左侧输入中文内容，这里将显示对应的英文翻译<br><br>
+                        🔗 技术词汇将自动添加学习链接
+                    </p>
+                </div>
+                
+                <div class="word-count" id="outputWordCount">单词数: 0</div>
+                
+                <div class="controls">
+                    <button class="btn" onclick="copyToClipboard('englishOutput')">
+                        <span>📋</span> 复制英文
+                    </button>
+                    <button class="btn btn-secondary" onclick="speakText()">
+                        <span>🔊</span> 朗读英文
+                    </button>
+                </div>
+                
+                <div class="tech-terms">
+                    <h3>🔗 技术词汇快速链接</h3>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <a href="https://aws.amazon.com/what-is-cloud-computing/" target="_blank" class="tech-link">云计算 Cloud Computing</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.vmware.com/topics/glossary/content/virtualization.html" target="_blank" class="tech-link">虚拟化 Virtualization</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.ibm.com/topics/artificial-intelligence" target="_blank" class="tech-link">人工智能 AI</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.oracle.com/big-data/what-is-big-data/" target="_blank" class="tech-link">大数据 Big Data</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.ibm.com/topics/what-is-blockchain" target="_blank" class="tech-link">区块链 Blockchain</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.cisco.com/c/en/us/solutions/internet-of-things/overview.html" target="_blank" class="tech-link">物联网 IoT</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/" target="_blank" class="tech-link">容器编排 Kubernetes</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.docker.com/resources/what-container/" target="_blank" class="tech-link">容器技术 Docker</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://microservices.io/" target="_blank" class="tech-link">微服务 Microservices</a>
+                        </div>
+                        <div class="tech-item">
+                            <a href="https://www.redhat.com/en/topics/devops" target="_blank" class="tech-link">DevOps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💡 提示：本工具使用内置词典进行翻译，技术词汇链接指向权威学习资源</p>
+        </div>
+    </div>
+
+    <script>
+        // 示例文本数据
+        const sampleTexts = [
+            {
+                title: "云计算基础介绍",
+                content: "云计算是一种通过互联网提供计算服务的模式，包括服务器、存储、数据库、网络、软件、分析和智能等服务。云计算具有按需自助服务、广泛的网络访问、资源池化、快速弹性和可测量服务等特征。主要的服务模型包括基础设施即服务(IaaS)、平台即服务(PaaS)和软件即服务(SaaS)。云计算的部署模型有公有云、私有云、混合云和社区云。通过虚拟化技术，云计算能够实现资源的高效利用和动态分配。"
+            },
+            {
+                title: "虚拟化技术概述",
+                content: "虚拟化技术允许在单一物理硬件上运行多个虚拟系统，通过虚拟机监控程序(Hypervisor)来管理和分配硬件资源。主要类型包括服务器虚拟化、桌面虚拟化、应用程序虚拟化和网络虚拟化。容器技术如Docker提供了轻量级的虚拟化解决方案，而Kubernetes则用于容器编排和管理。虚拟化技术提高了资源利用率，降低了硬件成本，增强了系统的灵活性和可扩展性。"
+            },
+            {
+                title: "人工智能发展",
+                content: "人工智能正在改变我们的生活和工作方式，包括机器学习、深度学习、自然语言处理、计算机视觉等技术领域。大数据为人工智能提供了丰富的训练数据，而云计算则提供了强大的计算能力。物联网设备产生的海量数据通过边缘计算进行预处理，然后传输到云端进行深度分析。区块链技术确保了数据的安全性和可信度。这些技术的融合推动了智能制造、智慧城市、自动驾驶等应用的发展。"
+            }
+        ];
+        
+        // 技术词汇翻译字典
+        const techDictionary = {
+            '云计算': 'Cloud Computing',
+            '虚拟化': 'Virtualization',
+            '人工智能': 'Artificial Intelligence',
+            '机器学习': 'Machine Learning',
+            '深度学习': 'Deep Learning',
+            '大数据': 'Big Data',
+            '物联网': 'Internet of Things (IoT)',
+            '区块链': 'Blockchain',
+            '容器技术': 'Container Technology',
+            '微服务': 'Microservices',
+            '边缘计算': 'Edge Computing',
+            '自然语言处理': 'Natural Language Processing (NLP)',
+            '计算机视觉': 'Computer Vision',
+            '数据库': 'Database',
+            '服务器': 'Server',
+            '网络': 'Network',
+            '存储': 'Storage',
+            '软件': 'Software',
+            '硬件': 'Hardware',
+            '算法': 'Algorithm',
+            '数据挖掘': 'Data Mining',
+            '网络安全': 'Cybersecurity',
+            '防火墙': 'Firewall',
+            '负载均衡': 'Load Balancing',
+            '分布式系统': 'Distributed System',
+            '高可用性': 'High Availability',
+            '容灾备份': 'Disaster Recovery',
+            '性能优化': 'Performance Optimization',
+            '扩展性': 'Scalability',
+            '可靠性': 'Reliability',
+            '监控': 'Monitoring',
+            '日志': 'Logging',
+            '部署': 'Deployment',
+            '运维': 'Operations',
+            '开发': 'Development',
+            '测试': 'Testing',
+            '集成': 'Integration',
+            '接口': 'Interface',
+            '协议': 'Protocol',
+            '架构': 'Architecture',
+            '框架': 'Framework',
+            '平台': 'Platform',
+            '环境': 'Environment',
+            '配置': 'Configuration',
+            '管理': 'Management',
+            '服务': 'Service',
+            '应用': 'Application',
+            '系统': 'System',
+            '技术': 'Technology',
+            '解决方案': 'Solution',
+            '基础设施': 'Infrastructure',
+            '资源': 'Resource',
+            '计算': 'Computing',
+            '处理': 'Processing',
+            '分析': 'Analytics',
+            '智能': 'Intelligence',
+            '自动化': 'Automation',
+            '优化': 'Optimization',
+            '效率': 'Efficiency',
+            '成本': 'Cost',
+            '安全': 'Security',
+            '隐私': 'Privacy',
+            '合规': 'Compliance',
+            '标准': 'Standard',
+            '规范': 'Specification',
+            '文档': 'Documentation',
+            '培训': 'Training',
+            '支持': 'Support',
+            '维护': 'Maintenance',
+            '升级': 'Upgrade',
+            '迁移': 'Migration',
+            '集群': 'Cluster',
+            '节点': 'Node',
+            '实例': 'Instance',
+            '镜像': 'Image',
+            '容器': 'Container',
+            '编排': 'Orchestration',
+            '调度': 'Scheduling',
+            '弹性': 'Elasticity',
+            '伸缩': 'Scaling',
+            '负载': 'Load',
+            '流量': 'Traffic',
+            '带宽': 'Bandwidth',
+            '延迟': 'Latency',
+            '吞吐量': 'Throughput',
+            '并发': 'Concurrency',
+            '异步': 'Asynchronous',
+            '同步': 'Synchronous',
+            '缓存': 'Cache',
+            '队列': 'Queue',
+            '消息': 'Message',
+            '事件': 'Event',
+            '触发器': 'Trigger',
+            '工作流': 'Workflow',
+            '流程': 'Process',
+            '任务': 'Task',
+            '作业': 'Job',
+            '批处理': 'Batch Processing',
+            '实时': 'Real-time',
+            '流式处理': 'Stream Processing',
+            '数据流': 'Data Stream',
+            '管道': 'Pipeline',
+            '模型': 'Model',
+            '训练': 'Training',
+            '推理': 'Inference',
+            '预测': 'Prediction',
+            '分类': 'Classification',
+            '聚类': 'Clustering',
+            '回归': 'Regression',
+            '特征': 'Feature',
+            '标签': 'Label',
+            '样本': 'Sample',
+            '数据集': 'Dataset',
+            '验证': 'Validation',
+            '评估': 'Evaluation',
+            '指标': 'Metrics',
+            '准确率': 'Accuracy',
+            '精确率': 'Precision',
+            '召回率': 'Recall',
+            '神经网络': 'Neural Network',
+            '卷积': 'Convolution',
+            '循环': 'Recurrent',
+            '注意力机制': 'Attention Mechanism',
+            '转换器': 'Transformer',
+            '生成对抗网络': 'Generative Adversarial Network (GAN)',
+            '强化学习': 'Reinforcement Learning',
+            '监督学习': 'Supervised Learning',
+            '无监督学习': 'Unsupervised Learning',
+            '半监督学习': 'Semi-supervised Learning',
+            '迁移学习': 'Transfer Learning',
+            '联邦学习': 'Federated Learning',
+            '多模态': 'Multimodal',
+            '跨模态': 'Cross-modal',
+            '语音识别': 'Speech Recognition',
+            '图像识别': 'Image Recognition',
+            '文本分析': 'Text Analysis',
+            '情感分析': 'Sentiment Analysis',
+            '知识图谱': 'Knowledge Graph',
+            '推荐系统': 'Recommendation System',
+            '搜索引擎': 'Search Engine',
+            '信息检索': 'Information Retrieval',
+            '数据仓库': 'Data Warehouse',
+            '数据湖': 'Data Lake',
+            '数据治理': 'Data Governance',
+            '数据质量': 'Data Quality',
+            '数据清洗': 'Data Cleaning',
+            '数据预处理': 'Data Preprocessing',
+            '特征工程': 'Feature Engineering',
+            '可视化': 'Visualization',
+            '仪表板': 'Dashboard',
+            '报表': 'Report',
+            '商业智能': 'Business Intelligence (BI)',
+            '决策支持': 'Decision Support',
+            '预测分析': 'Predictive Analytics',
+            '描述性分析': 'Descriptive Analytics',
+            '诊断性分析': 'Diagnostic Analytics',
+            '规范性分析': 'Prescriptive Analytics'
+        };
+        
+        // 翻译文本函数
+        function translateText() {
+            const chineseText = document.getElementById('chineseInput').value;
+            const outputDiv = document.getElementById('englishOutput');
+            
+            if (!chineseText.trim()) {
+                outputDiv.innerHTML = '<p style="color: #999; text-align: center; margin-top: 100px;">💡 在左侧输入中文内容，这里将显示对应的英文翻译<br><br>🔗 技术词汇将自动添加学习链接</p>';
+                updateWordCount('outputWordCount', 0);
+                return;
+            }
+            
+            // 简单的翻译逻辑（实际应用中可以调用翻译API）
+            let translatedText = performTranslation(chineseText);
+            
+            // 添加技术词汇链接
+            translatedText = addTechLinks(translatedText);
+            
+            outputDiv.innerHTML = translatedText;
+            
+            // 更新字符数统计
+            const wordCount = translatedText.replace(/<[^>]*>/g, '').split(/\s+/).filter(word => word.length > 0).length;
+            updateWordCount('outputWordCount', wordCount);
+        }
+        
+        // 执行翻译（简化版本）
+        function performTranslation(text) {
+            let translated = text;
+            
+            // 使用词典进行技术词汇翻译
+            for (const [chinese, english] of Object.entries(techDictionary)) {
+                const regex = new RegExp(chinese, 'g');
+                translated = translated.replace(regex, english);
+            }
+            
+            // 简单的句子结构调整
+            translated = translated
+                .replace(/的/g, ' of ')
+                .replace(/和/g, ' and ')
+                .replace(/或/g, ' or ')
+                .replace(/但是/g, ' but ')
+                .replace(/因为/g, ' because ')
+                .replace(/所以/g, ' so ')
+                .replace(/如果/g, ' if ')
+                .replace(/那么/g, ' then ')
+                .replace(/通过/g, ' through ')
+                .replace(/使用/g, ' using ')
+                .replace(/实现/g, ' achieve ')
+                .replace(/提供/g, ' provide ')
+                .replace(/包括/g, ' including ')
+                .replace(/具有/g, ' has ')
+                .replace(/能够/g, ' can ')
+                .replace(/允许/g, ' allows ')
+                .replace(/支持/g, ' supports ')
+                .replace(/确保/g, ' ensures ')
+                .replace(/提高/g, ' improves ')
+                .replace(/降低/g, ' reduces ')
+                .replace(/增强/g, ' enhances ')
+                .replace(/推动/g, ' drives ')
+                .replace(/促进/g, ' promotes ')
+                .replace(/改变/g, ' changes ')
+                .replace(/发展/g, ' development ')
+                .replace(/应用/g, ' application ')
+                .replace(/方式/g, ' way ')
+                .replace(/模式/g, ' model ')
+                .replace(/类型/g, ' type ')
+                .replace(/特征/g, ' characteristics ')
+                .replace(/优势/g, ' advantages ')
+                .replace(/挑战/g, ' challenges ')
+                .replace(/趋势/g, ' trends ')
+                .replace(/未来/g, ' future ')
+                .replace(/目前/g, ' currently ')
+                .replace(/主要/g, ' main ')
+                .replace(/重要/g, ' important ')
+                .replace(/关键/g, ' key ')
+                .replace(/核心/g, ' core ')
+                .replace(/基础/g, ' basic ')
+                .replace(/高级/g, ' advanced ')
+                .replace(/复杂/g, ' complex ')
+                .replace(/简单/g, ' simple ')
+                .replace(/有效/g, ' effective ')
+                .replace(/高效/g, ' efficient ')
+                .replace(/快速/g, ' fast ')
+                .replace(/稳定/g, ' stable ')
+                .replace(/安全/g, ' secure ')
+                .replace(/可靠/g, ' reliable ')
+                .replace(/灵活/g, ' flexible ')
+                .replace(/强大/g, ' powerful ')
+                .replace(/智能/g, ' intelligent ')
+                .replace(/自动/g, ' automatic ')
+                .replace(/手动/g, ' manual ')
+                .replace(/在线/g, ' online ')
+                .replace(/离线/g, ' offline ')
+                .replace(/本地/g, ' local ')
+                .replace(/远程/g, ' remote ')
+                .replace(/全球/g, ' global ')
+                .replace(/国际/g, ' international ')
+                .replace(/国内/g, ' domestic ')
+                .replace(/企业/g, ' enterprise ')
+                .replace(/公司/g, ' company ')
+                .replace(/组织/g, ' organization ')
+                .replace(/团队/g, ' team ')
+                .replace(/用户/g, ' user ')
+                .replace(/客户/g, ' customer ')
+                .replace(/开发者/g, ' developer ')
+                .replace(/工程师/g, ' engineer ')
+                .replace(/专家/g, ' expert ')
+                .replace(/研究/g, ' research ')
+                .replace(/学习/g, ' learning ')
+                .replace(/培训/g, ' training ')
+                .replace(/教育/g, ' education ')
+                .replace(/知识/g, ' knowledge ')
+                .replace(/经验/g, ' experience ')
+                .replace(/技能/g, ' skills ')
+                .replace(/能力/g, ' capability ')
+                .replace(/水平/g, ' level ')
+                .replace(/质量/g, ' quality ')
+                .replace(/性能/g, ' performance ')
+                .replace(/效果/g, ' effect ')
+                .replace(/结果/g, ' result ')
+                .replace(/成果/g, ' achievement ')
+                .replace(/价值/g, ' value ')
+                .replace(/利益/g, ' benefit ')
+                .replace(/成本/g, ' cost ')
+                .replace(/投资/g, ' investment ')
+                .replace(/回报/g, ' return ')
+                .replace(/风险/g, ' risk ')
+                .replace(/机会/g, ' opportunity ')
+                .replace(/挑战/g, ' challenge ')
+                .replace(/问题/g, ' problem ')
+                .replace(/解决/g, ' solve ')
+                .replace(/方案/g, ' solution ')
+                .replace(/策略/g, ' strategy ')
+                .replace(/计划/g, ' plan ')
+                .replace(/目标/g, ' goal ')
+                .replace(/任务/g, ' task ')
+                .replace(/项目/g, ' project ')
+                .replace(/产品/g, ' product ')
+                .replace(/服务/g, ' service ')
+                .replace(/功能/g, ' function ')
+                .replace(/特性/g, ' feature ')
+                .replace(/工具/g, ' tool ')
+                .replace(/设备/g, ' device ')
+                .replace(/机器/g, ' machine ')
+                .replace(/设施/g, ' facility ')
+                .replace(/环境/g, ' environment ')
+                .replace(/条件/g, ' condition ')
+                .replace(/要求/g, ' requirement ')
+                .replace(/标准/g, ' standard ')
+                .replace(/规范/g, ' specification ')
+                .replace(/协议/g, ' protocol ')
+                .replace(/接口/g, ' interface ')
+                .replace(/格式/g, ' format ')
+                .replace(/结构/g, ' structure ')
+                .replace(/架构/g, ' architecture ')
+                .replace(/设计/g, ' design ')
+                .replace(/开发/g, ' development ')
+                .replace(/实施/g, ' implementation ')
+                .replace(/部署/g, ' deployment ')
+                .replace(/运行/g, ' running ')
+                .replace(/操作/g, ' operation ')
+                .replace(/管理/g, ' management ')
+                .replace(/维护/g, ' maintenance ')
+                .replace(/监控/g, ' monitoring ')
+                .replace(/测试/g, ' testing ')
+                .replace(/验证/g, ' verification ')
+                .replace(/评估/g, ' evaluation ')
+                .replace(/分析/g, ' analysis ')
+                .replace(/处理/g, ' processing ')
+                .replace(/计算/g, ' computing ')
+                .replace(/存储/g, ' storage ')
+                .replace(/传输/g, ' transmission ')
+                .replace(/通信/g, ' communication ')
+                .replace(/连接/g, ' connection ')
+                .replace(/网络/g, ' network ')
+                .replace(/系统/g, ' system ')
+                .replace(/平台/g, ' platform ')
+                .replace(/框架/g, ' framework ')
+                .replace(/库/g, ' library ')
+                .replace(/模块/g, ' module ')
+                .replace(/组件/g, ' component ')
+                .replace(/元素/g, ' element ')
+                .replace(/对象/g, ' object ')
+                .replace(/实体/g, ' entity ')
+                .replace(/资源/g, ' resource ')
+                .replace(/数据/g, ' data ')
+                .replace(/信息/g, ' information ')
+                .replace(/内容/g, ' content ')
+                .replace(/文件/g, ' file ')
+                .replace(/文档/g, ' document ')
+                .replace(/报告/g, ' report ')
+                .replace(/记录/g, ' record ')
+                .replace(/日志/g, ' log ')
+                .replace(/配置/g, ' configuration ')
+                .replace(/设置/g, ' settings ')
+                .replace(/参数/g, ' parameters ')
+                .replace(/选项/g, ' options ')
+                .replace(/功能/g, ' functionality ')
+                .replace(/特征/g, ' features ')
+                .replace(/属性/g, ' properties ')
+                .replace(/状态/g, ' status ')
+                .replace(/模式/g, ' mode ')
+                .replace(/版本/g, ' version ')
+                .replace(/更新/g, ' update ')
+                .replace(/升级/g, ' upgrade ')
+                .replace(/安装/g, ' installation ')
+                .replace(/配置/g, ' configuration ')
+                .replace(/集成/g, ' integration ')
+                .replace(/兼容/g, ' compatible ')
+                .replace(/支持/g, ' support ')
+                .replace(/帮助/g, ' help ')
+                .replace(/指导/g, ' guidance ')
+                .replace(/建议/g, ' recommendation ')
+                .replace(/提示/g, ' tip ')
+                .replace(/注意/g, ' note ')
+                .replace(/警告/g, ' warning ')
+                .replace(/错误/g, ' error ')
+                .replace(/异常/g, ' exception ')
+                .replace(/故障/g, ' failure ')
+                .replace(/问题/g, ' issue ')
+                .replace(/修复/g, ' fix ')
+                .replace(/调试/g, ' debug ')
+                .replace(/优化/g, ' optimization ')
+                .replace(/改进/g, ' improvement ')
+                .replace(/增强/g, ' enhancement ')
+                .replace(/扩展/g, ' extension ')
+                .replace(/定制/g, ' customization ')
+                .replace(/个性化/g, ' personalization ')
+                .replace(/自定义/g, ' custom ')
+                .replace(/默认/g, ' default ')
+                .replace(/标准/g, ' standard ')
+                .replace(/通用/g, ' general ')
+                .replace(/专用/g, ' dedicated ')
+                .replace(/特殊/g, ' special ')
+                .replace(/独特/g, ' unique ')
+                .replace(/常见/g, ' common ')
+                .replace(/典型/g, ' typical ')
+                .replace(/普通/g, ' ordinary ')
+                .replace(/基本/g, ' basic ')
+                .replace(/高级/g, ' advanced ')
+                .replace(/专业/g, ' professional ')
+                .replace(/商业/g, ' commercial ')
+                .replace(/免费/g, ' free ')
+                .replace(/开源/g, ' open source ')
+                .replace(/闭源/g, ' closed source ')
+                .replace(/公开/g, ' public ')
+                .replace(/私有/g, ' private ')
+                .replace(/内部/g, ' internal ')
+                .replace(/外部/g, ' external ')
+                .replace(/第三方/g, ' third-party ')
+                .replace(/供应商/g, ' vendor ')
+                .replace(/提供商/g, ' provider ')
+                .replace(/制造商/g, ' manufacturer ')
+                .replace(/开发商/g, ' developer ')
+                .replace(/发布商/g, ' publisher ')
+                .replace(/分销商/g, ' distributor ')
+                .replace(/合作伙伴/g, ' partner ')
+                .replace(/客户/g, ' client ')
+                .replace(/最终用户/g, ' end user ')
+                .replace(/管理员/g, ' administrator ')
+                .replace(/操作员/g, ' operator ')
+                .replace(/技术员/g, ' technician ')
+                .replace(/分析师/g, ' analyst ')
+                .replace(/顾问/g, ' consultant ')
+                .replace(/架构师/g, ' architect ')
+                .replace(/设计师/g, ' designer ')
+                .replace(/程序员/g, ' programmer ')
+                .replace(/编码员/g, ' coder ')
+                .replace(/测试员/g, ' tester ')
+                .replace(/质量保证/g, ' quality assurance ')
+                .replace(/项目经理/g, ' project manager ')
+                .replace(/产品经理/g, ' product manager ')
+                .replace(/技术经理/g, ' technical manager ')
+                .replace(/团队领导/g, ' team leader ')
+                .replace(/主管/g, ' supervisor ')
+                .replace(/经理/g, ' manager ')
+                .replace(/总监/g, ' director ')
+                .replace(/副总裁/g, ' vice president ')
+                .replace(/首席技术官/g, ' Chief Technology Officer (CTO) ')
+                .replace(/首席信息官/g, ' Chief Information Officer (CIO) ')
+                .replace(/首席执行官/g, ' Chief Executive Officer (CEO) ');
+            
+            // 清理多余的空格
+            translated = translated.replace(/\s+/g, ' ').trim();
+            
+            return translated;
+        }
+        
+        // 添加技术词汇链接
+        function addTechLinks(text) {
+            const techLinks = {
+                'Cloud Computing': 'https://aws.amazon.com/what-is-cloud-computing/',
+                'Virtualization': 'https://www.vmware.com/topics/glossary/content/virtualization.html',
+                'Artificial Intelligence': 'https://www.ibm.com/topics/artificial-intelligence',
+                'Machine Learning': 'https://www.ibm.com/topics/machine-learning',
+                'Deep Learning': 'https://www.ibm.com/topics/deep-learning',
+                'Big Data': 'https://www.oracle.com/big-data/what-is-big-data/',
+                'Internet of Things': 'https://www.cisco.com/c/en/us/solutions/internet-of-things/overview.html',
+                'IoT': 'https://www.cisco.com/c/en/us/solutions/internet-of-things/overview.html',
+                'Blockchain': 'https://www.ibm.com/topics/what-is-blockchain',
+                'Container Technology': 'https://www.docker.com/resources/what-container/',
+                'Container': 'https://www.docker.com/resources/what-container/',
+                'Microservices': 'https://microservices.io/',
+                'Edge Computing': 'https://www.ibm.com/topics/edge-computing',
+                'Natural Language Processing': 'https://www.ibm.com/topics/natural-language-processing',
+                'NLP': 'https://www.ibm.com/topics/natural-language-processing',
+                'Computer Vision': 'https://www.ibm.com/topics/computer-vision',
+                'Cybersecurity': 'https://www.cisco.com/c/en/us/products/security/what-is-cybersecurity.html',
+                'DevOps': 'https://www.redhat.com/en/topics/devops',
+                'Kubernetes': 'https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/',
+                'Docker': 'https://www.docker.com/resources/what-container/'
+            };
+            
+            let linkedText = text;
+            
+            for (const [term, url] of Object.entries(techLinks)) {
+                const regex = new RegExp(`\\b${term}\\b`, 'gi');
+                linkedText = linkedText.replace(regex, `<a href="${url}" target="_blank" class="tech-link">${term}</a>`);
+            }
+            
+            return linkedText;
+        }
+        
+        // 加载示例文本
+        function loadSample(index) {
+            if (index >= 0 && index < sampleTexts.length) {
+                document.getElementById('chineseInput').value = sampleTexts[index].content;
+                translateText();
+                updateWordCount('inputWordCount', sampleTexts[index].content.length);
+            }
+        }
+        
+        // 清空文本
+        function clearText() {
+            document.getElementById('chineseInput').value = '';
+            document.getElementById('englishOutput').innerHTML = '<p style="color: #999; text-align: center; margin-top: 100px;">💡 在左侧输入中文内容，这里将显示对应的英文翻译<br><br>🔗 技术词汇将自动添加学习链接</p>';
+            updateWordCount('inputWordCount', 0);
+            updateWordCount('outputWordCount', 0);
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(elementId) {
+            let text = '';
+            
+            if (elementId === 'chineseInput') {
+                text = document.getElementById(elementId).value;
+            } else {
+                text = document.getElementById(elementId).innerText;
+            }
+            
+            if (text.trim()) {
+                navigator.clipboard.writeText(text).then(() => {
+                    // 显示复制成功提示
+                    const btn = event.target.closest('.btn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span>✅</span> 已复制';
+                    btn.style.background = '#27ae60';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    alert('复制失败，请手动复制文本');
+                });
+            } else {
+                alert('没有内容可复制');
+            }
+        }
+        
+        // 朗读英文文本
+        function speakText() {
+            const text = document.getElementById('englishOutput').innerText;
+            
+            if (text.trim() && text !== '💡 在左侧输入中文内容，这里将显示对应的英文翻译🔗 技术词汇将自动添加学习链接') {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1;
+                    
+                    speechSynthesis.speak(utterance);
+                    
+                    // 更新按钮状态
+                    const btn = event.target.closest('.btn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span>🔊</span> 朗读中...';
+                    btn.disabled = true;
+                    
+                    utterance.onend = () => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    };
+                } else {
+                    alert('您的浏览器不支持语音合成功能');
+                }
+            } else {
+                alert('没有英文内容可朗读');
+            }
+        }
+        
+        // 更新字符数统计
+        function updateWordCount(elementId, count) {
+            const element = document.getElementById(elementId);
+            if (elementId === 'inputWordCount') {
+                element.textContent = `字符数: ${count}`;
+            } else {
+                element.textContent = `单词数: ${count}`;
+            }
+        }
+        
+        // 监听输入变化
+        document.getElementById('chineseInput').addEventListener('input', function() {
+            updateWordCount('inputWordCount', this.value.length);
+        });
+        
+        // 页面加载完成后的初始化
+        window.onload = function() {
+            updateWordCount('inputWordCount', 0);
+            updateWordCount('outputWordCount', 0);
+        };
+    </script>
+</body>
+</html>

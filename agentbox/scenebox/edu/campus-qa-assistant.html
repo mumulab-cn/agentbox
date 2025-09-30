@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园问答助手 - 智能校园服务平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .chat-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafbfc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .demo-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input-field:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .question-item {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #495057;
+            border: 1px solid transparent;
+        }
+
+        .question-item:hover {
+            background: #e3f2fd;
+            border-color: #667eea;
+            transform: translateX(4px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            background: #e3f2fd;
+            transform: translateX(4px);
+        }
+
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .service-text {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #6c757d;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* 使用方式展示区域样式 */
+        .usage-demos {
+            margin-top: 60px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 30px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .demo-icon {
+            font-size: 24px;
+        }
+
+        .demo-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+
+        .demo-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .demo-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .demo-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .demo-features {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .demo-features h4 {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .demo-features ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo-features li {
+            font-size: 13px;
+            color: #6c757d;
+            padding: 4px 0;
+        }
+
+        .demo-description {
+            display: none;
+        }
+
+        /* 微信小程序模拟样式 */
+        .miniprogram-mockup {
+            width: 300px;
+            height: 500px;
+            background: #f7f7f7;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            margin: 0 auto;
+        }
+
+        .miniprogram-header {
+            background: #07c160;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .miniprogram-body {
+            padding: 16px;
+            height: 380px;
+            overflow-y: auto;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-text {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .service-card.active {
+            background: #e3f2fd;
+            border: 2px solid #667eea;
+        }
+
+        .service-card-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .service-card-text {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .miniprogram-chat {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-message {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: flex-end;
+        }
+
+        .mini-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .mini-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .mini-bubble {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            max-width: 180px;
+            line-height: 1.4;
+        }
+
+        .mini-message.user .mini-bubble {
+            background: #07c160;
+            color: white;
+        }
+
+        .miniprogram-footer {
+            background: white;
+            padding: 12px 16px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f7f7f7;
+            border-radius: 20px;
+            padding: 8px 16px;
+        }
+
+        .input-placeholder {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: #07c160;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* 网站浮框样式 */
+        .website-mockup {
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .website-header {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .website-logo {
+            font-weight: 600;
+        }
+
+        .website-nav {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .website-content {
+            padding: 20px;
+        }
+
+        .website-banner {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            color: #1976d2;
+            text-align: center;
+        }
+
+        .content-area {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            color: #666;
+        }
+
+        .floating-assistant {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 280px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .float-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .float-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .float-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .float-controls span {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .float-controls span:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .float-messages {
+            height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .float-message {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .float-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .float-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .float-text {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            max-width: 200px;
+            line-height: 1.4;
+        }
+
+        .float-message.user .float-text {
+            background: #667eea;
+            color: white;
+        }
+
+        .float-input {
+            padding: 12px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+        }
+
+        .float-input input {
+            flex: 1;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .float-input button {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .floating-trigger {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .trigger-icon {
+            color: white;
+            font-size: 20px;
+        }
+
+        .trigger-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #667eea;
+            opacity: 0.6;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        /* APP内嵌样式 */
+        .app-mockup {
+            width: 300px;
+            height: 500px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            margin: 0 auto;
+        }
+
+        .app-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .app-body {
+            padding: 16px;
+            height: 380px;
+            overflow-y: auto;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .quick-action span {
+            font-size: 10px;
+            color: #333;
+        }
+
+        .app-chat-area {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-message {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .app-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .app-bubble {
+            background: #f0f0f0;
+            border-radius: 12px;
+            padding: 12px;
+            max-width: 200px;
+        }
+
+        .bubble-text {
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .bubble-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 4px 12px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .app-input-bar {
+            background: white;
+            padding: 12px 16px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voice-btn, .emoji-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .app-input-bar input {
+            flex: 1;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        /* 智能音箱样式 */
+        .speaker-mockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .speaker-device {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .speaker-top {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .speaker-ring {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .speaker-ring.active {
+            animation: ring-pulse 2s infinite;
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                border-color: #764ba2;
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+        }
+
+        .speaker-buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 4px;
+        }
+
+        .speaker-btn {
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 8px;
+            cursor: pointer;
+        }
+
+        .speaker-btn.mic {
+            background: #e74c3c;
+        }
+
+        .speaker-body {
+            text-align: center;
+        }
+
+        .speaker-logo {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .speaker-name {
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .voice-interaction {
+            text-align: center;
+        }
+
+        .voice-wave {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: #667eea;
+            border-radius: 2px;
+            animation: wave 1.5s infinite;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% {
+                height: 10px;
+            }
+            50% {
+                height: 30px;
+            }
+        }
+
+        .voice-dialog {
+            max-width: 300px;
+        }
+
+        .voice-user {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .voice-assistant {
+            background: #f0f0f0;
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .container {
+                padding: 20px 16px;
+            }
+
+            .demo-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .miniprogram-mockup,
+            .app-mockup {
+                width: 280px;
+                height: 450px;
+            }
+
+            .website-mockup {
+                height: 300px;
+            }
+
+            .floating-assistant {
+                width: 250px;
+                bottom: 60px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🎓</div>
+                <div class="logo-text">智能校园</div>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link">首页</a>
+                <a href="#" class="nav-link">服务大厅</a>
+                <a href="#" class="nav-link">校园资讯</a>
+                <a href="#" class="nav-link">联系我们</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">校园问答助手</h1>
+            <p class="hero-subtitle">为师生提供24小时智能问答服务，快速解答校园生活中的各种问题</p>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-section">
+                <div class="chat-header">
+                    💬 智能问答 - 网页版
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        <div class="message-avatar">AI</div>
+                        <div class="message-content">
+                            您好！我是校园问答助手，可以帮您解答关于学校的各种问题。您可以询问课程安排、校园设施、生活服务等任何问题，或者点击右侧的常见问题快速获取答案。
+                        </div>
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    <span>AI正在思考中...</span>
+                </div>
+                <div class="chat-input">
+                    <div class="demo-controls">
+                        <button class="demo-btn" onclick="simulateQuestion('图书馆今天开放吗？')">📚 模拟提问</button>
+                        <button class="demo-btn" onclick="simulateQuestion('食堂有什么菜？')">🍽️ 询问食堂</button>
+                        <button class="demo-btn" onclick="simulateQuestion('如何查成绩？')">📊 查询成绩</button>
+                        <button class="demo-btn" onclick="simulateQuestion('宿舍WiFi密码？')">🌐 网络问题</button>
+                        <button class="demo-btn" onclick="clearChat()">🗑️ 清空对话</button>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="chat-input-field" id="messageInput" placeholder="请输入您的问题..." maxlength="500">
+                        <button class="send-button" onclick="sendMessage()">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">❓</div>
+                        常见问题
+                    </div>
+                    <div class="question-list">
+                        <div class="question-item" onclick="askQuestion('如何查询课程表？')">如何查询课程表？</div>
+                        <div class="question-item" onclick="askQuestion('图书馆开放时间是什么时候？')">图书馆开放时间是什么时候？</div>
+                        <div class="question-item" onclick="askQuestion('如何申请宿舍维修？')">如何申请宿舍维修？</div>
+                        <div class="question-item" onclick="askQuestion('食堂营业时间和菜品价格？')">食堂营业时间和菜品价格？</div>
+                        <div class="question-item" onclick="askQuestion('如何办理学生证补办？')">如何办理学生证补办？</div>
+                        <div class="question-item" onclick="askQuestion('校园网如何连接和缴费？')">校园网如何连接和缴费？</div>
+                        <div class="question-item" onclick="askQuestion('如何查询成绩和学分？')">如何查询成绩和学分？</div>
+                        <div class="question-item" onclick="askQuestion('体育馆预约和开放时间？')">体育馆预约和开放时间？</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">📊</div>
+                        服务统计
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">1,247</div>
+                            <div class="stat-label">今日咨询</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">98.5%</div>
+                            <div class="stat-label">解答准确率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2.3秒</div>
+                            <div class="stat-label">平均响应</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">在线服务</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">🏫</div>
+                        校园服务
+                    </div>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <div class="service-icon">📚</div>
+                            <div class="service-text">图书馆服务</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">🏠</div>
+                            <div class="service-text">宿舍管理</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">🍽️</div>
+                            <div class="service-text">餐饮服务</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">🏃</div>
+                            <div class="service-text">体育设施</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">🌐</div>
+                            <div class="service-text">网络服务</div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">🎯</div>
+                            <div class="service-text">学务服务</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用方式展示区域 -->
+        <div class="usage-demos">
+            <h2 class="section-title">多平台使用方式</h2>
+            
+            <!-- 微信小程序模拟 -->
+            <div class="demo-section">
+                <div class="demo-header">
+                    <div class="demo-icon">📱</div>
+                    <h3>微信小程序版本</h3>
+                    <span class="demo-badge">移动端</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-main">
+                        <div class="miniprogram-mockup">
+                        <div class="miniprogram-header">
+                            <div class="miniprogram-title">校园助手</div>
+                            <div class="miniprogram-menu">⋯</div>
+                        </div>
+                        <div class="miniprogram-body">
+                            <div class="miniprogram-search">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <span class="search-text">搜索校园服务...</span>
+                                </div>
+                            </div>
+                            <div class="miniprogram-services">
+                                <div class="service-grid">
+                                    <div class="service-card active">
+                                        <div class="service-card-icon">💬</div>
+                                        <div class="service-card-text">智能问答</div>
+                                    </div>
+                                    <div class="service-card">
+                                        <div class="service-card-icon">📚</div>
+                                        <div class="service-card-text">图书馆</div>
+                                    </div>
+                                    <div class="service-card">
+                                        <div class="service-card-icon">🍽️</div>
+                                        <div class="service-card-text">食堂</div>
+                                    </div>
+                                    <div class="service-card">
+                                        <div class="service-card-icon">🏠</div>
+                                        <div class="service-card-text">宿舍</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="miniprogram-chat">
+                                <div class="mini-message assistant">
+                                    <div class="mini-avatar">🤖</div>
+                                    <div class="mini-bubble">您好！有什么可以帮您的吗？</div>
+                                </div>
+                                <div class="mini-message user">
+                                    <div class="mini-bubble">图书馆今天开放吗？</div>
+                                    <div class="mini-avatar">👤</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="miniprogram-footer">
+                            <div class="input-area">
+                                <span class="input-placeholder">输入消息...</span>
+                                <div class="send-btn">发送</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="demo-features">
+                        <h4>特色功能</h4>
+                        <ul>
+                            <li>📱 原生小程序体验，操作流畅</li>
+                            <li>🔍 智能搜索，快速定位服务</li>
+                            <li>💬 语音输入支持，解放双手</li>
+                            <li>📍 位置服务，就近推荐设施</li>
+                            <li>🔔 消息推送，重要通知不错过</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 网站浮框问答 -->
+            <div class="demo-section">
+                <div class="demo-header">
+                    <div class="demo-icon">🌐</div>
+                    <h3>学校官网浮框助手</h3>
+                    <span class="demo-badge">网页端</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-main">
+                        <div class="website-mockup">
+                        <div class="website-header">
+                            <div class="website-logo">🏫 XX大学官网</div>
+                            <div class="website-nav">
+                                <span>首页</span>
+                                <span>学院设置</span>
+                                <span>招生就业</span>
+                                <span>科学研究</span>
+                            </div>
+                        </div>
+                        <div class="website-content">
+                            <div class="website-banner">学校新闻横幅区域</div>
+                            <div class="website-main">
+                                <div class="content-area">主要内容区域...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 浮框助手 -->
+                        <div class="floating-assistant">
+                            <div class="float-header">
+                                <span class="float-title">🤖 校园助手</span>
+                                <div class="float-controls">
+                                    <span class="minimize">−</span>
+                                    <span class="close">×</span>
+                                </div>
+                            </div>
+                            <div class="float-messages">
+                                <div class="float-message bot">
+                                    <div class="float-avatar">🤖</div>
+                                    <div class="float-text">您好！我是校园智能助手，有什么可以帮您的吗？</div>
+                                </div>
+                                <div class="float-message user">
+                                    <div class="float-text">请问图书馆在哪里？</div>
+                                    <div class="float-avatar">👤</div>
+                                </div>
+                                <div class="float-message bot">
+                                    <div class="float-avatar">🤖</div>
+                                    <div class="float-text">图书馆位于校园中心区域，从正门进入直走500米即可到达。开放时间：8:00-22:00</div>
+                                </div>
+                            </div>
+                            <div class="float-input">
+                                <input type="text" placeholder="输入您的问题...">
+                                <button>发送</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 浮框触发按钮 -->
+                        <div class="floating-trigger">
+                            <div class="trigger-icon">💬</div>
+                            <div class="trigger-pulse"></div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="demo-features">
+                        <h4>集成优势</h4>
+                        <ul>
+                            <li>🔗 无缝集成学校官网，不影响原有功能</li>
+                            <li>⚡ 即时响应，无需跳转页面</li>
+                            <li>📊 访问数据统计，了解用户需求</li>
+                            <li>🎯 智能推荐相关页面和服务</li>
+                            <li>📱 响应式设计，适配各种设备</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APP内嵌问答 -->
+            <div class="demo-section">
+                <div class="demo-header">
+                    <div class="demo-icon">📲</div>
+                    <h3>智慧校园APP内嵌</h3>
+                    <span class="demo-badge">移动应用</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-main">
+                        <div class="app-mockup">
+                        <div class="app-header">
+                            <div class="app-back">←</div>
+                            <div class="app-title">智能助手</div>
+                            <div class="app-more">⋮</div>
+                        </div>
+                        <div class="app-body">
+                            <div class="quick-actions">
+                                <div class="quick-action">
+                                    <div class="action-icon">📅</div>
+                                    <span>课程表</span>
+                                </div>
+                                <div class="quick-action">
+                                    <div class="action-icon">💰</div>
+                                    <span>缴费</span>
+                                </div>
+                                <div class="quick-action">
+                                    <div class="action-icon">📊</div>
+                                    <span>成绩</span>
+                                </div>
+                                <div class="quick-action">
+                                    <div class="action-icon">🏠</div>
+                                    <span>宿舍</span>
+                                </div>
+                            </div>
+                            <div class="app-chat-area">
+                                <div class="app-message assistant">
+                                    <div class="app-avatar">🤖</div>
+                                    <div class="app-bubble">
+                                        <div class="bubble-text">检测到您最近查看了成绩查询，需要帮助吗？</div>
+                                        <div class="bubble-actions">
+                                            <button class="action-btn">查看成绩</button>
+                                            <button class="action-btn">学分统计</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="app-input-bar">
+                            <div class="voice-btn">🎤</div>
+                            <input type="text" placeholder="说点什么...">
+                            <div class="emoji-btn">😊</div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="demo-features">
+                        <h4>智能特性</h4>
+                        <ul>
+                            <li>🧠 上下文感知，主动提供帮助</li>
+                            <li>🎯 个性化推荐，基于使用习惯</li>
+                            <li>🔊 语音交互，支持方言识别</li>
+                            <li>📱 深度集成，调用APP原生功能</li>
+                            <li>🔄 离线缓存，网络不佳时也能使用</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 智能音箱问答 -->
+            <div class="demo-section">
+                <div class="demo-header">
+                    <div class="demo-icon">🔊</div>
+                    <h3>智能音箱语音助手</h3>
+                    <span class="demo-badge">语音交互</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-main">
+                        <div class="speaker-mockup">
+                        <div class="speaker-device">
+                            <div class="speaker-top">
+                                <div class="speaker-ring active"></div>
+                                <div class="speaker-buttons">
+                                    <div class="speaker-btn">−</div>
+                                    <div class="speaker-btn mic">🎤</div>
+                                    <div class="speaker-btn">+</div>
+                                </div>
+                            </div>
+                            <div class="speaker-body">
+                                <div class="speaker-logo">🏫</div>
+                                <div class="speaker-name">校园智能音箱</div>
+                            </div>
+                        </div>
+                        <div class="voice-interaction">
+                            <div class="voice-wave">
+                                <div class="wave-bar"></div>
+                                <div class="wave-bar"></div>
+                                <div class="wave-bar"></div>
+                                <div class="wave-bar"></div>
+                                <div class="wave-bar"></div>
+                            </div>
+                            <div class="voice-dialog">
+                                <div class="voice-user">"小智，今天食堂有什么菜？"</div>
+                                <div class="voice-assistant">"今天一食堂有红烧肉、宫保鸡丁、麻婆豆腐等，二食堂新推出了川菜系列，您想了解哪个食堂的详细菜单？"</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="demo-features">
+                        <h4>语音优势</h4>
+                        <ul>
+                            <li>🗣️ 自然语言交互，解放双手</li>
+                            <li>🎯 多轮对话，上下文理解</li>
+                            <li>🔊 宿舍部署，24小时待命</li>
+                            <li>🌐 联网查询，实时信息更新</li>
+                            <li>👥 多用户识别，个性化服务</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 预定义的问答数据库
+        const qaDatabase = {
+            '如何查询课程表？': '您可以通过以下方式查询课程表：\n1. 登录学校教务系统，在"课程安排"模块查看\n2. 下载"智慧校园"APP，课程表功能实时同步\n3. 关注学校微信公众号，在服务菜单中查询\n4. 到各学院教务办公室咨询纸质版课程表',
+            
+            '图书馆开放时间是什么时候？': '图书馆开放时间如下：\n📖 周一至周五：8:00-22:00\n📖 周六至周日：9:00-21:00\n📖 法定节假日：9:00-17:00\n\n特殊说明：\n• 考试周期间延长至23:00闭馆\n• 寒暑假期间开放时间会有调整\n• 如遇特殊情况，请关注图书馆官方通知',
+            
+            '如何申请宿舍维修？': '宿舍维修申请流程：\n🔧 线上申请：\n1. 登录"智慧校园"APP\n2. 选择"宿舍服务"-"维修申请"\n3. 填写故障描述和联系方式\n4. 上传故障照片（可选）\n\n🔧 线下申请：\n1. 到宿舍楼管理办公室填写维修单\n2. 或联系宿管阿姨代为申请\n\n⏰ 处理时间：一般故障24小时内处理，紧急故障2小时内响应',
+            
+            '食堂营业时间和菜品价格？': '食堂服务信息：\n\n🍽️ 营业时间：\n• 早餐：6:30-9:00\n• 午餐：11:00-13:30\n• 晚餐：17:00-19:30\n• 夜宵：20:00-22:00（仅一楼）\n\n💰 价格区间：\n• 早餐：3-8元\n• 午餐/晚餐：8-15元\n• 特色菜品：12-25元\n\n📱 支付方式：校园卡、微信、支付宝均可使用',
+            
+            '如何办理学生证补办？': '学生证补办流程：\n\n📋 所需材料：\n1. 身份证原件及复印件\n2. 一寸免冠照片2张\n3. 学生证遗失证明（到保卫处开具）\n4. 补办申请表（学工部领取）\n\n🏢 办理地点：学生工作部（行政楼2楼）\n⏰ 办理时间：周一至周五 9:00-11:30, 14:00-17:00\n💰 补办费用：20元\n📅 制证周期：3-5个工作日',
+            
+            '校园网如何连接和缴费？': '校园网使用指南：\n\n🌐 连接方式：\n1. WiFi名称：Campus-WiFi\n2. 使用学号和密码登录\n3. 初始密码为身份证后6位\n\n💳 缴费方式：\n• 线上：登录网络中心官网缴费\n• 线下：到网络中心服务大厅\n• 自助：各宿舍楼下自助缴费机\n\n💰 资费标准：\n• 基础套餐：30元/月（50GB流量）\n• 标准套餐：50元/月（不限流量）\n• 学生优惠：首次办理享8折优惠',
+            
+            '如何查询成绩和学分？': '成绩学分查询方法：\n\n💻 在线查询：\n1. 登录教务管理系统\n2. 点击"成绩查询"模块\n3. 选择学期查看详细成绩\n4. 可导出成绩单PDF文件\n\n📱 手机查询：\n• 下载"智慧校园"APP\n• 在"学务服务"中查看\n\n📊 查询内容：\n• 各科目成绩及绩点\n• 已修学分统计\n• 学分绩点排名\n• 重修补考记录',
+            
+            '体育馆预约和开放时间？': '体育馆使用信息：\n\n🏃 开放时间：\n• 周一至周五：6:00-22:00\n• 周六至周日：8:00-22:00\n• 节假日：9:00-21:00\n\n📅 预约方式：\n1. "智慧校园"APP预约\n2. 体育馆前台现场预约\n3. 微信小程序"校园体育"\n\n🏀 场馆设施：\n• 篮球场：8片（4片可预约）\n• 羽毛球场：12片\n• 乒乓球台：20张\n• 健身房：免费开放\n• 游泳池：夏季开放\n\n💰 收费标准：学生凭校园卡享受优惠价格'
+        };
+
+        // 发送消息函数
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // 添加用户消息
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // 显示打字指示器
+            showTypingIndicator();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getAIResponse(message);
+                addMessage(response, 'assistant');
+            }, 1500 + Math.random() * 1000);
+        }
+
+        // 快速提问函数
+        function askQuestion(question) {
+            document.getElementById('messageInput').value = question;
+            sendMessage();
+        }
+
+        // 模拟提问函数
+        function simulateQuestion(question) {
+            // 添加用户消息
+            addMessage(question, 'user');
+            
+            // 显示打字指示器
+            showTypingIndicator();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getAIResponse(question);
+                addMessage(response, 'assistant');
+            }, 1000 + Math.random() * 800);
+        }
+
+        // 清空对话函数
+        function clearChat() {
+            const messagesContainer = document.getElementById('chatMessages');
+            // 保留欢迎消息
+            const welcomeMessage = messagesContainer.querySelector('.message.assistant');
+            messagesContainer.innerHTML = '';
+            if (welcomeMessage) {
+                messagesContainer.appendChild(welcomeMessage.cloneNode(true));
+            }
+        }
+
+        // 添加消息到聊天界面
+        function addMessage(content, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '我' : 'AI';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = content.replace(/\n/g, '<br>');
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 显示打字指示器
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+        }
+
+        // 隐藏打字指示器
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // 获取AI回复
+        function getAIResponse(question) {
+            // 首先检查是否有完全匹配的问题
+            if (qaDatabase[question]) {
+                return qaDatabase[question];
+            }
+            
+            // 模糊匹配常见关键词
+            const keywords = {
+                '课程': '您可以通过教务系统或智慧校园APP查询课程相关信息。如需具体帮助，请点击右侧"如何查询课程表？"获取详细指导。',
+                '图书馆': '图书馆周一至周五8:00-22:00开放，周末9:00-21:00。更多详情请点击右侧"图书馆开放时间"查看。',
+                '宿舍': '宿舍相关问题可通过智慧校园APP申请维修，或联系宿管办公室。详细流程请查看右侧常见问题。',
+                '食堂': '食堂提供一日三餐及夜宵服务，支持多种支付方式。具体时间和价格请点击右侧相关问题查看。',
+                '学生证': '学生证补办需要到学工部办理，准备相关材料。详细流程请查看右侧"学生证补办"问题。',
+                '网络': '校园网可通过多种方式连接和缴费，详细说明请查看右侧"校园网连接"相关问题。',
+                '成绩': '成绩可通过教务系统或智慧校园APP查询，支持多种查询方式。详情请点击右侧相关问题。',
+                '体育': '体育馆提供多种运动设施，支持在线预约。开放时间和预约方式请查看右侧相关问题。',
+                '缴费': '学校支持多种缴费方式，包括线上线下渠道。具体缴费指南请咨询相关部门或查看学校官网。',
+                '选课': '选课请登录教务系统，在规定时间内进行。如遇问题可咨询教务处或各学院教务办。',
+                '奖学金': '奖学金申请请关注学工部通知，准备相关材料按时申报。具体条件请查看学生手册。',
+                '社团': '社团活动丰富多彩，可关注学生会或各社团官方账号获取最新信息。',
+                '就业': '就业指导请联系就业指导中心，提供简历指导、面试培训等服务。',
+                '心理': '心理咨询服务请联系学生心理健康中心，提供专业的心理支持和咨询服务。'
+            };
+            
+            // 检查问题中是否包含关键词
+            for (const [keyword, response] of Object.entries(keywords)) {
+                if (question.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            // 默认回复
+            const defaultResponses = [
+                '感谢您的提问！我正在学习中，暂时无法准确回答这个问题。建议您：\n\n1. 查看右侧常见问题列表\n2. 联系相关部门咨询\n3. 访问学校官方网站获取更多信息\n\n如果是紧急问题，请直接联系相关部门或拨打校园服务热线。',
+                
+                '抱歉，我暂时无法理解您的问题。您可以：\n\n• 尝试重新描述问题\n• 点击右侧常见问题快速获取答案\n• 联系人工客服：400-123-4567\n• 访问学校官网查看详细信息\n\n我会继续学习，为您提供更好的服务！',
+                
+                '这个问题超出了我目前的知识范围。建议您：\n\n📞 联系相关部门直接咨询\n🌐 查看学校官方网站\n📱 使用智慧校园APP相关功能\n❓ 查看右侧常见问题列表\n\n如需人工服务，请拨打校园服务热线或到相关办公室咨询。'
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        // 回车发送消息
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里添加一些初始化逻辑
+            console.log('校园问答助手已加载完成');
+        });
+    </script>
+</body>
+</html>

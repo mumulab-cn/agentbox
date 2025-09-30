@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI英语作业批改助手 - 智能教学平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: #5a6c7d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .grading-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .grading-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .essay-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .essay-input:focus {
+            border-color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .grading-result {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+
+        .feedback-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .feedback-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .feedback-content {
+            color: #5a6c7d;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #fafbfc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .message-content {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .resource-item:hover {
+            background: #e3f2fd;
+            transform: translateX(4px);
+        }
+
+        .resource-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .resource-text {
+            flex: 1;
+        }
+
+        .resource-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .resource-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .features-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .feature-desc {
+            color: #5a6c7d;
+            line-height: 1.6;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background: #6c757d;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-6px);
+            }
+        }
+
+        .sample-essays {
+            display: none;
+        }
+
+        .essay-sample {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sample-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .sample-content {
+            color: #5a6c7d;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .analysis-content {
+            display: none;
+        }
+
+        .analysis-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .analysis-text {
+            color: #5a6c7d;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feedback-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📝</div>
+                <div class="logo-text">AI英语批改助手</div>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">首页</a>
+                <a href="#" class="nav-link">批改历史</a>
+                <a href="#" class="nav-link">学习资源</a>
+                <a href="#" class="nav-link">帮助中心</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">AI英语作业批改助手</h1>
+            <p class="hero-subtitle">智能批改英语作文，提供个性化学习建议，助力师生高效教学</p>
+        </div>
+
+        <div class="main-content">
+            <div class="grading-section">
+                <div class="section-header">
+                    <div class="section-icon">🤖</div>
+                    智能批改系统
+                </div>
+                
+                <div class="grading-tabs">
+                    <div class="tab active" onclick="switchTab('grading')">作文批改</div>
+                    <div class="tab" onclick="switchTab('analysis')">深度解析</div>
+                    <div class="tab" onclick="switchTab('samples')">范文参考</div>
+                </div>
+
+                <div class="tab-content">
+                    <div id="grading-content">
+                        <textarea class="essay-input" id="essayInput" placeholder="请在此输入英语作文内容，AI将为您提供详细的批改建议...\n\n示例：\nMy Dream Job\n\nEveryone has a dream job, and mine is to become a teacher. I have always been passionate about education and helping others learn...">
+                        </textarea>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="gradeEssay()">🔍 开始批改</button>
+                            <button class="btn btn-secondary" onclick="clearEssay()">🗑️ 清空内容</button>
+                            <button class="btn btn-secondary" onclick="loadSample()">📄 加载示例</button>
+                        </div>
+
+                        <div class="grading-result" id="gradingResult">
+                            <div class="score-display">
+                                <div class="score-circle" id="scoreCircle">85</div>
+                                <div>综合评分</div>
+                            </div>
+                            
+                            <div class="feedback-sections">
+                                <div class="feedback-item">
+                                    <div class="feedback-title">📝 语法评价</div>
+                                    <div class="feedback-content" id="grammarFeedback">语法结构基本正确，建议注意时态一致性...</div>
+                                </div>
+                                <div class="feedback-item">
+                                    <div class="feedback-title">📚 词汇运用</div>
+                                    <div class="feedback-content" id="vocabularyFeedback">词汇丰富度良好，可尝试使用更多高级词汇...</div>
+                                </div>
+                                <div class="feedback-item">
+                                    <div class="feedback-title">🏗️ 文章结构</div>
+                                    <div class="feedback-content" id="structureFeedback">文章结构清晰，段落过渡自然...</div>
+                                </div>
+                                <div class="feedback-item">
+                                    <div class="feedback-title">💡 改进建议</div>
+                                    <div class="feedback-content" id="improvementFeedback">建议增加具体例子支撑观点...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="analysis-content" class="analysis-content">
+                        <div class="analysis-item">
+                            <div class="analysis-title">📊 词汇分析</div>
+                            <div class="analysis-text">本文共使用156个单词，其中高频词汇占65%，中等难度词汇占25%，高级词汇占10%。建议增加学术词汇的使用。</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title">🔍 句式分析</div>
+                            <div class="analysis-text">简单句占60%，复合句占30%，复杂句占10%。建议适当增加复杂句式的使用，提升文章表达的丰富性。</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title">📈 语言流畅度</div>
+                            <div class="analysis-text">文章整体流畅度良好，段落间过渡自然。建议在第二段和第三段之间添加过渡句。</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title">🎯 内容深度</div>
+                            <div class="analysis-text">观点表达清晰，但缺乏具体例证支撑。建议添加个人经历或具体事例来增强说服力。</div>
+                        </div>
+                    </div>
+
+                    <div id="samples-content" class="sample-essays">
+                        <div class="essay-sample">
+                            <div class="sample-title">📖 优秀范文：My Dream Job</div>
+                            <div class="sample-content">
+                                Everyone harbors dreams about their ideal career, and mine is to become an educator. Teaching has always fascinated me because it combines my passion for knowledge sharing with the opportunity to shape young minds...
+                                <br><br>
+                                <strong>亮点分析：</strong>使用了"harbors"、"fascinated"等高级词汇，句式多样，逻辑清晰。
+                            </div>
+                        </div>
+                        <div class="essay-sample">
+                            <div class="sample-title">📖 优秀范文：Environmental Protection</div>
+                            <div class="sample-content">
+                                Environmental protection has become one of the most pressing issues of our time. As global warming accelerates and natural resources dwindle, it is imperative that we take immediate action...
+                                <br><br>
+                                <strong>亮点分析：</strong>开头直入主题，使用了"pressing"、"imperative"等学术词汇，论证有力。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">💬</div>
+                        AI学习助手
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                你好！我是AI英语学习助手，可以帮你解答英语学习问题，提供写作建议。有什么需要帮助的吗？
+                            </div>
+                        </div>
+                    </div>
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        <span>AI正在思考...</span>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="输入你的问题..." maxlength="200">
+                        <button onclick="sendMessage()">发送</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <div class="sidebar-icon">📚</div>
+                        学习资源
+                    </div>
+                    <div class="resource-list">
+                        <div class="resource-item" onclick="openResource('grammar')">
+                            <div class="resource-icon">📖</div>
+                            <div class="resource-text">
+                                <div class="resource-title">语法指南</div>
+                                <div class="resource-desc">英语语法规则详解</div>
+                            </div>
+                        </div>
+                        <div class="resource-item" onclick="openResource('vocabulary')">
+                            <div class="resource-icon">📝</div>
+                            <div class="resource-text">
+                                <div class="resource-title">词汇宝典</div>
+                                <div class="resource-desc">高频词汇学习</div>
+                            </div>
+                        </div>
+                        <div class="resource-item" onclick="openResource('writing')">
+                            <div class="resource-icon">✍️</div>
+                            <div class="resource-text">
+                                <div class="resource-title">写作技巧</div>
+                                <div class="resource-desc">英语写作方法</div>
+                            </div>
+                        </div>
+                        <div class="resource-item" onclick="openResource('templates')">
+                            <div class="resource-icon">📄</div>
+                            <div class="resource-text">
+                                <div class="resource-title">作文模板</div>
+                                <div class="resource-desc">各类作文模板</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2 class="features-title">功能特色</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">智能批改</div>
+                    <div class="feature-desc">AI深度分析作文内容，从语法、词汇、结构等多维度提供专业批改建议</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-title">互动问答</div>
+                    <div class="feature-desc">AI助手实时解答学习疑问，提供个性化的英语学习指导和建议</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">深度解析</div>
+                    <div class="feature-desc">详细分析词汇使用、句式结构、语言流畅度等，帮助学生全面提升</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-title">学习资源</div>
+                    <div class="feature-desc">丰富的语法指南、词汇宝典、写作技巧等学习材料，助力英语提升</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📖</div>
+                    <div class="feature-title">范文参考</div>
+                    <div class="feature-desc">精选优秀作文范例，配有详细分析，为学生提供写作参考和灵感</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">高效便捷</div>
+                    <div class="feature-desc">快速批改反馈，节省教师时间，提高教学效率，让学习更加高效</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function switchTab(tabName) {
+            // 移除所有活动状态
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('[id$="-content"]').forEach(content => content.style.display = 'none');
+            
+            // 激活当前标签
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-content').style.display = 'block';
+        }
+
+        // 批改作文
+        function gradeEssay() {
+            const essay = document.getElementById('essayInput').value.trim();
+            if (!essay) {
+                alert('请先输入作文内容');
+                return;
+            }
+
+            // 模拟批改过程
+            const resultDiv = document.getElementById('gradingResult');
+            resultDiv.style.display = 'none';
+            
+            // 显示加载状态
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '🔄 批改中...';
+            button.disabled = true;
+
+            setTimeout(() => {
+                // 生成随机评分
+                const score = Math.floor(Math.random() * 20) + 75;
+                document.getElementById('scoreCircle').textContent = score;
+                
+                // 生成反馈内容
+                generateFeedback(essay, score);
+                
+                // 显示结果
+                resultDiv.style.display = 'block';
+                
+                // 恢复按钮状态
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                // 滚动到结果区域
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+
+        // 生成反馈内容
+        function generateFeedback(essay, score) {
+            const feedbacks = {
+                grammar: [
+                    '语法结构基本正确，时态使用恰当，建议注意主谓一致。',
+                    '语法运用较好，但存在少量语法错误，建议加强复合句练习。',
+                    '语法基础扎实，句式多样，表达准确流畅。',
+                    '语法使用规范，建议适当增加复杂句式的运用。'
+                ],
+                vocabulary: [
+                    '词汇运用恰当，建议尝试使用更多高级词汇提升表达水平。',
+                    '词汇丰富度良好，用词准确，可适当增加学术词汇。',
+                    '词汇选择精准，表达生动，展现了良好的语言功底。',
+                    '词汇使用基本准确，建议扩大词汇量，避免重复用词。'
+                ],
+                structure: [
+                    '文章结构清晰，段落层次分明，逻辑性强。',
+                    '整体结构合理，建议加强段落间的过渡连接。',
+                    '文章组织有序，开头结尾呼应，结构完整。',
+                    '结构基本合理，建议优化段落安排，增强逻辑性。'
+                ],
+                improvement: [
+                    '建议增加具体例子支撑观点，使论证更加有力。',
+                    '可以适当增加细节描述，让文章内容更加丰富。',
+                    '建议加强观点的深度分析，提升文章的思辨性。',
+                    '可以尝试使用更多修辞手法，增强文章的表现力。'
+                ]
+            };
+
+            document.getElementById('grammarFeedback').textContent = feedbacks.grammar[Math.floor(Math.random() * feedbacks.grammar.length)];
+            document.getElementById('vocabularyFeedback').textContent = feedbacks.vocabulary[Math.floor(Math.random() * feedbacks.vocabulary.length)];
+            document.getElementById('structureFeedback').textContent = feedbacks.structure[Math.floor(Math.random() * feedbacks.structure.length)];
+            document.getElementById('improvementFeedback').textContent = feedbacks.improvement[Math.floor(Math.random() * feedbacks.improvement.length)];
+        }
+
+        // 清空作文
+        function clearEssay() {
+            document.getElementById('essayInput').value = '';
+            document.getElementById('gradingResult').style.display = 'none';
+        }
+
+        // 加载示例作文
+        function loadSample() {
+            const sampleEssay = `My Dream Job
+
+Everyone has a dream job, and mine is to become a teacher. I have always been passionate about education and helping others learn new things.
+
+First of all, teaching is a noble profession that allows me to make a positive impact on society. Teachers play a crucial role in shaping the future generation and contributing to the development of our country. By sharing knowledge and inspiring students, I can help them achieve their goals and dreams.
+
+Secondly, I enjoy working with young people. Their enthusiasm and curiosity motivate me to become a better person. Every day in the classroom would be different and exciting, as I would encounter new challenges and opportunities to grow professionally.
+
+Finally, teaching offers great job satisfaction. Seeing students progress and succeed would give me a sense of accomplishment that money cannot buy. The relationships built with students and colleagues would be rewarding and lasting.
+
+In conclusion, becoming a teacher is not just a career choice for me, but a calling. I believe that with dedication and hard work, I can make my dream come true and contribute to society through education.`;
+            
+            document.getElementById('essayInput').value = sampleEssay;
+        }
+
+        // 发送聊天消息
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用户消息
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // 显示打字指示器
+            showTypingIndicator();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getAIResponse(message);
+                addChatMessage(response, 'assistant');
+            }, 1000 + Math.random() * 1000);
+        }
+
+        // 添加聊天消息
+        function addChatMessage(content, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '我' : 'AI';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 显示打字指示器
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+        }
+
+        // 隐藏打字指示器
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // 获取AI回复
+        function getAIResponse(message) {
+            const responses = {
+                '语法': '英语语法学习建议：1. 掌握基本时态用法 2. 注意主谓一致 3. 学习从句结构 4. 多做语法练习。需要具体语法问题的解答吗？',
+                '词汇': '词汇积累技巧：1. 每天学习10-15个新单词 2. 使用词汇卡片记忆 3. 在语境中学习单词 4. 定期复习巩固。推荐使用词根词缀记忆法！',
+                '写作': '英语写作提升方法：1. 多读优秀范文 2. 练习不同文体写作 3. 注意文章结构 4. 积累写作句型。建议从简单句开始，逐步增加复杂度。',
+                '阅读': '阅读能力提升：1. 选择适合水平的材料 2. 培养快速阅读技巧 3. 学会猜测词义 4. 总结文章主旨。坚持每天阅读30分钟！',
+                '听力': '听力训练建议：1. 选择合适难度的材料 2. 反复听同一段内容 3. 做听写练习 4. 模仿语音语调。推荐从慢速英语开始！',
+                '口语': '口语练习方法：1. 大声朗读文章 2. 模仿标准发音 3. 参与英语对话 4. 录音自我检查。不要害怕犯错，多练习是关键！'
+            };
+            
+            // 检查关键词
+            for (const [keyword, response] of Object.entries(responses)) {
+                if (message.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            // 默认回复
+            const defaultResponses = [
+                '这是一个很好的问题！英语学习需要持续的练习和积累。你可以从基础语法开始，逐步提升词汇量和写作能力。',
+                '我建议你多做英语阅读和写作练习。如果有具体的语法或词汇问题，随时可以问我！',
+                '英语学习是一个循序渐进的过程。建议你制定学习计划，每天坚持练习。有什么具体问题需要帮助吗？',
+                '很高兴为你提供英语学习建议！你可以问我关于语法、词汇、写作、阅读等任何问题。'
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        // 打开学习资源
+        function openResource(type) {
+            const resources = {
+                grammar: '语法指南：包含英语语法基础知识、常见语法错误分析、语法练习题等内容。',
+                vocabulary: '词汇宝典：提供高频词汇列表、词汇记忆技巧、词汇测试等学习工具。',
+                writing: '写作技巧：涵盖各类英语写作方法、写作模板、优秀范文分析等内容。',
+                templates: '作文模板：提供议论文、说明文、记叙文等各类作文模板和写作框架。'
+            };
+            
+            alert(resources[type] || '资源正在准备中，敬请期待！');
+        }
+
+        // 回车发送消息
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AI英语批改助手已加载完成');
+        });
+    </script>
+</body>
+</html>
