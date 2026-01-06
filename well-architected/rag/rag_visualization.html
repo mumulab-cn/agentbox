@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG 可视化演示系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #2196F3;
+            border-bottom: 3px solid #2196F3;
+        }
+        
+        .nav-tab:hover {
+            background: #e0e0e0;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            min-height: 600px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+        
+        .demo-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .input-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .visualization-area {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 400px;
+        }
+        
+        .vector-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .vector-element {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-results {
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            background: #f0f8ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .similarity-score {
+            background: #4CAF50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            float: right;
+        }
+        
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .process-step {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            margin: 5px;
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+        
+        .process-step:hover {
+            transform: scale(1.05);
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #666;
+            margin: 0 10px;
+        }
+        
+        .knowledge-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .knowledge-section h4 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-section ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .knowledge-section li {
+            background: white;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #2196F3;
+        }
+        
+        .canvas-container {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        #vectorCanvas {
+            display: block;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .metrics-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 RAG 可视化演示系统</h1>
+            <p>检索增强生成 (Retrieval-Augmented Generation) 完整流程演示</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">RAG概览</button>
+            <button class="nav-tab" onclick="showTab('vectorization')">文本向量化</button>
+            <button class="nav-tab" onclick="showTab('search')">向量搜索</button>
+            <button class="nav-tab" onclick="showTab('optimization')">RAG优化</button>
+            <button class="nav-tab" onclick="showTab('evaluation')">效果评估</button>
+        </div>
+        
+        <!-- RAG概览标签页 -->
+        <div id="overview" class="tab-content active">
+            <h2>🔍 RAG系统架构概览</h2>
+            
+            <div class="process-flow">
+                <div class="process-step">
+                    <h4>📄 文档处理</h4>
+                    <p>分块、清洗</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-step">
+                    <h4>🔢 向量化</h4>
+                    <p>文本转向量</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-step">
+                    <h4>💾 存储</h4>
+                    <p>向量数据库</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-step">
+                    <h4>🔍 检索</h4>
+                    <p>相似度搜索</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-step">
+                    <h4>🤖 生成</h4>
+                    <p>LLM回答</p>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>🎯 RAG系统演示</h3>
+                <div class="input-group">
+                    <label>输入您的问题：</label>
+                    <input type="text" id="userQuery" placeholder="例如：什么是机器学习？" value="什么是机器学习？">
+                </div>
+                <button class="btn" onclick="demonstrateRAG()">🚀 开始RAG演示</button>
+                
+                <div id="ragDemo" class="visualization-area" style="display:none;">
+                    <div id="ragSteps"></div>
+                </div>
+            </div>
+            
+            <div class="knowledge-section">
+                <h4>📚 RAG核心概念</h4>
+                <ul>
+                    <li><strong>检索增强：</strong>通过外部知识库增强LLM的回答能力</li>
+                    <li><strong>向量相似度：</strong>使用余弦相似度等方法计算文本相关性</li>
+                    <li><strong>上下文窗口：</strong>将检索到的相关文档作为上下文输入LLM</li>
+                    <li><strong>实时更新：</strong>知识库可以实时更新，无需重新训练模型</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 文本向量化标签页 -->
+        <div id="vectorization" class="tab-content">
+            <h2>🔢 文本向量化过程</h2>
+            
+            <div class="demo-section">
+                <h3>📝 文本转向量演示</h3>
+                <div class="input-group">
+                    <label>输入文本：</label>
+                    <textarea id="inputText" placeholder="输入要转换为向量的文本...">人工智能是计算机科学的一个分支，致力于创建能够执行通常需要人类智能的任务的系统。</textarea>
+                </div>
+                <button class="btn" onclick="vectorizeText()">🔄 转换为向量</button>
+                
+                <div id="vectorResult" class="visualization-area" style="display:none;">
+                    <h4>🎯 向量化结果：</h4>
+                    <div id="vectorDisplay"></div>
+                    <div class="canvas-container">
+                        <canvas id="vectorCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="knowledge-section">
+                <h4>🧠 向量化技术</h4>
+                <ul>
+                    <li><strong>Word2Vec：</strong>基于神经网络的词向量表示方法</li>
+                    <li><strong>BERT：</strong>双向编码器表示，考虑上下文信息</li>
+                    <li><strong>Sentence-BERT：</strong>专门用于句子级别的向量表示</li>
+                    <li><strong>OpenAI Embeddings：</strong>高质量的通用文本嵌入模型</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 向量搜索标签页 -->
+        <div id="search" class="tab-content">
+            <h2>🔍 向量搜索与语义搜索</h2>
+            
+            <div class="demo-section">
+                <h3>🎯 语义搜索演示</h3>
+                <div class="input-group">
+                    <label>搜索查询：</label>
+                    <input type="text" id="searchQuery" placeholder="输入搜索查询..." value="深度学习算法">
+                </div>
+                <button class="btn" onclick="performSemanticSearch()">🔍 执行语义搜索</button>
+                
+                <div id="searchResults" class="visualization-area" style="display:none;">
+                    <h4>📊 搜索结果：</h4>
+                    <div id="resultsDisplay"></div>
+                    <div class="canvas-container">
+                        <canvas id="searchCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="knowledge-section">
+                <h4>🔧 搜索算法</h4>
+                <ul>
+                    <li><strong>余弦相似度：</strong>计算向量间夹角的余弦值</li>
+                    <li><strong>欧几里得距离：</strong>计算向量间的直线距离</li>
+                    <li><strong>近似最近邻(ANN)：</strong>快速搜索大规模向量数据库</li>
+                    <li><strong>HNSW：</strong>分层导航小世界图算法</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- RAG优化标签页 -->
+        <div id="optimization" class="tab-content">
+            <h2>⚡ RAG系统优化</h2>
+            
+            <div class="demo-section">
+                <h3>🎛️ 优化参数调整</h3>
+                <div class="input-group">
+                    <label>检索文档数量 (Top-K)：</label>
+                    <input type="range" id="topK" min="1" max="10" value="5" oninput="updateOptimization()">
+                    <span id="topKValue">5</span>
+                </div>
+                <div class="input-group">
+                    <label>相似度阈值：</label>
+                    <input type="range" id="threshold" min="0" max="1" step="0.1" value="0.7" oninput="updateOptimization()">
+                    <span id="thresholdValue">0.7</span>
+                </div>
+                <div class="input-group">
+                    <label>文档分块大小：</label>
+                    <input type="range" id="chunkSize" min="100" max="1000" step="100" value="500" oninput="updateOptimization()">
+                    <span id="chunkSizeValue">500</span>
+                </div>
+                
+                <div id="optimizationResult" class="visualization-area">
+                    <div class="metrics-display">
+                        <div class="metric-card">
+                            <div class="metric-value" id="precisionMetric">0.85</div>
+                            <div class="metric-label">精确率</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="recallMetric">0.78</div>
+                            <div class="metric-label">召回率</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="latencyMetric">120ms</div>
+                            <div class="metric-label">响应延迟</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="relevanceMetric">0.82</div>
+                            <div class="metric-label">相关性得分</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="knowledge-section">
+                <h4>🚀 优化策略</h4>
+                <ul>
+                    <li><strong>文档分块优化：</strong>合理的分块大小和重叠策略</li>
+                    <li><strong>混合搜索：</strong>结合关键词搜索和语义搜索</li>
+                    <li><strong>重排序：</strong>使用专门的重排序模型提升结果质量</li>
+                    <li><strong>查询扩展：</strong>通过同义词和相关词扩展查询</li>
+                    <li><strong>缓存机制：</strong>缓存常见查询结果提升响应速度</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 效果评估标签页 -->
+        <div id="evaluation" class="tab-content">
+            <h2>📊 RAG系统效果评估</h2>
+            
+            <div class="demo-section">
+                <h3>📈 评估指标演示</h3>
+                <button class="btn" onclick="runEvaluation()">🧪 运行评估测试</button>
+                
+                <div id="evaluationResults" class="visualization-area" style="display:none;">
+                    <div class="canvas-container">
+                        <canvas id="evaluationCanvas"></canvas>
+                    </div>
+                    <div id="evaluationDetails"></div>
+                </div>
+            </div>
+            
+            <div class="knowledge-section">
+                <h4>📏 评估指标</h4>
+                <ul>
+                    <li><strong>RAGAS：</strong>专门用于RAG系统的评估框架</li>
+                    <li><strong>Faithfulness：</strong>生成答案与检索文档的一致性</li>
+                    <li><strong>Answer Relevancy：</strong>答案与问题的相关性</li>
+                    <li><strong>Context Precision：</strong>检索上下文的精确性</li>
+                    <li><strong>Context Recall：</strong>检索上下文的召回率</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let knowledgeBase = [
+            "机器学习是人工智能的一个子领域，专注于开发能够从数据中学习的算法。",
+            "深度学习是机器学习的一个分支，使用多层神经网络来模拟人脑的学习过程。",
+            "自然语言处理是计算机科学和人工智能的一个分支，专注于计算机与人类语言的交互。",
+            "计算机视觉是人工智能的一个领域，致力于让计算机能够理解和解释视觉信息。",
+            "强化学习是机器学习的一种方法，通过与环境交互来学习最优行为策略。"
+        ];
+        
+        // 标签页切换
+        function showTab(tabName) {
+            // 隐藏所有标签页内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // 移除所有标签的active类
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // 显示选中的标签页
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // 模拟文本向量化
+        function generateVector(text, dimension = 8) {
+            const vector = [];
+            for (let i = 0; i < dimension; i++) {
+                // 基于文本内容生成伪向量
+                const hash = text.charCodeAt(i % text.length) + i;
+                vector.push((Math.sin(hash) * 0.5 + 0.5).toFixed(3));
+            }
+            return vector;
+        }
+        
+        // 计算余弦相似度
+        function cosineSimilarity(vec1, vec2) {
+            const dotProduct = vec1.reduce((sum, a, i) => sum + a * vec2[i], 0);
+            const magnitude1 = Math.sqrt(vec1.reduce((sum, a) => sum + a * a, 0));
+            const magnitude2 = Math.sqrt(vec2.reduce((sum, a) => sum + a * a, 0));
+            return dotProduct / (magnitude1 * magnitude2);
+        }
+        
+        // RAG演示
+        function demonstrateRAG() {
+            const query = document.getElementById('userQuery').value;
+            const demoDiv = document.getElementById('ragDemo');
+            const stepsDiv = document.getElementById('ragSteps');
+            
+            demoDiv.style.display = 'block';
+            stepsDiv.innerHTML = '';
+            
+            // 步骤1：查询向量化
+            setTimeout(() => {
+                const step1 = document.createElement('div');
+                step1.className = 'result-item';
+                step1.innerHTML = `
+                    <h4>步骤1：查询向量化</h4>
+                    <p>将用户查询 "${query}" 转换为向量表示</p>
+                    <div class="vector-display">
+                        ${generateVector(query).map(v => `<span class="vector-element">${v}</span>`).join('')}
+                    </div>
+                `;
+                stepsDiv.appendChild(step1);
+            }, 500);
+            
+            // 步骤2：检索相关文档
+            setTimeout(() => {
+                const queryVector = generateVector(query).map(Number);
+                const results = knowledgeBase.map(doc => ({
+                    text: doc,
+                    vector: generateVector(doc).map(Number),
+                    similarity: 0
+                }));
+                
+                results.forEach(result => {
+                    result.similarity = cosineSimilarity(queryVector, result.vector);
+                });
+                
+                results.sort((a, b) => b.similarity - a.similarity);
+                
+                const step2 = document.createElement('div');
+                step2.className = 'result-item';
+                step2.innerHTML = `
+                    <h4>步骤2：检索相关文档</h4>
+                    <p>从知识库中检索最相关的文档：</p>
+                    ${results.slice(0, 3).map(result => `
+                        <div style="margin: 10px 0; padding: 10px; background: #f0f8ff; border-radius: 5px;">
+                            <span class="similarity-score">${(result.similarity * 100).toFixed(1)}%</span>
+                            <p>${result.text}</p>
+                        </div>
+                    `).join('')}
+                `;
+                stepsDiv.appendChild(step2);
+            }, 1500);
+            
+            // 步骤3：生成回答
+            setTimeout(() => {
+                const step3 = document.createElement('div');
+                step3.className = 'result-item';
+                step3.innerHTML = `
+                    <h4>步骤3：生成增强回答</h4>
+                    <p>基于检索到的相关文档，LLM生成的回答：</p>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                        <strong>回答：</strong>机器学习是人工智能的核心技术之一，它通过算法让计算机能够从数据中自动学习和改进。
+                        机器学习包含多个分支，如深度学习、强化学习等，广泛应用于自然语言处理、计算机视觉等领域。
+                    </div>
+                `;
+                stepsDiv.appendChild(step3);
+            }, 2500);
+        }
+        
+        // 文本向量化演示
+        function vectorizeText() {
+            const text = document.getElementById('inputText').value;
+            const resultDiv = document.getElementById('vectorResult');
+            const displayDiv = document.getElementById('vectorDisplay');
+            
+            resultDiv.style.display = 'block';
+            
+            const vector = generateVector(text, 16);
+            displayDiv.innerHTML = `
+                <p><strong>原文本：</strong>${text}</p>
+                <p><strong>向量维度：</strong>${vector.length}</p>
+                <div class="vector-display">
+                    ${vector.map((v, i) => `<span class="vector-element">v${i}: ${v}</span>`).join('')}
+                </div>
+            `;
+            
+            // 绘制向量可视化
+            drawVectorVisualization(vector);
+        }
+        
+        // 绘制向量可视化
+        function drawVectorVisualization(vector) {
+            const canvas = document.getElementById('vectorCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 400;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const barWidth = canvas.width / vector.length;
+            const maxValue = Math.max(...vector.map(Number));
+            
+            vector.forEach((value, index) => {
+                const height = (Number(value) / maxValue) * (canvas.height - 50);
+                const x = index * barWidth;
+                const y = canvas.height - height - 25;
+                
+                // 绘制柱状图
+                const gradient = ctx.createLinearGradient(0, y, 0, y + height);
+                gradient.addColorStop(0, '#4ECDC4');
+                gradient.addColorStop(1, '#44A08D');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x + 2, y, barWidth - 4, height);
+                
+                // 添加数值标签
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, x + barWidth/2, canvas.height - 5);
+                ctx.fillText(`v${index}`, x + barWidth/2, y - 5);
+            });
+        }
+        
+        // 语义搜索演示
+        function performSemanticSearch() {
+            const query = document.getElementById('searchQuery').value;
+            const resultDiv = document.getElementById('searchResults');
+            const displayDiv = document.getElementById('resultsDisplay');
+            
+            resultDiv.style.display = 'block';
+            
+            const queryVector = generateVector(query).map(Number);
+            const results = knowledgeBase.map((doc, index) => ({
+                id: index,
+                text: doc,
+                vector: generateVector(doc).map(Number),
+                similarity: 0
+            }));
+            
+            results.forEach(result => {
+                result.similarity = cosineSimilarity(queryVector, result.vector);
+            });
+            
+            results.sort((a, b) => b.similarity - a.similarity);
+            
+            displayDiv.innerHTML = `
+                <p><strong>查询：</strong>${query}</p>
+                <p><strong>搜索结果（按相似度排序）：</strong></p>
+                ${results.map((result, index) => `
+                    <div class="result-item">
+                        <span class="similarity-score">${(result.similarity * 100).toFixed(1)}%</span>
+                        <strong>结果 ${index + 1}：</strong>
+                        <p>${result.text}</p>
+                    </div>
+                `).join('')}
+            `;
+            
+            // 绘制搜索结果可视化
+            drawSearchVisualization(queryVector, results);
+        }
+        
+        // 绘制搜索结果可视化
+        function drawSearchVisualization(queryVector, results) {
+            const canvas = document.getElementById('searchCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 400;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制查询向量
+            ctx.fillStyle = '#FF6B6B';
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('查询', canvas.width / 2, canvas.height / 2 + 30);
+            
+            // 绘制结果向量
+            results.slice(0, 5).forEach((result, index) => {
+                const angle = (index * 2 * Math.PI) / 5;
+                const distance = 100 + (1 - result.similarity) * 100;
+                const x = canvas.width / 2 + Math.cos(angle) * distance;
+                const y = canvas.height / 2 + Math.sin(angle) * distance;
+                
+                // 绘制连接线
+                ctx.strokeStyle = `rgba(33, 150, 243, ${result.similarity})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                // 绘制结果点
+                ctx.fillStyle = '#4ECDC4';
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // 添加相似度标签
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${(result.similarity * 100).toFixed(0)}%`, x, y - 15);
+            });
+        }
+        
+        // 更新优化参数
+        function updateOptimization() {
+            const topK = document.getElementById('topK').value;
+            const threshold = document.getElementById('threshold').value;
+            const chunkSize = document.getElementById('chunkSize').value;
+            
+            document.getElementById('topKValue').textContent = topK;
+            document.getElementById('thresholdValue').textContent = threshold;
+            document.getElementById('chunkSizeValue').textContent = chunkSize;
+            
+            // 模拟参数对性能的影响
+            const precision = Math.max(0.5, 0.9 - (topK - 5) * 0.02 - (0.7 - threshold) * 0.1);
+            const recall = Math.max(0.6, 0.8 + (topK - 5) * 0.01 - (threshold - 0.7) * 0.2);
+            const latency = Math.max(50, 100 + topK * 10 + (1000 - chunkSize) * 0.05);
+            const relevance = Math.max(0.6, 0.85 - Math.abs(topK - 5) * 0.02 - Math.abs(threshold - 0.7) * 0.1);
+            
+            document.getElementById('precisionMetric').textContent = precision.toFixed(2);
+            document.getElementById('recallMetric').textContent = recall.toFixed(2);
+            document.getElementById('latencyMetric').textContent = Math.round(latency) + 'ms';
+            document.getElementById('relevanceMetric').textContent = relevance.toFixed(2);
+        }
+        
+        // 运行评估测试
+        function runEvaluation() {
+            const resultDiv = document.getElementById('evaluationResults');
+            const detailsDiv = document.getElementById('evaluationDetails');
+            
+            resultDiv.style.display = 'block';
+            
+            // 模拟评估数据
+            const metrics = {
+                faithfulness: 0.85,
+                answerRelevancy: 0.78,
+                contextPrecision: 0.82,
+                contextRecall: 0.75,
+                overallScore: 0.80
+            };
+            
+            detailsDiv.innerHTML = `
+                <h4>📊 评估结果详情</h4>
+                <div class="metrics-display">
+                    <div class="metric-card">
+                        <div class="metric-value">${metrics.faithfulness}</div>
+                        <div class="metric-label">忠实度</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${metrics.answerRelevancy}</div>
+                        <div class="metric-label">答案相关性</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${metrics.contextPrecision}</div>
+                        <div class="metric-label">上下文精确度</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${metrics.contextRecall}</div>
+                        <div class="metric-label">上下文召回率</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px;">
+                    <h4>🎯 综合评分: ${metrics.overallScore}</h4>
+                    <p>您的RAG系统表现良好，建议继续优化上下文召回率以提升整体性能。</p>
+                </div>
+            `;
+            
+            // 绘制评估图表
+            drawEvaluationChart(metrics);
+        }
+        
+        // 绘制评估图表
+        function drawEvaluationChart(metrics) {
+            const canvas = document.getElementById('evaluationCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 400;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const labels = ['忠实度', '答案相关性', '上下文精确度', '上下文召回率'];
+            const values = [metrics.faithfulness, metrics.answerRelevancy, metrics.contextPrecision, metrics.contextRecall];
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 120;
+            
+            // 绘制雷达图
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            // 绘制网格
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                const r = (radius * i) / 5;
+                for (let j = 0; j < labels.length; j++) {
+                    const angle = (j * 2 * Math.PI) / labels.length - Math.PI / 2;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // 绘制轴线
+            for (let i = 0; i < labels.length; i++) {
+                const angle = (i * 2 * Math.PI) / labels.length - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                ctx.stroke();
+            }
+            
+            // 绘制数据
+            ctx.fillStyle = 'rgba(33, 150, 243, 0.3)';
+            ctx.strokeStyle = '#2196F3';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let i = 0; i < values.length; i++) {
+                const angle = (i * 2 * Math.PI) / values.length - Math.PI / 2;
+                const r = radius * values[i];
+                const x = centerX + Math.cos(angle) * r;
+                const y = centerY + Math.sin(angle) * r;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 绘制标签
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i < labels.length; i++) {
+                const angle = (i * 2 * Math.PI) / labels.length - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * (radius + 30);
+                const y = centerY + Math.sin(angle) * (radius + 30);
+                ctx.fillText(labels[i], x, y);
+                ctx.fillText(values[i].toFixed(2), x, y + 15);
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOptimization();
+        });
+    </script>
+</body>
+</html>

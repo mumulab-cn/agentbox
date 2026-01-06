@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完整Transformer Encoder详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #f57f17;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #f57f17;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fdd835;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #f57f17;
+            font-weight: bold;
+            background: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 完整架构图 */
+        .encoder-architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin: 40px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #fff9c4, #fff59d);
+            border-radius: 15px;
+        }
+        
+        .arch-layer {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 6px solid #ffb300;
+            transition: all 0.3s;
+        }
+        
+        .arch-layer:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(245, 127, 23, 0.3);
+        }
+        
+        .layer-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #f57f17;
+            margin-bottom: 10px;
+        }
+        
+        .layer-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .layer-formula {
+            background: #fffde7;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            color: #f57f17;
+            font-weight: bold;
+        }
+        
+        /* 数据流动 */
+        .data-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .flow-shape {
+            background: linear-gradient(135deg, #ffd54f, #ffb300);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .flow-arrow {
+            font-size: 2em;
+            color: #f57f17;
+        }
+        
+        .flow-info {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        /* 模块组成 */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .module-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .module-card:hover {
+            border-color: #f57f17;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(245, 127, 23, 0.3);
+        }
+        
+        .module-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .module-title {
+            color: #f57f17;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .module-desc {
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #fdd835, #f57f17);
+            color: #333;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #fff9c4;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ 完整Transformer Encoder</h1>
+        <p class="subtitle">组装所有模块 - 从输入到输出的完整流程</p>
+        
+        <!-- 1. 整体架构 -->
+        <div class="section">
+            <h2 class="section-title">一、Encoder完整架构</h2>
+            <p class="content-text">
+                一个完整的Encoder层包含<span class="highlight">两个子层</span>，每个子层后都有Add&Norm：
+            </p>
+            
+            <div class="encoder-architecture">
+                <div class="arch-layer" style="border-color: #42a5f5;">
+                    <div class="layer-title">📥 输入处理</div>
+                    <div class="layer-desc">
+                        词嵌入（Token Embedding）+ 位置编码（Positional Encoding）
+                    </div>
+                    <div class="layer-formula">
+                        Input = Embedding(tokens) + PositionalEncoding
+                    </div>
+                </div>
+                
+                <div style="text-align: center; font-size: 2em; color: #f57f17;">↓</div>
+                
+                <div class="arch-layer" style="border-color: #ab47bc;">
+                    <div class="layer-title">🔀 子层1：多头自注意力</div>
+                    <div class="layer-desc">
+                        8个注意力头并行计算，捕捉词与词之间的关系
+                    </div>
+                    <div class="layer-formula">
+                        X = LayerNorm(X + MultiHeadAttention(X, X, X))
+                    </div>
+                </div>
+                
+                <div style="text-align: center; font-size: 2em; color: #f57f17;">↓</div>
+                
+                <div class="arch-layer" style="border-color: #66bb6a;">
+                    <div class="layer-title">🔄 子层2：前馈神经网络</div>
+                    <div class="layer-desc">
+                        两层全连接网络，维度先扩展4倍再压缩回来
+                    </div>
+                    <div class="layer-formula">
+                        X = LayerNorm(X + FeedForward(X))
+                    </div>
+                </div>
+                
+                <div style="text-align: center; font-size: 2em; color: #f57f17;">↓</div>
+                
+                <div class="arch-layer" style="border-color: #ff9800;">
+                    <div class="layer-title">📤 输出</div>
+                    <div class="layer-desc">
+                        融合了上下文信息的向量表示，传递给下一层或用于预测
+                    </div>
+                    <div class="layer-formula">
+                        Output (seq_len, d_model)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 数据流动 -->
+        <div class="section">
+            <h2 class="section-title">二、数据维度变化全流程</h2>
+            
+            <div class="data-flow">
+                <div class="flow-item">
+                    <div class="flow-shape">输入Token IDs<br>(batch, seq_len)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">例：(32, 10)<br>32个样本，每个10个词</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">词嵌入<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">通过Embedding矩阵</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">位置编码<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">相加融入位置信息</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">多头注意力<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">内部分为8个头，每头64维</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">Add & Norm<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">残差连接+层归一化</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">前馈网络<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">512→2048→512</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape">Add & Norm<br>(batch, seq_len, 512)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-info">第二次残差+归一化</div>
+                </div>
+                
+                <div class="flow-item">
+                    <div class="flow-shape" style="background: linear-gradient(135deg, #ff9800, #f57f17);">
+                        Encoder输出<br>(batch, seq_len, 512)
+                    </div>
+                    <div class="flow-arrow">✓</div>
+                    <div class="flow-info">完成一层编码</div>
+                </div>
+            </div>
+            
+            <p class="content-text" style="text-align: center; color: #f57f17; font-weight: bold; margin-top: 20px;">
+                ⚠️ 维度始终保持不变：(batch_size, seq_len, d_model)
+            </p>
+        </div>
+        
+        <!-- 3. 核心模块回顾 -->
+        <div class="section">
+            <h2 class="section-title">三、核心模块详解</h2>
+            
+            <div class="module-grid">
+                <div class="module-card">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">Token Embedding</div>
+                    <div class="module-desc">
+                        将词ID转为512维向量<br>
+                        参数量：vocab_size × 512
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-icon">📍</div>
+                    <div class="module-title">位置编码</div>
+                    <div class="module-desc">
+                        正弦余弦函数生成<br>
+                        无需训练参数
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-icon">🔀</div>
+                    <div class="module-title">多头注意力</div>
+                    <div class="module-desc">
+                        8个头并行，每头64维<br>
+                        参数量：约105万
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-icon">🔄</div>
+                    <div class="module-title">前馈网络</div>
+                    <div class="module-desc">
+                        512→2048→512<br>
+                        参数量：约210万
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-icon">➕</div>
+                    <div class="module-title">残差连接</div>
+                    <div class="module-desc">
+                        X + Sublayer(X)<br>
+                        解决梯度消失
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-icon">📊</div>
+                    <div class="module-title">层归一化</div>
+                    <div class="module-desc">
+                        均值0，方差1<br>
+                        参数量：2 × 512
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. 参数量统计 -->
+        <div class="section">
+            <h2 class="section-title">四、单层Encoder参数量</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>模块</th>
+                        <th>子组件</th>
+                        <th>参数量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="4"><strong>多头注意力</strong></td>
+                        <td>W_Q</td>
+                        <td>512 × 512 = 262,144</td>
+                    </tr>
+                    <tr>
+                        <td>W_K</td>
+                        <td>512 × 512 = 262,144</td>
+                    </tr>
+                    <tr>
+                        <td>W_V</td>
+                        <td>512 × 512 = 262,144</td>
+                    </tr>
+                    <tr>
+                        <td>W_O</td>
+                        <td>512 × 512 = 262,144</td>
+                    </tr>
+                    <tr style="background: #fff9c4;">
+                        <td colspan="2"><strong>多头注意力小计</strong></td>
+                        <td><strong>1,048,576</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><strong>前馈网络</strong></td>
+                        <td>第一层</td>
+                        <td>512 × 2048 = 1,048,576</td>
+                    </tr>
+                    <tr>
+                        <td>第二层</td>
+                        <td>2048 × 512 = 1,048,576</td>
+                    </tr>
+                    <tr style="background: #fff9c4;">
+                        <td colspan="2"><strong>前馈网络小计</strong></td>
+                        <td><strong>2,097,152</strong></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><strong>层归一化</strong></td>
+                        <td>第1次（注意力后）</td>
+                        <td>2 × 512 = 1,024</td>
+                    </tr>
+                    <tr>
+                        <td>第2次（FFN后）</td>
+                        <td>2 × 512 = 1,024</td>
+                    </tr>
+                    <tr style="background: #ffd54f;">
+                        <td colspan="2"><strong>单层Encoder总计</strong></td>
+                        <td><strong>3,147,776 ≈ 315万</strong></td>
+                    </tr>
+                    <tr style="background: #ff9800; color: white;">
+                        <td colspan="2"><strong>6层Encoder总计</strong></td>
+                        <td><strong>18,886,656 ≈ 1889万</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 5. 堆叠多层 -->
+        <div class="section">
+            <h2 class="section-title">五、堆叠6层Encoder</h2>
+            
+            <div class="tip-box">
+                <div class="tip-title">🏗️ 为什么堆叠多层</div>
+                <div class="tip-content">
+                    <strong>逐层抽象：</strong><br>
+                    • <strong>第1-2层：</strong>学习局部模式（词性、短语）<br>
+                    • <strong>第3-4层：</strong>学习句法结构（主谓宾、从句）<br>
+                    • <strong>第5-6层：</strong>学习语义关系（共指、推理）<br>
+                    <br>
+                    <strong>标准配置：</strong><br>
+                    • BERT-Base: 12层Encoder<br>
+                    • GPT-3: 96层<br>
+                    • 原始Transformer: 6层Encoder + 6层Decoder
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #fff9c4, #fff59d); padding: 30px; border-radius: 15px; margin: 30px 0;">
+                <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                    <div style="background: white; padding: 20px 40px; border-radius: 10px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        Encoder Layer 6
+                    </div>
+                    <div style="font-size: 2em; color: #f57f17;">↑</div>
+                    <div style="background: white; padding: 20px 40px; border-radius: 10px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        Encoder Layer 5
+                    </div>
+                    <div style="font-size: 2em; color: #f57f17;">↑</div>
+                    <div style="background: white; padding: 20px 40px; border-radius: 10px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        Encoder Layer 4
+                    </div>
+                    <div style="font-size: 1.5em; color: #f57f17;">⋮</div>
+                    <div style="background: white; padding: 20px 40px; border-radius: 10px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        Encoder Layer 1
+                    </div>
+                    <div style="font-size: 2em; color: #f57f17;">↑</div>
+                    <div style="background: linear-gradient(135deg, #42a5f5, #1e88e5); color: white; padding: 20px 40px; border-radius: 10px; font-weight: bold; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        输入（Embedding + Position）
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 完整代码 -->
+        <div class="section">
+            <h2 class="section-title">六、完整PyTorch实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn <span style="color: #82b1ff;">as</span> nn
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">EncoderLayer</span>(nn.Module):
+    <span style="color: #90a4ae;">"""单层Transformer Encoder"""</span>
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+        
+        <span style="color: #90a4ae;"># 多头注意力</span>
+        self.multi_head_attention = MultiHeadAttention(d_model, num_heads)
+        
+        <span style="color: #90a4ae;"># 前馈网络</span>
+        self.feed_forward = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_ff, d_model)
+        )
+        
+        <span style="color: #90a4ae;"># 两个层归一化</span>
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        
+        <span style="color: #90a4ae;"># Dropout</span>
+        self.dropout = nn.Dropout(dropout)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x):
+        <span style="color: #90a4ae;"># 子层1：多头注意力 + Add & Norm</span>
+        attn_output = self.multi_head_attention(x, x, x)
+        x = self.norm1(x + self.dropout(attn_output))
+        
+        <span style="color: #90a4ae;"># 子层2：前馈网络 + Add & Norm</span>
+        ff_output = self.feed_forward(x)
+        x = self.norm2(x + self.dropout(ff_output))
+        
+        <span style="color: #82b1ff;">return</span> x
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">TransformerEncoder</span>(nn.Module):
+    <span style="color: #90a4ae;">"""完整的Transformer Encoder（堆叠N层）"""</span>
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, vocab_size, d_model=512, num_layers=6, 
+                 num_heads=8, d_ff=2048, max_len=5000, dropout=0.1):
+        super().__init__()
+        
+        <span style="color: #90a4ae;"># 词嵌入</span>
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        
+        <span style="color: #90a4ae;"># 位置编码</span>
+        self.pos_encoding = PositionalEncoding(d_model, max_len)
+        
+        <span style="color: #90a4ae;"># 堆叠N层Encoder</span>
+        self.layers = nn.ModuleList([
+            EncoderLayer(d_model, num_heads, d_ff, dropout)
+            <span style="color: #82b1ff;">for</span> _ <span style="color: #82b1ff;">in</span> range(num_layers)
+        ])
+        
+        self.dropout = nn.Dropout(dropout)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x):
+        <span style="color: #90a4ae;"># x shape: (batch_size, seq_len)</span>
+        
+        <span style="color: #90a4ae;"># 1. 词嵌入</span>
+        x = self.embedding(x)  <span style="color: #90a4ae;"># (batch, seq_len, d_model)</span>
+        
+        <span style="color: #90a4ae;"># 2. 加上位置编码</span>
+        x = self.pos_encoding(x)
+        x = self.dropout(x)
+        
+        <span style="color: #90a4ae;"># 3. 逐层通过Encoder</span>
+        <span style="color: #82b1ff;">for</span> layer <span style="color: #82b1ff;">in</span> self.layers:
+            x = layer(x)
+        
+        <span style="color: #82b1ff;">return</span> x
+
+<span style="color: #90a4ae;"># 使用示例</span>
+vocab_size = 30000
+batch_size = 32
+seq_len = 10
+
+<span style="color: #90a4ae;"># 创建模型</span>
+encoder = TransformerEncoder(
+    vocab_size=vocab_size,
+    d_model=512,
+    num_layers=6,
+    num_heads=8,
+    d_ff=2048
+)
+
+<span style="color: #90a4ae;"># 输入token IDs</span>
+input_ids = torch.randint(0, vocab_size, (batch_size, seq_len))
+
+<span style="color: #90a4ae;"># 前向传播</span>
+output = encoder(input_ids)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输入: {input_ids.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输出: {output.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"参数量: {sum(p.numel() for p in encoder.parameters()):,}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #fff9c4, #fff59d); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #f57f17; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ Encoder由输入处理+多头注意力+前馈网络组成，每个子层后有Add&Norm<br>
+                ✓ 数据维度始终保持(batch, seq_len, d_model)不变<br>
+                ✓ 单层约315万参数，6层约1889万参数<br>
+                ✓ 通过堆叠多层实现逐层抽象，从词法到句法到语义<br>
+                ✓ 这就是Transformer Encoder的完整结构，BERT等模型的基础
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 完整Transformer Encoder详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

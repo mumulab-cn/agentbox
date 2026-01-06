@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多头注意力机制详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #6a1b9a;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #6a1b9a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ce93d8;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #6a1b9a;
+            font-weight: bold;
+            background: #f3e5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 多头并行可视化 */
+        .multi-head-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-radius: 15px;
+        }
+        
+        .head-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .head-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(106, 27, 154, 0.3);
+            border-color: #6a1b9a;
+        }
+        
+        .head-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 15px;
+        }
+        
+        .head-visual {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border: 4px solid #ab47bc;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .head-visual::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ab47bc;
+            border-radius: 50%;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .head-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        /* 维度分割展示 */
+        .dimension-split {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .dim-box {
+            text-align: center;
+        }
+        
+        .dim-label {
+            color: #6a1b9a;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .dim-visual {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .dim-bar {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .dim-bar.full {
+            width: 512px;
+            background: linear-gradient(90deg, #ab47bc, #6a1b9a);
+        }
+        
+        .dim-segments {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .dim-segment {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .dim-segment:nth-child(1) { background: #e91e63; }
+        .dim-segment:nth-child(2) { background: #9c27b0; }
+        .dim-segment:nth-child(3) { background: #673ab7; }
+        .dim-segment:nth-child(4) { background: #3f51b5; }
+        .dim-segment:nth-child(5) { background: #2196f3; }
+        .dim-segment:nth-child(6) { background: #00bcd4; }
+        .dim-segment:nth-child(7) { background: #009688; }
+        .dim-segment:nth-child(8) { background: #4caf50; }
+        
+        .arrow-down {
+            font-size: 2.5em;
+            color: #6a1b9a;
+        }
+        
+        /* 计算流程 */
+        .computation-flow {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .flow-title {
+            color: #f57c00;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .flow-step {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        .step-num {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #ff9800;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step-text {
+            display: inline-block;
+            vertical-align: top;
+            width: calc(100% - 45px);
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 拼接可视化 */
+        .concat-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+            padding: 25px;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+        
+        .concat-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .concat-piece {
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .concat-result {
+            padding: 20px 40px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #ab47bc, #6a1b9a);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-left: 5px solid #6a1b9a;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            color: #6a1b9a;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #ab47bc, #6a1b9a);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f3e5f5;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .dim-bar.full {
+                width: 100%;
+            }
+            
+            .dim-segments {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔀 多头注意力机制详解</h1>
+        <p class="subtitle">Multi-Head Attention - 8个注意力头并行捕捉不同语义关系</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section">
+            <h2 class="section-title">一、什么是多头注意力</h2>
+            <p class="content-text">
+                多头注意力（Multi-Head Attention）是将<span class="highlight">单个注意力分解为多个并行的注意力头</span>，
+                每个头独立学习不同的语义关系，最后将结果拼接融合。
+            </p>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 为什么需要多头</div>
+                <div class="tip-content">
+                    <strong>类比：</strong>从不同角度观察同一个事物<br><br>
+                    • <strong>Head 1：</strong>关注语法关系（主谓宾）<br>
+                    • <strong>Head 2：</strong>关注语义相似性<br>
+                    • <strong>Head 3：</strong>关注位置距离<br>
+                    • <strong>Head 4-8：</strong>学习其他隐含模式<br>
+                    <br>
+                    <strong>效果：</strong>单头只能学到一种模式，多头能同时捕捉多种语言现象
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 8个注意力头 -->
+        <div class="section">
+            <h2 class="section-title">二、8个注意力头并行计算</h2>
+            <p class="content-text">
+                标准Transformer使用<span class="highlight">8个注意力头</span>同时工作：
+            </p>
+            
+            <div class="multi-head-visual">
+                <div class="head-box">
+                    <div class="head-number">Head 1</div>
+                    <div class="head-visual"></div>
+                    <div class="head-desc">学习模式1</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 2</div>
+                    <div class="head-visual" style="animation-delay: -0.5s;"></div>
+                    <div class="head-desc">学习模式2</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 3</div>
+                    <div class="head-visual" style="animation-delay: -1s;"></div>
+                    <div class="head-desc">学习模式3</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 4</div>
+                    <div class="head-visual" style="animation-delay: -1.5s;"></div>
+                    <div class="head-desc">学习模式4</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 5</div>
+                    <div class="head-visual" style="animation-delay: -2s;"></div>
+                    <div class="head-desc">学习模式5</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 6</div>
+                    <div class="head-visual" style="animation-delay: -2.5s;"></div>
+                    <div class="head-desc">学习模式6</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 7</div>
+                    <div class="head-visual" style="animation-delay: -3s;"></div>
+                    <div class="head-desc">学习模式7</div>
+                </div>
+                
+                <div class="head-box">
+                    <div class="head-number">Head 8</div>
+                    <div class="head-visual" style="animation-delay: -3.5s;"></div>
+                    <div class="head-desc">学习模式8</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 维度分割 -->
+        <div class="section">
+            <h2 class="section-title">三、维度如何分割</h2>
+            <p class="content-text">
+                关键技巧：将<span class="highlight">512维均分给8个头</span>，每个头处理64维
+            </p>
+            
+            <div class="dimension-split">
+                <div class="dim-box">
+                    <div class="dim-label">原始维度</div>
+                    <div class="dim-visual">
+                        <div class="dim-bar full">d_model = 512</div>
+                    </div>
+                </div>
+                
+                <div class="arrow-down">↓</div>
+                
+                <div class="dim-box">
+                    <div class="dim-label">分割为8个头</div>
+                    <div class="dim-visual">
+                        <div class="dim-segments">
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                            <div class="dim-segment">64</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">d_k = d_v = d_model / h = 512 / 8 = 64</div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    • h = 8（注意力头数）<br>
+                    • d_k = d_v = 64（每个头的维度）
+                </p>
+            </div>
+        </div>
+        
+        <!-- 4. 计算流程 -->
+        <div class="section">
+            <h2 class="section-title">四、多头注意力计算流程</h2>
+            
+            <div class="computation-flow">
+                <div class="flow-title">🔄 完整计算步骤</div>
+                
+                <div class="flow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-text">
+                        <strong>线性投影：</strong>输入(seq_len, 512)通过W_Q、W_K、W_V得到Q、K、V<br>
+                        每个权重矩阵：(512, 512)
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-text">
+                        <strong>分割为8个头：</strong>reshape操作<br>
+                        Q、K、V: (seq_len, 512) → (seq_len, 8, 64)
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-text">
+                        <strong>并行计算注意力：</strong>每个头独立计算<br>
+                        Head_i = Attention(Q_i, K_i, V_i)<br>
+                        输出：8个(seq_len, 64)的向量
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <span class="step-num">4</span>
+                    <div class="step-text">
+                        <strong>拼接：</strong>将8个头的输出拼接<br>
+                        Concat: (seq_len, 8, 64) → (seq_len, 512)
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <span class="step-num">5</span>
+                    <div class="step-text">
+                        <strong>输出投影：</strong>通过W_O线性变换<br>
+                        最终输出: (seq_len, 512)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 拼接过程 -->
+        <div class="section">
+            <h2 class="section-title">五、多头输出拼接</h2>
+            <p class="content-text">
+                8个头的输出需要<span class="highlight">拼接（Concatenate）</span>成完整的512维向量：
+            </p>
+            
+            <div class="concat-visual">
+                <div class="concat-row">
+                    <div class="concat-piece" style="background: #e91e63;">Head1<br>64维</div>
+                    <div class="concat-piece" style="background: #9c27b0;">Head2<br>64维</div>
+                    <div class="concat-piece" style="background: #673ab7;">Head3<br>64维</div>
+                    <div class="concat-piece" style="background: #3f51b5;">Head4<br>64维</div>
+                    <div class="concat-piece" style="background: #2196f3;">Head5<br>64维</div>
+                    <div class="concat-piece" style="background: #00bcd4;">Head6<br>64维</div>
+                    <div class="concat-piece" style="background: #009688;">Head7<br>64维</div>
+                    <div class="concat-piece" style="background: #4caf50;">Head8<br>64维</div>
+                </div>
+                
+                <div style="text-align: center; font-size: 2em; color: #6a1b9a;">↓ Concat</div>
+                
+                <div class="concat-row">
+                    <div class="concat-result">完整向量 512维</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 完整公式 -->
+        <div class="section">
+            <h2 class="section-title">六、多头注意力完整公式</h2>
+            
+            <div class="formula-box">
+                <div class="formula">MultiHead(Q,K,V) = Concat(head₁,...,head₈) · W_O</div>
+                <div class="formula" style="font-size: 1.1em; margin-top: 20px;">head_i = Attention(Q·W_Qⁱ, K·W_Kⁱ, V·W_Vⁱ)</div>
+                <p style="color: #666; text-align: center; margin-top: 20px;">
+                    • W_Qⁱ, W_Kⁱ, W_Vⁱ: 第i个头的投影矩阵 (512, 64)<br>
+                    • W_O: 输出投影矩阵 (512, 512)
+                </p>
+            </div>
+        </div>
+        
+        <!-- 7. 参数量计算 -->
+        <div class="section">
+            <h2 class="section-title">七、参数量分析</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>权重矩阵</th>
+                        <th>形状</th>
+                        <th>参数量</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>W_Q</strong></td>
+                        <td>(512, 512)</td>
+                        <td>262,144</td>
+                        <td>Query投影</td>
+                    </tr>
+                    <tr>
+                        <td><strong>W_K</strong></td>
+                        <td>(512, 512)</td>
+                        <td>262,144</td>
+                        <td>Key投影</td>
+                    </tr>
+                    <tr>
+                        <td><strong>W_V</strong></td>
+                        <td>(512, 512)</td>
+                        <td>262,144</td>
+                        <td>Value投影</td>
+                    </tr>
+                    <tr>
+                        <td><strong>W_O</strong></td>
+                        <td>(512, 512)</td>
+                        <td>262,144</td>
+                        <td>输出投影</td>
+                    </tr>
+                    <tr style="background: #f3e5f5;">
+                        <td><strong>总计</strong></td>
+                        <td>-</td>
+                        <td><strong>1,048,576</strong></td>
+                        <td>约100万参数</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 8. 优势对比 -->
+        <div class="section">
+            <h2 class="section-title">八、多头 vs 单头</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特性</th>
+                        <th>单头注意力</th>
+                        <th>多头注意力（8头）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>表达能力</strong></td>
+                        <td>只能学习一种模式</td>
+                        <td>同时学习8种不同模式</td>
+                    </tr>
+                    <tr>
+                        <td><strong>关注维度</strong></td>
+                        <td>单一视角</td>
+                        <td>多个子空间，多角度观察</td>
+                    </tr>
+                    <tr>
+                        <td><strong>鲁棒性</strong></td>
+                        <td>较弱</td>
+                        <td>更强，多个头互补</td>
+                    </tr>
+                    <tr>
+                        <td><strong>计算效率</strong></td>
+                        <td>512×512矩阵乘法</td>
+                        <td>8个64×64并行，更高效</td>
+                    </tr>
+                    <tr>
+                        <td><strong>参数量</strong></td>
+                        <td>约80万</td>
+                        <td>约105万（增加25%）</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 9. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">九、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn <span style="color: #82b1ff;">as</span> nn
+<span style="color: #82b1ff;">import</span> math
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">MultiHeadAttention</span>(nn.Module):
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model=512, num_heads=8):
+        super().__init__()
+        <span style="color: #82b1ff;">assert</span> d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads  <span style="color: #90a4ae;"># 64</span>
+        
+        <span style="color: #90a4ae;"># Q、K、V投影矩阵</span>
+        self.W_Q = nn.Linear(d_model, d_model)
+        self.W_K = nn.Linear(d_model, d_model)
+        self.W_V = nn.Linear(d_model, d_model)
+        
+        <span style="color: #90a4ae;"># 输出投影矩阵</span>
+        self.W_O = nn.Linear(d_model, d_model)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">split_heads</span>(self, x):
+        <span style="color: #90a4ae;">"""分割为多个头"""</span>
+        batch_size, seq_len, d_model = x.size()
+        <span style="color: #90a4ae;"># (batch, seq_len, d_model) -> (batch, seq_len, num_heads, d_k)</span>
+        x = x.view(batch_size, seq_len, self.num_heads, self.d_k)
+        <span style="color: #90a4ae;"># (batch, seq_len, num_heads, d_k) -> (batch, num_heads, seq_len, d_k)</span>
+        <span style="color: #82b1ff;">return</span> x.transpose(1, 2)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">combine_heads</span>(self, x):
+        <span style="color: #90a4ae;">"""拼接多个头"""</span>
+        batch_size, num_heads, seq_len, d_k = x.size()
+        <span style="color: #90a4ae;"># (batch, num_heads, seq_len, d_k) -> (batch, seq_len, num_heads, d_k)</span>
+        x = x.transpose(1, 2)
+        <span style="color: #90a4ae;"># (batch, seq_len, num_heads, d_k) -> (batch, seq_len, d_model)</span>
+        <span style="color: #82b1ff;">return</span> x.contiguous().view(batch_size, seq_len, self.d_model)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">attention</span>(self, Q, K, V):
+        <span style="color: #90a4ae;">"""计算单头注意力"""</span>
+        d_k = Q.size(-1)
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+        attention_weights = torch.softmax(scores, dim=-1)
+        output = torch.matmul(attention_weights, V)
+        <span style="color: #82b1ff;">return</span> output
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, Q, K, V):
+        <span style="color: #90a4ae;"># 1. 线性投影</span>
+        Q = self.W_Q(Q)  <span style="color: #90a4ae;"># (batch, seq_len, d_model)</span>
+        K = self.W_K(K)
+        V = self.W_V(V)
+        
+        <span style="color: #90a4ae;"># 2. 分割为多个头</span>
+        Q = self.split_heads(Q)  <span style="color: #90a4ae;"># (batch, num_heads, seq_len, d_k)</span>
+        K = self.split_heads(K)
+        V = self.split_heads(V)
+        
+        <span style="color: #90a4ae;"># 3. 计算注意力（8个头并行）</span>
+        attn_output = self.attention(Q, K, V)
+        
+        <span style="color: #90a4ae;"># 4. 拼接头</span>
+        output = self.combine_heads(attn_output)  <span style="color: #90a4ae;"># (batch, seq_len, d_model)</span>
+        
+        <span style="color: #90a4ae;"># 5. 输出投影</span>
+        output = self.W_O(output)
+        
+        <span style="color: #82b1ff;">return</span> output
+
+<span style="color: #90a4ae;"># 使用示例</span>
+batch_size = 2
+seq_len = 10
+d_model = 512
+
+mha = MultiHeadAttention(d_model=512, num_heads=8)
+x = torch.randn(batch_size, seq_len, d_model)
+output = mha(x, x, x)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输入: {x.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输出: {output.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"参数量: {sum(p.numel() for p in mha.parameters()):,}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #6a1b9a; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ 多头注意力将512维分割为8个64维，并行计算8次注意力<br>
+                ✓ 每个头学习不同的语义模式，提升模型表达能力<br>
+                ✓ 计算流程：投影→分割→并行注意力→拼接→输出投影<br>
+                ✓ 相比单头，参数量仅增加25%，但性能大幅提升<br>
+                ✓ 这是Transformer能够理解复杂语言现象的关键机制
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 多头注意力机制详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

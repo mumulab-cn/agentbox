@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>位置编码原理详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1f5fe 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #7b1fa2;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #7b1fa2;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ce93d8;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #7b1fa2;
+            font-weight: bold;
+            background: #f3e5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 问题演示 */
+        .problem-demo {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .problem-title {
+            color: #f57c00;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .sentence-visual {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .word-card {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #7b1fa2;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .word-card.same {
+            background: linear-gradient(135deg, #ba68c8, #ab47bc);
+            color: white;
+        }
+        
+        /* 正弦余弦波形 */
+        .wave-container {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .wave-title {
+            color: #7b1fa2;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .waves-display {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .wave-box {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .wave-label {
+            color: #7b1fa2;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .wave-svg {
+            width: 100%;
+            height: 100px;
+        }
+        
+        .wave-path {
+            stroke: #ba68c8;
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            animation: drawWave 2s ease-out forwards;
+        }
+        
+        @keyframes drawWave {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        /* 位置编码可视化 */
+        .position-encoding-visual {
+            margin: 30px 0;
+        }
+        
+        .position-grid {
+            display: grid;
+            grid-template-columns: auto repeat(8, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .grid-header {
+            background: linear-gradient(135deg, #ba68c8, #ab47bc);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .grid-cell {
+            background: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #7b1fa2;
+            border: 1px solid #e1bee7;
+            transition: all 0.3s;
+        }
+        
+        .grid-cell:hover {
+            background: #f3e5f5;
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(123, 31, 162, 0.3);
+        }
+        
+        /* 公式展示 */
+        .formula-box {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-left: 5px solid #7b1fa2;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            color: #7b1fa2;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 实例计算 */
+        .calculation-demo {
+            background: #e8f5e9;
+            border: 2px solid #66bb6a;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .calc-title {
+            color: #2e7d32;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .calc-step {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #66bb6a;
+        }
+        
+        .calc-step-title {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #ba68c8, #ab47bc);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f3e5f5;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .position-grid {
+                grid-template-columns: auto repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📍 位置编码原理详解</h1>
+        <p class="subtitle">Positional Encoding - 为每个词添加位置信息</p>
+        
+        <!-- 1. 为什么需要位置编码 -->
+        <div class="section">
+            <h2 class="section-title">一、为什么需要位置编码</h2>
+            
+            <div class="problem-demo">
+                <div class="problem-title">🤔 问题：Transformer如何区分词的顺序？</div>
+                <p class="content-text">
+                    不同于RNN按顺序处理，Transformer的<span class="highlight">自注意力机制</span>是并行处理所有词的，
+                    <strong>无法感知词的位置信息</strong>。
+                </p>
+                
+                <p style="color: #666; margin: 20px 0; font-weight: bold;">举例：</p>
+                
+                <div class="sentence-visual">
+                    <div class="word-card same">我</div>
+                    <div class="word-card same">爱</div>
+                    <div class="word-card same">你</div>
+                </div>
+                
+                <div style="text-align: center; margin: 15px 0; color: #666;">与</div>
+                
+                <div class="sentence-visual">
+                    <div class="word-card same">你</div>
+                    <div class="word-card same">爱</div>
+                    <div class="word-card same">我</div>
+                </div>
+                
+                <p style="color: #f57c00; margin-top: 20px; font-weight: bold;">
+                    在没有位置编码的情况下，这两个句子对于模型来说是完全相同的！
+                </p>
+            </div>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 位置编码的作用</div>
+                <div class="tip-content">
+                    • 为每个位置生成<span class="highlight">唯一的编码向量</span><br>
+                    • 将位置信息<span class="highlight">叠加</span>到词嵌入向量上<br>
+                    • 使模型能够区分词的顺序和相对位置<br>
+                    • 支持处理任意长度的序列
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 正弦余弦位置编码 -->
+        <div class="section">
+            <h2 class="section-title">二、正弦余弦位置编码公式</h2>
+            <p class="content-text">
+                Transformer使用<span class="highlight">正弦和余弦函数</span>生成位置编码：
+            </p>
+            
+            <div class="formula-box">
+                <div class="formula">PE(pos, 2i) = sin(pos / 10000^(2i/d_model))</div>
+                <div class="formula">PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))</div>
+                <p style="color: #666; text-align: center; margin-top: 20px;">
+                    • pos: 词在句子中的位置（0, 1, 2, ...）<br>
+                    • i: 向量维度的索引（0 到 d_model/2）<br>
+                    • d_model: 向量维度（通常是512）
+                </p>
+            </div>
+            
+            <p class="content-text" style="margin-top: 25px;">
+                <strong>关键特点：</strong>
+            </p>
+            <ul style="color: #555; margin-left: 30px; line-height: 2;">
+                <li>偶数维度使用 sin 函数</li>
+                <li>奇数维度使用 cos 函数</li>
+                <li>不同维度使用不同频率的波</li>
+                <li>位置越远，编码差异越大</li>
+            </ul>
+        </div>
+        
+        <!-- 3. 波形可视化 -->
+        <div class="section">
+            <h2 class="section-title">三、不同位置的波形模式</h2>
+            
+            <div class="wave-container">
+                <div class="wave-title">不同位置产生不同频率的正弦波</div>
+                <div class="waves-display">
+                    <div class="wave-box">
+                        <div class="wave-label">位置 0</div>
+                        <svg class="wave-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="50" x2="200" y2="50" stroke="#ddd" stroke-width="1"/>
+                            <path class="wave-path" d="M 0,50 Q 25,20 50,50 T 100,50 T 150,50 T 200,50"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="wave-box">
+                        <div class="wave-label">位置 1</div>
+                        <svg class="wave-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="50" x2="200" y2="50" stroke="#ddd" stroke-width="1"/>
+                            <path class="wave-path" d="M 0,50 Q 25,25 50,50 T 100,50 T 150,50 T 200,50" style="animation-delay: 0.2s;"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="wave-box">
+                        <div class="wave-label">位置 2</div>
+                        <svg class="wave-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="50" x2="200" y2="50" stroke="#ddd" stroke-width="1"/>
+                            <path class="wave-path" d="M 0,50 Q 25,30 50,50 T 100,50 T 150,50 T 200,50" style="animation-delay: 0.4s;"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="wave-box">
+                        <div class="wave-label">位置 3</div>
+                        <svg class="wave-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="50" x2="200" y2="50" stroke="#ddd" stroke-width="1"/>
+                            <path class="wave-path" d="M 0,50 Q 25,35 50,50 T 100,50 T 150,50 T 200,50" style="animation-delay: 0.6s;"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. 位置编码矩阵 -->
+        <div class="section">
+            <h2 class="section-title">四、位置编码矩阵可视化</h2>
+            <p class="content-text">
+                位置编码是一个<span class="highlight">序列长度 × 向量维度</span>的矩阵：
+            </p>
+            
+            <div class="position-encoding-visual">
+                <div class="position-grid">
+                    <div class="grid-header">位置</div>
+                    <div class="grid-header">维度0</div>
+                    <div class="grid-header">维度1</div>
+                    <div class="grid-header">维度2</div>
+                    <div class="grid-header">维度3</div>
+                    <div class="grid-header">维度4</div>
+                    <div class="grid-header">维度5</div>
+                    <div class="grid-header">维度6</div>
+                    <div class="grid-header">维度7</div>
+                    
+                    <div class="grid-header">0</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    
+                    <div class="grid-header">1</div>
+                    <div class="grid-cell">0.84</div>
+                    <div class="grid-cell">0.54</div>
+                    <div class="grid-cell">0.10</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.01</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    
+                    <div class="grid-header">2</div>
+                    <div class="grid-cell">0.91</div>
+                    <div class="grid-cell">-0.42</div>
+                    <div class="grid-cell">0.20</div>
+                    <div class="grid-cell">0.98</div>
+                    <div class="grid-cell">0.02</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                    
+                    <div class="grid-header">3</div>
+                    <div class="grid-cell">0.14</div>
+                    <div class="grid-cell">-0.99</div>
+                    <div class="grid-cell">0.30</div>
+                    <div class="grid-cell">0.95</div>
+                    <div class="grid-cell">0.03</div>
+                    <div class="grid-cell">1.00</div>
+                    <div class="grid-cell">0.00</div>
+                    <div class="grid-cell">1.00</div>
+                </div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    实际维度为512，这里简化为8维展示
+                </p>
+            </div>
+        </div>
+        
+        <!-- 5. 计算实例 -->
+        <div class="section">
+            <h2 class="section-title">五、完整计算示例</h2>
+            
+            <div class="calculation-demo">
+                <div class="calc-title">🧮 计算位置1、维度0的编码值</div>
+                
+                <div class="calc-step">
+                    <div class="calc-step-title">第1步：确定参数</div>
+                    <div style="color: #555; line-height: 1.8;">
+                        • pos = 1（第2个词）<br>
+                        • i = 0（第1个维度，是偶数，用sin）<br>
+                        • d_model = 512
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="calc-step-title">第2步：计算频率</div>
+                    <div style="color: #555; line-height: 1.8;">
+                        freq = 1 / 10000^(2×0/512) = 1 / 10000^0 = 1
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="calc-step-title">第3步：计算角度</div>
+                    <div style="color: #555; line-height: 1.8;">
+                        angle = pos × freq = 1 × 1 = 1
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="calc-step-title">第4步：应用sin函数</div>
+                    <div style="color: #555; line-height: 1.8;">
+                        PE(1, 0) = sin(1) ≈ <strong style="color: #2e7d32;">0.8414</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 如何使用 -->
+        <div class="section">
+            <h2 class="section-title">六、位置编码的使用方式</h2>
+            <p class="content-text">
+                位置编码通过<span class="highlight">相加</span>的方式融入词嵌入：
+            </p>
+            
+            <div class="formula-box">
+                <div class="formula">最终输入 = Token Embedding + Positional Encoding</div>
+                <div style="margin-top: 25px; padding: 20px; background: white; border-radius: 8px;">
+                    <p style="color: #555; line-height: 2;">
+                        <strong style="color: #7b1fa2;">示例：</strong><br>
+                        词嵌入: [0.5, -0.2, 0.8, 0.1, ...]  (512维)<br>
+                        位置编码: [0.84, 0.54, 0.10, 1.00, ...]  (512维)<br>
+                        <strong>相加后: [1.34, 0.34, 0.90, 1.10, ...]  (512维)</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 7. 优势分析 -->
+        <div class="section">
+            <h2 class="section-title">七、正弦余弦编码的优势</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特点</th>
+                        <th>说明</th>
+                        <th>优势</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>确定性</strong></td>
+                        <td>每个位置的编码是固定的数学函数</td>
+                        <td>无需学习参数，节省计算</td>
+                    </tr>
+                    <tr>
+                        <td><strong>无限长度</strong></td>
+                        <td>可以为任意长度的序列生成编码</td>
+                        <td>支持超出训练长度的推理</td>
+                    </tr>
+                    <tr>
+                        <td><strong>相对位置</strong></td>
+                        <td>任意两个位置的编码可以通过线性组合得到</td>
+                        <td>模型能学习相对位置关系</td>
+                    </tr>
+                    <tr>
+                        <td><strong>周期性</strong></td>
+                        <td>使用多个频率的波，捕捉不同尺度的位置信息</td>
+                        <td>既能区分近邻，也能区分远距离</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 8. 对比学习式位置编码 -->
+        <div class="section">
+            <h2 class="section-title">八、与学习式位置编码对比</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>类型</th>
+                        <th>原理</th>
+                        <th>优点</th>
+                        <th>缺点</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>正弦余弦编码</strong></td>
+                        <td>使用数学公式生成</td>
+                        <td>• 无需训练<br>• 支持任意长度<br>• 泛化能力强</td>
+                        <td>• 固定模式<br>• 无法针对任务优化</td>
+                    </tr>
+                    <tr>
+                        <td><strong>学习式编码</strong></td>
+                        <td>作为参数在训练中学习</td>
+                        <td>• 可以学习任务特定模式<br>• 灵活性高</td>
+                        <td>• 需要训练<br>• 长度受限<br>• 泛化性差</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="tip-box">
+                <div class="tip-title">📌 实际应用</div>
+                <div class="tip-content">
+                    • <strong>原始Transformer：</strong>使用正弦余弦编码<br>
+                    • <strong>BERT：</strong>使用学习式位置编码，最大长度512<br>
+                    • <strong>GPT系列：</strong>使用学习式位置编码<br>
+                    • <strong>现代改进：</strong>相对位置编码、旋转位置编码（RoPE）等
+                </div>
+            </div>
+        </div>
+        
+        <!-- 9. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">九、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn <span style="color: #82b1ff;">as</span> nn
+<span style="color: #82b1ff;">import</span> math
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">PositionalEncoding</span>(nn.Module):
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model=512, max_len=5000):
+        super().__init__()
+        
+        <span style="color: #90a4ae;"># 创建位置编码矩阵</span>
+        pe = torch.zeros(max_len, d_model)
+        
+        <span style="color: #90a4ae;"># 位置索引: [0, 1, 2, ..., max_len-1]</span>
+        position = torch.arange(0, max_len).unsqueeze(1)
+        
+        <span style="color: #90a4ae;"># 计算频率: 10000^(2i/d_model)</span>
+        div_term = torch.exp(
+            torch.arange(0, d_model, 2) * -(math.log(10000.0) / d_model)
+        )
+        
+        <span style="color: #90a4ae;"># 偶数维度使用sin</span>
+        pe[:, 0::2] = torch.sin(position * div_term)
+        
+        <span style="color: #90a4ae;"># 奇数维度使用cos</span>
+        pe[:, 1::2] = torch.cos(position * div_term)
+        
+        <span style="color: #90a4ae;"># 增加batch维度: (1, max_len, d_model)</span>
+        pe = pe.unsqueeze(0)
+        
+        <span style="color: #90a4ae;"># 注册为buffer，不参与梯度更新</span>
+        self.register_buffer(<span style="color: #aed581;">'pe'</span>, pe)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x):
+        <span style="color: #90a4ae;"># x shape: (batch_size, seq_len, d_model)</span>
+        <span style="color: #90a4ae;"># 将位置编码加到输入上</span>
+        x = x + self.pe[:, :x.size(1), :]
+        <span style="color: #82b1ff;">return</span> x
+
+<span style="color: #90a4ae;"># 使用示例</span>
+d_model = 512
+seq_len = 10
+batch_size = 2
+
+<span style="color: #90a4ae;"># 词嵌入输出</span>
+embeddings = torch.randn(batch_size, seq_len, d_model)
+
+<span style="color: #90a4ae;"># 添加位置编码</span>
+pe = PositionalEncoding(d_model)
+output = pe(embeddings)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输入形状: {embeddings.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输出形状: {output.shape}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #7b1fa2; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ 位置编码为并行处理的Transformer提供词序信息<br>
+                ✓ 使用正弦余弦函数生成，不同位置产生不同的编码模式<br>
+                ✓ 通过相加方式融入词嵌入，维度保持一致<br>
+                ✓ 支持任意长度序列，无需额外训练参数<br>
+                ✓ 使模型能够学习词之间的相对位置关系
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 位置编码原理详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

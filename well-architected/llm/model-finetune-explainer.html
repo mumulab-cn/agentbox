@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>大模型微调原理交互讲解（Mock）</title>
+  <style>
+    :root {
+      --bg-main: #f5f7fb;
+      --bg-card: #ffffff;
+      --border-soft: #d9e2ec;
+      --text-main: #102a43;
+      --text-sub: #627d98;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --accent-strong: #1d4ed8;
+      --train: #16a34a;
+      --train-soft: #dcfce7;
+      --frozen: #9ca3af;
+      --frozen-soft: #e5e7eb;
+      --prompt: #f97316;
+      --prompt-soft: #ffedd5;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0ebff 0, #f5f7fb 40%, #f5f7fb 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .header-tags {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.06);
+      color: var(--accent-strong);
+      font-size: 11px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1.2fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 14px 16px 16px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .mode-switch {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #eef2ff;
+      padding: 2px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #4b5563;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mode-btn span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .mode-btn[data-mode="prompt"] span.dot {
+      background: var(--prompt);
+    }
+
+    .mode-btn[data-mode="lora"] span.dot {
+      background: var(--accent);
+    }
+
+    .mode-btn[data-mode="full"] span.dot {
+      background: #7c3aed;
+    }
+
+    .mode-btn.active {
+      background: #ffffff;
+      color: var(--accent-strong);
+      box-shadow: 0 0 0 1px #dbeafe;
+    }
+
+    /* 模型结构示意图 */
+
+    .viz-wrapper {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 860px) {
+      .viz-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .model-diagram {
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+      background: linear-gradient(135deg, #eef2ff 0, #ffffff 50%, #f9fafb 100%);
+      border: 1px solid #e5e7f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .diagram-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #1f2933;
+    }
+
+    .diagram-caption {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-label {
+      font-size: 11px;
+      color: var(--text-sub);
+      min-width: 56px;
+      text-align: right;
+    }
+
+    .flow-arrow {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .layers {
+      flex: 1;
+      display: grid;
+      grid-template-rows: auto;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .layer {
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      border: 1px solid var(--frozen-soft);
+      background: rgba(255, 255, 255, 0.86);
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.35s ease, border-color 0.35s ease, transform 0.25s ease;
+    }
+
+    .layer-label {
+      font-weight: 500;
+    }
+
+    .layer-desc {
+      color: var(--text-sub);
+      font-size: 10px;
+    }
+
+    .layer-state {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 1px 6px;
+      border: 1px solid var(--frozen-soft);
+      color: var(--frozen);
+      background: #f9fafb;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .layer-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--frozen);
+    }
+
+    .layer.train {
+      border-color: var(--train);
+      background: var(--train-soft);
+      transform: translateX(2px);
+    }
+
+    .layer.train .layer-state {
+      border-color: var(--train);
+      color: var(--train);
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    .layer.train .layer-dot {
+      background: var(--train);
+    }
+
+    .layer.prompt-highlight {
+      border-color: var(--prompt);
+      background: var(--prompt-soft);
+      transform: translateX(2px);
+    }
+    
+    .layer.prompt-highlight .layer-state {
+      border-color: var(--prompt);
+      color: var(--prompt);
+      background: rgba(249, 115, 22, 0.08);
+    }
+    
+    /* 每一层中可视化“参与训练参数比例”的小条形图 */
+    .layer-visual {
+      margin-top: 4px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .lv-base {
+      position: absolute;
+      inset: 0;
+      background: rgba(148, 163, 184, 0.25);
+    }
+    
+    .lv-train {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.2), rgba(37, 99, 235, 0.65));
+      transform-origin: left;
+      opacity: 0.85;
+    }
+    
+    .lv-train.animate {
+      animation: trainPulse 1.4s ease-in-out infinite;
+    }
+    
+    @keyframes trainPulse {
+      0% { transform: scaleX(0.9); opacity: 0.6; }
+      50% { transform: scaleX(1); opacity: 1; }
+      100% { transform: scaleX(0.9); opacity: 0.6; }
+    }
+    
+    .prompt-panel {
+      margin-top: 6px;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 11px;
+      border: 1px dashed var(--prompt);
+      background: var(--prompt-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    .prompt-panel.hidden {
+      opacity: 0.15;
+      transform: translateY(2px);
+      border-color: #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .prompt-title {
+      font-weight: 600;
+      color: var(--prompt);
+    }
+
+    .prompt-desc {
+      font-size: 10px;
+      color: #92400e;
+    }
+
+    .prompt-example {
+      font-size: 10px;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    /* 右侧：原理说明 + 指标表 */
+
+    .explain-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .explain-top {
+      font-size: 12px;
+      color: var(--text-main);
+      line-height: 1.5;
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .explain-top strong {
+      color: var(--accent-strong);
+    }
+
+    .bullet {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .bullet span {
+      color: #111827;
+    }
+
+    .compare-table {
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      background: #ffffff;
+      font-size: 11px;
+    }
+
+    .compare-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .compare-table thead {
+      background: #f3f4f6;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 5px 7px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .compare-table th {
+      font-weight: 600;
+      font-size: 11px;
+      color: #374151;
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 1px 6px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 10px;
+      color: var(--text-sub);
+      gap: 4px;
+      align-items: center;
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #9ca3af;
+    }
+
+    .tag.prompt {
+      border-color: var(--prompt);
+      background: var(--prompt-soft);
+      color: #9a3412;
+    }
+    .tag.prompt .tag-dot {
+      background: var(--prompt);
+    }
+
+    .tag.lora {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+    .tag.lora .tag-dot {
+      background: var(--accent);
+    }
+
+    .tag.full {
+      border-color: #7c3aed;
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+    .tag.full .tag-dot {
+      background: #7c3aed;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      min-width: 38px;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 1px 5px;
+      font-weight: 600;
+    }
+
+    .score-low {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .score-mid {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .score-high {
+      background: #dcfce7;
+      color: var(--train);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+    
+    .layer-detail {
+      margin-top: 6px;
+      padding: 8px 9px;
+      border-radius: 8px;
+      border: 1px dashed #e5e7eb;
+      background: #f9fafb;
+    }
+    
+    .layer-detail-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+    
+    .layer-detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .layer-detail-item {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    
+    .layer-detail-name {
+      font-weight: 500;
+      color: #1f2933;
+      margin-right: 4px;
+    }
+    
+    .layer-detail-content {
+      margin-top: 1px;
+    }
+    
+    /* Canvas 动态训练过程展示 */
+    .canvas-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    
+    .canvas-caption {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+    
+    .canvas-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    #trainCanvas {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    
+    .canvas-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .canvas-legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+    
+    .canvas-color-prompt {
+      background: var(--prompt);
+    }
+    
+    .canvas-color-lora {
+      background: var(--accent);
+    }
+    
+    .canvas-color-full {
+      background: #7c3aed;
+    }
+    
+    footer {
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--text-sub);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>大模型微调原理交互讲解（Mock）</h1>
+      <p>通过简化的“层结构+对比指标”来直观理解：只调提示 / 轻量化微调 / 全量微调 三种方式的原理与取舍。</p>
+      <div class="header-tags">
+        <span class="tag-pill">浅色背景 · 培训演示专用</span>
+        <span class="tag-pill">点击上方模式按钮，查看不同微调方式</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="card-title">
+            微调方式对比与原理示意
+          </div>
+          <div class="card-subtitle" id="mode-subtitle">
+            当前模式：只调提示（Prompt Engineering）——不改模型参数，只改“如何跟模型说话”。
+          </div>
+        </div>
+        <div class="mode-switch">
+          <button class="mode-btn active" data-mode="prompt">
+            <span class="dot"></span>只调提示
+          </button>
+          <button class="mode-btn" data-mode="lora">
+            <span class="dot"></span>轻量化微调（LoRA）
+          </button>
+          <button class="mode-btn" data-mode="full">
+            <span class="dot"></span>全量微调
+          </button>
+        </div>
+      </div>
+
+      <div class="viz-wrapper">
+        <!-- 左侧：模型结构动态图 -->
+        <div class="model-diagram">
+          <div class="diagram-title">模型结构简化示意</div>
+          <div class="diagram-caption">
+            从左到右：输入文本 → 词向量 / 嵌入层 → 多层 Transformer → 输出头。不同模式下，哪些部分被训练、哪些保持冻结？
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-label">输入</div>
+            <div class="flow-arrow">⟶</div>
+            <div style="flex:1; font-size:11px; color:#4b5563;">
+              用户指令、系统提示、历史对话等（在“只调提示”模式下，这是主要调优对象）。
+            </div>
+          </div>
+
+          <div class="layers" id="layers">
+            <div class="layer" data-part="embed">
+              <div>
+                <div class="layer-label">词嵌入层（Embedding）</div>
+                <div class="layer-desc">把离散的词/字转换为向量表示，是“输入的基础语言理解”。</div>
+              </div>
+              <div>
+                <div class="layer-state">
+                  <span class="layer-dot"></span> 冻结
+                </div>
+                <div class="layer-visual">
+                  <div class="lv-base"></div>
+                  <div class="lv-train"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="layer" data-part="block1">
+              <div>
+                <div class="layer-label">Transformer 中层</div>
+                <div class="layer-desc">捕捉句法结构与短距离依赖（如主谓宾关系）。</div>
+              </div>
+              <div>
+                <div class="layer-state">
+                  <span class="layer-dot"></span> 冻结
+                </div>
+                <div class="layer-visual">
+                  <div class="lv-base"></div>
+                  <div class="lv-train"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="layer" data-part="block2">
+              <div>
+                <div class="layer-label">Transformer 深层</div>
+                <div class="layer-desc">建模复杂语义与长距离依赖，承载“世界知识”和推理能力。</div>
+              </div>
+              <div>
+                <div class="layer-state">
+                  <span class="layer-dot"></span> 冻结
+                </div>
+                <div class="layer-visual">
+                  <div class="lv-base"></div>
+                  <div class="lv-train"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="layer" data-part="head">
+              <div>
+                <div class="layer-label">输出头（语言建模头）</div>
+                <div class="layer-desc">根据内部表示，逐 token 预测下一个词，生成最终回答。</div>
+              </div>
+              <div>
+                <div class="layer-state">
+                  <span class="layer-dot"></span> 冻结
+                </div>
+                <div class="layer-visual">
+                  <div class="lv-base"></div>
+                  <div class="lv-train"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prompt-panel" id="prompt-panel">
+            <div>
+              <div class="prompt-title">提示层 · Prompt / System Instruction</div>
+              <div class="prompt-desc">
+                不改模型参数，通过“讲题方式”来引导模型行为：告诉它角色、风格、格式与边界。
+              </div>
+              <div class="prompt-example">
+                示例：<code>你是某银行智能客服，请严格按以下流程回答，并在遇到风险问题时建议转人工...</code>
+              </div>
+            </div>
+            <div style="font-size:10px; color:#9a3412; margin-left:8px;">
+              训练开销：几乎为 0<br/>适合：快速试验、冷启动
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：原理说明 + 指标对比 -->
+        <div class="explain-section">
+          <div class="explain-top" id="explain-text">
+            <strong>只调提示（Prompt Engineering）：</strong>不改动大模型内部的任何参数，只是改变“对模型下指令的方式”。<br/>
+            这就像给同一个专家不同的工作说明书——专家的知识不变，但说清楚“你是谁、要做什么、怎么做、哪些不能做”，效果立刻会好很多。
+            <div class="bullet">
+              ▸ <span>优点：</span>零训练成本，见效快，非常适合 PoC & 早期探索。<br/>
+              ▸ <span>局限：</span>遇到强行业知识或复杂规则时，仅靠提示很难“硬性写进模型记忆”，稳定性有限。
+            </div>
+          </div>
+
+          <div class="compare-table">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:27%;">方式</th>
+                  <th style="width:19%;">效果提升（行业定制）</th>
+                  <th style="width:19%;">训练成本</th>
+                  <th style="width:18%;">上线灵活性</th>
+                  <th style="width:17%;">适合阶段</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-row="prompt">
+                  <td>
+                    <span class="tag prompt">
+                      <span class="tag-dot"></span>只调提示
+                    </span>
+                  </td>
+                  <td><span class="score-pill score-mid" id="prompt-effect">中</span></td>
+                  <td><span class="score-pill score-high" id="prompt-cost">低</span></td>
+                  <td><span class="score-pill score-high" id="prompt-flex">高</span></td>
+                  <td id="prompt-stage">PoC / 早期试验</td>
+                </tr>
+                <tr data-row="lora">
+                  <td>
+                    <span class="tag lora">
+                      <span class="tag-dot"></span>轻量化微调（LoRA）
+                    </span>
+                  </td>
+                  <td><span class="score-pill score-high" id="lora-effect">高</span></td>
+                  <td><span class="score-pill score-mid" id="lora-cost">中</span></td>
+                  <td><span class="score-pill score-high" id="lora-flex">高</span></td>
+                  <td id="lora-stage">场景试点 / 小规模上线</td>
+                </tr>
+                <tr data-row="full">
+                  <td>
+                    <span class="tag full">
+                      <span class="tag-dot"></span>全量微调
+                    </span>
+                  </td>
+                  <td><span class="score-pill score-high" id="full-effect">最高</span></td>
+                  <td><span class="score-pill score-low" id="full-cost">高</span></td>
+                  <td><span class="score-pill score-mid" id="full-flex">中</span></td>
+                  <td id="full-stage">成熟业务 / 核心场景</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="hint" id="hint-text">
+            课堂讲解建议：先切换“只调提示”模式，让学员理解——在不训练模型的情况下，为什么仍然能明显改变行为；再切到 LoRA 和全量微调，说明“参数真的动了”会带来什么差异。
+          </div>
+    
+          <div class="layer-detail" id="layer-detail">
+            <div class="layer-detail-title">按层深入解释（当前模式）</div>
+            <div class="layer-detail-list" id="layer-detail-list">
+              <!-- 由脚本按当前模式填充：Embedding / 中层 / 深层 / 输出头 各自做了什么变化 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="card" style="margin-top: 14px;">
+      <div class="card-title-row">
+        <div>
+          <div class="canvas-section-title">训练过程动态示意（Loss 曲线 · Mock）</div>
+          <div class="canvas-caption">
+            使用 Canvas 动画展示三种方式在训练过程中的 Loss 下降趋势：只调提示 / 轻量化微调 / 全量微调，帮助学员理解“谁在真正训练参数”。
+          </div>
+        </div>
+      </div>
+      <div class="canvas-layout">
+        <canvas id="trainCanvas" width="900" height="230"></canvas>
+        <div class="canvas-legend">
+          <div class="canvas-legend-item">
+            <span class="canvas-legend-color canvas-color-prompt"></span> 只调提示：仅作为对比基线，Loss 下降有限
+          </div>
+          <div class="canvas-legend-item">
+            <span class="canvas-legend-color canvas-color-lora"></span> 轻量化微调（LoRA）：在少量参数上快速下降并趋于平稳
+          </div>
+          <div class="canvas-legend-item">
+            <span class="canvas-legend-color canvas-color-full"></span> 全量微调：在充足数据下，可获得更低 Loss，但更容易过拟合
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <footer>
+      提示：本页面数据与结构均为 Mock，旨在教学场景中帮助学员用“可视化方式”理解大模型微调原理及取舍。
+    </footer>
+  </div>
+  
+  <script>
+    // 简单 Mock 配置，控制不同模式下：哪些层参与训练 + 文案说明
+    const MODES = {
+      prompt: {
+        subtitle: "当前模式：只调提示（Prompt Engineering）——不改模型参数，只改“如何跟模型说话”。",
+        explain: "只调提示（Prompt Engineering）：不改动大模型内部的任何参数，只是改变“对模型下指令的方式”。<br/>这就像给同一个专家不同的工作说明书——专家的知识不变，但说清楚“你是谁、要做什么、怎么做、哪些不能做”，效果立刻会好很多。",
+        bullet: [
+          "优点：零训练成本，见效快，非常适合 PoC 与早期探索。",
+          "局限：遇到强行业知识或复杂规则时，仅靠提示很难“硬性写进模型记忆”，稳定性有限。"
+        ],
+        trainParts: [],      // 不训练任何内部层
+        highlightPrompt: true,
+        layerTrainRatio: {
+          embed: 0.0,
+          block1: 0.0,
+          block2: 0.0,
+          head: 0.0
+        },
+        layerDetails: {
+          embed: {
+            name: "词嵌入层（Embedding）",
+            text: "完全沿用基础模型的词向量表示，不做任何参数更新，只是通过不同的提示，让这些向量在后续层里被以不同方式组合使用。"
+          },
+          block1: {
+            name: "Transformer 中层",
+            text: "中层负责句法结构和短距离依赖建模，提示不会改动这里的参数，而是在上层控制“用哪种表达方式”和“输出什么结构”。"
+          },
+          block2: {
+            name: "Transformer 深层",
+            text: "深层承载通用世界知识和推理能力，在只调提示时保持不变，主要通过改变问题描述方式来让这些知识被更好地调用。"
+          },
+          head: {
+            name: "输出头（语言建模头）",
+            text: "输出头参数不变，但提示会要求“输出 JSON / 列表 / 分步说明”等，从而在不训练参数的前提下改变输出格式。"
+          }
+        }
+      },
+      lora: {
+        subtitle: "当前模式：轻量化微调（LoRA 等）——在部分层外挂“小模块”，只训练少量新增参数。",
+        explain: "轻量化微调（以 LoRA 为代表）：在模型的部分层（通常是中高层 Transformer）外挂一小块“可训练模块”，只训练这部分新增参数，原始大模型保持冻结。<br/>好比在专家的脑海中加一本“小笔记本”，记住这家企业的行业术语和常用套路。",
+        bullet: [
+          "优点：训练成本远低于全量微调，效果对特定场景有明显提升，还能为不同业务线分别训练多个“小插件”。",
+          "局限：对极端定制化需求或需要大幅改造模型能力的场景，能力仍不如全量微调。"
+        ],
+        trainParts: ["block1", "block2"], // 训练中层与深层的 LoRA 插件（示意）
+        highlightPrompt: true,
+        layerTrainRatio: {
+          embed: 0.0,
+          block1: 0.35,
+          block2: 0.45,
+          head: 0.15
+        },
+        layerDetails: {
+          embed: {
+            name: "词嵌入层（Embedding）",
+            text: "仍然主要使用原始词向量，必要时可轻量增加少量适配向量，用于更好地表示企业特有术语。"
+          },
+          block1: {
+            name: "Transformer 中层",
+            text: "在中层插入 LoRA 模块，相当于给“句法理解”多加一层企业语境的偏好，例如更好地识别本行业常见问法和表达。"
+          },
+          block2: {
+            name: "Transformer 深层",
+            text: "深层 LoRA 模块让模型在推理时更多参考行业知识和业务规则，比如在金融客服场景中优先考虑合规约束。"
+          },
+          head: {
+            name: "输出头（语言建模头）",
+            text: "通常只做极少量轻微调整，保证生成用词和话术更像“这家企业”，但不会像全量微调那样大幅改变输出分布。"
+          }
+        }
+      },
+      full: {
+        subtitle: "当前模式：全量微调（Fine-tuning All Parameters）——直接更新大部分甚至全部模型参数。",
+        explain: "全量微调：允许大模型的大部分甚至全部参数在新数据上继续学习。<br/>类似把专家拉来长期驻场，让 TA 系统性地改造自己的“知识体系”和“表达习惯”，不仅记住企业知识，还可能对通用能力产生一定漂移。",
+        bullet: [
+          "优点：在大规模高质量数据支撑下，能获得最强的行业专用模型效果。",
+          "局限：训练成本高、风险大（例如遗忘通用能力），需要更严格的评测与版本管理。"
+        ],
+        trainParts: ["embed", "block1", "block2", "head"],
+        highlightPrompt: false,
+        layerTrainRatio: {
+          embed: 0.7,
+          block1: 0.9,
+          block2: 0.9,
+          head: 0.8
+        },
+        layerDetails: {
+          embed: {
+            name: "词嵌入层（Embedding）",
+            text: "针对企业常用词、缩写和专业名词进行重新拟合，让这些词在向量空间中的位置更贴近真实业务语义。"
+          },
+          block1: {
+            name: "Transformer 中层",
+            text: "在全量微调中，中层参数也会更新，使模型在“句法+企业专属表达习惯”之间找到新的平衡。"
+          },
+          block2: {
+            name: "Transformer 深层",
+            text: "深层大幅更新，将通用世界知识和企业私域知识重新融合，例如更重视本企业的政策、产品边界和流程。"
+          },
+          head: {
+            name: "输出头（语言建模头）",
+            text: "输出头会整体偏向企业语料中的用词分布，如果数据分布不均衡，可能会“遗忘”部分通用表达，需要评测把关。"
+          }
+        }
+      }
+    };
+
+    const modeButtons = document.querySelectorAll(".mode-btn");
+    const modeSubtitle = document.getElementById("mode-subtitle");
+    const explainText = document.getElementById("explain-text");
+    const hintText = document.getElementById("hint-text");
+    const layers = document.querySelectorAll(".layer");
+    const promptPanel = document.getElementById("prompt-panel");
+    const layerDetailList = document.getElementById("layer-detail-list");
+    const trainCanvas = document.getElementById("trainCanvas");
+    const ctx = trainCanvas ? trainCanvas.getContext("2d") : null;
+    let currentModeKey = "prompt";
+    let animFrameId = null;
+    
+    const LOSS_CURVES = {
+      epochs: [1,2,3,4,5,6,7,8,9,10],
+      prompt: [1.0, 0.95, 0.92, 0.90, 0.89, 0.88, 0.875, 0.87, 0.869, 0.868],
+      lora:   [1.0, 0.82, 0.70, 0.62, 0.57, 0.54, 0.51, 0.50, 0.495, 0.49],
+      full:   [1.0, 0.78, 0.60, 0.50, 0.44, 0.40, 0.36, 0.35, 0.345, 0.343]
+    };
+    
+    const MODE_COLORS = {
+      prompt: "#f97316",
+      lora: "#2563eb",
+      full: "#7c3aed"
+    };
+    
+    function drawTrainCanvas(progress) {
+      if (!ctx || !trainCanvas) return;
+      const w = trainCanvas.width;
+      const h = trainCanvas.height;
+      ctx.clearRect(0, 0, w, h);
+    
+      const paddingLeft = 40;
+      const paddingRight = 18;
+      const paddingTop = 18;
+      const paddingBottom = 26;
+      const plotW = w - paddingLeft - paddingRight;
+      const plotH = h - paddingTop - paddingBottom;
+    
+      // 画坐标轴
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(paddingLeft, paddingTop);
+      ctx.lineTo(paddingLeft, paddingTop + plotH);
+      ctx.lineTo(paddingLeft + plotW, paddingTop + plotH);
+      ctx.stroke();
+    
+      // Y 轴刻度（Loss）
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "10px system-ui";
+      const yTicks = [1.0, 0.8, 0.6, 0.4];
+      yTicks.forEach(v => {
+        const y = paddingTop + plotH * (1 - (1.2 - v) / 1.2);
+        ctx.beginPath();
+        ctx.moveTo(paddingLeft - 3, y);
+        ctx.lineTo(paddingLeft + plotW, y);
+        ctx.strokeStyle = "#f3f4f6";
+        ctx.stroke();
+        ctx.fillStyle = "#9ca3af";
+        ctx.fillText(v.toFixed(1), 6, y + 3);
+      });
+    
+      // X 轴刻度（epoch）
+      const epochs = LOSS_CURVES.epochs;
+      const maxEpoch = epochs[epochs.length - 1];
+      ctx.fillStyle = "#9ca3af";
+      epochs.forEach(e => {
+        const x = paddingLeft + plotW * (e - 1) / (maxEpoch - 1);
+        ctx.fillRect(x, paddingTop + plotH, 1, 4);
+        if (e === 1 || e === maxEpoch || e === 5) {
+          ctx.fillText("E" + e, x - 6, paddingTop + plotH + 14);
+        }
+      });
+    
+      // 画三条 Loss 曲线
+      ["prompt", "lora", "full"].forEach(modeKey => {
+        const data = LOSS_CURVES[modeKey];
+        if (!data) return;
+        const isFocus = modeKey === currentModeKey;
+        const alpha = isFocus ? 1.0 : 0.35;
+        const widthFactor = isFocus ? 2 : 1;
+    
+        ctx.beginPath();
+        data.forEach((v, idx) => {
+          const visibleCount = Math.max(1, Math.floor(progress * (data.length - 1)) + 1);
+          if (idx >= visibleCount) return;
+          const x = paddingLeft + plotW * (idx) / (data.length - 1);
+          const y = paddingTop + plotH * (1 - (1.2 - v) / 1.2);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        const color = MODE_COLORS[modeKey];
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = widthFactor;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      });
+    
+      // 当前模式说明文字
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "10px system-ui";
+      let tip = "";
+      if (currentModeKey === "prompt") {
+        tip = "只调提示：Loss 基本不再显著下降，更多依赖“问法”优化而非参数更新";
+      } else if (currentModeKey === "lora") {
+        tip = "轻量化微调：在少量参数上快速下降并趋于平稳，性价比较高";
+      } else {
+        tip = "全量微调：Loss 可降得更低，但后期需防止过拟合（验证集 Loss 是否回升）";
+      }
+      ctx.fillText(tip, paddingLeft, paddingTop - 6);
+    }
+    
+    function startTrainAnimation() {
+      if (!ctx) return;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      const duration = 1600;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min(1, (now - start) / duration);
+        drawTrainCanvas(t);
+        if (t < 1) {
+          animFrameId = requestAnimationFrame(step);
+        }
+      }
+      animFrameId = requestAnimationFrame(step);
+    }
+        
+    function applyMode(modeKey) {
+      const mode = MODES[modeKey];
+    
+      // 更新按钮状态
+      modeButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === modeKey);
+      });
+      
+      currentModeKey = modeKey;
+      
+      // 更新副标题
+      modeSubtitle.textContent = mode.subtitle;
+
+      // 更新说明文本
+      const bulletHtml = `
+        <div class="bullet">
+          ▸ <span>${mode.bullet[0].split("：")[0]}：</span>${mode.bullet[0].split("：")[1]}<br/>
+          ▸ <span>${mode.bullet[1].split("：")[0]}：</span>${mode.bullet[1].split("：")[1]}
+        </div>`;
+      explainText.innerHTML = `<strong>${mode.subtitle.split("——")[0]}：</strong>` +
+        mode.explain.split("：")[1] + bulletHtml;
+
+      // 更新层的训练状态 + 条形图动画
+      layers.forEach(layer => {
+        const part = layer.getAttribute("data-part");
+        const isTrain = mode.trainParts.includes(part);
+        const ratio = mode.layerTrainRatio && mode.layerTrainRatio[part] != null ? mode.layerTrainRatio[part] : 0;
+        layer.classList.remove("train", "prompt-highlight");
+        const stateLabel = layer.querySelector(".layer-state");
+        const bar = layer.querySelector(".lv-train");
+      
+        if (isTrain) {
+          layer.classList.add("train");
+          stateLabel.innerHTML = '<span class="layer-dot"></span> 参与训练';
+        } else {
+          stateLabel.innerHTML = '<span class="layer-dot"></span> 冻结';
+        }
+      
+        if (bar) {
+          const width = Math.max(0, Math.min(1, ratio)) * 100;
+          bar.style.width = width + "%";
+          bar.classList.toggle("animate", width > 0);
+        }
+      });
+      
+      // 更新 prompt 面板状态
+      if (mode.highlightPrompt) {
+        promptPanel.classList.remove("hidden");
+      } else {
+        promptPanel.classList.add("hidden");
+      }
+
+      // 给“只调提示”模式一个额外高亮：提示层承担主要改造
+      if (modeKey === "prompt") {
+        // 在视觉上弱化内部层，强调提示层
+        layers.forEach(layer => {
+          layer.classList.remove("train");
+        });
+      }
+
+      // 小提示文案
+      if (modeKey === "prompt") {
+        hintText.textContent = "讲解建议：先从“只调提示”开始，让学员理解在完全不训练模型的前提下，为什么仍然能通过系统提示+示例，对输出风格和边界产生显著影响。";
+      } else if (modeKey === "lora") {
+        hintText.textContent = "讲解建议：切换到“轻量化微调”时，可以强调——真正被训练的是插在中高层的“小模块”，而不是整座大楼，这也是为什么成本更低且可以针对多个场景分别微调。";
+      } else {
+        hintText.textContent = "讲解建议：在“全量微调”模式下，要提醒学员：虽然效果潜力最大，但也最依赖高质量数据与严格评测，否则可能破坏基础模型已有能力，因此在企业落地中通常只用于非常关键、成熟的核心场景。";
+      }
+    
+      // 按层深入解释：根据当前模式更新文字说明
+      if (layerDetailList && mode.layerDetails) {
+        const order = ["embed", "block1", "block2", "head"];
+        layerDetailList.innerHTML = order.map(part => {
+          const info = mode.layerDetails[part];
+          if (!info) return "";
+          return `
+            <div class="layer-detail-item">
+              <div class="layer-detail-name">${info.name}</div>
+              <div class="layer-detail-content">${info.text}</div>
+            </div>
+          `;
+        }).join("");
+      }
+    
+      // 每次切换模式时，重新播放 Loss 动画
+      startTrainAnimation();
+    }
+    modeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.mode;
+        applyMode(mode);
+      });
+    });
+
+    // 默认模式 + 启动一次动画
+    applyMode("prompt");
+    startTrainAnimation();
+  </script>
+</body>
+</html>

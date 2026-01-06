@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 古诗向量检索系统 - Poetry Vector Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        .pulse-animation { animation: pulse 2s infinite; }
+
+        .vector-viz {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .similarity-bar {
+            transition: width 0.8s ease-out;
+        }
+
+        .node circle {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node:hover circle {
+            r: 8;
+            stroke-width: 3;
+        }
+
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.3;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .embedding-process {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vector-flow {
+            animation: flow 2s ease-in-out infinite;
+        }
+
+        @keyframes flow {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                📚 古诗向量检索系统
+            </h1>
+            <p class="text-xl text-gray-700">Poetry Vector Search with Embedding & ReRank Models</p>
+        </header>
+
+        <!-- Model Selection -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🔧 模型配置</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Embedding 模型</label>
+                    <select id="embedding-model" class="w-full px-4 py-2 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                        <option value="bert">BERT-base-chinese (768维)</option>
+                        <option value="sentence-bert">Sentence-BERT (384维)</option>
+                        <option value="text2vec">Text2Vec-base (768维)</option>
+                        <option value="bge">BGE-large-zh (1024维)</option>
+                    </select>
+                    <div id="embedding-info" class="mt-2 p-3 bg-blue-50 rounded-lg text-sm"></div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">ReRank 模型</label>
+                    <select id="rerank-model" class="w-full px-4 py-2 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none">
+                        <option value="bge-reranker">BGE-Reranker-base</option>
+                        <option value="cross-encoder">Cross-Encoder</option>
+                        <option value="cohere">Cohere Rerank</option>
+                        <option value="none">不使用ReRank</option>
+                    </select>
+                    <div id="rerank-info" class="mt-2 p-3 bg-purple-50 rounded-lg text-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🔍 语义检索</h2>
+            <div class="mb-4">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="输入描述，例如：描述友情的诗句、思念家乡、春天的景色..."
+                    class="w-full px-6 py-4 text-lg border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none"
+                />
+            </div>
+            <div class="flex gap-4">
+                <button id="search-btn" class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold rounded-xl hover:from-indigo-600 hover:to-purple-600 transition">
+                    开始检索
+                </button>
+                <button id="example-btn" class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300 transition">
+                    示例查询
+                </button>
+            </div>
+        </div>
+
+        <!-- Embedding Visualization -->
+        <div id="embedding-viz" class="bg-white rounded-2xl shadow-xl p-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🧠 Embedding 过程可视化</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div class="text-center">
+                    <div class="text-4xl mb-2">📝</div>
+                    <div class="font-bold text-gray-700">输入文本</div>
+                    <div id="input-text" class="mt-2 p-3 bg-gray-50 rounded-lg text-sm"></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">⚙️</div>
+                    <div class="font-bold text-gray-700">模型处理</div>
+                    <div id="model-process" class="mt-2 p-3 bg-indigo-50 rounded-lg text-sm"></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">🔢</div>
+                    <div class="font-bold text-gray-700">向量输出</div>
+                    <div id="vector-output" class="mt-2 p-3 bg-purple-50 rounded-lg text-sm"></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
+                <h3 class="font-bold text-gray-800 mb-3">生成的向量表示 (前32维展示)</h3>
+                <div id="vector-display" class="grid grid-cols-8 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div id="search-results" class="bg-white rounded-2xl shadow-xl p-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 检索结果</h2>
+            
+            <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="font-bold">检索统计：</span>
+                    <span id="search-stats"></span>
+                </div>
+                <div class="text-sm text-gray-600" id="rerank-status"></div>
+            </div>
+
+            <div id="results-container"></div>
+        </div>
+
+        <!-- Vector Space Visualization -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🌌 向量空间可视化 (50首古诗)</h2>
+            <div class="mb-4 flex gap-4">
+                <button id="show-all-btn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600">
+                    显示全部
+                </button>
+                <button id="show-similar-btn" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                    显示相似组
+                </button>
+                <select id="theme-select" class="px-4 py-2 border-2 border-gray-200 rounded-lg">
+                    <option value="all">所有主题</option>
+                    <option value="friendship">友情</option>
+                    <option value="nature">自然</option>
+                    <option value="homesick">思乡</option>
+                    <option value="love">爱情</option>
+                </select>
+            </div>
+            <div id="vector-space" class="border-2 border-gray-200 rounded-xl bg-gray-50"></div>
+            <div class="mt-4 grid md:grid-cols-2 gap-4">
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <div class="font-bold text-gray-700 mb-2">📍 选中的诗句</div>
+                    <div id="selected-poetry" class="text-sm text-gray-600">点击节点查看详情</div>
+                </div>
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <div class="font-bold text-gray-700 mb-2">🔢 向量信息</div>
+                    <div id="selected-vector" class="text-sm text-gray-600 font-mono">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Poetry Database -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📖 古诗数据库 (50首)</h2>
+            <div class="mb-4">
+                <input 
+                    type="text" 
+                    id="filter-input" 
+                    placeholder="过滤诗句..."
+                    class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                />
+            </div>
+            <div id="poetry-list" class="grid md:grid-cols-2 gap-4 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Poetry Database with 50 Chinese poems
+        const poetryDatabase = [
+            // 友情主题
+            { id: 1, text: "海内存知己，天涯若比邻", author: "王勃", theme: "friendship", vector: null },
+            { id: 2, text: "桃花潭水深千尺，不及汪伦送我情", author: "李白", theme: "friendship", vector: null },
+            { id: 3, text: "劝君更尽一杯酒，西出阳关无故人", author: "王维", theme: "friendship", vector: null },
+            { id: 4, text: "莫愁前路无知己，天下谁人不识君", author: "高适", theme: "friendship", vector: null },
+            { id: 5, text: "故人西辞黄鹤楼，烟花三月下扬州", author: "李白", theme: "friendship", vector: null },
+            
+            // 自然景色
+            { id: 6, text: "春眠不觉晓，处处闻啼鸟", author: "孟浩然", theme: "nature", vector: null },
+            { id: 7, text: "日出江花红胜火，春来江水绿如蓝", author: "白居易", theme: "nature", vector: null },
+            { id: 8, text: "接天莲叶无穷碧，映日荷花别样红", author: "杨万里", theme: "nature", vector: null },
+            { id: 9, text: "千里莺啼绿映红，水村山郭酒旗风", author: "杜牧", theme: "nature", vector: null },
+            { id: 10, text: "竹外桃花三两枝，春江水暖鸭先知", author: "苏轼", theme: "nature", vector: null },
+            
+            // 思乡主题
+            { id: 11, text: "独在异乡为异客，每逢佳节倍思亲", author: "王维", theme: "homesick", vector: null },
+            { id: 12, text: "举头望明月，低头思故乡", author: "李白", theme: "homesick", vector: null },
+            { id: 13, text: "露从今夜白，月是故乡明", author: "杜甫", theme: "homesick", vector: null },
+            { id: 14, text: "日暮乡关何处是，烟波江上使人愁", author: "崔颢", theme: "homesick", vector: null },
+            { id: 15, text: "洛阳亲友如相问，一片冰心在玉壶", author: "王昌龄", theme: "homesick", vector: null },
+            
+            // 爱情主题
+            { id: 16, text: "愿得一心人，白头不相离", author: "卓文君", theme: "love", vector: null },
+            { id: 17, text: "曾经沧海难为水，除却巫山不是云", author: "元稹", theme: "love", vector: null },
+            { id: 18, text: "身无彩凤双飞翼，心有灵犀一点通", author: "李商隐", theme: "love", vector: null },
+            { id: 19, text: "衣带渐宽终不悔，为伊消得人憔悴", author: "柳永", theme: "love", vector: null },
+            { id: 20, text: "两情若是久长时，又岂在朝朝暮暮", author: "秦观", theme: "love", vector: null },
+            
+            // 山水田园
+            { id: 21, text: "空山新雨后，天气晚来秋", author: "王维", theme: "nature", vector: null },
+            { id: 22, text: "明月松间照，清泉石上流", author: "王维", theme: "nature", vector: null },
+            { id: 23, text: "采菊东篱下，悠然见南山", author: "陶渊明", theme: "nature", vector: null },
+            { id: 24, text: "山重水复疑无路，柳暗花明又一村", author: "陆游", theme: "nature", vector: null },
+            { id: 25, text: "绿树村边合，青山郭外斜", author: "孟浩然", theme: "nature", vector: null },
+            
+            // 人生感悟
+            { id: 26, text: "人生得意须尽欢，莫使金樽空对月", author: "李白", theme: "life", vector: null },
+            { id: 27, text: "人生自古谁无死，留取丹心照汗青", author: "文天祥", theme: "life", vector: null },
+            { id: 28, text: "长风破浪会有时，直挂云帆济沧海", author: "李白", theme: "life", vector: null },
+            { id: 29, text: "会当凌绝顶，一览众山小", author: "杜甫", theme: "life", vector: null },
+            { id: 30, text: "不畏浮云遮望眼，只缘身在最高层", author: "王安石", theme: "life", vector: null },
+            
+            // 边塞军旅
+            { id: 31, text: "黄沙百战穿金甲，不破楼兰终不还", author: "王昌龄", theme: "military", vector: null },
+            { id: 32, text: "但使龙城飞将在，不教胡马度阴山", author: "王昌龄", theme: "military", vector: null },
+            { id: 33, text: "羌笛何须怨杨柳，春风不度玉门关", author: "王之涣", theme: "military", vector: null },
+            { id: 34, text: "醉卧沙场君莫笑，古来征战几人回", author: "王翰", theme: "military", vector: null },
+            { id: 35, text: "葡萄美酒夜光杯，欲饮琵琶马上催", author: "王翰", theme: "military", vector: null },
+            
+            // 秋冬景色
+            { id: 36, text: "停车坐爱枫林晚，霜叶红于二月花", author: "杜牧", theme: "nature", vector: null },
+            { id: 37, text: "忽如一夜春风来，千树万树梨花开", author: "岑参", theme: "nature", vector: null },
+            { id: 38, text: "孤舟蓑笠翁，独钓寒江雪", author: "柳宗元", theme: "nature", vector: null },
+            { id: 39, text: "晴空一鹤排云上，便引诗情到碧霄", author: "刘禹锡", theme: "nature", vector: null },
+            { id: 40, text: "银烛秋光冷画屏，轻罗小扇扑流萤", author: "杜牧", theme: "nature", vector: null },
+            
+            // 离别惆怅
+            { id: 41, text: "多情自古伤离别，更那堪冷落清秋节", author: "柳永", theme: "parting", vector: null },
+            { id: 42, text: "相见时难别亦难，东风无力百花残", author: "李商隐", theme: "parting", vector: null },
+            { id: 43, text: "此情可待成追忆，只是当时已惘然", author: "李商隐", theme: "parting", vector: null },
+            { id: 44, text: "去年今日此门中，人面桃花相映红", author: "崔护", theme: "parting", vector: null },
+            { id: 45, text: "人生若只如初见，何事秋风悲画扇", author: "纳兰性德", theme: "parting", vector: null },
+            
+            // 咏物抒怀
+            { id: 46, text: "梅须逊雪三分白，雪却输梅一段香", author: "卢梅坡", theme: "nature", vector: null },
+            { id: 47, text: "墙角数枝梅，凌寒独自开", author: "王安石", theme: "nature", vector: null },
+            { id: 48, text: "不要人夸好颜色，只留清气满乾坤", author: "王冕", theme: "nature", vector: null },
+            { id: 49, text: "野火烧不尽，春风吹又生", author: "白居易", theme: "nature", vector: null },
+            { id: 50, text: "落红不是无情物，化作春泥更护花", author: "龚自珍", theme: "nature", vector: null }
+        ];
+
+        // Embedding model configurations
+        const embeddingModels = {
+            'bert': {
+                name: 'BERT-base-chinese',
+                dim: 768,
+                description: '🎯 作用：基础中文语义理解<br>📊 维度：768维<br>⚡ 特点：平衡性能与效果，适合通用场景<br>🔧 架构：Transformer编码器，12层',
+                speed: '中等',
+                accuracy: '良好'
+            },
+            'sentence-bert': {
+                name: 'Sentence-BERT',
+                dim: 384,
+                description: '🎯 作用：优化句子级语义相似度<br>📊 维度：384维<br>⚡ 特点：专门优化相似度计算，速度快<br>🔧 架构：BERT + Siamese网络结构',
+                speed: '快速',
+                accuracy: '优秀'
+            },
+            'text2vec': {
+                name: 'Text2Vec-base',
+                dim: 768,
+                description: '🎯 作用：中文文本向量化<br>📊 维度：768维<br>⚡ 特点：针对中文优化，效果好<br>🔧 架构：基于BERT改进，中文语料微调',
+                speed: '中等',
+                accuracy: '优秀'
+            },
+            'bge': {
+                name: 'BGE-large-zh',
+                dim: 1024,
+                description: '🎯 作用：大规模语义检索<br>📊 维度：1024维<br>⚡ 特点：检索效果最佳，信息量大<br>🔧 架构：24层Transformer，大规模预训练',
+                speed: '较慢',
+                accuracy: '极佳'
+            }
+        };
+
+        // ReRank model configurations
+        const rerankModels = {
+            'bge-reranker': {
+                name: 'BGE-Reranker-base',
+                description: '🎯 作用：精排序优化<br>⚡ 原理：对召回结果进行精确打分重排<br>📈 提升：准确率提升15-20%<br>🔧 方法：Cross-Attention计算query-doc相关性',
+                method: 'Cross-Attention'
+            },
+            'cross-encoder': {
+                name: 'Cross-Encoder',
+                description: '🎯 作用：深度语义匹配<br>⚡ 原理：同时编码query和doc计算相关性<br>📈 提升：准确率提升20-30%<br>🔧 方法：联合编码 + 二分类',
+                method: 'Joint Encoding'
+            },
+            'cohere': {
+                name: 'Cohere Rerank',
+                description: '🎯 作用：商业级精排<br>⚡ 原理：多语言深度学习模型<br>📈 提升：准确率提升25-35%<br>🔧 方法：大规模Transformer + 排序学习',
+                method: 'Learning to Rank'
+            },
+            'none': {
+                name: '不使用ReRank',
+                description: '⚠️ 仅使用向量相似度排序<br>📊 可能存在语义偏差<br>🔍 适合：快速检索场景',
+                method: 'Cosine Similarity Only'
+            }
+        };
+
+        // Generate vectors for each poetry (simulated)
+        function generateVector(text, dim) {
+            // Simple hash-based vector generation (for demo purposes)
+            const vector = [];
+            let hash = 0;
+            for (let i = 0; i < text.length; i++) {
+                hash = ((hash << 5) - hash) + text.charCodeAt(i);
+                hash = hash & hash;
+            }
+            
+            const random = new Math.seedrandom(hash);
+            for (let i = 0; i < dim; i++) {
+                vector.push((random() * 2 - 1).toFixed(4));
+            }
+            return vector;
+        }
+
+        // Math.seedrandom implementation
+        Math.seedrandom = function(seed) {
+            const m = 0x80000000;
+            const a = 1103515245;
+            const c = 12345;
+            let state = seed ? seed : Math.floor(Math.random() * (m - 1));
+            return function() {
+                state = (a * state + c) % m;
+                return state / (m - 1);
+            };
+        };
+
+        // Calculate cosine similarity
+        function cosineSimilarity(vecA, vecB) {
+            let dotProduct = 0;
+            let normA = 0;
+            let normB = 0;
+            for (let i = 0; i < vecA.length; i++) {
+                dotProduct += parseFloat(vecA[i]) * parseFloat(vecB[i]);
+                normA += parseFloat(vecA[i]) ** 2;
+                normB += parseFloat(vecB[i]) ** 2;
+            }
+            return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+
+        // Initialize vectors for all poetry
+        function initializeVectors() {
+            const model = $('#embedding-model').val();
+            const dim = embeddingModels[model].dim;
+            
+            poetryDatabase.forEach(poetry => {
+                poetry.vector = generateVector(poetry.text, dim);
+            });
+        }
+
+        // Update model info
+        function updateModelInfo() {
+            const embeddingModel = $('#embedding-model').val();
+            const rerankModel = $('#rerank-model').val();
+            
+            $('#embedding-info').html(embeddingModels[embeddingModel].description);
+            $('#rerank-info').html(rerankModels[rerankModel].description);
+        }
+
+        // Render poetry list
+        function renderPoetryList(filter = '') {
+            const container = $('#poetry-list');
+            container.empty();
+            
+            const filtered = poetryDatabase.filter(p => 
+                p.text.includes(filter) || p.author.includes(filter)
+            );
+            
+            filtered.forEach(poetry => {
+                const card = $(`
+                    <div class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-indigo-100 hover:border-indigo-300 transition cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs px-2 py-1 bg-indigo-500 text-white rounded">${poetry.theme}</span>
+                            <span class="text-xs text-gray-500">#${poetry.id}</span>
+                        </div>
+                        <div class="text-lg font-bold text-gray-800 mb-1">${poetry.text}</div>
+                        <div class="text-sm text-gray-600">—— ${poetry.author}</div>
+                        <div class="mt-2 text-xs text-gray-500 font-mono">
+                            Vector dim: ${poetry.vector ? poetry.vector.length : 0}
+                        </div>
+                    </div>
+                `);
+                
+                card.click(() => {
+                    highlightNode(poetry.id);
+                    showPoetryDetail(poetry);
+                });
+                
+                container.append(card);
+            });
+        }
+
+        // Show poetry detail
+        function showPoetryDetail(poetry) {
+            $('#selected-poetry').html(`
+                <div class="font-bold">${poetry.text}</div>
+                <div class="text-xs mt-1">作者：${poetry.author} | 主题：${poetry.theme}</div>
+            `);
+            
+            if (poetry.vector) {
+                const vectorPreview = poetry.vector.slice(0, 8).join(', ') + '...';
+                $('#selected-vector').html(`
+                    [${vectorPreview}]<br>
+                    <span class="text-xs text-gray-500">维度: ${poetry.vector.length}</span>
+                `);
+            }
+        }
+
+        // Render vector space visualization
+        function renderVectorSpace() {
+            const width = $('#vector-space').width();
+            const height = 600;
+            
+            $('#vector-space').empty();
+            
+            const svg = d3.select('#vector-space')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Use t-SNE-like projection (simplified 2D projection)
+            const nodes = poetryDatabase.map((poetry, i) => {
+                const angle = (i / poetryDatabase.length) * 2 * Math.PI;
+                const radius = 200 + Math.random() * 100;
+                return {
+                    id: poetry.id,
+                    x: width / 2 + Math.cos(angle) * radius,
+                    y: height / 2 + Math.sin(angle) * radius,
+                    text: poetry.text,
+                    theme: poetry.theme,
+                    author: poetry.author
+                };
+            });
+
+            // Create links between similar poems
+            const links = [];
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    if (poetryDatabase[i].theme === poetryDatabase[j].theme) {
+                        const similarity = cosineSimilarity(
+                            poetryDatabase[i].vector,
+                            poetryDatabase[j].vector
+                        );
+                        if (similarity > 0.7) {
+                            links.push({
+                                source: nodes[i],
+                                target: nodes[j],
+                                similarity: similarity
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Draw links
+            svg.selectAll('line')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('class', 'link')
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y)
+                .attr('stroke-width', d => d.similarity * 2);
+
+            // Theme colors
+            const themeColors = {
+                friendship: '#3b82f6',
+                nature: '#10b981',
+                homesick: '#f59e0b',
+                love: '#ec4899',
+                life: '#8b5cf6',
+                military: '#ef4444',
+                parting: '#6366f1'
+            };
+
+            // Draw nodes
+            const node = svg.selectAll('.node')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.x},${d.y})`);
+
+            node.append('circle')
+                .attr('r', 5)
+                .attr('fill', d => themeColors[d.theme] || '#6b7280')
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2);
+
+            node.on('mouseover', function(event, d) {
+                d3.select('#tooltip')
+                    .style('opacity', 1)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 10) + 'px')
+                    .html(`<strong>${d.text}</strong><br>${d.author}<br>主题: ${d.theme}`);
+            })
+            .on('mouseout', function() {
+                d3.select('#tooltip').style('opacity', 0);
+            })
+            .on('click', function(event, d) {
+                const poetry = poetryDatabase.find(p => p.id === d.id);
+                showPoetryDetail(poetry);
+            });
+        }
+
+        // Highlight node in visualization
+        function highlightNode(id) {
+            d3.selectAll('.node circle')
+                .attr('r', 5)
+                .attr('stroke-width', 2);
+            
+            d3.selectAll('.node')
+                .filter(d => d.id === id)
+                .select('circle')
+                .attr('r', 8)
+                .attr('stroke-width', 3)
+                .attr('stroke', '#fbbf24');
+        }
+
+        // Show embedding visualization
+        function showEmbeddingViz(text) {
+            $('#embedding-viz').removeClass('hidden').addClass('fade-in');
+            
+            const model = $('#embedding-model').val();
+            const modelInfo = embeddingModels[model];
+            
+            $('#input-text').text(text);
+            $('#model-process').html(`
+                <div class="font-bold">${modelInfo.name}</div>
+                <div class="text-xs mt-1">处理中...</div>
+            `);
+            
+            setTimeout(() => {
+                const vector = generateVector(text, modelInfo.dim);
+                
+                $('#model-process').html(`
+                    <div class="font-bold">${modelInfo.name}</div>
+                    <div class="text-xs mt-1 text-green-600">✓ 完成</div>
+                `);
+                
+                $('#vector-output').html(`
+                    <div class="font-bold">${modelInfo.dim}维向量</div>
+                    <div class="text-xs mt-1">长度: ${vector.length}</div>
+                `);
+                
+                // Display first 32 dimensions
+                const display = $('#vector-display');
+                display.empty();
+                
+                vector.slice(0, 32).forEach((val, idx) => {
+                    const value = parseFloat(val);
+                    const color = value > 0 ? 'from-green-400 to-green-600' : 'from-red-400 to-red-600';
+                    const height = Math.abs(value) * 50 + 20;
+                    
+                    display.append(`
+                        <div class="text-center">
+                            <div class="h-16 flex items-end justify-center mb-1">
+                                <div class="w-full bg-gradient-to-t ${color} rounded-t" style="height: ${height}px"></div>
+                            </div>
+                            <div class="text-xs font-mono">${val}</div>
+                            <div class="text-xs text-gray-400">D${idx + 1}</div>
+                        </div>
+                    `);
+                });
+            }, 800);
+        }
+
+        // Search function
+        function performSearch(query) {
+            showEmbeddingViz(query);
+            
+            const model = $('#embedding-model').val();
+            const dim = embeddingModels[model].dim;
+            const queryVector = generateVector(query, dim);
+            
+            // Calculate similarities
+            const results = poetryDatabase.map(poetry => ({
+                ...poetry,
+                similarity: cosineSimilarity(queryVector, poetry.vector)
+            })).sort((a, b) => b.similarity - a.similarity);
+            
+            // Apply ReRank if enabled
+            const rerankModel = $('#rerank-model').val();
+            let finalResults = results;
+            
+            if (rerankModel !== 'none') {
+                // Simulate reranking (boost semantic matches)
+                finalResults = results.map(r => ({
+                    ...r,
+                    rerankScore: r.similarity * (1 + Math.random() * 0.2)
+                })).sort((a, b) => b.rerankScore - a.rerankScore);
+            }
+            
+            displayResults(query, finalResults.slice(0, 10), rerankModel);
+        }
+
+        // Display search results
+        function displayResults(query, results, rerankModel) {
+            $('#search-results').removeClass('hidden').addClass('fade-in');
+            
+            $('#search-stats').html(`
+                查询: <span class="text-indigo-600">"${query}"</span> | 
+                找到 <span class="font-bold text-green-600">${results.length}</span> 条结果
+            `);
+            
+            const rerankStatus = rerankModel !== 'none' 
+                ? `✅ 已使用 ${rerankModels[rerankModel].name} 重排序` 
+                : '⚠️ 未使用ReRank，仅按向量相似度排序';
+            $('#rerank-status').text(rerankStatus);
+            
+            const container = $('#results-container');
+            container.empty();
+            
+            results.forEach((result, index) => {
+                const similarity = (result.similarity * 100).toFixed(2);
+                const rerankScore = result.rerankScore ? (result.rerankScore * 100).toFixed(2) : null;
+                
+                const card = $(`
+                    <div class="mb-4 p-4 bg-gradient-to-r from-white to-gray-50 rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-2xl font-bold text-indigo-600">#${index + 1}</div>
+                                <div>
+                                    <div class="text-xl font-bold text-gray-800">${result.text}</div>
+                                    <div class="text-sm text-gray-600">—— ${result.author}</div>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-${index < 3 ? 'green' : 'blue'}-500 text-white rounded-full text-sm">
+                                ${result.theme}
+                            </span>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">向量相似度</span>
+                                    <span class="font-bold text-indigo-600">${similarity}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="similarity-bar bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style="width: ${similarity}%"></div>
+                                </div>
+                            </div>
+                            
+                            ${rerankScore ? `
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">ReRank得分</span>
+                                    <span class="font-bold text-purple-600">${rerankScore}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="similarity-bar bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: ${rerankScore}%"></div>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-gray-100 rounded text-xs font-mono text-gray-600">
+                            <div class="font-bold mb-1">向量表示 (前8维):</div>
+                            [${result.vector.slice(0, 8).join(', ')}...]
+                        </div>
+                    </div>
+                `);
+                
+                container.append(card);
+            });
+        }
+
+        // Initialize
+        $(document).ready(function() {
+            initializeVectors();
+            updateModelInfo();
+            renderPoetryList();
+            renderVectorSpace();
+
+            // Event listeners
+            $('#embedding-model').change(function() {
+                initializeVectors();
+                updateModelInfo();
+                renderVectorSpace();
+            });
+
+            $('#rerank-model').change(updateModelInfo);
+
+            $('#search-btn').click(function() {
+                const query = $('#search-input').val().trim();
+                if (query) {
+                    performSearch(query);
+                }
+            });
+
+            $('#example-btn').click(function() {
+                const examples = [
+                    '描写友情的诗句',
+                    '思念家乡的感受',
+                    '春天的美丽景色',
+                    '表达爱意的诗',
+                    '离别的惆怅'
+                ];
+                const random = examples[Math.floor(Math.random() * examples.length)];
+                $('#search-input').val(random);
+                performSearch(random);
+            });
+
+            $('#search-input').keypress(function(e) {
+                if (e.which === 13) {
+                    $('#search-btn').click();
+                }
+            });
+
+            $('#filter-input').on('input', function() {
+                renderPoetryList($(this).val());
+            });
+
+            $('#show-all-btn').click(renderVectorSpace);
+
+            $('#theme-select').change(function() {
+                const theme = $(this).val();
+                if (theme === 'all') {
+                    renderPoetryList();
+                } else {
+                    const filtered = poetryDatabase.filter(p => p.theme === theme);
+                    $('#poetry-list').empty();
+                    filtered.forEach(poetry => {
+                        const card = $(`
+                            <div class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-indigo-100">
+                                <div class="text-lg font-bold text-gray-800 mb-1">${poetry.text}</div>
+                                <div class="text-sm text-gray-600">—— ${poetry.author}</div>
+                            </div>
+                        `);
+                        $('#poetry-list').append(card);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

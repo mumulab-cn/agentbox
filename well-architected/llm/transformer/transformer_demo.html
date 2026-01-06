@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer架构深度可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00d9ff;
+            margin-bottom: 50px;
+            font-size: 2.8em;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+        
+        .section {
+            margin-bottom: 80px;
+        }
+        
+        .section-title {
+            font-size: 2em;
+            color: #00d9ff;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00d9ff, transparent);
+        }
+        
+        .demo-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 40px;
+            position: relative;
+            overflow: visible;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+        
+        /* 输入文本动画 */
+        .input-text-demo {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .input-token {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            animation: tokenFadeIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.3);
+        }
+        
+        .input-token:nth-child(1) { animation-delay: 0.1s; }
+        .input-token:nth-child(2) { animation-delay: 0.2s; }
+        .input-token:nth-child(3) { animation-delay: 0.3s; }
+        .input-token:nth-child(4) { animation-delay: 0.4s; }
+        .input-token:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes tokenFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Embedding层可视化 */
+        .embedding-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .token-embedding {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .token-box {
+            background: #00d9ff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+        
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 20px);
+            gap: 3px;
+            padding: 10px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid #00d9ff;
+        }
+        
+        .vector-cell {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-radius: 2px;
+            animation: cellPulse 2s infinite;
+        }
+        
+        .vector-cell:nth-child(odd) { animation-delay: 0.1s; }
+        .vector-cell:nth-child(even) { animation-delay: 0.2s; }
+        
+        @keyframes cellPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .transform-arrow {
+            font-size: 2em;
+            color: #00d9ff;
+            animation: arrowBounce 1.5s infinite;
+        }
+        
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* 位置编码可视化 */
+        .positional-encoding {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .position-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .position-label {
+            color: #00d9ff;
+            font-size: 0.9em;
+        }
+        
+        .sine-wave {
+            width: 100px;
+            height: 60px;
+            position: relative;
+        }
+        
+        .wave-path {
+            stroke: #00d9ff;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawWave 2s ease-out forwards;
+        }
+        
+        @keyframes drawWave {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        /* 自注意力机制可视化 */
+        .attention-matrix {
+            display: grid;
+            grid-template-columns: auto repeat(4, 1fr);
+            gap: 5px;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .attention-cell {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .attention-cell.header {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            color: #1a1a2e;
+        }
+        
+        .attention-cell.score {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        
+        .attention-cell.score:hover {
+            background: rgba(0, 217, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+        
+        .attention-score-high {
+            background: rgba(0, 217, 255, 0.6) !important;
+        }
+        
+        .attention-score-medium {
+            background: rgba(0, 217, 255, 0.4) !important;
+        }
+        
+        .attention-score-low {
+            background: rgba(0, 217, 255, 0.2) !important;
+        }
+        
+        /* QKV分解动画 */
+        .qkv-transform {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .qkv-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .qkv-label {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+        
+        .qkv-matrix {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(0, 153, 204, 0.3));
+            border: 2px solid #00d9ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            animation: matrixGlow 2s infinite;
+        }
+        
+        @keyframes matrixGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 217, 255, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 217, 255, 0.8); }
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+            padding: 10px;
+        }
+        
+        .matrix-cell {
+            width: 20px;
+            height: 20px;
+            background: #00d9ff;
+            border-radius: 2px;
+            opacity: 0;
+            animation: cellAppear 0.5s forwards;
+        }
+        
+        .matrix-cell:nth-child(1) { animation-delay: 0.1s; }
+        .matrix-cell:nth-child(2) { animation-delay: 0.15s; }
+        .matrix-cell:nth-child(3) { animation-delay: 0.2s; }
+        .matrix-cell:nth-child(4) { animation-delay: 0.25s; }
+        .matrix-cell:nth-child(5) { animation-delay: 0.3s; }
+        .matrix-cell:nth-child(6) { animation-delay: 0.35s; }
+        .matrix-cell:nth-child(7) { animation-delay: 0.4s; }
+        .matrix-cell:nth-child(8) { animation-delay: 0.45s; }
+        .matrix-cell:nth-child(9) { animation-delay: 0.5s; }
+        .matrix-cell:nth-child(10) { animation-delay: 0.55s; }
+        .matrix-cell:nth-child(11) { animation-delay: 0.6s; }
+        .matrix-cell:nth-child(12) { animation-delay: 0.65s; }
+        .matrix-cell:nth-child(13) { animation-delay: 0.7s; }
+        .matrix-cell:nth-child(14) { animation-delay: 0.75s; }
+        .matrix-cell:nth-child(15) { animation-delay: 0.8s; }
+        .matrix-cell:nth-child(16) { animation-delay: 0.85s; }
+        
+        @keyframes cellAppear {
+            to { opacity: 1; }
+        }
+        
+        /* 多头注意力可视化 */
+        .multi-head-attention {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .attention-head {
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid #00d9ff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .attention-head:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+            background: rgba(0, 217, 255, 0.2);
+        }
+        
+        .head-label {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #00d9ff;
+        }
+        
+        .head-visual {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border: 3px solid #00d9ff;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .head-visual::before,
+        .head-visual::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #00d9ff;
+            border-radius: 50%;
+        }
+        
+        .head-visual::before {
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .head-visual::after {
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Feed Forward可视化 */
+        .feedforward-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .ff-layer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .ff-neuron {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a2e;
+            animation: neuronPulse 1.5s infinite;
+        }
+        
+        .ff-neuron:nth-child(1) { animation-delay: 0s; }
+        .ff-neuron:nth-child(2) { animation-delay: 0.2s; }
+        .ff-neuron:nth-child(3) { animation-delay: 0.4s; }
+        .ff-neuron:nth-child(4) { animation-delay: 0.6s; }
+        
+        @keyframes neuronPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 217, 255, 0.7);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 0 0 20px rgba(0, 217, 255, 0);
+            }
+        }
+        
+        .ff-arrow {
+            font-size: 3em;
+            color: #00d9ff;
+        }
+        
+        .ff-label {
+            text-align: center;
+            color: #00d9ff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        /* 残差连接可视化 */
+        .residual-connection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .residual-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .residual-box {
+            width: 150px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(0, 153, 204, 0.3));
+            border: 2px solid #00d9ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .skip-connection {
+            position: absolute;
+            left: 50%;
+            width: 4px;
+            height: 200px;
+            background: repeating-linear-gradient(
+                0deg,
+                #00d9ff,
+                #00d9ff 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            animation: flowDown 2s linear infinite;
+        }
+        
+        @keyframes flowDown {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 20px; }
+        }
+        
+        /* Layer Normalization可视化 */
+        .layer-norm-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .norm-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .norm-label {
+            color: #00d9ff;
+            font-weight: bold;
+        }
+        
+        .value-bars {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+            height: 100px;
+        }
+        
+        .value-bar {
+            width: 25px;
+            background: linear-gradient(0deg, #00d9ff, #0099cc);
+            border-radius: 3px;
+            animation: barGrow 1s ease-out forwards;
+        }
+        
+        .value-bar:nth-child(1) { height: 80px; animation-delay: 0.1s; }
+        .value-bar:nth-child(2) { height: 50px; animation-delay: 0.2s; }
+        .value-bar:nth-child(3) { height: 90px; animation-delay: 0.3s; }
+        .value-bar:nth-child(4) { height: 60px; animation-delay: 0.4s; }
+        
+        .value-bars.normalized .value-bar {
+            height: 70px !important;
+        }
+        
+        @keyframes barGrow {
+            from {
+                transform: scaleY(0);
+                opacity: 0;
+            }
+            to {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+        
+        /* 完整流程可视化 */
+        .pipeline-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .pipeline-stage {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .pipeline-stage:hover {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateX(10px);
+        }
+        
+        .stage-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stage-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a2e;
+            font-size: 1.2em;
+        }
+        
+        .stage-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+        
+        .stage-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-left: 55px;
+        }
+        
+        .pipeline-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #00d9ff;
+            animation: arrowBounce 1.5s infinite;
+        }
+        
+        /* 输出生成动画 */
+        .output-generation {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .generation-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #00d9ff;
+        }
+        
+        .generation-token {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #1a1a2e;
+            animation: tokenAppear 0.5s ease-out;
+        }
+        
+        @keyframes tokenAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .probability {
+            color: #00d9ff;
+            font-size: 0.9em;
+        }
+        
+        /* 训练过程可视化 */
+        .training-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .training-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .training-card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+        
+        .training-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .training-title {
+            color: #00d9ff;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .training-desc {
+            color: #ccc;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        /* 损失曲线 */
+        .loss-chart {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 15px;
+            position: relative;
+            padding: 20px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+        
+        .chart-line {
+            stroke: #00d9ff;
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 1500;
+            stroke-dashoffset: 1500;
+            animation: drawChart 3s ease-out forwards;
+            filter: drop-shadow(0 0 8px rgba(0, 217, 255, 0.6));
+        }
+        
+        @keyframes drawChart {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        .chart-label {
+            position: absolute;
+            color: #00d9ff;
+            font-size: 0.9em;
+        }
+        
+        .chart-label.y-label {
+            left: 10px;
+            top: 20px;
+        }
+        
+        .chart-label.x-label {
+            right: 20px;
+            bottom: 20px;
+        }
+        
+        .desc-text {
+            text-align: center;
+            color: #aaa;
+            margin: 20px 0;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            color: #00d9ff;
+            font-weight: bold;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+            
+            .demo-box {
+                padding: 20px;
+            }
+            
+            .attention-matrix {
+                grid-template-columns: auto repeat(2, 1fr);
+            }
+            
+            .attention-cell {
+                width: 60px;
+                height: 60px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Transformer架构深度可视化</h1>
+        
+        <!-- 1. 输入文本分词 -->
+        <div class="section">
+            <h2 class="section-title">① 输入文本分词</h2>
+            <div class="demo-box">
+                <p class="desc-text">将输入句子分解为一个个 Token（词元）</p>
+                <div class="input-text-demo">
+                    <div class="input-token">我</div>
+                    <div class="input-token">爱</div>
+                    <div class="input-token">学习</div>
+                    <div class="input-token">人工</div>
+                    <div class="input-token">智能</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. Embedding嵌入层 -->
+        <div class="section">
+            <h2 class="section-title">② 词嵌入层 (Token Embedding)</h2>
+            <div class="demo-box">
+                <p class="desc-text">将每个 Token转换为<span class="highlight">高维向量</span>（如512维）来表示语义</p>
+                <div class="embedding-visual">
+                    <div class="token-embedding">
+                        <div class="token-box">我</div>
+                        <div class="transform-arrow">↓</div>
+                        <div class="vector-grid">
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                        </div>
+                    </div>
+                    <div class="token-embedding">
+                        <div class="token-box">爱</div>
+                        <div class="transform-arrow">↓</div>
+                        <div class="vector-grid">
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                        </div>
+                    </div>
+                    <div class="token-embedding">
+                        <div class="token-box">AI</div>
+                        <div class="transform-arrow">↓</div>
+                        <div class="vector-grid">
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                            <div class="vector-cell"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 位置编码 -->
+        <div class="section">
+            <h2 class="section-title">③ 位置编码 (Positional Encoding)</h2>
+            <div class="demo-box">
+                <p class="desc-text">通过<span class="highlight">正弦余弦函数</span>给每个位置添加独特的位置信息</p>
+                <div class="positional-encoding">
+                    <div class="position-item">
+                        <div class="position-label">位置 0</div>
+                        <svg class="sine-wave" viewBox="0 0 100 60">
+                            <path class="wave-path" d="M 0,30 Q 25,10 50,30 T 100,30" />
+                        </svg>
+                    </div>
+                    <div class="position-item">
+                        <div class="position-label">位置 1</div>
+                        <svg class="sine-wave" viewBox="0 0 100 60">
+                            <path class="wave-path" d="M 0,30 Q 25,15 50,30 T 100,30" />
+                        </svg>
+                    </div>
+                    <div class="position-item">
+                        <div class="position-label">位置 2</div>
+                        <svg class="sine-wave" viewBox="0 0 100 60">
+                            <path class="wave-path" d="M 0,30 Q 25,20 50,30 T 100,30" />
+                        </svg>
+                    </div>
+                    <div class="position-item">
+                        <div class="position-label">位置 3</div>
+                        <svg class="sine-wave" viewBox="0 0 100 60">
+                            <path class="wave-path" d="M 0,30 Q 25,25 50,30 T 100,30" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. Q K V计算 -->
+        <div class="section">
+            <h2 class="section-title">④ 生成 Query、Key、Value 矩阵</h2>
+            <div class="demo-box">
+                <p class="desc-text">将输入向量通过三个<span class="highlight">权重矩阵</span>分别转换为 Q、K、V</p>
+                <div class="qkv-transform">
+                    <div class="qkv-box">
+                        <div class="qkv-label">Q</div>
+                        <div class="qkv-matrix">
+                            <div class="matrix-grid">
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                            </div>
+                        </div>
+                        <div style="color: #aaa; font-size: 0.85em; margin-top: 5px;">Query</div>
+                    </div>
+                    <div class="transform-arrow">×</div>
+                    <div class="qkv-box">
+                        <div class="qkv-label">K</div>
+                        <div class="qkv-matrix">
+                            <div class="matrix-grid">
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div>
+                            </div>
+                        </div>
+                        <div style="color: #aaa; font-size: 0.85em; margin-top: 5px;">Key</div>
+                    </div>
+                    <div class="transform-arrow">=</div>
+                    <div class="qkv-box">
+                        <div class="qkv-label" style="color: #ff6b6b;">Score</div>
+                        <div class="qkv-matrix" style="border-color: #ff6b6b;">
+                            <div class="matrix-grid">
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                                <div class="matrix-cell" style="background: #ff6b6b;"></div>
+                            </div>
+                        </div>
+                        <div style="color: #aaa; font-size: 0.85em; margin-top: 5px;">注意力分数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 注意力矩阵 -->
+        <div class="section">
+            <h2 class="section-title">⑤ 自注意力矩阵 (Attention Matrix)</h2>
+            <div class="demo-box">
+                <p class="desc-text">计算每个词与其他词的<span class="highlight">关联度</span>，颜色越深关联越强</p>
+                <div class="attention-matrix">
+                    <div class="attention-cell"></div>
+                    <div class="attention-cell header">我</div>
+                    <div class="attention-cell header">爱</div>
+                    <div class="attention-cell header">学习</div>
+                    <div class="attention-cell header">AI</div>
+                    
+                    <div class="attention-cell header">我</div>
+                    <div class="attention-cell score attention-score-high">0.95</div>
+                    <div class="attention-cell score attention-score-medium">0.45</div>
+                    <div class="attention-cell score attention-score-low">0.32</div>
+                    <div class="attention-cell score attention-score-medium">0.51</div>
+                    
+                    <div class="attention-cell header">爱</div>
+                    <div class="attention-cell score attention-score-medium">0.42</div>
+                    <div class="attention-cell score attention-score-high">0.89</div>
+                    <div class="attention-cell score attention-score-high">0.78</div>
+                    <div class="attention-cell score attention-score-medium">0.55</div>
+                    
+                    <div class="attention-cell header">学习</div>
+                    <div class="attention-cell score attention-score-low">0.28</div>
+                    <div class="attention-cell score attention-score-high">0.72</div>
+                    <div class="attention-cell score attention-score-high">0.92</div>
+                    <div class="attention-cell score attention-score-high">0.85</div>
+                    
+                    <div class="attention-cell header">AI</div>
+                    <div class="attention-cell score attention-score-medium">0.38</div>
+                    <div class="attention-cell score attention-score-medium">0.48</div>
+                    <div class="attention-cell score attention-score-high">0.81</div>
+                    <div class="attention-cell score attention-score-high">0.96</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 多头注意力 -->
+        <div class="section">
+            <h2 class="section-title">⑥ 多头注意力 (Multi-Head Attention)</h2>
+            <div class="demo-box">
+                <p class="desc-text">使用<span class="highlight">8个注意力头</span>并行计算，捕捉不同维度的语义关系</p>
+                <div class="multi-head-attention">
+                    <div class="attention-head">
+                        <div class="head-label">Head 1</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 2</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 3</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 4</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 5</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 6</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 7</div>
+                        <div class="head-visual"></div>
+                    </div>
+                    <div class="attention-head">
+                        <div class="head-label">Head 8</div>
+                        <div class="head-visual"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 7. 前馈网络 -->
+        <div class="section">
+            <h2 class="section-title">⑦ 前馈网络 (Feed Forward Network)</h2>
+            <div class="demo-box">
+                <p class="desc-text">两层全连接网络，对每个位置独立进行<span class="highlight">非线性变换</span></p>
+                <div class="feedforward-visual">
+                    <div>
+                        <div class="ff-layer">
+                            <div class="ff-neuron">x1</div>
+                            <div class="ff-neuron">x2</div>
+                            <div class="ff-neuron">x3</div>
+                            <div class="ff-neuron">x4</div>
+                        </div>
+                        <div class="ff-label">输入层<br>d=512</div>
+                    </div>
+                    
+                    <div class="ff-arrow">→</div>
+                    
+                    <div>
+                        <div class="ff-layer">
+                            <div class="ff-neuron" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">h1</div>
+                            <div class="ff-neuron" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">h2</div>
+                            <div class="ff-neuron" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">...</div>
+                            <div class="ff-neuron" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">h8</div>
+                        </div>
+                        <div class="ff-label">隐藏层<br>d=2048</div>
+                    </div>
+                    
+                    <div class="ff-arrow">→</div>
+                    
+                    <div>
+                        <div class="ff-layer">
+                            <div class="ff-neuron">y1</div>
+                            <div class="ff-neuron">y2</div>
+                            <div class="ff-neuron">y3</div>
+                            <div class="ff-neuron">y4</div>
+                        </div>
+                        <div class="ff-label">输出层<br>d=512</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 8. 残差连接 -->
+        <div class="section">
+            <h2 class="section-title">⑧ 残差连接 (Residual Connection)</h2>
+            <div class="demo-box">
+                <p class="desc-text">将输入<span class="highlight">直接跳过</span>到输出，解决深层网络梯度消失问题</p>
+                <div class="residual-connection">
+                    <div class="residual-path">
+                        <div class="residual-box" style="background: linear-gradient(135deg, rgba(0, 217, 255, 0.4), rgba(0, 153, 204, 0.4));">
+                            输入 X
+                        </div>
+                        <div style="color: #00d9ff; margin: 10px 0;">↓</div>
+                        <div class="residual-box">
+                            注意力层 F(X)
+                        </div>
+                        <div style="color: #00d9ff; margin: 10px 0;">↓</div>
+                        <div class="residual-box" style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.3), rgba(238, 90, 111, 0.3)); border-color: #ff6b6b;">
+                            输出 = X + F(X)
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 3em; color: #00d9ff; opacity: 0.3;">
+                        +
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 9. Layer Normalization -->
+        <div class="section">
+            <h2 class="section-title">⑨ 层归一化 (Layer Normalization)</h2>
+            <div class="demo-box">
+                <p class="desc-text">对每个样本进行<span class="highlight">标准化</span>，稳定训练过程</p>
+                <div class="layer-norm-visual">
+                    <div class="norm-stage">
+                        <div class="norm-label">原始数据</div>
+                        <div class="value-bars">
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="transform-arrow">→</div>
+                    
+                    <div class="norm-stage">
+                        <div class="norm-label">归一化后</div>
+                        <div class="value-bars normalized">
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                            <div class="value-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 10. 完整流程 -->
+        <div class="section">
+            <h2 class="section-title">⑩ Transformer完整流程</h2>
+            <div class="demo-box">
+                <div class="pipeline-visual">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <div class="stage-number">1</div>
+                            <div class="stage-title">输入嵌入 + 位置编码</div>
+                        </div>
+                        <div class="stage-description">
+                            将Token转为向量表示，并添加位置信息
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-arrow">↓</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <div class="stage-number">2</div>
+                            <div class="stage-title">多头自注意力层</div>
+                        </div>
+                        <div class="stage-description">
+                            计算Q、K、V，生成注意力矩阵，加权求和
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-arrow">↓</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <div class="stage-number">3</div>
+                            <div class="stage-title">残差连接 + 层归一化</div>
+                        </div>
+                        <div class="stage-description">
+                            添加残差，对结果进行层归一化
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-arrow">↓</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <div class="stage-number">4</div>
+                            <div class="stage-title">前馈网络</div>
+                        </div>
+                        <div class="stage-description">
+                            两层全连接网络，中间层维度扩大到4倍
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-arrow">↓</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <div class="stage-number">5</div>
+                            <div class="stage-title">再次残差 + 归一化</div>
+                        </div>
+                        <div class="stage-description">
+                            再次应用残差连接和层归一化
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-arrow">↓</div>
+                    
+                    <div class="pipeline-stage" style="border-color: #ff6b6b;">
+                        <div class="stage-header">
+                            <div class="stage-number" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">∞</div>
+                            <div class="stage-title" style="color: #ff6b6b;">重复 N 次（N=12戦24层）</div>
+                        </div>
+                        <div class="stage-description">
+                            以上2-5步骤构成一个Encoder块，堆叠多层形成深度网络
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 11. 训练过程 -->
+        <div class="section">
+            <h2 class="section-title">⑪ 大模型训练过程</h2>
+            <div class="demo-box">
+                <div class="training-visual">
+                    <div class="training-card">
+                        <div class="training-icon">📚</div>
+                        <div class="training-title">数据预处理</div>
+                        <div class="training-desc">清洗、分词、构建词表<br>数据量：数TB文本</div>
+                    </div>
+                    <div class="training-card">
+                        <div class="training-icon">⚙️</div>
+                        <div class="training-title">前向传播</div>
+                        <div class="training-desc">输入通过Transformer<br>计算输出概率分布</div>
+                    </div>
+                    <div class="training-card">
+                        <div class="training-icon">🎯</div>
+                        <div class="training-title">计算损失</div>
+                        <div class="training-desc">使用交叉熘损失<br>衡量预测与真实差异</div>
+                    </div>
+                    <div class="training-card">
+                        <div class="training-icon">🔄</div>
+                        <div class="training-title">反向传播</div>
+                        <div class="training-desc">计算梯度<br>更新模型参数</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 50px;">
+                    <p class="desc-text">训练过程中损失函数逐渐下降</p>
+                    <div class="loss-chart">
+                        <span class="chart-label y-label">损失值</span>
+                        <span class="chart-label x-label">训练轮次</span>
+                        <svg viewBox="0 0 500 300" style="width: 100%; height: 100%;">
+                            <path class="chart-line" d="M 20,50 L 100,80 L 180,120 L 260,170 L 340,210 L 420,240 L 480,260" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 12. 模型输出 -->
+        <div class="section">
+            <h2 class="section-title">⑫ 模型生成过程</h2>
+            <div class="demo-box">
+                <p class="desc-text">模型逐个生成Token，每次选择<span class="highlight">概率最高</span>的下一个词</p>
+                <div class="output-generation">
+                    <div class="generation-step">
+                        <div style="color: #aaa;">输入：</div>
+                        <div class="generation-token">人工智能是</div>
+                        <div class="probability">P = 1.0</div>
+                    </div>
+                    <div class="generation-step">
+                        <div style="color: #aaa;">第1步：</div>
+                        <div class="generation-token">一</div>
+                        <div class="probability">P = 0.87</div>
+                    </div>
+                    <div class="generation-step">
+                        <div style="color: #aaa;">第2步：</div>
+                        <div class="generation-token">门</div>
+                        <div class="probability">P = 0.92</div>
+                    </div>
+                    <div class="generation-step">
+                        <div style="color: #aaa;">第3步：</div>
+                        <div class="generation-token">新兴</div>
+                        <div class="probability">P = 0.78</div>
+                    </div>
+                    <div class="generation-step">
+                        <div style="color: #aaa;">第4步：</div>
+                        <div class="generation-token">技术</div>
+                        <div class="probability">P = 0.95</div>
+                    </div>
+                    <div class="generation-step" style="background: rgba(0, 217, 255, 0.1); border-color: #00d9ff;">
+                        <div style="color: #00d9ff; font-weight: bold;">最终输出：</div>
+                        <div style="color: #fff; font-size: 1.1em;">人工智能是一门新兴技术</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 60px; padding: 30px; background: rgba(0, 217, 255, 0.05); border-radius: 15px; border: 1px solid rgba(0, 217, 255, 0.2);">
+            <p style="color: #00d9ff; font-size: 1.1em; margin-bottom: 10px;">✨ Transformer是现代大语言模型的基础架构 ✨</p>
+            <p style="color: #aaa; font-size: 0.95em;">以上展示了Transformer的完整工作原理与大模型训练流程</p>
+        </div>
+    </div>
+</body>
+</html>

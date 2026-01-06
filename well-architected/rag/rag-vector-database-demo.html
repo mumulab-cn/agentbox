@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 RAG Vector Database - 向量数据库演示</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes drawLine {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes vector-flow {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .slide-in-left {
+            animation: slideInFromLeft 0.6s ease-out forwards;
+        }
+
+        .slide-in-right {
+            animation: slideInFromRight 0.6s ease-out forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .step-hidden {
+            display: none;
+        }
+
+        .step-active {
+            display: block;
+        }
+
+        .vector-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            animation: vector-flow 3s ease-in-out infinite;
+        }
+
+        .connection-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2s ease-out forwards;
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease-out;
+        }
+
+        .dimension-box {
+            transition: all 0.3s ease;
+        }
+
+        .dimension-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-white mb-4">🔍 RAG Vector Database</h1>
+            <p class="text-xl text-white opacity-90">向量数据库与文本转向量全流程演示</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="flex justify-center mb-8 space-x-4">
+            <button id="tab-intro" class="tab-btn px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 transition">
+                向量数据库介绍
+            </button>
+            <button id="tab-demo" class="tab-btn px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition">
+                文本转向量演示
+            </button>
+        </div>
+
+        <!-- Introduction Section -->
+        <div id="intro-section" class="section-content">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">什么是向量数据库？</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="slide-in-left">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-l-4 border-indigo-500">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">📊 传统数据库</h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• 存储结构化数据</li>
+                                <li>• 精确匹配查询</li>
+                                <li>• SQL查询语言</li>
+                                <li>• 关键词搜索</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="slide-in-right">
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-l-4 border-purple-500">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">🚀 向量数据库</h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• 存储高维向量数据</li>
+                                <li>• 语义相似度查询</li>
+                                <li>• 向量相似度搜索</li>
+                                <li>• 理解语义含义</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vector Database Animation -->
+                <div class="bg-gray-50 rounded-xl p-8 mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">向量数据库工作原理</h3>
+                    <div class="relative h-64 overflow-hidden">
+                        <svg width="100%" height="100%" class="absolute inset-0">
+                            <!-- Database Icon -->
+                            <g class="float-animation">
+                                <rect x="50" y="80" width="120" height="100" rx="10" fill="#6366f1" opacity="0.2"/>
+                                <rect x="50" y="70" width="120" height="20" rx="10" fill="#6366f1"/>
+                                <text x="110" y="140" text-anchor="middle" fill="#4f46e5" font-size="14" font-weight="bold">Vector DB</text>
+                            </g>
+
+                            <!-- Vectors -->
+                            <g class="fade-in" style="animation-delay: 0.5s;">
+                                <circle cx="400" cy="80" r="30" fill="#8b5cf6" opacity="0.3" class="pulse-glow"/>
+                                <text x="400" y="85" text-anchor="middle" fill="#fff" font-size="12">[0.2, 0.8]</text>
+                            </g>
+
+                            <g class="fade-in" style="animation-delay: 0.7s;">
+                                <circle cx="500" cy="130" r="30" fill="#ec4899" opacity="0.3" class="pulse-glow"/>
+                                <text x="500" y="135" text-anchor="middle" fill="#fff" font-size="12">[0.7, 0.3]</text>
+                            </g>
+
+                            <g class="fade-in" style="animation-delay: 0.9s;">
+                                <circle cx="450" cy="180" r="30" fill="#10b981" opacity="0.3" class="pulse-glow"/>
+                                <text x="450" y="185" text-anchor="middle" fill="#fff" font-size="12">[0.5, 0.5]</text>
+                            </g>
+
+                            <!-- Connection Lines -->
+                            <line x1="170" y1="120" x2="370" y2="80" stroke="#6366f1" stroke-width="2" class="connection-line" style="animation-delay: 0.3s;"/>
+                            <line x1="170" y1="120" x2="470" y2="130" stroke="#8b5cf6" stroke-width="2" class="connection-line" style="animation-delay: 0.5s;"/>
+                            <line x1="170" y1="120" x2="420" y2="180" stroke="#ec4899" stroke-width="2" class="connection-line" style="animation-delay: 0.7s;"/>
+                        </svg>
+
+                        <!-- Flowing Particles -->
+                        <div class="vector-particle" style="top: 50%; left: 20%; animation-delay: 0s;"></div>
+                        <div class="vector-particle" style="top: 30%; left: 40%; animation-delay: 1s;"></div>
+                        <div class="vector-particle" style="top: 70%; left: 60%; animation-delay: 2s;"></div>
+                    </div>
+                </div>
+
+                <!-- Key Features -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="dimension-box bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 rounded-xl">
+                        <div class="text-4xl mb-3">⚡</div>
+                        <h4 class="text-xl font-bold mb-2">高速检索</h4>
+                        <p class="text-sm opacity-90">毫秒级相似度搜索，支持百万级向量</p>
+                    </div>
+
+                    <div class="dimension-box bg-gradient-to-br from-purple-500 to-pink-600 text-white p-6 rounded-xl">
+                        <div class="text-4xl mb-3">🎯</div>
+                        <h4 class="text-xl font-bold mb-2">语义理解</h4>
+                        <p class="text-sm opacity-90">基于语义相似度，而非关键词匹配</p>
+                    </div>
+
+                    <div class="dimension-box bg-gradient-to-br from-green-500 to-teal-600 text-white p-6 rounded-xl">
+                        <div class="text-4xl mb-3">📈</div>
+                        <h4 class="text-xl font-bold mb-2">可扩展性</h4>
+                        <p class="text-sm opacity-90">支持水平扩展，处理海量数据</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Section -->
+        <div id="demo-section" class="section-content step-hidden">
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">文本转向量全流程演示</h2>
+
+                <!-- Progress Bar -->
+                <div class="mb-8">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-600">步骤 <span id="current-step">1</span> / 6</span>
+                        <span class="text-sm font-semibold text-indigo-600"><span id="progress-percent">0</span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="progress-bar bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Step Content Container -->
+                <div id="step-container" class="min-h-96">
+                    <!-- Step 1: Input Text -->
+                    <div class="step-content step-active" data-step="1">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">📝</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 1: 输入原始文本</h3>
+                            <p class="text-gray-600 mb-6">首先，我们需要输入想要转换为向量的文本</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border-2 border-indigo-200">
+                            <div class="bg-white rounded-lg p-6 shadow-inner">
+                                <p class="text-lg text-gray-800 leading-relaxed">
+                                    <span class="font-semibold text-indigo-600">示例文本：</span><br>
+                                    "Artificial Intelligence is revolutionizing the way we interact with technology. 
+                                    Machine learning algorithms can process vast amounts of data to find patterns and make predictions."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Tokenization -->
+                    <div class="step-content step-hidden" data-step="2">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">✂️</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 2: 分词（Tokenization）</h3>
+                            <p class="text-gray-600 mb-6">将文本分解为单词或子词单元（tokens）</p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-50 rounded-xl p-6">
+                                <h4 class="font-bold text-gray-700 mb-4">原始文本</h4>
+                                <p class="text-gray-600">"Artificial Intelligence is revolutionizing..."</p>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                                <h4 class="font-bold text-gray-700 mb-4">分词结果</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-indigo-500 text-white rounded-full text-sm">Artificial</span>
+                                    <span class="px-3 py-1 bg-purple-500 text-white rounded-full text-sm">Intelligence</span>
+                                    <span class="px-3 py-1 bg-pink-500 text-white rounded-full text-sm">is</span>
+                                    <span class="px-3 py-1 bg-indigo-500 text-white rounded-full text-sm">revolution</span>
+                                    <span class="px-3 py-1 bg-purple-500 text-white rounded-full text-sm">izing</span>
+                                    <span class="px-3 py-1 bg-pink-500 text-white rounded-full text-sm">...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Embedding Model -->
+                    <div class="step-content step-hidden" data-step="3">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">🧠</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 3: 嵌入模型处理</h3>
+                            <p class="text-gray-600 mb-6">使用预训练的嵌入模型将tokens转换为数值</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl p-8">
+                            <div class="text-center mb-6">
+                                <div class="inline-block bg-white rounded-lg px-6 py-3 shadow-lg">
+                                    <span class="font-bold text-gray-700">常用嵌入模型:</span>
+                                    <span class="ml-2 text-indigo-600">BERT, GPT, Word2Vec, Sentence-BERT</span>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-white rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-2">📊</div>
+                                    <div class="font-bold text-gray-700">输入层</div>
+                                    <div class="text-sm text-gray-500">Token序列</div>
+                                </div>
+
+                                <div class="bg-white rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-2">⚙️</div>
+                                    <div class="font-bold text-gray-700">神经网络</div>
+                                    <div class="text-sm text-gray-500">多层变换</div>
+                                </div>
+
+                                <div class="bg-white rounded-lg p-4 text-center">
+                                    <div class="text-2xl mb-2">🎯</div>
+                                    <div class="font-bold text-gray-700">输出层</div>
+                                    <div class="text-sm text-gray-500">向量表示</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Vector Generation -->
+                    <div class="step-content step-hidden" data-step="4">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">🔢</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 4: 生成向量</h3>
+                            <p class="text-gray-600 mb-6">将文本转换为高维数值向量（通常768或1536维）</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-8">
+                            <div class="bg-white rounded-lg p-6 shadow-lg">
+                                <h4 class="font-bold text-gray-700 mb-4">生成的向量表示 (简化为8维示例)</h4>
+                                <div class="grid grid-cols-4 gap-3">
+                                    <div class="bg-gradient-to-br from-indigo-500 to-purple-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 1</div>
+                                        <div class="font-bold">0.245</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-purple-500 to-pink-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 2</div>
+                                        <div class="font-bold">-0.128</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-pink-500 to-red-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 3</div>
+                                        <div class="font-bold">0.892</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-red-500 to-orange-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 4</div>
+                                        <div class="font-bold">0.512</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-orange-500 to-yellow-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 5</div>
+                                        <div class="font-bold">-0.673</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-yellow-500 to-green-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 6</div>
+                                        <div class="font-bold">0.334</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-green-500 to-teal-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 7</div>
+                                        <div class="font-bold">0.156</div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-teal-500 to-blue-500 text-white p-4 rounded-lg text-center">
+                                        <div class="text-xs mb-1">Dim 8</div>
+                                        <div class="font-bold">-0.421</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                                    <p class="text-sm text-gray-600">
+                                        <span class="font-semibold">💡 提示：</span> 
+                                        实际向量通常有768维（BERT）或1536维（OpenAI），每个维度捕捉文本的不同语义特征
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Store in Database -->
+                    <div class="step-content step-hidden" data-step="5">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">💾</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 5: 存储到向量数据库</h3>
+                            <p class="text-gray-600 mb-6">将向量及其元数据存储到专门的向量数据库</p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+                                <h4 class="font-bold text-gray-700 mb-4">向量数据</h4>
+                                <div class="bg-white rounded-lg p-4 font-mono text-sm">
+                                    <div class="text-indigo-600">vector: [0.245, -0.128, ...]</div>
+                                    <div class="text-purple-600">dimension: 768</div>
+                                    <div class="text-pink-600">norm: 1.0</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                                <h4 class="font-bold text-gray-700 mb-4">元数据</h4>
+                                <div class="bg-white rounded-lg p-4 font-mono text-sm">
+                                    <div class="text-green-600">id: "doc_001"</div>
+                                    <div class="text-teal-600">text: "Artificial..."</div>
+                                    <div class="text-blue-600">timestamp: 2025-11-12</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl p-6">
+                            <h4 class="font-bold mb-3">常用向量数据库</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">Pinecone</div>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">Milvus</div>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">Weaviate</div>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">Qdrant</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Query & Retrieval -->
+                    <div class="step-content step-hidden" data-step="6">
+                        <div class="text-center mb-8">
+                            <div class="text-6xl mb-4">🔍</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">步骤 6: 查询与检索</h3>
+                            <p class="text-gray-600 mb-6">使用相似度搜索找到最相关的向量</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl p-6">
+                                <h4 class="font-bold mb-3">查询文本</h4>
+                                <p class="text-lg">"What is AI and machine learning?"</p>
+                            </div>
+
+                            <div class="text-center">
+                                <div class="text-4xl mb-2">⬇️</div>
+                                <div class="text-sm text-gray-600">相同的嵌入流程</div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl p-6">
+                                <h4 class="font-bold mb-3">查询向量</h4>
+                                <p class="font-mono text-sm">[0.251, -0.132, 0.885, ...]</p>
+                            </div>
+
+                            <div class="text-center">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="text-sm text-gray-600">计算余弦相似度</div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6">
+                                <h4 class="font-bold text-gray-700 mb-4">检索结果（按相似度排序）</h4>
+                                <div class="space-y-3">
+                                    <div class="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-800">Document 1</div>
+                                                <div class="text-sm text-gray-600">"Artificial Intelligence is revolutionizing..."</div>
+                                            </div>
+                                            <div class="ml-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                98.5%
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-800">Document 2</div>
+                                                <div class="text-sm text-gray-600">"Machine learning algorithms process data..."</div>
+                                            </div>
+                                            <div class="ml-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                94.2%
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white rounded-lg p-4 border-l-4 border-indigo-500">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-800">Document 3</div>
+                                                <div class="text-sm text-gray-600">"Deep learning neural networks..."</div>
+                                            </div>
+                                            <div class="ml-4 bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                87.3%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                                <p class="text-sm text-gray-700">
+                                    <span class="font-semibold">✨ 完成！</span> 
+                                    通过向量相似度搜索，我们找到了与查询最相关的文档，这就是RAG系统的核心检索机制。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                    <button id="prev-btn" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        ← 上一步
+                    </button>
+
+                    <button id="reset-btn" class="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition">
+                        🔄 重新开始
+                    </button>
+
+                    <button id="next-btn" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-purple-600 transition">
+                        下一步 →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let currentStep = 1;
+            const totalSteps = 6;
+
+            // Tab switching
+            $('#tab-intro').click(function() {
+                $('#intro-section').removeClass('step-hidden').addClass('step-active');
+                $('#demo-section').removeClass('step-active').addClass('step-hidden');
+                $(this).removeClass('bg-indigo-600 text-white').addClass('bg-white text-indigo-600');
+                $('#tab-demo').removeClass('bg-white text-indigo-600').addClass('bg-indigo-600 text-white');
+            });
+
+            $('#tab-demo').click(function() {
+                $('#demo-section').removeClass('step-hidden').addClass('step-active');
+                $('#intro-section').removeClass('step-active').addClass('step-hidden');
+                $(this).removeClass('bg-indigo-600 text-white').addClass('bg-white text-indigo-600');
+                $('#tab-intro').removeClass('bg-white text-indigo-600').addClass('bg-indigo-600 text-white');
+            });
+
+            // Update progress
+            function updateProgress() {
+                const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                $('#progress-bar').css('width', progress + '%');
+                $('#progress-percent').text(Math.round(progress));
+                $('#current-step').text(currentStep);
+
+                // Update button states
+                $('#prev-btn').prop('disabled', currentStep === 1);
+                
+                if (currentStep === totalSteps) {
+                    $('#next-btn').html('完成 ✓').addClass('bg-green-500').removeClass('bg-gradient-to-r from-indigo-500 to-purple-500');
+                } else {
+                    $('#next-btn').html('下一步 →').removeClass('bg-green-500').addClass('bg-gradient-to-r from-indigo-500 to-purple-500');
+                }
+            }
+
+            // Show step
+            function showStep(step) {
+                $('.step-content').removeClass('step-active').addClass('step-hidden');
+                $(`.step-content[data-step="${step}"]`).removeClass('step-hidden').addClass('step-active');
+                updateProgress();
+
+                // Scroll to top
+                $('#step-container').animate({ scrollTop: 0 }, 300);
+            }
+
+            // Next button
+            $('#next-btn').click(function() {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                } else {
+                    // Show completion message
+                    alert('🎉 恭喜！您已完成所有步骤的学习！\n\n现在您了解了文本如何转换为向量并存储在向量数据库中。');
+                }
+            });
+
+            // Previous button
+            $('#prev-btn').click(function() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            // Reset button
+            $('#reset-btn').click(function() {
+                currentStep = 1;
+                showStep(currentStep);
+            });
+
+            // Initialize
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前馈网络原理详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 50px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #00d9ff;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+        }
+        
+        .content-text {
+            color: #ccc;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .highlight {
+            color: #00d9ff;
+            font-weight: bold;
+        }
+        
+        .formula-box {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            color: #00d9ff;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+        
+        /* 网络结构可视化 */
+        .network-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .layer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .layer-label {
+            color: #00d9ff;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .layer-info {
+            color: #aaa;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .neurons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .neuron {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a2e;
+            font-size: 0.9em;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: neuronPulse 2s infinite;
+        }
+        
+        .neuron:nth-child(1) { animation-delay: 0s; }
+        .neuron:nth-child(2) { animation-delay: 0.2s; }
+        .neuron:nth-child(3) { animation-delay: 0.4s; }
+        .neuron:nth-child(4) { animation-delay: 0.6s; }
+        
+        @keyframes neuronPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            }
+            50% { 
+                transform: scale(1.15);
+                box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
+            }
+        }
+        
+        .hidden-neurons .neuron {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        @keyframes hiddenPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+            }
+            50% { 
+                transform: scale(1.15);
+                box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            }
+        }
+        
+        .hidden-neurons .neuron {
+            animation-name: hiddenPulse;
+        }
+        
+        .arrow-connector {
+            font-size: 3em;
+            color: #00d9ff;
+            animation: arrowFlow 1.5s infinite;
+        }
+        
+        @keyframes arrowFlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* 计算过程演示 */
+        .calculation-demo {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .calc-step {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #00d9ff;
+        }
+        
+        .step-title {
+            color: #00d9ff;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .step-content {
+            color: #ccc;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+        
+        .matrix {
+            display: inline-block;
+            margin: 15px 20px;
+            padding: 15px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid #00d9ff;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #00d9ff;
+        }
+        
+        .matrix-row {
+            margin: 5px 0;
+        }
+        
+        /* 实例演示 */
+        .example-box {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 153, 204, 0.1));
+            border: 2px solid #00d9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .example-title {
+            font-size: 1.5em;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .input-output {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .io-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .input-box {
+            background: rgba(0, 217, 255, 0.15);
+            border: 2px solid #00d9ff;
+        }
+        
+        .output-box {
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid #ff6b6b;
+        }
+        
+        .io-label {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .io-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin: 5px;
+            font-family: 'Courier New', monospace;
+            color: #00d9ff;
+        }
+        
+        /* 激活函数可视化 */
+        .activation-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .activation-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .activation-card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+        
+        .activation-name {
+            color: #00d9ff;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .activation-formula {
+            font-family: 'Courier New', monospace;
+            color: #ccc;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.05em;
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 150px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .graph-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .graph-path {
+            stroke: #00d9ff;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            animation: drawPath 2s ease-out forwards;
+        }
+        
+        @keyframes drawPath {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            color: #1a1a2e;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            color: #ccc;
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+        
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            color: #00d9ff;
+            overflow-x: auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .network-visual {
+                flex-direction: column;
+            }
+            
+            .arrow-connector {
+                transform: rotate(90deg);
+            }
+            
+            .neurons {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 前馈网络原理详解</h1>
+        <p class="subtitle">Feed Forward Network (FFN) - Transformer核心组件深度剖析</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section fade-in">
+            <h2 class="section-title">一、什么是前馈网络</h2>
+            <p class="content-text">
+                前馈网络（Feed Forward Network）是Transformer架构中的关键组件，位于<span class="highlight">多头自注意力层之后</span>。
+                它是一个简单但强大的<span class="highlight">全连接神经网络</span>，对每个位置的向量进行独立的非线性变换。
+            </p>
+            <p class="content-text">
+                <strong>核心特点：</strong>
+            </p>
+            <ul style="color: #ccc; margin-left: 30px; line-height: 2;">
+                <li>两层全连接层：输入层 → 隐藏层 → 输出层</li>
+                <li>位置独立：对序列中的每个位置独立处理</li>
+                <li>维度变换：先扩展到4倍维度，再压缩回原维度</li>
+                <li>非线性激活：使用ReLU或GELU激活函数</li>
+            </ul>
+        </div>
+        
+        <!-- 2. 网络结构 -->
+        <div class="section fade-in">
+            <h2 class="section-title">二、网络结构可视化</h2>
+            <p class="content-text">
+                标准Transformer中FFN的维度变化：<span class="highlight">512 → 2048 → 512</span>
+            </p>
+            
+            <div class="network-visual">
+                <div class="layer-container">
+                    <div class="layer-label">输入层</div>
+                    <div class="neurons">
+                        <div class="neuron">x₁</div>
+                        <div class="neuron">x₂</div>
+                        <div class="neuron">x₃</div>
+                        <div class="neuron">x₄</div>
+                    </div>
+                    <div class="layer-info">d_model = 512</div>
+                </div>
+                
+                <div class="arrow-connector">→</div>
+                
+                <div class="layer-container">
+                    <div class="layer-label">隐藏层</div>
+                    <div class="neurons hidden-neurons">
+                        <div class="neuron">h₁</div>
+                        <div class="neuron">h₂</div>
+                        <div class="neuron">h₃</div>
+                        <div class="neuron">h₄</div>
+                        <div class="neuron">...</div>
+                        <div class="neuron">h₈</div>
+                    </div>
+                    <div class="layer-info">d_ff = 2048<br>(4倍扩展)</div>
+                </div>
+                
+                <div class="arrow-connector">→</div>
+                
+                <div class="layer-container">
+                    <div class="layer-label">输出层</div>
+                    <div class="neurons">
+                        <div class="neuron">y₁</div>
+                        <div class="neuron">y₂</div>
+                        <div class="neuron">y₃</div>
+                        <div class="neuron">y₄</div>
+                    </div>
+                    <div class="layer-info">d_model = 512</div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">FFN(x) = W₂ · ReLU(W₁ · x + b₁) + b₂</div>
+                <p style="color: #aaa; text-align: center; margin-top: 15px;">
+                    其中：W₁ ∈ ℝ^(2048×512)，W₂ ∈ ℝ^(512×2048)
+                </p>
+            </div>
+        </div>
+        
+        <!-- 3. 计算过程 -->
+        <div class="section fade-in">
+            <h2 class="section-title">三、计算过程详解</h2>
+            
+            <div class="calculation-demo">
+                <div class="calc-step">
+                    <div class="step-title">步骤1：第一层线性变换</div>
+                    <div class="step-content">
+                        输入向量 x 与权重矩阵 W₁ 相乘，并加上偏置 b₁，将维度从512扩展到2048
+                        <div class="formula-box" style="margin-top: 15px;">
+                            <div class="formula">h = W₁ · x + b₁</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">步骤2：激活函数</div>
+                    <div class="step-content">
+                        对隐藏层输出应用ReLU或GELU激活函数，引入非线性
+                        <div class="formula-box" style="margin-top: 15px;">
+                            <div class="formula">h' = ReLU(h) = max(0, h)</div>
+                        </div>
+                        <p style="margin-top: 10px;">
+                            激活函数将负值变为0，保留正值，使网络能够学习复杂的非线性关系
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">步骤3：第二层线性变换</div>
+                    <div class="step-content">
+                        将激活后的向量与权重矩阵 W₂ 相乘，并加上偏置 b₂，维度从2048压缩回512
+                        <div class="formula-box" style="margin-top: 15px;">
+                            <div class="formula">y = W₂ · h' + b₂</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. 具体实例 -->
+        <div class="section fade-in">
+            <h2 class="section-title">四、实例演示：处理单词"爱"的向量</h2>
+            
+            <div class="example-box">
+                <div class="example-title">📊 数值计算示例</div>
+                
+                <div class="input-output">
+                    <div class="io-box input-box">
+                        <div class="io-label" style="color: #00d9ff;">输入向量 x</div>
+                        <div class="io-content">
+                            <div class="value-display">[0.5, -0.2, 0.8, 0.1]</div>
+                            <p style="margin-top: 15px; font-size: 0.9em; color: #aaa;">
+                                简化为4维向量<br>（实际为512维）
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 2em; color: #00d9ff;">⟹</div>
+                    
+                    <div class="io-box output-box">
+                        <div class="io-label" style="color: #ff6b6b;">输出向量 y</div>
+                        <div class="io-content">
+                            <div class="value-display">[0.7, 0.3, 0.9, -0.1]</div>
+                            <p style="margin-top: 15px; font-size: 0.9em; color: #aaa;">
+                                经过FFN变换后<br>保持相同维度
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; padding: 25px; background: rgba(0, 0, 0, 0.3); border-radius: 10px;">
+                    <h3 style="color: #00d9ff; margin-bottom: 20px;">🔢 详细计算步骤</h3>
+                    
+                    <div style="margin: 20px 0;">
+                        <strong style="color: #00d9ff;">第一层：</strong>
+                        <div class="matrix">
+W₁ (8×4):          输入 (4×1):      结果 (8×1):
+[0.2  0.3  0.1  0.4]   [0.5]          [0.58]
+[0.1 -0.2  0.5  0.2]   [-0.2]         [0.49]
+[0.4  0.1  0.3  0.1] × [0.8]     =    [0.59]
+[0.3  0.2  0.2  0.3]   [0.1]          [0.48]
+[...]                                  [...]
+[0.2  0.4  0.1  0.2]                  [0.52]
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <strong style="color: #00d9ff;">激活函数（ReLU）：</strong>
+                        <div class="formula-box">
+                            <div class="formula">h' = [0.58, 0.49, 0.59, 0.48, ..., 0.52]</div>
+                            <p style="color: #aaa; margin-top: 10px; text-align: center;">所有值都为正，保持不变</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <strong style="color: #00d9ff;">第二层：</strong>
+                        <div class="matrix">
+W₂ (4×8):                              h' (8×1):    结果 (4×1):
+[0.3  0.2  0.1  0.4  0.2  0.3  0.1  0.2]  [0.58]      [0.7]
+[0.1  0.3  0.2  0.1  0.3  0.2  0.1  0.4]  [0.49]      [0.3]
+[0.2  0.1  0.4  0.2  0.1  0.3  0.2  0.1] × [0.59]  =  [0.9]
+[0.4  0.2  0.1  0.3  0.2  0.1  0.3  0.2]  [0.48]      [-0.1]
+                                          [...]
+                                          [0.52]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 激活函数对比 -->
+        <div class="section fade-in">
+            <h2 class="section-title">五、激活函数详解</h2>
+            
+            <div class="activation-visual">
+                <div class="activation-card">
+                    <div class="activation-name">ReLU</div>
+                    <div class="activation-formula">f(x) = max(0, x)</div>
+                    <div class="graph-container">
+                        <svg class="graph-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="100" x2="200" y2="100" stroke="#333" stroke-width="1"/>
+                            <line x1="100" y1="0" x2="100" y2="100" stroke="#333" stroke-width="1"/>
+                            <path class="graph-path" d="M 0,100 L 100,100 L 200,0"/>
+                        </svg>
+                    </div>
+                    <p style="color: #aaa; margin-top: 15px; font-size: 0.9em;">
+                        优点：计算简单、收敛快<br>
+                        缺点：负值梯度为0
+                    </p>
+                </div>
+                
+                <div class="activation-card">
+                    <div class="activation-name">GELU</div>
+                    <div class="activation-formula">f(x) = x · Φ(x)</div>
+                    <div class="graph-container">
+                        <svg class="graph-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="100" x2="200" y2="100" stroke="#333" stroke-width="1"/>
+                            <line x1="100" y1="0" x2="100" y2="100" stroke="#333" stroke-width="1"/>
+                            <path class="graph-path" d="M 0,100 Q 80,95 100,50 T 200,0" style="animation-delay: 0.3s;"/>
+                        </svg>
+                    </div>
+                    <p style="color: #aaa; margin-top: 15px; font-size: 0.9em;">
+                        优点：平滑的非线性<br>
+                        广泛用于BERT、GPT等模型
+                    </p>
+                </div>
+                
+                <div class="activation-card">
+                    <div class="activation-name">Swish</div>
+                    <div class="activation-formula">f(x) = x · σ(x)</div>
+                    <div class="graph-container">
+                        <svg class="graph-svg" viewBox="0 0 200 100">
+                            <line x1="0" y1="100" x2="200" y2="100" stroke="#333" stroke-width="1"/>
+                            <line x1="100" y1="0" x2="100" y2="100" stroke="#333" stroke-width="1"/>
+                            <path class="graph-path" d="M 0,98 Q 70,90 100,50 T 200,0" style="animation-delay: 0.6s;"/>
+                        </svg>
+                    </div>
+                    <p style="color: #aaa; margin-top: 15px; font-size: 0.9em;">
+                        优点：自门控特性<br>
+                        在深层网络中表现优异
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 作用与意义 -->
+        <div class="section fade-in">
+            <h2 class="section-title">六、前馈网络的作用</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>功能</th>
+                        <th>说明</th>
+                        <th>重要性</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>特征变换</strong></td>
+                        <td>对注意力层的输出进行非线性变换，提取更高级的特征</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>增加容量</strong></td>
+                        <td>通过4倍维度扩展，大幅增加模型的参数量和表达能力</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>位置独立处理</strong></td>
+                        <td>对每个位置独立变换，与注意力机制形成互补</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><strong>非线性映射</strong></td>
+                        <td>通过激活函数引入非线性，使模型能够学习复杂模式</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="formula-box" style="margin-top: 30px;">
+                <p style="color: #00d9ff; font-size: 1.2em; text-align: center; margin-bottom: 15px;">
+                    <strong>📌 关键理解</strong>
+                </p>
+                <p style="color: #ccc; text-align: center; line-height: 1.8;">
+                    如果说<span class="highlight">多头注意力</span>负责"看整体、找关系"，<br>
+                    那么<span class="highlight">前馈网络</span>就负责"看局部、做变换"。<br>
+                    两者配合，形成了Transformer强大的表示学习能力。
+                </p>
+            </div>
+        </div>
+        
+        <!-- 7. 实际应用场景 -->
+        <div class="section fade-in">
+            <h2 class="section-title">七、实际应用场景示例</h2>
+            
+            <div class="example-box">
+                <div class="example-title">🌐 场景：机器翻译</div>
+                <div style="color: #ccc; line-height: 1.8;">
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #00d9ff;">输入句子：</strong>"I love artificial intelligence"
+                    </p>
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #00d9ff;">注意力层处理后：</strong>每个词已经融合了上下文信息
+                        <br>例如："love"的向量现在包含了与"I"和"intelligence"的关联
+                    </p>
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #ff6b6b;">FFN的作用：</strong>
+                    </p>
+                    <ul style="margin-left: 30px; line-height: 2;">
+                        <li>对"love"的向量进行深度特征提取</li>
+                        <li>识别这是一个情感动词，需要翻译为"爱"或"喜欢"</li>
+                        <li>考虑后接"intelligence"这类抽象名词的搭配模式</li>
+                        <li>输出更适合翻译的向量表示</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <div class="example-title">💬 场景：文本生成</div>
+                <div style="color: #ccc; line-height: 1.8;">
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #00d9ff;">输入：</strong>"今天天气"
+                    </p>
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #00d9ff;">注意力层输出：</strong>已识别"天气"这个主题
+                    </p>
+                    <p style="margin: 15px 0;">
+                        <strong style="color: #ff6b6b;">FFN处理：</strong>
+                    </p>
+                    <ul style="margin-left: 30px; line-height: 2;">
+                        <li>特征提取：识别这是一个未完成的陈述句</li>
+                        <li>语义增强：增强"天气状态"相关的特征</li>
+                        <li>为下一步预测做准备：更可能生成"很好"、"不错"等词</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 8. 参数量分析 -->
+        <div class="section fade-in">
+            <h2 class="section-title">八、参数量与计算复杂度</h2>
+            
+            <div class="content-text">
+                以标准Transformer为例（d_model=512, d_ff=2048）：
+            </div>
+            
+            <div class="formula-box">
+                <p style="color: #00d9ff; margin-bottom: 15px;"><strong>参数量计算：</strong></p>
+                <div class="formula">W₁: 512 × 2048 = 1,048,576</div>
+                <div class="formula">b₁: 2048</div>
+                <div class="formula">W₂: 2048 × 512 = 1,048,576</div>
+                <div class="formula">b₂: 512</div>
+                <div class="formula" style="border-top: 2px solid #00d9ff; margin-top: 15px; padding-top: 15px;">
+                    总计：2,099,712 ≈ 210万参数/层
+                </div>
+            </div>
+            
+            <div class="content-text" style="margin-top: 25px;">
+                <strong style="color: #00d9ff;">关键发现：</strong>
+            </div>
+            <ul style="color: #ccc; margin-left: 30px; line-height: 2;">
+                <li>FFN占据了Transformer <span class="highlight">约2/3的参数量</span></li>
+                <li>12层Transformer的FFN总参数：210万 × 12 = <span class="highlight">2520万参数</span></li>
+                <li>这就是为什么大模型参数量如此庞大的主要原因</li>
+            </ul>
+        </div>
+        
+        <!-- 9. 代码实现 -->
+        <div class="section fade-in">
+            <h2 class="section-title">九、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<pre style="margin: 0; color: #00d9ff; line-height: 1.6;">
+<span style="color: #ff6b6b;">import</span> torch
+<span style="color: #ff6b6b;">import</span> torch.nn <span style="color: #ff6b6b;">as</span> nn
+
+<span style="color: #ff6b6b;">class</span> <span style="color: #00d9ff;">FeedForwardNetwork</span>(nn.Module):
+    <span style="color: #ff6b6b;">def</span> <span style="color: #00d9ff;">__init__</span>(self, d_model=512, d_ff=2048, dropout=0.1):
+        <span style="color: #aaa;"># d_model: 输入输出维度</span>
+        <span style="color: #aaa;"># d_ff: 隐藏层维度（通常是d_model的4倍）</span>
+        super().__init__()
+        
+        <span style="color: #aaa;"># 第一层：512 → 2048</span>
+        self.linear1 = nn.Linear(d_model, d_ff)
+        
+        <span style="color: #aaa;"># 激活函数</span>
+        self.relu = nn.ReLU()
+        
+        <span style="color: #aaa;"># Dropout防止过拟合</span>
+        self.dropout = nn.Dropout(dropout)
+        
+        <span style="color: #aaa;"># 第二层：2048 → 512</span>
+        self.linear2 = nn.Linear(d_ff, d_model)
+    
+    <span style="color: #ff6b6b;">def</span> <span style="color: #00d9ff;">forward</span>(self, x):
+        <span style="color: #aaa;"># x shape: (batch_size, seq_len, d_model)</span>
+        
+        <span style="color: #aaa;"># 第一层线性变换</span>
+        x = self.linear1(x)  <span style="color: #aaa;"># (batch, seq_len, d_ff)</span>
+        
+        <span style="color: #aaa;"># 激活函数</span>
+        x = self.relu(x)
+        
+        <span style="color: #aaa;"># Dropout</span>
+        x = self.dropout(x)
+        
+        <span style="color: #aaa;"># 第二层线性变换</span>
+        x = self.linear2(x)  <span style="color: #aaa;"># (batch, seq_len, d_model)</span>
+        
+        <span style="color: #ff6b6b;">return</span> x
+
+
+<span style="color: #aaa;"># 使用示例</span>
+ffn = FeedForwardNetwork(d_model=512, d_ff=2048)
+input_tensor = torch.randn(32, 10, 512)  <span style="color: #aaa;"># batch=32, seq_len=10, dim=512</span>
+output = ffn(input_tensor)
+<span style="color: #ff6b6b;">print</span>(output.shape)  <span style="color: #aaa;"># torch.Size([32, 10, 512])</span>
+</pre>
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="text-align: center; margin-top: 60px; padding: 40px; background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 107, 107, 0.1)); border-radius: 15px; border: 2px solid rgba(0, 217, 255, 0.3);">
+            <p style="color: #00d9ff; font-size: 1.5em; margin-bottom: 20px;">✨ 核心要点总结</p>
+            <div style="color: #ccc; font-size: 1.05em; line-height: 2; text-align: left; max-width: 800px; margin: 0 auto;">
+                <p>✓ FFN是Transformer中参数量最大的组件，占比约2/3</p>
+                <p>✓ 采用"扩展-压缩"结构（512→2048→512），增强表达能力</p>
+                <p>✓ 对每个位置独立处理，与注意力机制形成互补</p>
+                <p>✓ 通过非线性激活函数学习复杂的特征变换</p>
+                <p>✓ 在实际应用中负责深度特征提取和语义增强</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9em;">
+            <p>© 2025 前馈网络原理详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

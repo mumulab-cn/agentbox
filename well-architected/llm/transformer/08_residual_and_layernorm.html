@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>残差连接与层归一化详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #81c784;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #2e7d32;
+            font-weight: bold;
+            background: #e8f5e9;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 残差连接可视化 */
+        .residual-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .residual-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+        }
+        
+        .flow-box {
+            background: white;
+            padding: 25px 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            font-weight: bold;
+            font-size: 1.2em;
+            min-width: 200px;
+            text-align: center;
+            border: 3px solid #66bb6a;
+        }
+        
+        .flow-box.input {
+            background: linear-gradient(135deg, #81c784, #66bb6a);
+            color: white;
+        }
+        
+        .flow-box.sublayer {
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: white;
+        }
+        
+        .flow-box.output {
+            background: linear-gradient(135deg, #ffa726, #fb8c00);
+            color: white;
+        }
+        
+        .arrow-down {
+            font-size: 2.5em;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        
+        .skip-path {
+            position: absolute;
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 400px;
+            background: repeating-linear-gradient(
+                0deg,
+                #ff9800,
+                #ff9800 15px,
+                transparent 15px,
+                transparent 30px
+            );
+            animation: flow 1.5s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 30px; }
+        }
+        
+        .skip-label {
+            position: absolute;
+            left: -150px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            color: #ff9800;
+            font-weight: bold;
+            font-size: 1.2em;
+            white-space: nowrap;
+        }
+        
+        .plus-sign {
+            font-size: 3em;
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        /* 层归一化可视化 */
+        .layernorm-demo {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .norm-stage {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .stage-label {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .value-bars {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            justify-content: center;
+            height: 150px;
+        }
+        
+        .value-bar {
+            width: 35px;
+            background: linear-gradient(0deg, #66bb6a, #43a047);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            animation: barGrow 1s ease-out;
+        }
+        
+        @keyframes barGrow {
+            from {
+                transform: scaleY(0);
+            }
+            to {
+                transform: scaleY(1);
+            }
+        }
+        
+        .value-bars.before .value-bar:nth-child(1) { height: 120px; }
+        .value-bars.before .value-bar:nth-child(2) { height: 60px; }
+        .value-bars.before .value-bar:nth-child(3) { height: 140px; }
+        .value-bars.before .value-bar:nth-child(4) { height: 80px; }
+        .value-bars.before .value-bar:nth-child(5) { height: 100px; }
+        
+        .value-bars.after .value-bar {
+            height: 90px;
+            background: linear-gradient(0deg, #ffa726, #fb8c00);
+        }
+        
+        .transform-arrow {
+            font-size: 3em;
+            color: #2e7d32;
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 5px solid #2e7d32;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.4em;
+            color: #2e7d32;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 问题与解决 */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .problem-box, .solution-box {
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .problem-box {
+            background: #ffebee;
+            border: 3px solid #ef5350;
+        }
+        
+        .solution-box {
+            background: #e8f5e9;
+            border: 3px solid #66bb6a;
+        }
+        
+        .box-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .problem-box .box-title {
+            color: #c62828;
+        }
+        
+        .solution-box .box-title {
+            color: #2e7d32;
+        }
+        
+        .box-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e8f5e9;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #e65100;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+            
+            .skip-path {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 残差连接与层归一化</h1>
+        <p class="subtitle">Add & Norm - 稳定深层网络训练的关键技术</p>
+        
+        <!-- 1. 残差连接 -->
+        <div class="section">
+            <h2 class="section-title">一、残差连接（Residual Connection）</h2>
+            <p class="content-text">
+                残差连接是将<span class="highlight">输入直接加到输出</span>上，
+                让梯度能够直接传播，解决深层网络的训练难题。
+            </p>
+            
+            <div class="residual-visual">
+                <div class="skip-path"></div>
+                <div class="skip-label">跳跃连接</div>
+                
+                <div class="residual-flow">
+                    <div class="flow-box input">输入 X</div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-box sublayer">
+                        子层（注意力/FFN）<br>
+                        F(X)
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="plus-sign">⊕ 相加</div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-box output">
+                        输出<br>
+                        X + F(X)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">Output = LayerNorm(X + Sublayer(X))</div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    X: 输入 | Sublayer: 注意力层或FFN | LayerNorm: 层归一化
+                </p>
+            </div>
+        </div>
+        
+        <!-- 2. 为什么需要残差 -->
+        <div class="section">
+            <h2 class="section-title">二、残差连接的作用</h2>
+            
+            <div class="problem-solution">
+                <div class="problem-box">
+                    <div class="box-title">❌ 深层网络的问题</div>
+                    <div class="box-content">
+                        <strong>梯度消失：</strong><br>
+                        • 反向传播时梯度逐层衰减<br>
+                        • 深层参数难以更新<br>
+                        • 网络性能下降<br>
+                        <br>
+                        <strong>退化问题：</strong><br>
+                        • 层数增加，性能反而下降<br>
+                        • 难以训练超过20层的网络
+                    </div>
+                </div>
+                
+                <div class="solution-box">
+                    <div class="box-title">✅ 残差连接的解决</div>
+                    <div class="box-content">
+                        <strong>直接梯度通道：</strong><br>
+                        • 梯度可以直接跳过多层<br>
+                        • 保证深层也能得到更新<br>
+                        • 训练更稳定<br>
+                        <br>
+                        <strong>恒等映射：</strong><br>
+                        • 最坏情况下学到F(X)=0<br>
+                        • 至少保持输入不变<br>
+                        • 网络不会退化
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 形象理解</div>
+                <div class="tip-content">
+                    <strong>类比：</strong>爬山路线<br>
+                    • <strong>无残差：</strong>必须一步步沿着蜿蜒小路爬（梯度逐层传播）<br>
+                    • <strong>有残差：</strong>有电梯直达山顶（梯度跳跃传播）<br>
+                    <br>
+                    即使某些中间台阶很滑（梯度消失），也能通过电梯到达目的地
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 层归一化 -->
+        <div class="section">
+            <h2 class="section-title">三、层归一化（Layer Normalization）</h2>
+            <p class="content-text">
+                层归一化将每个样本的特征<span class="highlight">标准化为均值0、方差1</span>，
+                稳定训练过程，加速收敛。
+            </p>
+            
+            <div class="layernorm-demo">
+                <div class="norm-stage">
+                    <div class="stage-label">归一化前</div>
+                    <div class="value-bars before">
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                    </div>
+                    <div style="margin-top: 15px; color: #666;">
+                        数值分散<br>
+                        均值≠0，方差大
+                    </div>
+                </div>
+                
+                <div class="transform-arrow">→</div>
+                
+                <div class="norm-stage">
+                    <div class="stage-label">归一化后</div>
+                    <div class="value-bars after">
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                        <div class="value-bar"></div>
+                    </div>
+                    <div style="margin-top: 15px; color: #666;">
+                        数值集中<br>
+                        均值=0，方差=1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">LayerNorm(x) = γ · (x - μ) / σ + β</div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    μ: 均值 | σ: 标准差 | γ, β: 可学习参数（缩放和平移）
+                </p>
+            </div>
+        </div>
+        
+        <!-- 4. LayerNorm计算步骤 -->
+        <div class="section">
+            <h2 class="section-title">四、层归一化计算步骤</h2>
+            
+            <div style="background: #fff3e0; border: 3px solid #ffb74d; border-radius: 15px; padding: 30px; margin: 30px 0;">
+                <div style="color: #f57c00; font-size: 1.4em; font-weight: bold; text-align: center; margin-bottom: 25px;">
+                    🧮 完整计算示例
+                </div>
+                
+                <div style="background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                    <div style="color: #f57c00; font-weight: bold; margin-bottom: 10px;">输入向量</div>
+                    <div style="color: #555;">x = [2.0, 4.0, 1.0, 5.0]</div>
+                </div>
+                
+                <div style="background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                    <div style="color: #f57c00; font-weight: bold; margin-bottom: 10px;">第1步：计算均值</div>
+                    <div style="color: #555;">μ = (2.0 + 4.0 + 1.0 + 5.0) / 4 = <strong>3.0</strong></div>
+                </div>
+                
+                <div style="background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                    <div style="color: #f57c00; font-weight: bold; margin-bottom: 10px;">第2步：计算方差</div>
+                    <div style="color: #555;">
+                        σ² = [(2-3)² + (4-3)² + (1-3)² + (5-3)²] / 4<br>
+                        = [1 + 1 + 4 + 4] / 4 = <strong>2.5</strong><br>
+                        σ = √2.5 ≈ <strong>1.58</strong>
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                    <div style="color: #f57c00; font-weight: bold; margin-bottom: 10px;">第3步：标准化</div>
+                    <div style="color: #555;">
+                        x_norm = (x - μ) / σ<br>
+                        = [(2-3)/1.58, (4-3)/1.58, (1-3)/1.58, (5-3)/1.58]<br>
+                        = [<strong>-0.63, 0.63, -1.26, 1.26</strong>]
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                    <div style="color: #f57c00; font-weight: bold; margin-bottom: 10px;">第4步：缩放和平移（假设γ=1, β=0）</div>
+                    <div style="color: #555;">
+                        output = γ · x_norm + β = 1 · x_norm + 0<br>
+                        = [<strong>-0.63, 0.63, -1.26, 1.26</strong>]
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. BatchNorm vs LayerNorm -->
+        <div class="section">
+            <h2 class="section-title">五、BatchNorm vs LayerNorm</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特性</th>
+                        <th>Batch Normalization</th>
+                        <th>Layer Normalization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>归一化维度</strong></td>
+                        <td>在batch维度上计算</td>
+                        <td>在特征维度上计算</td>
+                    </tr>
+                    <tr>
+                        <td><strong>依赖性</strong></td>
+                        <td>依赖batch大小</td>
+                        <td>不依赖batch，每个样本独立</td>
+                    </tr>
+                    <tr>
+                        <td><strong>适用场景</strong></td>
+                        <td>CNN、大batch训练</td>
+                        <td>RNN、Transformer、小batch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>序列任务</strong></td>
+                        <td>不适合（序列长度不同）</td>
+                        <td>适合（每个序列独立处理）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>推理阶段</strong></td>
+                        <td>需要统计量的移动平均</td>
+                        <td>训练和推理完全一致</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 6. Add&Norm完整流程 -->
+        <div class="section">
+            <h2 class="section-title">六、Add & Norm在Transformer中的位置</h2>
+            <p class="content-text">
+                Transformer的每个子层后都有<span class="highlight">Add & Norm</span>：
+            </p>
+            
+            <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 30px; border-radius: 15px; margin: 30px 0;">
+                <div style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border-left: 5px solid #66bb6a;">
+                        <strong style="color: #2e7d32;">位置1：多头注意力后</strong><br>
+                        <span style="color: #666;">Output = LayerNorm(X + MultiHeadAttention(X))</span>
+                    </div>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; border-left: 5px solid #66bb6a;">
+                        <strong style="color: #2e7d32;">位置2：前馈网络后</strong><br>
+                        <span style="color: #666;">Output = LayerNorm(X + FeedForward(X))</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 7. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">七、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn <span style="color: #82b1ff;">as</span> nn
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">AddAndNorm</span>(nn.Module):
+    <span style="color: #90a4ae;">"""残差连接 + 层归一化"""</span>
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model=512, dropout=0.1):
+        super().__init__()
+        self.layer_norm = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x, sublayer_output):
+        <span style="color: #90a4ae;">"""
+        Args:
+            x: 原始输入
+            sublayer_output: 子层的输出
+        """</span>
+        <span style="color: #90a4ae;"># 残差连接 + Dropout</span>
+        x = x + self.dropout(sublayer_output)
+        <span style="color: #90a4ae;"># 层归一化</span>
+        <span style="color: #82b1ff;">return</span> self.layer_norm(x)
+
+<span style="color: #90a4ae;"># 或者更简洁的实现</span>
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">SublayerConnection</span>(nn.Module):
+    <span style="color: #90a4ae;">"""子层连接：LayerNorm(x + Sublayer(x))"""</span>
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model, dropout):
+        super().__init__()
+        self.norm = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x, sublayer):
+        <span style="color: #90a4ae;"># sublayer是一个函数（如注意力层或FFN）</span>
+        <span style="color: #82b1ff;">return</span> self.norm(x + self.dropout(sublayer(x)))
+
+<span style="color: #90a4ae;"># 使用示例</span>
+batch_size = 2
+seq_len = 10
+d_model = 512
+
+<span style="color: #90a4ae;"># 原始输入</span>
+x = torch.randn(batch_size, seq_len, d_model)
+
+<span style="color: #90a4ae;"># 子层输出（如注意力层的输出）</span>
+sublayer_output = torch.randn(batch_size, seq_len, d_model)
+
+<span style="color: #90a4ae;"># Add & Norm</span>
+add_norm = AddAndNorm(d_model)
+output = add_norm(x, sublayer_output)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输入: {x.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输出: {output.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"均值: {output.mean():.4f}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"标准差: {output.std():.4f}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #2e7d32; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ 残差连接通过跳跃连接解决梯度消失，让深层网络可训练<br>
+                ✓ 层归一化稳定训练，加速收敛，每个样本独立处理<br>
+                ✓ Add&Norm在每个子层后应用：Output = LayerNorm(X + Sublayer(X))<br>
+                ✓ 这两个技术是Transformer能堆叠到数十层的关键<br>
+                ✓ 相比BatchNorm，LayerNorm更适合序列任务和小batch场景
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 残差连接与层归一化详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

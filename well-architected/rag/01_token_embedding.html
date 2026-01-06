@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词嵌入层原理详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #1976d2;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #bbdefb;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #1976d2;
+            font-weight: bold;
+            background: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 词汇表可视化 */
+        .vocab-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            padding: 25px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .vocab-item {
+            background: linear-gradient(135deg, #42a5f5, #1976d2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .vocab-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Token到向量转换 */
+        .embedding-process {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .token-box {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 12px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1976d2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(25, 118, 210, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
+            }
+        }
+        
+        .arrow {
+            font-size: 3em;
+            color: #1976d2;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+        
+        .vector-display {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 35px);
+            gap: 5px;
+        }
+        
+        .vector-cell {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #42a5f5, #1976d2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7em;
+            font-weight: bold;
+            animation: cellAppear 0.5s ease-out;
+        }
+        
+        .vector-cell:nth-child(1) { animation-delay: 0.1s; }
+        .vector-cell:nth-child(2) { animation-delay: 0.15s; }
+        .vector-cell:nth-child(3) { animation-delay: 0.2s; }
+        .vector-cell:nth-child(4) { animation-delay: 0.25s; }
+        .vector-cell:nth-child(5) { animation-delay: 0.3s; }
+        .vector-cell:nth-child(6) { animation-delay: 0.35s; }
+        .vector-cell:nth-child(7) { animation-delay: 0.4s; }
+        .vector-cell:nth-child(8) { animation-delay: 0.45s; }
+        
+        @keyframes cellAppear {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 嵌入矩阵 */
+        .embedding-matrix {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border: 2px solid #bbdefb;
+        }
+        
+        .matrix-title {
+            color: #1976d2;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .matrix-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .matrix-table {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .matrix-row {
+            display: flex;
+            gap: 8px;
+            margin: 5px 0;
+        }
+        
+        .matrix-value {
+            width: 50px;
+            padding: 8px;
+            background: #e3f2fd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #1976d2;
+            font-weight: bold;
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 5px solid #1976d2;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.4em;
+            color: #1976d2;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 实例演示 */
+        .example-box {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .example-title {
+            color: #f57c00;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .example-content {
+            color: #555;
+            line-height: 2;
+        }
+        
+        .step-box {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #ff9800;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #42a5f5, #1976d2);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-comment {
+            color: #90a4ae;
+        }
+        
+        .code-keyword {
+            color: #82b1ff;
+        }
+        
+        .code-function {
+            color: #ffb74d;
+        }
+        
+        /* 关键点提示框 */
+        .tip-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .embedding-process {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 词嵌入层原理详解</h1>
+        <p class="subtitle">Token Embedding - 将文字转换为计算机可理解的向量表示</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section">
+            <h2 class="section-title">一、什么是词嵌入</h2>
+            <p class="content-text">
+                词嵌入（Token Embedding）是将<span class="highlight">离散的文字符号</span>转换为<span class="highlight">连续的数值向量</span>的过程。
+                计算机无法直接理解"爱"、"学习"这样的词汇，需要将它们转换为数学向量才能进行计算。
+            </p>
+            <p class="content-text">
+                <strong>核心思想：</strong>相似含义的词在向量空间中距离更近
+            </p>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 为什么需要词嵌入？</div>
+                <div class="tip-content">
+                    • 计算机只能处理数字，不能直接理解文字<br>
+                    • 向量可以进行数学运算（加减乘除）<br>
+                    • 向量能够表达词语之间的语义关系<br>
+                    • 相似的词在空间中距离更近，便于模型学习
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 词汇表 -->
+        <div class="section">
+            <h2 class="section-title">二、构建词汇表</h2>
+            <p class="content-text">
+                第一步是建立一个<span class="highlight">词汇表（Vocabulary）</span>，包含所有可能出现的词：
+            </p>
+            
+            <div class="vocab-demo">
+                <div class="vocab-item">我<br>ID:0</div>
+                <div class="vocab-item">爱<br>ID:1</div>
+                <div class="vocab-item">学习<br>ID:2</div>
+                <div class="vocab-item">人工<br>ID:3</div>
+                <div class="vocab-item">智能<br>ID:4</div>
+                <div class="vocab-item">是<br>ID:5</div>
+                <div class="vocab-item">未来<br>ID:6</div>
+                <div class="vocab-item">技术<br>ID:7</div>
+            </div>
+            
+            <p class="content-text" style="margin-top: 20px;">
+                实际应用中，词汇表通常包含<span class="highlight">3万到5万个词</span>（中文）或<span class="highlight">5万到10万个词</span>（英文）
+            </p>
+        </div>
+        
+        <!-- 3. 转换过程 -->
+        <div class="section">
+            <h2 class="section-title">三、Token到向量的转换</h2>
+            <p class="content-text">
+                每个词通过查找<span class="highlight">嵌入矩阵（Embedding Matrix）</span>转换为高维向量：
+            </p>
+            
+            <div class="embedding-process">
+                <div class="token-box">爱</div>
+                <div class="arrow">→</div>
+                <div class="token-box" style="background: #e3f2fd; color: #1976d2;">ID: 1</div>
+                <div class="arrow">→</div>
+                <div class="vector-display">
+                    <div style="color: #1976d2; font-weight: bold; margin-bottom: 10px; text-align: center;">
+                        512维向量
+                    </div>
+                    <div class="vector-grid">
+                        <div class="vector-cell">0.5</div>
+                        <div class="vector-cell">-0.2</div>
+                        <div class="vector-cell">0.8</div>
+                        <div class="vector-cell">0.3</div>
+                        <div class="vector-cell">-0.1</div>
+                        <div class="vector-cell">0.6</div>
+                        <div class="vector-cell">0.4</div>
+                        <div class="vector-cell">...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">embedding = Embedding_Matrix[token_id]</div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    从嵌入矩阵中取出对应ID的那一行向量
+                </p>
+            </div>
+        </div>
+        
+        <!-- 4. 嵌入矩阵 -->
+        <div class="section">
+            <h2 class="section-title">四、嵌入矩阵详解</h2>
+            <p class="content-text">
+                嵌入矩阵是一个<span class="highlight">词汇表大小 × 向量维度</span>的二维表格：
+            </p>
+            
+            <div class="embedding-matrix">
+                <div class="matrix-title">嵌入矩阵示例（词汇量=5, 维度=4）</div>
+                <div class="matrix-visual">
+                    <div class="matrix-table">
+                        <div style="color: #1976d2; font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">
+                            词汇ID → 向量维度
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-value">0.2</div>
+                            <div class="matrix-value">0.5</div>
+                            <div class="matrix-value">-0.1</div>
+                            <div class="matrix-value">0.8</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-value">0.7</div>
+                            <div class="matrix-value">-0.3</div>
+                            <div class="matrix-value">0.4</div>
+                            <div class="matrix-value">0.2</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-value">-0.5</div>
+                            <div class="matrix-value">0.9</div>
+                            <div class="matrix-value">0.1</div>
+                            <div class="matrix-value">-0.2</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-value">0.3</div>
+                            <div class="matrix-value">0.1</div>
+                            <div class="matrix-value">0.6</div>
+                            <div class="matrix-value">0.4</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-value">0.8</div>
+                            <div class="matrix-value">-0.4</div>
+                            <div class="matrix-value">0.2</div>
+                            <div class="matrix-value">0.5</div>
+                        </div>
+                    </div>
+                    <div style="color: #666; font-size: 0.9em; max-width: 300px;">
+                        <strong>实际规模：</strong><br>
+                        • 词汇量：30,000 ~ 50,000<br>
+                        • 向量维度：512 ~ 1024<br>
+                        • 矩阵参数量：约2500万个
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 实例演示 -->
+        <div class="section">
+            <h2 class="section-title">五、完整实例：处理句子"我爱AI"</h2>
+            
+            <div class="example-box">
+                <div class="example-title">🎯 步骤演示</div>
+                <div class="example-content">
+                    <div class="step-box">
+                        <span class="step-number">1</span>
+                        <strong>分词：</strong>将句子分解为词元<br>
+                        "我爱AI" → ["我", "爱", "AI"]
+                    </div>
+                    
+                    <div class="step-box">
+                        <span class="step-number">2</span>
+                        <strong>转换ID：</strong>查找词汇表获取ID<br>
+                        ["我", "爱", "AI"] → [0, 1, 8]
+                    </div>
+                    
+                    <div class="step-box">
+                        <span class="step-number">3</span>
+                        <strong>查找向量：</strong>从嵌入矩阵中取出对应行<br>
+                        • ID=0 → [0.2, 0.5, -0.1, 0.8, ...]  (512维)<br>
+                        • ID=1 → [0.7, -0.3, 0.4, 0.2, ...]  (512维)<br>
+                        • ID=8 → [0.3, 0.6, 0.1, 0.5, ...]  (512维)
+                    </div>
+                    
+                    <div class="step-box">
+                        <span class="step-number">4</span>
+                        <strong>输出结果：</strong>3个512维向量<br>
+                        形状：(3, 512) - 3个词，每个512维
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 语义相似性 -->
+        <div class="section">
+            <h2 class="section-title">六、向量的语义特性</h2>
+            <p class="content-text">
+                训练良好的词嵌入具有<span class="highlight">语义相似性</span>特征：
+            </p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>词语对</th>
+                        <th>余弦相似度</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>国王 - 男人 + 女人</strong></td>
+                        <td>≈ 女王</td>
+                        <td>向量运算可捕捉关系</td>
+                    </tr>
+                    <tr>
+                        <td><strong>爱 ↔ 喜欢</strong></td>
+                        <td>0.85</td>
+                        <td>语义相近，距离较近</td>
+                    </tr>
+                    <tr>
+                        <td><strong>苹果 ↔ 香蕉</strong></td>
+                        <td>0.78</td>
+                        <td>同属水果类别</td>
+                    </tr>
+                    <tr>
+                        <td><strong>爱 ↔ 技术</strong></td>
+                        <td>0.12</td>
+                        <td>语义无关，距离较远</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 7. 参数量计算 -->
+        <div class="section">
+            <h2 class="section-title">七、参数量分析</h2>
+            <p class="content-text">
+                词嵌入层的参数量 = <span class="highlight">词汇表大小 × 向量维度</span>
+            </p>
+            
+            <div class="formula-box">
+                <div class="formula">参数量 = Vocab_Size × d_model</div>
+                <div style="margin-top: 20px; color: #555; font-size: 1.1em;">
+                    <strong>实例计算：</strong><br>
+                    • GPT-2: 50,257 × 768 = <span class="highlight">38,597,376 参数</span><br>
+                    • BERT: 30,522 × 768 = <span class="highlight">23,440,896 参数</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 8. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">八、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span class="code-keyword">import</span> torch
+<span class="code-keyword">import</span> torch.nn <span class="code-keyword">as</span> nn
+
+<span class="code-comment"># 定义词嵌入层</span>
+<span class="code-keyword">class</span> <span class="code-function">TokenEmbedding</span>(nn.Module):
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, vocab_size=30000, d_model=512):
+        <span class="code-comment"># vocab_size: 词汇表大小</span>
+        <span class="code-comment"># d_model: 向量维度</span>
+        super().__init__()
+        
+        <span class="code-comment"># 创建嵌入矩阵</span>
+        self.embedding = nn.Embedding(vocab_size, d_model)
+    
+    <span class="code-keyword">def</span> <span class="code-function">forward</span>(self, x):
+        <span class="code-comment"># x: token IDs, shape (batch_size, seq_len)</span>
+        <span class="code-comment"># 返回: embeddings, shape (batch_size, seq_len, d_model)</span>
+        <span class="code-keyword">return</span> self.embedding(x)
+
+<span class="code-comment"># 使用示例</span>
+vocab_size = 30000
+d_model = 512
+embedding_layer = TokenEmbedding(vocab_size, d_model)
+
+<span class="code-comment"># 输入：一个batch包含2个句子，每个句子10个token</span>
+token_ids = torch.randint(0, vocab_size, (2, 10))
+<span class="code-comment"># 输出：(2, 10, 512) - 2个句子，10个词，每个512维</span>
+embeddings = embedding_layer(token_ids)
+
+<span class="code-keyword">print</span>(f<span class="code-comment">"输入形状: {token_ids.shape}"</span>)
+<span class="code-keyword">print</span>(f<span class="code-comment">"输出形状: {embeddings.shape}"</span>)
+<span class="code-keyword">print</span>(f<span class="code-comment">"参数量: {vocab_size * d_model:,}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #1976d2; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ 词嵌入将离散的词转换为连续的向量，使计算机能够处理文本<br>
+                ✓ 每个词对应嵌入矩阵中的一行，通过ID查找获取向量<br>
+                ✓ 向量维度通常为512或768，能够表达丰富的语义信息<br>
+                ✓ 训练后的嵌入具有语义相似性：相似词的向量距离更近<br>
+                ✓ 参数量 = 词汇表大小 × 向量维度，通常占模型参数的10-15%
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 词嵌入层原理详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

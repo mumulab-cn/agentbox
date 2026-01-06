@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Agentic RAG - 22种分块策略可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .sidebar h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .strategy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .strategy-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f7fafc;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .strategy-item:hover {
+            background: #edf2f7;
+            transform: translateX(4px);
+        }
+
+        .strategy-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .strategy-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .strategy-item.active .strategy-number {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .strategy-info {
+            flex: 1;
+        }
+
+        .strategy-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .strategy-name-en {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .strategy-detail {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .name-en {
+            color: #718096;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: #f7fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card strong {
+            color: #2d3748;
+            margin-right: 0.5rem;
+        }
+
+        .visualization {
+            margin-top: 2rem;
+        }
+
+        .visualization h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .visualization h4 {
+            color: #4a5568;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sample-text {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .sample-text pre {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .chunks-container {
+            margin-top: 1.5rem;
+        }
+
+        .chunks {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .chunk {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chunk:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .chunk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .chunk-index {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .chunk-length {
+            background: #edf2f7;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .chunk-content {
+            color: #2d3748;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            color: #718096;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+            
+            .chunks {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .detail-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1>🤖 Agentic RAG - 22种分块策略可视化</h1>
+            <p class="subtitle">22 Chunking Strategies for RAG Systems</p>
+        </header>
+
+        <div class="container">
+            <aside class="sidebar">
+                <h3>分块策略列表</h3>
+                <div class="strategy-list" id="strategyList"></div>
+            </aside>
+
+            <main class="main-content">
+                <div class="strategy-detail" id="strategyDetail"></div>
+            </main>
+        </div>
+
+        <footer class="footer">
+            <p>💡 提示：点击左侧策略查看不同的分块效果 | Total: <span id="totalCount">22</span> Strategies</p>
+        </footer>
+    </div>
+
+    <script>
+        const sampleText = `Artificial Intelligence (AI) is transforming the world.
+Machine learning is a subset of AI. It enables computers to learn from data.
+
+Deep learning uses neural networks. These networks can process vast amounts of information.
+
+Natural Language Processing (NLP) helps computers understand human language. This technology powers chatbots and translation services.`;
+
+        const strategies = [
+            {
+                id: 1,
+                name: '基础分块法',
+                nameEn: 'Basic Chunking',
+                description: '按换行符分割文本',
+                scenario: '笔记、FAQ、聊天记录',
+                chunker: (text) => text.split('\n').filter(s => s.trim())
+            },
+            {
+                id: 2,
+                name: '定长分块法',
+                nameEn: 'Fixed-Size Chunking',
+                description: '按固定字符数切割',
+                scenario: '扫描文档、转录稿',
+                chunker: (text) => {
+                    const size = 80;
+                    const chunks = [];
+                    for (let i = 0; i < text.length; i += size) {
+                        chunks.push(text.slice(i, i + size));
+                    }
+                    return chunks;
+                }
+            },
+            {
+                id: 3,
+                name: '滑动窗口分块法',
+                nameEn: 'Sliding Window',
+                description: '固定大小+重叠',
+                scenario: '议论文、叙述性报告',
+                chunker: (text) => {
+                    const size = 100;
+                    const overlap = 30;
+                    const chunks = [];
+                    for (let i = 0; i < text.length; i += size - overlap) {
+                        chunks.push(text.slice(i, i + size));
+                    }
+                    return chunks;
+                }
+            },
+            {
+                id: 4,
+                name: '按句分块法',
+                nameEn: 'Sentence-Based',
+                description: '在句子结尾处分割',
+                scenario: '技术博客、文档摘要',
+                chunker: (text) => text.split(/[.!?]\s+/).filter(s => s.trim())
+            },
+            {
+                id: 5,
+                name: '按段分块法',
+                nameEn: 'Paragraph-Based',
+                description: '依据段落分割',
+                scenario: '博客文章、研究报告',
+                chunker: (text) => text.split(/\n\n+/).filter(s => s.trim())
+            },
+            {
+                id: 6,
+                name: '按页分块法',
+                nameEn: 'Page-Based',
+                description: '每个物理页面一个块',
+                scenario: 'PDF、演示文稿',
+                chunker: (text) => [
+                    'Page 1: ' + text.slice(0, 100),
+                    'Page 2: ' + text.slice(100, 200),
+                    'Page 3: ' + text.slice(200)
+                ]
+            },
+            {
+                id: 7,
+                name: '按预定结构分块法',
+                nameEn: 'Structure-Based',
+                description: '根据结构化元素分割',
+                scenario: 'HTML、JSON、CSV',
+                chunker: (text) => [
+                    '<header>AI Introduction</header>',
+                    '<section>ML Content</section>',
+                    '<section>DL Content</section>',
+                    '<section>NLP Content</section>'
+                ]
+            },
+            {
+                id: 8,
+                name: '基于文档层级的分块法',
+                nameEn: 'Hierarchical',
+                description: '根据标题层级分块',
+                scenario: '技术文章、操作手册',
+                chunker: (text) => [
+                    '# AI Overview\n...',
+                    '## Machine Learning\n...',
+                    '## Deep Learning\n...',
+                    '## NLP\n...'
+                ]
+            },
+            {
+                id: 9,
+                name: '基于关键词的分块法',
+                nameEn: 'Keyword-Based',
+                description: '在关键词处分割',
+                scenario: '有标志性关键词的文档',
+                chunker: (text) => text.split(/(?=Machine learning|Deep learning|Natural Language)/i).filter(s => s.trim())
+            },
+            {
+                id: 10,
+                name: '基于实体的分块法',
+                nameEn: 'Entity-Based',
+                description: '使用NER技术按实体分组',
+                scenario: '新闻报道、法律合同',
+                chunker: (text) => [
+                    'Entity: AI - Artificial Intelligence...',
+                    'Entity: ML - Machine learning...',
+                    'Entity: NLP - Natural Language Processing...'
+                ]
+            },
+            {
+                id: 11,
+                name: '基于词元数的分块法',
+                nameEn: 'Token-Based',
+                description: '按词元数量分割',
+                scenario: '非结构化文档',
+                chunker: (text) => {
+                    const words = text.split(/\s+/);
+                    const tokenSize = 20;
+                    const chunks = [];
+                    for (let i = 0; i < words.length; i += tokenSize) {
+                        chunks.push(words.slice(i, i + tokenSize).join(' '));
+                    }
+                    return chunks;
+                }
+            },
+            {
+                id: 12,
+                name: '基于主题的分块法',
+                nameEn: 'Topic-Based',
+                description: '使用主题建模聚合',
+                scenario: '多主题文档',
+                chunker: (text) => [
+                    'Topic: AI Fundamentals',
+                    'Topic: ML & DL Techniques',
+                    'Topic: NLP Applications'
+                ]
+            },
+            {
+                id: 13,
+                name: '表格感知分块法',
+                nameEn: 'Table-Aware',
+                description: '独立处理表格内容',
+                scenario: '包含表格的文档',
+                chunker: (text) => [
+                    'Text: AI introduction...',
+                    'Table: {"Technology": "AI", "Type": "ML"}',
+                    'Text: NLP applications...'
+                ]
+            },
+            {
+                id: 14,
+                name: '内容感知分块法',
+                nameEn: 'Content-Aware',
+                description: '根据内容类型动态调整',
+                scenario: '混合格式文档',
+                chunker: (text) => [
+                    '[Paragraph] AI introduction',
+                    '[List] ML, DL, NLP',
+                    '[Table] Technology comparison'
+                ]
+            },
+            {
+                id: 15,
+                name: '上下文增强分块法',
+                nameEn: 'Context-Enhanced',
+                description: 'LLM注入上下文',
+                scenario: '财报、合同等复杂文档',
+                chunker: (text) => [
+                    '[Context: AI Overview] ' + text.slice(0, 60),
+                    '[Context: ML Details] ' + text.slice(60, 120),
+                    '[Context: Applications] ' + text.slice(120)
+                ]
+            },
+            {
+                id: 16,
+                name: '语义分块法',
+                nameEn: 'Semantic Chunking',
+                description: '基于嵌入相似度聚合',
+                scenario: '混杂主题的长文档',
+                chunker: (text) => [
+                    'Semantic Group 1: AI & ML concepts',
+                    'Semantic Group 2: DL neural networks',
+                    'Semantic Group 3: NLP applications'
+                ]
+            },
+            {
+                id: 17,
+                name: '递归分块法',
+                nameEn: 'Recursive Chunking',
+                description: '递归使用多级分隔符',
+                scenario: '长度不规则的文本',
+                chunker: (text) => {
+                    const level1 = text.split(/\n\n+/);
+                    const chunks = [];
+                    level1.forEach(chunk => {
+                        if (chunk.length > 100) {
+                            chunks.push(...chunk.split(/\n/).filter(s => s.trim()));
+                        } else {
+                            chunks.push(chunk);
+                        }
+                    });
+                    return chunks.filter(s => s.trim());
+                }
+            },
+            {
+                id: 18,
+                name: '嵌入优先分块法',
+                nameEn: 'Embedding-First',
+                description: '先嵌入再按相似度合并',
+                scenario: '完全无结构的文档',
+                chunker: (text) => [
+                    'Similar Embedding Cluster 1',
+                    'Similar Embedding Cluster 2',
+                    'Similar Embedding Cluster 3'
+                ]
+            },
+            {
+                id: 19,
+                name: '基于大模型的分块法',
+                nameEn: 'LLM-Based',
+                description: 'LLM自主判断分割',
+                scenario: '结构不明确的复杂内容',
+                chunker: (text) => [
+                    'LLM Decision: Intro section',
+                    'LLM Decision: Technical details',
+                    'LLM Decision: Applications'
+                ]
+            },
+            {
+                id: 20,
+                name: '分层分块法',
+                nameEn: 'Hierarchical Multi-Level',
+                description: '多层次粒度分块',
+                scenario: '有清晰层次结构的文档',
+                chunker: (text) => [
+                    'L1: Chapter - AI',
+                    'L2: Section - ML',
+                    'L3: Subsection - DL',
+                    'L2: Section - NLP'
+                ]
+            },
+            {
+                id: 21,
+                name: '多模态分块法',
+                nameEn: 'Multimodal',
+                description: '针对不同媒体形式',
+                scenario: '包含多种媒体的文档',
+                chunker: (text) => [
+                    '[Text] AI introduction',
+                    '[Image] Neural network diagram',
+                    '[Table] Model comparison',
+                    '[Text] Conclusion'
+                ]
+            },
+            {
+                id: 22,
+                name: '混合分块法',
+                nameEn: 'Hybrid Chunking',
+                description: '融合多种技术',
+                scenario: '复杂数据结构',
+                chunker: (text) => [
+                    'Hybrid: Structure + Semantic',
+                    'Hybrid: LLM + Rules',
+                    'Hybrid: Multi-strategy combined'
+                ]
+            }
+        ];
+
+        let currentStrategyIndex = 0;
+
+        function renderStrategyList() {
+            const listElement = document.getElementById('strategyList');
+            listElement.innerHTML = strategies.map((strategy, index) => `
+                <button class="strategy-item ${index === 0 ? 'active' : ''}" onclick="selectStrategy(${index})">
+                    <span class="strategy-number">${strategy.id}</span>
+                    <div class="strategy-info">
+                        <div class="strategy-name">${strategy.name}</div>
+                        <div class="strategy-name-en">${strategy.nameEn}</div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function selectStrategy(index) {
+            currentStrategyIndex = index;
+            
+            // Update active state
+            document.querySelectorAll('.strategy-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            renderStrategyDetail();
+        }
+
+        function renderStrategyDetail() {
+            const strategy = strategies[currentStrategyIndex];
+            const chunks = strategy.chunker(sampleText);
+            
+            const detailElement = document.getElementById('strategyDetail');
+            detailElement.innerHTML = `
+                <div class="detail-header">
+                    <h2>
+                        <span class="badge">${strategy.id}</span>
+                        ${strategy.name}
+                    </h2>
+                    <p class="name-en">${strategy.nameEn}</p>
+                </div>
+
+                <div class="detail-info">
+                    <div class="info-card">
+                        <strong>📝 原理：</strong>
+                        <span>${strategy.description}</span>
+                    </div>
+                    <div class="info-card">
+                        <strong>🎯 适用场景：</strong>
+                        <span>${strategy.scenario}</span>
+                    </div>
+                </div>
+
+                <div class="visualization">
+                    <h3>分块效果展示</h3>
+                    <div class="sample-text">
+                        <h4>原始文本：</h4>
+                        <pre>${sampleText}</pre>
+                    </div>
+
+                    <div class="chunks-container">
+                        <h4>分块结果：</h4>
+                        <div class="chunks">
+                            ${chunks.map((chunk, index) => `
+                                <div class="chunk" style="animation-delay: ${index * 0.1}s">
+                                    <div class="chunk-header">
+                                        <span class="chunk-index">Chunk ${index + 1}</span>
+                                        <span class="chunk-length">${chunk.length} chars</span>
+                                    </div>
+                                    <div class="chunk-content">${chunk}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        renderStrategyList();
+        renderStrategyDetail();
+        document.getElementById('totalCount').textContent = strategies.length;
+    </script>
+</body>
+</html>

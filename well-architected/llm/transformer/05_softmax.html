@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Softmax归一化详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00838f;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #00838f;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #80deea;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #00838f;
+            font-weight: bold;
+            background: #e0f7fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* Softmax转换可视化 */
+        .softmax-transform {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .transform-stage {
+            text-align: center;
+        }
+        
+        .stage-label {
+            color: #00838f;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .value-box {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+        
+        .value-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .value-before {
+            color: #e53935;
+            font-weight: bold;
+        }
+        
+        .value-after {
+            color: #43a047;
+            font-weight: bold;
+        }
+        
+        .arrow-big {
+            font-size: 3em;
+            color: #00838f;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* 概率分布可视化 */
+        .probability-bars {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .bar-title {
+            color: #00838f;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            gap: 15px;
+        }
+        
+        .bar-label {
+            width: 80px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .bar-container {
+            flex: 1;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00acc1, #00838f);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            animation: barGrow 1.5s ease-out;
+        }
+        
+        @keyframes barGrow {
+            from { width: 0; }
+        }
+        
+        .bar-value {
+            width: 60px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            color: #00838f;
+            font-weight: bold;
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            border-left: 5px solid #00838f;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.4em;
+            color: #00838f;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 计算步骤 */
+        .calculation-demo {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .calc-header {
+            color: #f57c00;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .calc-step {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        .step-title {
+            color: #f57c00;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .step-detail {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 特性展示 */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .property-card {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 131, 143, 0.3);
+        }
+        
+        .property-icon {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .property-title {
+            color: #00838f;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .property-desc {
+            color: #555;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #00acc1, #00838f);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e0f7fa;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e8f5e9;
+            border-left: 5px solid #66bb6a;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .softmax-transform {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Softmax归一化详解</h1>
+        <p class="subtitle">将注意力分数转换为概率分布</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section">
+            <h2 class="section-title">一、什么是Softmax</h2>
+            <p class="content-text">
+                Softmax函数将<span class="highlight">任意实数</span>转换为<span class="highlight">概率分布</span>，
+                保证所有输出值在0到1之间，且总和为1。
+            </p>
+            
+            <div class="softmax-transform">
+                <div class="transform-stage">
+                    <div class="stage-label">原始分数</div>
+                    <div class="value-box">
+                        <div class="value-item value-before">[2.5, 1.8, 3.2, 0.9]</div>
+                    </div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        可以是任意值
+                    </div>
+                </div>
+                
+                <div class="arrow-big">→</div>
+                
+                <div class="transform-stage">
+                    <div class="stage-label">Softmax后</div>
+                    <div class="value-box">
+                        <div class="value-item value-after">[0.29, 0.14, 0.56, 0.06]</div>
+                    </div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        总和=1，表示概率
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 为什么需要Softmax</div>
+                <div class="tip-content">
+                    • <strong>归一化：</strong>将分数转为0-1之间的概率<br>
+                    • <strong>可解释性：</strong>概率更直观（"有56%的注意力在这个词上"）<br>
+                    • <strong>数值稳定：</strong>通过指数函数放大差异，强化重要信息<br>
+                    • <strong>梯度友好：</strong>求导简单，利于反向传播
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. Softmax公式 -->
+        <div class="section">
+            <h2 class="section-title">二、Softmax计算公式</h2>
+            
+            <div class="formula-box">
+                <div class="formula">Softmax(x_i) = exp(x_i) / Σ exp(x_j)</div>
+                <p style="color: #666; text-align: center; margin-top: 20px;">
+                    • x_i: 第i个分数<br>
+                    • exp(x_i): e的x_i次方<br>
+                    • Σ exp(x_j): 所有分数指数的总和
+                </p>
+            </div>
+            
+            <p class="content-text">
+                <strong>核心步骤：</strong><br>
+                1. 对每个分数取指数（exp）<br>
+                2. 计算所有指数值的和<br>
+                3. 每个指数值除以总和
+            </p>
+        </div>
+        
+        <!-- 3. 详细计算示例 -->
+        <div class="section">
+            <h2 class="section-title">三、完整计算示例</h2>
+            
+            <div class="calculation-demo">
+                <div class="calc-header">🧮 计算"我"对其他词的注意力权重</div>
+                
+                <div class="calc-step">
+                    <div class="step-title">输入：注意力分数</div>
+                    <div class="step-detail">
+                        原始分数 = [8.5, 3.2, 1.8, 2.1]<br>
+                        对应词：["我", "爱", "学习", "AI"]
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">第1步：计算exp(x)</div>
+                    <div class="step-detail">
+                        exp(8.5) = 4914.77<br>
+                        exp(3.2) = 24.53<br>
+                        exp(1.8) = 6.05<br>
+                        exp(2.1) = 8.17
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">第2步：计算总和Σ</div>
+                    <div class="step-detail">
+                        总和 = 4914.77 + 24.53 + 6.05 + 8.17<br>
+                        = <strong style="color: #f57c00;">4953.52</strong>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">第3步：归一化</div>
+                    <div class="step-detail">
+                        对"我": 4914.77 / 4953.52 = <strong style="color: #43a047;">0.992</strong><br>
+                        对"爱": 24.53 / 4953.52 = <strong style="color: #43a047;">0.005</strong><br>
+                        对"学习": 6.05 / 4953.52 = <strong style="color: #43a047;">0.001</strong><br>
+                        对"AI": 8.17 / 4953.52 = <strong style="color: #43a047;">0.002</strong>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-title">验证：总和=1</div>
+                    <div class="step-detail">
+                        0.992 + 0.005 + 0.001 + 0.002 = <strong style="color: #43a047;">1.000 ✓</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. 概率分布可视化 -->
+        <div class="section">
+            <h2 class="section-title">四、注意力权重分布</h2>
+            <p class="content-text">
+                Softmax后的结果表示每个词获得的<span class="highlight">注意力权重（概率）</span>：
+            </p>
+            
+            <div class="probability-bars">
+                <div class="bar-title">词"我"对其他词的注意力分配</div>
+                
+                <div class="bar-row">
+                    <div class="bar-label">我</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 99.2%;">99.2%</div>
+                    </div>
+                    <div class="bar-value">0.992</div>
+                </div>
+                
+                <div class="bar-row">
+                    <div class="bar-label">爱</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 5%; animation-delay: 0.2s;">0.5%</div>
+                    </div>
+                    <div class="bar-value">0.005</div>
+                </div>
+                
+                <div class="bar-row">
+                    <div class="bar-label">学习</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 1%; animation-delay: 0.4s;">0.1%</div>
+                    </div>
+                    <div class="bar-value">0.001</div>
+                </div>
+                
+                <div class="bar-row">
+                    <div class="bar-label">AI</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 2%; animation-delay: 0.6s;">0.2%</div>
+                    </div>
+                    <div class="bar-value">0.002</div>
+                </div>
+            </div>
+            
+            <p class="content-text" style="text-align: center; color: #00838f; font-weight: bold; margin-top: 20px;">
+                "我"这个词99.2%的注意力集中在自己身上
+            </p>
+        </div>
+        
+        <!-- 5. Softmax特性 -->
+        <div class="section">
+            <h2 class="section-title">五、Softmax的重要特性</h2>
+            
+            <div class="properties-grid">
+                <div class="property-card">
+                    <div class="property-icon">📏</div>
+                    <div class="property-title">归一化</div>
+                    <div class="property-desc">
+                        输出值范围[0,1]<br>
+                        所有输出总和=1<br>
+                        形成概率分布
+                    </div>
+                </div>
+                
+                <div class="property-card">
+                    <div class="property-icon">🔺</div>
+                    <div class="property-title">放大差异</div>
+                    <div class="property-desc">
+                        通过exp函数<br>
+                        大值变更大<br>
+                        小值变更小
+                    </div>
+                </div>
+                
+                <div class="property-card">
+                    <div class="property-icon">🎯</div>
+                    <div class="property-title">可微分</div>
+                    <div class="property-desc">
+                        导数计算简单<br>
+                        利于梯度反传<br>
+                        训练稳定
+                    </div>
+                </div>
+                
+                <div class="property-card">
+                    <div class="property-icon">🔄</div>
+                    <div class="property-title">单调性</div>
+                    <div class="property-desc">
+                        保持相对顺序<br>
+                        最大值仍最大<br>
+                        最小值仍最小
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 温度参数 -->
+        <div class="section">
+            <h2 class="section-title">六、温度参数调节</h2>
+            <p class="content-text">
+                Softmax可以引入<span class="highlight">温度参数T</span>来控制分布的"陡峭程度"：
+            </p>
+            
+            <div class="formula-box">
+                <div class="formula">Softmax(x_i, T) = exp(x_i/T) / Σ exp(x_j/T)</div>
+            </div>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>温度T</th>
+                        <th>效果</th>
+                        <th>分布特点</th>
+                        <th>应用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>T → 0</strong></td>
+                        <td>分布更陡峭</td>
+                        <td>接近one-hot<br>[0.99, 0.01, 0, 0]</td>
+                        <td>需要明确决策</td>
+                    </tr>
+                    <tr>
+                        <td><strong>T = 1</strong></td>
+                        <td>标准Softmax</td>
+                        <td>正常分布<br>[0.7, 0.2, 0.08, 0.02]</td>
+                        <td>常规使用</td>
+                    </tr>
+                    <tr>
+                        <td><strong>T → ∞</strong></td>
+                        <td>分布更平缓</td>
+                        <td>接近均匀<br>[0.25, 0.25, 0.25, 0.25]</td>
+                        <td>需要多样性</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 7. 掩码机制 -->
+        <div class="section">
+            <h2 class="section-title">七、掩码（Mask）处理</h2>
+            <p class="content-text">
+                在计算Softmax前，常需要<span class="highlight">屏蔽某些位置</span>（如padding、未来词）：
+            </p>
+            
+            <div class="tip-box">
+                <div class="tip-title">📌 掩码方法</div>
+                <div class="tip-content">
+                    <strong>实现：</strong>在Softmax前，将需要屏蔽的位置设为<span class="highlight">-∞</span><br>
+                    <br>
+                    <strong>效果：</strong>exp(-∞) = 0，Softmax后该位置权重为0<br>
+                    <br>
+                    <strong>应用：</strong><br>
+                    • Padding掩码：忽略填充的无效词<br>
+                    • 因果掩码：Decoder中防止看到未来词
+                </div>
+            </div>
+            
+            <div class="calculation-demo">
+                <div class="calc-header">掩码示例</div>
+                <div class="calc-step">
+                    <div class="step-title">原始分数</div>
+                    <div class="step-detail">[2.5, 1.8, 3.2, 0.9]</div>
+                </div>
+                <div class="calc-step">
+                    <div class="step-title">应用掩码（屏蔽后两个）</div>
+                    <div class="step-detail">[2.5, 1.8, -∞, -∞]</div>
+                </div>
+                <div class="calc-step">
+                    <div class="step-title">Softmax结果</div>
+                    <div class="step-detail">[0.67, 0.33, 0.00, 0.00]</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 8. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">八、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn.functional <span style="color: #82b1ff;">as</span> F
+
+<span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">compute_attention_weights</span>(scores, mask=<span style="color: #82b1ff;">None</span>):
+    <span style="color: #90a4ae;">"""
+    计算注意力权重
+    Args:
+        scores: 注意力分数, shape (batch, seq_len, seq_len)
+        mask: 掩码, shape (batch, 1, seq_len) 或 (batch, seq_len, seq_len)
+    Returns:
+        weights: 注意力权重（概率）, shape (batch, seq_len, seq_len)
+    """</span>
+    
+    <span style="color: #90a4ae;"># 如果有掩码，将需要屏蔽的位置设为-inf</span>
+    <span style="color: #82b1ff;">if</span> mask <span style="color: #82b1ff;">is not None</span>:
+        scores = scores.masked_fill(mask == 0, float(<span style="color: #aed581;">'-inf'</span>))
+    
+    <span style="color: #90a4ae;"># 应用Softmax（在最后一个维度上）</span>
+    weights = F.softmax(scores, dim=-1)
+    
+    <span style="color: #82b1ff;">return</span> weights
+
+<span style="color: #90a4ae;"># 使用示例</span>
+batch_size = 2
+seq_len = 4
+
+<span style="color: #90a4ae;"># 注意力分数</span>
+scores = torch.randn(batch_size, seq_len, seq_len)
+
+<span style="color: #90a4ae;"># 计算注意力权重</span>
+weights = compute_attention_weights(scores)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Scores shape: {scores.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Weights shape: {weights.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"权重范围: [{weights.min():.3f}, {weights.max():.3f}]"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"每行总和: {weights.sum(dim=-1)}"</span>)
+
+<span style="color: #90a4ae;"># 带掩码的示例</span>
+mask = torch.ones(batch_size, 1, seq_len)
+mask[:, :, 2:] = 0  <span style="color: #90a4ae;"># 屏蔽后两个位置</span>
+
+weights_masked = compute_attention_weights(scores, mask)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"\n带掩码的权重:\n{weights_masked[0]}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #e0f7fa, #b2ebf2); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #00838f; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ Softmax将注意力分数转换为概率分布，总和为1<br>
+                ✓ 通过exp函数放大差异，突出重要信息<br>
+                ✓ 输出可解释为"对每个词的注意力权重"<br>
+                ✓ 支持掩码机制，屏蔽无效或未来位置<br>
+                ✓ 温度参数可调节分布的陡峭程度
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 Softmax归一化详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

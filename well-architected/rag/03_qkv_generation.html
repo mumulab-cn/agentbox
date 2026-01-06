@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QKV矩阵生成详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #3f51b5;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #3f51b5;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #9fa8da;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #3f51b5;
+            font-weight: bold;
+            background: #e8eaf6;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* QKV转换可视化 */
+        .qkv-transform {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .transform-box {
+            text-align: center;
+        }
+        
+        .box-label {
+            color: #3f51b5;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .matrix-visual {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 40px);
+            gap: 5px;
+        }
+        
+        .matrix-cell {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #5c6bc0, #3f51b5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+            animation: cellPop 0.5s ease-out;
+        }
+        
+        @keyframes cellPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .matrix-cell.q { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+        .matrix-cell.k { background: linear-gradient(135deg, #66bb6a, #43a047); }
+        .matrix-cell.v { background: linear-gradient(135deg, #ffa726, #fb8c00); }
+        
+        .operator {
+            font-size: 3em;
+            color: #3f51b5;
+            font-weight: bold;
+        }
+        
+        .matrix-desc {
+            margin-top: 12px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        /* 权重矩阵展示 */
+        .weight-matrices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .weight-card {
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .weight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(63, 81, 181, 0.3);
+        }
+        
+        .weight-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .weight-title.q { color: #1e88e5; }
+        .weight-title.k { color: #43a047; }
+        .weight-title.v { color: #fb8c00; }
+        
+        .weight-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            border-left: 5px solid #3f51b5;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            color: #3f51b5;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 计算示例 */
+        .calculation-example {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .calc-title {
+            color: #f57c00;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .calc-step {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        .step-header {
+            color: #f57c00;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .step-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .matrix-calc {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .calc-matrix {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        
+        .calc-matrix.input { border-color: #5c6bc0; }
+        .calc-matrix.q { border-color: #1e88e5; }
+        .calc-matrix.k { border-color: #43a047; }
+        .calc-matrix.v { border-color: #fb8c00; }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #5c6bc0, #3f51b5);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e8eaf6;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e8f5e9;
+            border-left: 5px solid #66bb6a;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .qkv-transform {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 Query、Key、Value矩阵生成</h1>
+        <p class="subtitle">自注意力机制的核心：将输入转换为Q、K、V三个矩阵</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section">
+            <h2 class="section-title">一、什么是Q、K、V矩阵</h2>
+            <p class="content-text">
+                在自注意力机制中，每个输入向量需要转换成三个不同的表示：
+            </p>
+            
+            <ul style="color: #555; margin-left: 30px; line-height: 2.2; font-size: 1.05em;">
+                <li><span class="highlight">Query（查询）</span>：我要找什么信息？</li>
+                <li><span class="highlight">Key（键）</span>：我能提供什么信息？</li>
+                <li><span class="highlight">Value（值）</span>：我的内容是什么？</li>
+            </ul>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 形象类比：图书馆检索系统</div>
+                <div class="tip-content">
+                    • <strong>Query：</strong>读者的检索需求（"我想找关于AI的书"）<br>
+                    • <strong>Key：</strong>每本书的索引标签（"这本书是关于AI的"）<br>
+                    • <strong>Value：</strong>书的实际内容（书中的知识）<br>
+                    <br>
+                    通过对比Query和Key，找到匹配的书，然后获取Value（实际内容）
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 转换过程 -->
+        <div class="section">
+            <h2 class="section-title">二、从输入到Q、K、V的转换</h2>
+            <p class="content-text">
+                通过三个<span class="highlight">独立的权重矩阵</span>进行线性变换：
+            </p>
+            
+            <div class="qkv-transform">
+                <div class="transform-box">
+                    <div class="box-label">输入 X</div>
+                    <div class="matrix-visual">
+                        <div class="matrix-grid">
+                            <div class="matrix-cell">0.5</div>
+                            <div class="matrix-cell">-0.2</div>
+                            <div class="matrix-cell">0.8</div>
+                            <div class="matrix-cell">0.1</div>
+                            <div class="matrix-cell">-0.3</div>
+                            <div class="matrix-cell">0.6</div>
+                            <div class="matrix-cell">0.4</div>
+                            <div class="matrix-cell">0.2</div>
+                        </div>
+                        <div class="matrix-desc">输入向量<br>d_model=512</div>
+                    </div>
+                </div>
+                
+                <div class="operator">→</div>
+                
+                <div class="transform-box">
+                    <div class="box-label" style="color: #1e88e5;">Query (Q)</div>
+                    <div class="matrix-visual">
+                        <div class="matrix-grid">
+                            <div class="matrix-cell q">0.3</div>
+                            <div class="matrix-cell q">0.7</div>
+                            <div class="matrix-cell q">-0.1</div>
+                            <div class="matrix-cell q">0.5</div>
+                            <div class="matrix-cell q">0.2</div>
+                            <div class="matrix-cell q">-0.4</div>
+                            <div class="matrix-cell q">0.8</div>
+                            <div class="matrix-cell q">0.1</div>
+                        </div>
+                        <div class="matrix-desc">Q = X · W_Q<br>d_k=64</div>
+                    </div>
+                </div>
+                
+                <div class="transform-box">
+                    <div class="box-label" style="color: #43a047;">Key (K)</div>
+                    <div class="matrix-visual">
+                        <div class="matrix-grid">
+                            <div class="matrix-cell k">0.6</div>
+                            <div class="matrix-cell k">0.1</div>
+                            <div class="matrix-cell k">0.4</div>
+                            <div class="matrix-cell k">-0.2</div>
+                            <div class="matrix-cell k">0.7</div>
+                            <div class="matrix-cell k">0.3</div>
+                            <div class="matrix-cell k">-0.5</div>
+                            <div class="matrix-cell k">0.9</div>
+                        </div>
+                        <div class="matrix-desc">K = X · W_K<br>d_k=64</div>
+                    </div>
+                </div>
+                
+                <div class="transform-box">
+                    <div class="box-label" style="color: #fb8c00;">Value (V)</div>
+                    <div class="matrix-visual">
+                        <div class="matrix-grid">
+                            <div class="matrix-cell v">0.4</div>
+                            <div class="matrix-cell v">-0.3</div>
+                            <div class="matrix-cell v">0.9</div>
+                            <div class="matrix-cell v">0.2</div>
+                            <div class="matrix-cell v">0.5</div>
+                            <div class="matrix-cell v">0.7</div>
+                            <div class="matrix-cell v">-0.1</div>
+                            <div class="matrix-cell v">0.6</div>
+                        </div>
+                        <div class="matrix-desc">V = X · W_V<br>d_v=64</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-box">
+                <div class="formula">Q = X · W_Q</div>
+                <div class="formula">K = X · W_K</div>
+                <div class="formula">V = X · W_V</div>
+            </div>
+        </div>
+        
+        <!-- 3. 权重矩阵详解 -->
+        <div class="section">
+            <h2 class="section-title">三、三个权重矩阵的作用</h2>
+            
+            <div class="weight-matrices">
+                <div class="weight-card">
+                    <div class="weight-title q">W_Q（Query权重）</div>
+                    <div class="weight-info">
+                        <strong>形状：</strong>(d_model, d_k)<br>
+                        <strong>典型值：</strong>(512, 64)<br>
+                        <strong>作用：</strong>提取"查询特征"<br>
+                        <strong>参数量：</strong>32,768个<br>
+                        <br>
+                        学习如何从输入中提取"想要关注什么"的信息
+                    </div>
+                </div>
+                
+                <div class="weight-card">
+                    <div class="weight-title k">W_K（Key权重）</div>
+                    <div class="weight-info">
+                        <strong>形状：</strong>(d_model, d_k)<br>
+                        <strong>典型值：</strong>(512, 64)<br>
+                        <strong>作用：</strong>提取"索引特征"<br>
+                        <strong>参数量：</strong>32,768个<br>
+                        <br>
+                        学习如何从输入中提取"能被关注的特征"
+                    </div>
+                </div>
+                
+                <div class="weight-card">
+                    <div class="weight-title v">W_V（Value权重）</div>
+                    <div class="weight-info">
+                        <strong>形状：</strong>(d_model, d_v)<br>
+                        <strong>典型值：</strong>(512, 64)<br>
+                        <strong>作用：</strong>提取"内容特征"<br>
+                        <strong>参数量：</strong>32,768个<br>
+                        <br>
+                        学习如何从输入中提取"要传递的信息"
+                    </div>
+                </div>
+            </div>
+            
+            <p class="content-text" style="margin-top: 25px;">
+                <strong>关键点：</strong>这三个权重矩阵是<span class="highlight">独立可学习的参数</span>，
+                在训练过程中会自动学习到最优的转换方式。
+            </p>
+        </div>
+        
+        <!-- 4. 完整计算示例 -->
+        <div class="section">
+            <h2 class="section-title">四、完整计算示例</h2>
+            
+            <div class="calculation-example">
+                <div class="calc-title">📊 计算"爱"这个词的Q、K、V</div>
+                
+                <div class="calc-step">
+                    <div class="step-header">输入：词嵌入+位置编码</div>
+                    <div class="step-content">
+                        <div class="calc-matrix">
+                            <div style="color: #5c6bc0; font-weight: bold; margin-bottom: 8px;">X (1×4 简化维度):</div>
+                            <div>[0.5, -0.2, 0.8, 0.1]</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-header">第1步：计算Query</div>
+                    <div class="step-content">
+                        <div class="calc-matrix">
+                            <div style="color: #1e88e5; font-weight: bold; margin-bottom: 8px;">W_Q (4×4):</div>
+                            <div>[0.2, 0.3, 0.1, 0.4]</div>
+                            <div>[0.5, -0.1, 0.2, 0.3]</div>
+                            <div>[0.1, 0.4, 0.3, 0.2]</div>
+                            <div>[0.3, 0.2, 0.4, 0.1]</div>
+                        </div>
+                        <div style="margin: 15px 0; text-align: center; font-size: 1.2em; color: #555;">×</div>
+                        <div class="calc-matrix input">
+                            <div style="color: #5c6bc0; font-weight: bold; margin-bottom: 8px;">X:</div>
+                            <div>[0.5]</div>
+                            <div>[-0.2]</div>
+                            <div>[0.8]</div>
+                            <div>[0.1]</div>
+                        </div>
+                        <div style="margin: 15px 0; text-align: center; font-size: 1.2em; color: #555;">=</div>
+                        <div class="calc-matrix q">
+                            <div style="color: #1e88e5; font-weight: bold; margin-bottom: 8px;">Q:</div>
+                            <div>[0.27]</div>
+                            <div>[0.36]</div>
+                            <div>[0.29]</div>
+                            <div>[0.45]</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-header">第2步：计算Key</div>
+                    <div class="step-content">
+                        同样的方式，使用 W_K 权重矩阵进行计算：<br>
+                        <strong style="color: #43a047;">K = X · W_K = [0.18, 0.52, 0.31, 0.41]</strong>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <div class="step-header">第3步：计算Value</div>
+                    <div class="step-content">
+                        同样的方式，使用 W_V 权重矩阵进行计算：<br>
+                        <strong style="color: #fb8c00;">V = X · W_V = [0.35, 0.24, 0.48, 0.39]</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 维度分析 -->
+        <div class="section">
+            <h2 class="section-title">五、维度变化分析</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>阶段</th>
+                        <th>矩阵</th>
+                        <th>形状</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>输入</strong></td>
+                        <td>X</td>
+                        <td>(seq_len, d_model)</td>
+                        <td>例：(10, 512)</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>权重</strong></td>
+                        <td>W_Q</td>
+                        <td>(d_model, d_k)</td>
+                        <td>例：(512, 64)</td>
+                    </tr>
+                    <tr>
+                        <td>W_K</td>
+                        <td>(d_model, d_k)</td>
+                        <td>例：(512, 64)</td>
+                    </tr>
+                    <tr>
+                        <td>W_V</td>
+                        <td>(d_model, d_v)</td>
+                        <td>例：(512, 64)</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>输出</strong></td>
+                        <td>Q</td>
+                        <td>(seq_len, d_k)</td>
+                        <td>例：(10, 64)</td>
+                    </tr>
+                    <tr>
+                        <td>K</td>
+                        <td>(seq_len, d_k)</td>
+                        <td>例：(10, 64)</td>
+                    </tr>
+                    <tr>
+                        <td>V</td>
+                        <td>(seq_len, d_v)</td>
+                        <td>例：(10, 64)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="tip-box">
+                <div class="tip-title">📌 维度压缩的原因</div>
+                <div class="tip-content">
+                    原始维度512压缩到64（在8个头的情况下）：<br>
+                    • 减少计算量：64×64的矩阵乘法比512×512快很多<br>
+                    • 多头注意力：8个头 × 64维 = 512维，保持总维度不变<br>
+                    • 强制信息压缩：迫使模型学习最重要的特征
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 参数量计算 -->
+        <div class="section">
+            <h2 class="section-title">六、参数量计算</h2>
+            
+            <div class="formula-box">
+                <p style="color: #3f51b5; font-size: 1.2em; text-align: center; margin-bottom: 20px;">
+                    <strong>单头注意力参数量</strong>
+                </p>
+                <div class="formula">参数量 = 3 × (d_model × d_k)</div>
+                <div style="margin-top: 25px; color: #555; font-size: 1.05em; text-align: center;">
+                    <strong>标准配置计算：</strong><br>
+                    d_model = 512, d_k = 64<br>
+                    参数量 = 3 × (512 × 64) = <span class="highlight">98,304 个参数</span>
+                </div>
+            </div>
+            
+            <p class="content-text">
+                <strong>8头注意力：</strong>98,304 × 8 = <span class="highlight">786,432 个参数</span>（仅Q、K、V转换）
+            </p>
+        </div>
+        
+        <!-- 7. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">七、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> torch.nn <span style="color: #82b1ff;">as</span> nn
+
+<span style="color: #82b1ff;">class</span> <span style="color: #ffb74d;">QKVGeneration</span>(nn.Module):
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">__init__</span>(self, d_model=512, d_k=64, d_v=64):
+        super().__init__()
+        
+        <span style="color: #90a4ae;"># 定义三个线性变换层</span>
+        self.W_Q = nn.Linear(d_model, d_k, bias=<span style="color: #82b1ff;">False</span>)
+        self.W_K = nn.Linear(d_model, d_k, bias=<span style="color: #82b1ff;">False</span>)
+        self.W_V = nn.Linear(d_model, d_v, bias=<span style="color: #82b1ff;">False</span>)
+    
+    <span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">forward</span>(self, x):
+        <span style="color: #90a4ae;"># x shape: (batch_size, seq_len, d_model)</span>
+        
+        <span style="color: #90a4ae;"># 生成Q、K、V</span>
+        Q = self.W_Q(x)  <span style="color: #90a4ae;"># (batch, seq_len, d_k)</span>
+        K = self.W_K(x)  <span style="color: #90a4ae;"># (batch, seq_len, d_k)</span>
+        V = self.W_V(x)  <span style="color: #90a4ae;"># (batch, seq_len, d_v)</span>
+        
+        <span style="color: #82b1ff;">return</span> Q, K, V
+
+<span style="color: #90a4ae;"># 使用示例</span>
+batch_size = 32
+seq_len = 10
+d_model = 512
+d_k = d_v = 64
+
+<span style="color: #90a4ae;"># 输入：(batch, seq_len, d_model)</span>
+x = torch.randn(batch_size, seq_len, d_model)
+
+<span style="color: #90a4ae;"># 生成Q、K、V</span>
+qkv_layer = QKVGeneration(d_model, d_k, d_v)
+Q, K, V = qkv_layer(x)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"输入 X: {x.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Query: {Q.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Key:   {K.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Value: {V.shape}"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #e8eaf6, #c5cae9); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #3f51b5; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ Q、K、V通过三个独立的权重矩阵从输入X线性变换得到<br>
+                ✓ Query负责"查询"，Key负责"索引"，Value负责"内容"<br>
+                ✓ 维度从512压缩到64，减少计算量并强制特征提取<br>
+                ✓ 三个权重矩阵是可学习参数，训练中自动优化<br>
+                ✓ 这是自注意力机制的第一步，为后续计算注意力分数做准备
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 QKV矩阵生成详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注意力分数计算详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #c2185b;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #c2185b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f48fb1;
+        }
+        
+        .content-text {
+            color: #555;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #c2185b;
+            font-weight: bold;
+            background: #fce4ec;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* 矩阵乘法可视化 */
+        .matrix-multiplication {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .matrix-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .matrix-label {
+            color: #c2185b;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .matrix-grid {
+            display: grid;
+            gap: 5px;
+        }
+        
+        .matrix-grid.q {
+            grid-template-columns: repeat(3, 45px);
+        }
+        
+        .matrix-grid.k {
+            grid-template-columns: repeat(3, 45px);
+        }
+        
+        .matrix-grid.score {
+            grid-template-columns: repeat(3, 50px);
+        }
+        
+        .matrix-cell {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .matrix-cell.q {
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: white;
+        }
+        
+        .matrix-cell.k {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
+            color: white;
+        }
+        
+        .matrix-cell.score {
+            background: linear-gradient(135deg, #ec407a, #c2185b);
+            color: white;
+            animation: scoreAppear 0.8s ease-out;
+        }
+        
+        @keyframes scoreAppear {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .operator {
+            font-size: 2.5em;
+            color: #c2185b;
+            font-weight: bold;
+        }
+        
+        /* 注意力热力图 */
+        .attention-heatmap {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .heatmap-title {
+            color: #c2185b;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: auto repeat(4, 1fr);
+            gap: 5px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .heatmap-cell {
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .heatmap-cell.header {
+            background: linear-gradient(135deg, #ec407a, #c2185b);
+            color: white;
+        }
+        
+        .heatmap-cell.high {
+            background: #ffcdd2;
+            color: #c2185b;
+        }
+        
+        .heatmap-cell.medium {
+            background: #f8bbd0;
+            color: #880e4f;
+        }
+        
+        .heatmap-cell.low {
+            background: #fce4ec;
+            color: #ad1457;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(194, 24, 91, 0.3);
+        }
+        
+        /* 公式框 */
+        .formula-box {
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            border-left: 5px solid #c2185b;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .formula {
+            font-size: 1.4em;
+            color: #c2185b;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        /* 计算步骤 */
+        .calculation-steps {
+            background: #fff3e0;
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .calc-title {
+            color: #f57c00;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .calc-step {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #ff9800;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step-content {
+            display: inline-block;
+            vertical-align: top;
+            width: calc(100% - 50px);
+        }
+        
+        /* 缩放因子说明 */
+        .scaling-demo {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            padding: 25px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .scaling-box {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .scaling-label {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .scaling-value {
+            font-size: 2em;
+            color: #43a047;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #ec407a, #c2185b);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .comparison-table tr:hover {
+            background: #fce4ec;
+        }
+        
+        /* 提示框 */
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-title {
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .tip-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* 代码块 */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .matrix-multiplication {
+                flex-direction: column;
+            }
+            
+            .heatmap-grid {
+                grid-template-columns: auto repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 注意力分数计算详解</h1>
+        <p class="subtitle">Attention Score = Q × K^T / √d_k</p>
+        
+        <!-- 1. 基本概念 -->
+        <div class="section">
+            <h2 class="section-title">一、什么是注意力分数</h2>
+            <p class="content-text">
+                注意力分数（Attention Score）衡量<span class="highlight">每个词对其他词的关注程度</span>。
+                通过计算Query和Key的相似度，确定哪些词之间联系更紧密。
+            </p>
+            
+            <div class="tip-box">
+                <div class="tip-title">💡 直观理解</div>
+                <div class="tip-content">
+                    在句子"我爱学习AI"中：<br>
+                    • "爱"这个词应该更关注"我"（主语）和"学习"（宾语）<br>
+                    • "AI"应该更关注"学习"（因为学习的对象是AI）<br>
+                    <br>
+                    注意力分数就是用<strong>数值</strong>来表示这种关联强度
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 计算公式 -->
+        <div class="section">
+            <h2 class="section-title">二、注意力分数计算公式</h2>
+            
+            <div class="formula-box">
+                <div class="formula">Score = Q × K^T / √d_k</div>
+                <p style="color: #666; text-align: center; margin-top: 20px;">
+                    • Q: Query矩阵 (seq_len, d_k)<br>
+                    • K^T: Key矩阵的转置 (d_k, seq_len)<br>
+                    • d_k: Key向量的维度（通常是64）<br>
+                    • √d_k: 缩放因子，防止数值过大
+                </p>
+            </div>
+            
+            <p class="content-text">
+                <strong>核心思想：</strong>通过<span class="highlight">矩阵乘法</span>计算Query和Key的点积，得到相似度分数
+            </p>
+        </div>
+        
+        <!-- 3. 矩阵乘法过程 -->
+        <div class="section">
+            <h2 class="section-title">三、矩阵乘法可视化</h2>
+            <p class="content-text">
+                假设有3个词，每个词的Q和K向量维度为3（简化展示）：
+            </p>
+            
+            <div class="matrix-multiplication">
+                <div class="matrix-box">
+                    <div class="matrix-label">Query (Q)</div>
+                    <div class="matrix-grid q">
+                        <div class="matrix-cell q">0.5</div>
+                        <div class="matrix-cell q">0.3</div>
+                        <div class="matrix-cell q">0.8</div>
+                        
+                        <div class="matrix-cell q">0.2</div>
+                        <div class="matrix-cell q">0.7</div>
+                        <div class="matrix-cell q">0.4</div>
+                        
+                        <div class="matrix-cell q">0.6</div>
+                        <div class="matrix-cell q">0.1</div>
+                        <div class="matrix-cell q">0.9</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        (3词 × 3维)
+                    </div>
+                </div>
+                
+                <div class="operator">×</div>
+                
+                <div class="matrix-box">
+                    <div class="matrix-label">Key^T (K^T)</div>
+                    <div class="matrix-grid k">
+                        <div class="matrix-cell k">0.4</div>
+                        <div class="matrix-cell k">0.6</div>
+                        <div class="matrix-cell k">0.2</div>
+                        
+                        <div class="matrix-cell k">0.8</div>
+                        <div class="matrix-cell k">0.3</div>
+                        <div class="matrix-cell k">0.5</div>
+                        
+                        <div class="matrix-cell k">0.7</div>
+                        <div class="matrix-cell k">0.9</div>
+                        <div class="matrix-cell k">0.1</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        (3维 × 3词)
+                    </div>
+                </div>
+                
+                <div class="operator">=</div>
+                
+                <div class="matrix-box">
+                    <div class="matrix-label">Attention Score</div>
+                    <div class="matrix-grid score">
+                        <div class="matrix-cell score">0.98</div>
+                        <div class="matrix-cell score">0.82</div>
+                        <div class="matrix-cell score">0.65</div>
+                        
+                        <div class="matrix-cell score">0.74</div>
+                        <div class="matrix-cell score">1.15</div>
+                        <div class="matrix-cell score">0.53</div>
+                        
+                        <div class="matrix-cell score">0.91</div>
+                        <div class="matrix-cell score">1.05</div>
+                        <div class="matrix-cell score">0.36</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        (3词 × 3词)
+                    </div>
+                </div>
+            </div>
+            
+            <p class="content-text" style="text-align: center; color: #c2185b; font-weight: bold;">
+                结果矩阵[i][j]表示：第i个词对第j个词的注意力分数
+            </p>
+        </div>
+        
+        <!-- 4. 详细计算示例 -->
+        <div class="section">
+            <h2 class="section-title">四、完整计算示例</h2>
+            
+            <div class="calculation-steps">
+                <div class="calc-title">🧮 计算"我"对"爱"的注意力分数</div>
+                
+                <div class="calc-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <strong>准备Query和Key向量</strong><br>
+                        Q(我) = [0.5, 0.3, 0.8]<br>
+                        K(爱) = [0.8, 0.3, 0.5]
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <strong>计算点积</strong><br>
+                        点积 = 0.5×0.8 + 0.3×0.3 + 0.8×0.5<br>
+                        = 0.4 + 0.09 + 0.4<br>
+                        = <strong style="color: #f57c00;">0.89</strong>
+                    </div>
+                </div>
+                
+                <div class="calc-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <strong>除以缩放因子</strong><br>
+                        d_k = 3（向量维度）<br>
+                        √d_k = √3 ≈ 1.732<br>
+                        缩放后分数 = 0.89 / 1.732<br>
+                        = <strong style="color: #f57c00;">0.514</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 缩放因子的作用 -->
+        <div class="section">
+            <h2 class="section-title">五、为什么要除以√d_k</h2>
+            <p class="content-text">
+                缩放因子<span class="highlight">√d_k</span>的作用是防止点积结果过大，导致梯度消失。
+            </p>
+            
+            <div class="scaling-demo">
+                <div class="scaling-box">
+                    <div class="scaling-label">不使用缩放</div>
+                    <div class="scaling-value">128.5</div>
+                    <div style="color: #666; font-size: 0.9em;">
+                        当d_k=512时<br>
+                        点积可能很大<br>
+                        Softmax梯度趋近0
+                    </div>
+                </div>
+                
+                <div class="scaling-box">
+                    <div class="scaling-label">使用缩放</div>
+                    <div class="scaling-value">5.68</div>
+                    <div style="color: #666; font-size: 0.9em;">
+                        除以√512≈22.6<br>
+                        结果在合理范围<br>
+                        梯度稳定
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <div class="tip-title">📌 技术细节</div>
+                <div class="tip-content">
+                    当d_k较大时（如512），两个随机向量的点积的方差约为d_k。<br>
+                    除以√d_k后，方差变为1，使数值保持在合理范围，<br>
+                    避免Softmax函数输出过于极端（接近0或1），保证梯度有效传播。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. 注意力矩阵解读 -->
+        <div class="section">
+            <h2 class="section-title">六、注意力分数矩阵解读</h2>
+            <p class="content-text">
+                对于句子"我 爱 学习 AI"，注意力分数矩阵如下：
+            </p>
+            
+            <div class="attention-heatmap">
+                <div class="heatmap-title">注意力分数矩阵（缩放前）</div>
+                <div class="heatmap-grid">
+                    <div class="heatmap-cell"></div>
+                    <div class="heatmap-cell header">我</div>
+                    <div class="heatmap-cell header">爱</div>
+                    <div class="heatmap-cell header">学习</div>
+                    <div class="heatmap-cell header">AI</div>
+                    
+                    <div class="heatmap-cell header">我</div>
+                    <div class="heatmap-cell high">8.5</div>
+                    <div class="heatmap-cell medium">3.2</div>
+                    <div class="heatmap-cell low">1.8</div>
+                    <div class="heatmap-cell low">2.1</div>
+                    
+                    <div class="heatmap-cell header">爱</div>
+                    <div class="heatmap-cell medium">4.1</div>
+                    <div class="heatmap-cell high">7.8</div>
+                    <div class="heatmap-cell high">6.5</div>
+                    <div class="heatmap-cell medium">3.7</div>
+                    
+                    <div class="heatmap-cell header">学习</div>
+                    <div class="heatmap-cell low">2.3</div>
+                    <div class="heatmap-cell high">5.9</div>
+                    <div class="heatmap-cell high">9.2</div>
+                    <div class="heatmap-cell high">7.4</div>
+                    
+                    <div class="heatmap-cell header">AI</div>
+                    <div class="heatmap-cell low">1.9</div>
+                    <div class="heatmap-cell medium">3.8</div>
+                    <div class="heatmap-cell high">6.8</div>
+                    <div class="heatmap-cell high">8.6</div>
+                </div>
+                <p style="color: #666; text-align: center; margin-top: 15px;">
+                    颜色越深表示注意力越强
+                </p>
+            </div>
+            
+            <p class="content-text">
+                <strong>解读：</strong><br>
+                • 对角线分数高：每个词对自己的注意力最强<br>
+                • "爱"对"学习"分数高：动词关注宾语<br>
+                • "学习"对"AI"分数高：动作指向目标
+            </p>
+        </div>
+        
+        <!-- 7. 维度分析 -->
+        <div class="section">
+            <h2 class="section-title">七、维度变化分析</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>矩阵</th>
+                        <th>形状</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Query (Q)</strong></td>
+                        <td>(seq_len, d_k)</td>
+                        <td>例：(10, 64) - 10个词，每个64维</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Key (K)</strong></td>
+                        <td>(seq_len, d_k)</td>
+                        <td>例：(10, 64)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>K^T（转置）</strong></td>
+                        <td>(d_k, seq_len)</td>
+                        <td>例：(64, 10)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q × K^T</strong></td>
+                        <td>(seq_len, seq_len)</td>
+                        <td>例：(10, 10) - 每个词对每个词的分数</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Score（缩放后）</strong></td>
+                        <td>(seq_len, seq_len)</td>
+                        <td>例：(10, 10) - 最终注意力分数矩阵</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 8. 代码实现 -->
+        <div class="section">
+            <h2 class="section-title">八、PyTorch代码实现</h2>
+            
+            <div class="code-block">
+<span style="color: #82b1ff;">import</span> torch
+<span style="color: #82b1ff;">import</span> math
+
+<span style="color: #82b1ff;">def</span> <span style="color: #ffb74d;">compute_attention_scores</span>(Q, K):
+    <span style="color: #90a4ae;">"""
+    计算注意力分数
+    Args:
+        Q: Query矩阵, shape (batch, seq_len, d_k)
+        K: Key矩阵, shape (batch, seq_len, d_k)
+    Returns:
+        scores: 注意力分数, shape (batch, seq_len, seq_len)
+    """</span>
+    
+    <span style="color: #90a4ae;"># 获取维度</span>
+    d_k = Q.size(-1)
+    
+    <span style="color: #90a4ae;"># 计算 Q × K^T</span>
+    scores = torch.matmul(Q, K.transpose(-2, -1))
+    
+    <span style="color: #90a4ae;"># 除以缩放因子</span>
+    scores = scores / math.sqrt(d_k)
+    
+    <span style="color: #82b1ff;">return</span> scores
+
+<span style="color: #90a4ae;"># 使用示例</span>
+batch_size = 2
+seq_len = 10
+d_k = 64
+
+<span style="color: #90a4ae;"># 生成随机Q和K</span>
+Q = torch.randn(batch_size, seq_len, d_k)
+K = torch.randn(batch_size, seq_len, d_k)
+
+<span style="color: #90a4ae;"># 计算注意力分数</span>
+attention_scores = compute_attention_scores(Q, K)
+
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Q shape: {Q.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"K shape: {K.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"Attention Scores shape: {attention_scores.shape}"</span>)
+<span style="color: #82b1ff;">print</span>(<span style="color: #aed581;">f"分数范围: [{attention_scores.min():.2f}, {attention_scores.max():.2f}]"</span>)
+            </div>
+        </div>
+        
+        <!-- 总结 -->
+        <div style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h3 style="color: #c2185b; text-align: center; margin-bottom: 20px; font-size: 1.5em;">
+                ✨ 核心要点总结
+            </h3>
+            <div style="color: #555; line-height: 2; font-size: 1.05em;">
+                ✓ 注意力分数通过Q和K^T的矩阵乘法计算，衡量词间相似度<br>
+                ✓ 缩放因子√d_k防止数值过大，保持梯度稳定<br>
+                ✓ 输出是(seq_len × seq_len)的分数矩阵，每个位置表示两词关联度<br>
+                ✓ 分数越高表示两个词之间的关联越强<br>
+                ✓ 这是自注意力机制的第二步，为Softmax归一化做准备
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9em;">
+            <p>© 2025 注意力分数计算详解 - Transformer系列教程</p>
+        </div>
+    </div>
+</body>
+</html>

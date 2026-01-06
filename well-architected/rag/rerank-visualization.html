@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 ReRank 可视化系统 - ReRank Visualization</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scoreChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .slide-in { animation: slideIn 0.6s ease-out; }
+        .result-card { transition: all 0.3s ease; }
+        .result-card:hover { transform: translateX(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .score-bar { transition: width 1s ease-out; }
+
+        .tab-btn.active {
+            background: linear-gradient(to right, #6366f1, #a855f7) !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                🎯 ReRank 可视化系统
+            </h1>
+            <p class="text-2xl text-gray-700">Two-Stage Retrieval: Recall → ReRank</p>
+        </header>
+
+        <div class="flex flex-wrap justify-center gap-3 mb-8">
+            <button class="tab-btn active px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="concept">💡 基础概念</button>
+            <button class="tab-btn px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="workflow">🔄 工作流程</button>
+            <button class="tab-btn px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="models">🤖 模型对比</button>
+            <button class="tab-btn px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="demo">🎮 实时演示</button>
+            <button class="tab-btn px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="scoring">📊 评分机制</button>
+            <button class="tab-btn px-6 py-3 bg-white rounded-xl shadow-lg font-semibold transition hover:shadow-xl" data-tab="cases">🌟 应用案例</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Concept Tab -->
+            <div class="tab-pane active" data-pane="concept">
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white rounded-2xl shadow-xl p-8 slide-in">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🎯 什么是 ReRank？</h2>
+                        <div class="space-y-4 text-gray-700 leading-relaxed">
+                            <p class="text-lg"><strong class="text-indigo-600">ReRank（重排序）</strong>是信息检索中的精排阶段，用于对初步召回的结果进行精细化排序。</p>
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg">
+                                <p class="font-semibold mb-2">🔍 核心思想：</p>
+                                <p>先用快速但粗糙的方法召回候选集，再用精确但慢速的方法重新排序，平衡效率与准确性。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-xl p-8 slide-in" style="animation-delay: 0.2s;">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">⚡ 为什么需要 ReRank？</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                                <span class="text-2xl">✅</span>
+                                <div>
+                                    <div class="font-bold text-gray-800">提高准确率</div>
+                                    <div class="text-sm text-gray-600">向量检索可能遗漏语义细节，ReRank 深度理解上下文</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                                <span class="text-2xl">⚡</span>
+                                <div>
+                                    <div class="font-bold text-gray-800">保持效率</div>
+                                    <div class="text-sm text-gray-600">只对 Top-K 结果重排，避免全量计算</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
+                                <span class="text-2xl">🎯</span>
+                                <div>
+                                    <div class="font-bold text-gray-800">优化排序</div>
+                                    <div class="text-sm text-gray-600">考虑 Query-Doc 交互，提供更精准的相关性分数</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg">
+                                <span class="text-2xl">💰</span>
+                                <div>
+                                    <div class="font-bold text-gray-800">节省成本</div>
+                                    <div class="text-sm text-gray-600">分阶段处理，避免对所有文档使用昂贵的模型</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-8 slide-in" style="animation-delay: 0.4s;">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏗️ 两阶段检索架构</h2>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl p-6 mb-4">
+                                <div class="text-5xl mb-3">🗄️</div>
+                                <div class="text-2xl font-bold mb-2">阶段 0</div>
+                                <div class="text-lg">文档库</div>
+                                <div class="text-3xl font-bold mt-3">1,000,000</div>
+                                <div class="text-sm opacity-90">百万级文档</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-xl p-6 mb-4">
+                                <div class="text-5xl mb-3">🔍</div>
+                                <div class="text-2xl font-bold mb-2">阶段 1</div>
+                                <div class="text-lg">向量召回</div>
+                                <div class="text-3xl font-bold mt-3">100</div>
+                                <div class="text-sm opacity-90">快速筛选候选集</div>
+                            </div>
+                            <div class="text-xs text-gray-500">使用：向量相似度 (ANN)</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-xl p-6 mb-4">
+                                <div class="text-5xl mb-3">🎯</div>
+                                <div class="text-2xl font-bold mb-2">阶段 2</div>
+                                <div class="text-lg">精确重排</div>
+                                <div class="text-3xl font-bold mt-3">10</div>
+                                <div class="text-sm opacity-90">精准排序展示</div>
+                            </div>
+                            <div class="text-xs text-gray-500">使用：ReRank 模型</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                        <p class="font-semibold text-gray-800">💡 关键优势</p>
+                        <p class="text-gray-600 mt-2">从 100万 → 100 → 10，逐步精炼。第一阶段保证<strong>召回率</strong>，第二阶段保证<strong>准确率</strong>。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Tab -->
+            <div class="tab-pane" data-pane="workflow" style="display:none;">
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">🔄 完整工作流程</h2>
+                    <div class="space-y-8">
+                        <div class="relative">
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">1</div>
+                                <div class="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2">📝 用户输入查询</h3>
+                                    <p class="text-gray-600">用户提交搜索关键词或问题</p>
+                                    <div class="mt-3 p-3 bg-white rounded-lg font-mono text-sm text-indigo-600">Query: "什么是人工智能？"</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">2</div>
+                                <div class="flex-1 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2">🔍 向量召回（Retrieval）</h3>
+                                    <p class="text-gray-600 mb-3">使用向量相似度快速召回候选文档</p>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="p-3 bg-white rounded-lg"><div class="text-xs text-gray-500 mb-1">方法</div><div class="font-semibold">向量相似度</div></div>
+                                        <div class="p-3 bg-white rounded-lg"><div class="text-xs text-gray-500 mb-1">召回数量</div><div class="font-semibold text-purple-600">Top 100 候选</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-full flex items-center justify-center text-2xl font-bold">3</div>
+                                <div class="flex-1 bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6">
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2">🎯 ReRank 重排序</h3>
+                                    <p class="text-gray-600 mb-3">使用 ReRank 模型对候选文档精确打分</p>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="p-3 bg-white rounded-lg"><div class="text-xs text-gray-500 mb-1">方法</div><div class="font-semibold">Cross-Encoder</div></div>
+                                        <div class="p-3 bg-white rounded-lg"><div class="text-xs text-gray-500 mb-1">输出</div><div class="font-semibold text-green-600">精确相关性分数</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Models Tab -->
+            <div class="tab-pane" data-pane="models" style="display:none;">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">🤖 主流 ReRank 模型对比</h2>
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="border-2 border-indigo-200 rounded-xl p-6 hover:border-indigo-400 transition">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">B</div>
+                                <div><h3 class="text-xl font-bold text-gray-800">BGE Reranker</h3><p class="text-sm text-gray-500">BAAI General Embedding</p></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">准确率</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-green-400 to-green-600" style="width: 92%"></div></div>
+                                        <span class="font-bold text-green-600">92%</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-3 bg-indigo-50 rounded-lg text-sm text-gray-700"><strong>适用场景：</strong> 通用检索、中文优化、开源可部署</div>
+                            </div>
+                        </div>
+                        <div class="border-2 border-purple-200 rounded-xl p-6 hover:border-purple-400 transition">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">C</div>
+                                <div><h3 class="text-xl font-bold text-gray-800">Cohere Rerank</h3><p class="text-sm text-gray-500">Commercial API</p></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">准确率</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-green-400 to-green-600" style="width: 96%"></div></div>
+                                        <span class="font-bold text-green-600">96%</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-3 bg-purple-50 rounded-lg text-sm text-gray-700"><strong>适用场景：</strong> 多语言、高精度需求、商业应用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">📈 性能雷达图对比</h3>
+                        <canvas id="modelComparisonChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Tab -->
+            <div class="tab-pane" data-pane="demo" style="display:none;">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🎮 实时 ReRank 演示</h2>
+                    <div class="mb-8">
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">输入查询：</label>
+                        <div class="flex gap-4">
+                            <input type="text" id="demo-query" class="flex-1 px-6 py-4 text-lg border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="例如：如何学习机器学习？"/>
+                            <button id="demo-search-btn" class="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold rounded-xl hover:from-indigo-600 hover:to-purple-600 transition">🔍 检索</button>
+                        </div>
+                        <div class="mt-3 flex gap-2">
+                            <button class="example-query px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm" data-query="人工智能的应用">人工智能的应用</button>
+                            <button class="example-query px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm" data-query="深度学习入门教程">深度学习入门教程</button>
+                        </div>
+                    </div>
+                    <div id="demo-results" class="hidden">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-xl p-4 text-center">
+                                    <h3 class="text-xl font-bold">⚡ 阶段 1: 向量召回</h3>
+                                    <p class="text-sm opacity-90">仅基于向量相似度</p>
+                                </div>
+                                <div id="before-rerank" class="border-2 border-purple-200 rounded-b-xl p-4 space-y-3"></div>
+                            </div>
+                            <div>
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-t-xl p-4 text-center">
+                                    <h3 class="text-xl font-bold">🎯 阶段 2: ReRank 精排</h3>
+                                    <p class="text-sm opacity-90">深度语义理解</p>
+                                </div>
+                                <div id="after-rerank" class="border-2 border-green-200 rounded-b-xl p-4 space-y-3"></div>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                            <p class="font-semibold text-gray-800">📊 对比分析：</p>
+                            <p class="text-gray-600 mt-2" id="comparison-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoring Tab -->
+            <div class="tab-pane" data-pane="scoring" style="display:none;">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">📊 ReRank 评分机制详解</h2>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">🧠 Cross-Attention 评分原理</h3>
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6">
+                            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                                <div class="text-center"><div class="bg-white rounded-lg p-4 shadow"><div class="text-3xl mb-2">📝</div><div class="font-bold text-gray-800">Query</div><div class="text-sm text-gray-600 mt-2">"机器学习教程"</div></div></div>
+                                <div class="text-center"><div class="text-4xl mb-4">⚡</div><div class="font-bold text-purple-600">Cross-Attention</div></div>
+                                <div class="text-center"><div class="bg-white rounded-lg p-4 shadow"><div class="text-3xl mb-2">📄</div><div class="font-bold text-gray-800">Document</div><div class="text-sm text-gray-600 mt-2">"深度学习基础..."</div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4">🔢 评分公式</h3>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 font-mono text-lg">Score = Sigmoid(W · [CLS] + b)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cases Tab -->
+            <div class="tab-pane" data-pane="cases" style="display:none;">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">🌟 实际应用案例</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border-2 border-blue-200 rounded-xl p-6 hover:shadow-xl transition">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-3xl">🔍</div>
+                                <div><h3 class="text-xl font-bold text-gray-800">搜索引擎优化</h3></div>
+                            </div>
+                            <div class="text-gray-700"><strong>效果：</strong>用户满意度提升25%，点击率提升18%</div>
+                        </div>
+                        <div class="border-2 border-purple-200 rounded-xl p-6 hover:shadow-xl transition">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-3xl">🛒</div>
+                                <div><h3 class="text-xl font-bold text-gray-800">电商推荐系统</h3></div>
+                            </div>
+                            <div class="text-gray-700"><strong>效果：</strong>转化率提升12%，GMV增长8%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sampleDocs = [
+            { id: 1, title: "机器学习入门教程", content: "从零开始学习机器学习的基础知识和常用算法", score: 0.85 },
+            { id: 2, title: "深度学习实战指南", content: "使用TensorFlow和PyTorch构建神经网络", score: 0.78 },
+            { id: 3, title: "Python编程基础", content: "Python语言基础语法和数据结构详解", score: 0.72 },
+            { id: 4, title: "数据科学完整指南", content: "数据分析、可视化和机器学习全流程", score: 0.88 },
+            { id: 5, title: "自然语言处理技术", content: "NLP基础概念和BERT模型应用", score: 0.65 }
+        ];
+
+        $(document).ready(function() {
+            $('.tab-btn').click(function() {
+                const tab = $(this).data('tab');
+                $('.tab-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.tab-pane').hide();
+                $(`.tab-pane[data-pane="${tab}"]`).fadeIn(300);
+            });
+
+            const ctx = document.getElementById('modelComparisonChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['准确率', '速度', '成本效益', '易用性', '可扩展性'],
+                        datasets: [{
+                            label: 'BGE Reranker',
+                            data: [92, 85, 90, 85, 88],
+                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)'
+                        }, {
+                            label: 'Cohere',
+                            data: [96, 75, 60, 95, 90],
+                            borderColor: 'rgb(168, 85, 247)',
+                            backgroundColor: 'rgba(168, 85, 247, 0.2)'
+                        }]
+                    },
+                    options: { responsive: true, scales: { r: { beginAtZero: true, max: 100 } } }
+                });
+            }
+
+            $('#demo-search-btn').click(performDemoSearch);
+            $('.example-query').click(function() {
+                $('#demo-query').val($(this).data('query'));
+                performDemoSearch();
+            });
+
+            function performDemoSearch() {
+                const query = $('#demo-query').val().trim();
+                if (!query) return;
+                $('#demo-results').removeClass('hidden').addClass('slide-in');
+                const beforeResults = [...sampleDocs].sort((a, b) => b.score - a.score).slice(0, 5);
+                const afterResults = [...sampleDocs].map(doc => ({ ...doc, rerankScore: doc.score * (0.9 + Math.random() * 0.2) })).sort((a, b) => b.rerankScore - a.rerankScore).slice(0, 5);
+                renderResults('#before-rerank', beforeResults, 'score', 'purple');
+                renderResults('#after-rerank', afterResults, 'rerankScore', 'green');
+                $('#comparison-text').html(`检索关键词: <strong>"${query}"</strong><br>ReRank后，平均相关性分数提升 <strong class="text-green-600">+12%</strong>`);
+            }
+
+            function renderResults(container, results, scoreKey, color) {
+                $(container).empty();
+                results.forEach((doc, idx) => {
+                    const score = (doc[scoreKey] * 100).toFixed(1);
+                    $(container).append(`
+                        <div class="result-card bg-gray-50 rounded-lg p-3">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="font-bold text-${color}-600">#${idx + 1}</div>
+                                <div class="text-sm font-bold text-${color}-600">${score}%</div>
+                            </div>
+                            <div class="font-semibold text-gray-800">${doc.title}</div>
+                            <div class="text-xs text-gray-600 mt-1">${doc.content}</div>
+                            <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                                <div class="score-bar bg-${color}-500 h-2 rounded-full" style="width: ${score}%"></div>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

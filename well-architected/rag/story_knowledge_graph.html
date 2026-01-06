@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>故事知识图谱 - 向量相似度可视化</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; color: #333; overflow: hidden; }
+        .container { width: 100vw; height: 100vh; position: relative; }
+        .controls { position: absolute; top: 20px; left: 20px; z-index: 100; background: rgba(255,255,255,0.95); padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px; }
+        .controls h2 { margin-bottom: 15px; color: #2196F3; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-box input { padding: 10px; border: 2px solid #ddd; border-radius: 5px; background: white; color: #333; width: 300px; }
+        .search-box button { padding: 10px 20px; background: #2196F3; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
+        .search-box button:hover { background: #1976D2; }
+        .top-n { margin-bottom: 10px; }
+        .top-n label { display: block; margin-bottom: 5px; }
+        .top-n input { width: 100px; padding: 5px; border: 2px solid #ddd; border-radius: 3px; background: white; color: #333; }
+        .results { max-height: 200px; overflow-y: auto; }
+        .result-item { background: rgba(33, 150, 243, 0.1); padding: 8px; margin: 5px 0; border-radius: 5px; font-size: 14px; border-left: 3px solid #2196F3; }
+        #canvas { display: block; background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%); }
+        .legend { position: absolute; bottom: 20px; right: 20px; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .vector-table { position: absolute; top: 20px; left: 390px; z-index: 100; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 600px; max-height: 80vh; overflow-y: auto; cursor: move; }
+        .vector-table h3 { margin-bottom: 10px; color: #2196F3; display: flex; justify-content: space-between; align-items: center; }
+        .vector-table table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .vector-table th, .vector-table td { padding: 4px; border: 1px solid #ddd; text-align: center; }
+        .vector-table th { background: #f5f5f5; font-weight: bold; }
+        .vector-table .story-name { text-align: left; font-weight: bold; min-width: 40px; max-width: 80px; }
+        .vector-table .matched { background: rgba(76, 175, 80, 0.1); }
+        .vector-table .query-row { background: rgba(255, 87, 34, 0.1); }
+        .collapse-btn { background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .collapsed { height: 40px; overflow: hidden; }
+        .collapsed table { display: none; }
+        #canvas { cursor: grab; }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; }
+        .legend-color { width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h2>🔍 故事向量搜索</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="输入关键词搜索相似故事..." value="爱情">
+                <button onclick="searchStories()">搜索</button>
+            </div>
+            <div class="top-n">
+                <label>显示TOP N个相似故事:</label>
+                <input type="number" id="topN" value="5" min="1" max="10" onchange="searchStories()">
+            </div>
+            <div class="results" id="results"></div>
+        </div>
+        
+        <canvas id="canvas"></canvas>
+        
+        <div class="vector-table">
+            <h3>📊 向量数据表 <button class="collapse-btn" onclick="toggleTable()">折叠</button></h3>
+            <div id="vectorTable"></div>
+        </div>
+        
+        <div class="legend">
+            <h3>图例</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2196F3;"></div>
+                <span>普通故事</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50;"></div>
+                <span>匹配故事</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF5722;"></div>
+                <span>查询点</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stories = [
+            { name: "白雪公主", keywords: ["公主", "魔镜", "七个小矮人", "毒苹果", "善良", "美丽"] },
+            { name: "灰姑娘", keywords: ["舞会", "水晶鞋", "南瓜马车", "仙女", "王子", "爱情"] },
+            { name: "睡美人", keywords: ["诅咒", "纺锤", "沉睡", "王子", "吻", "爱情"] },
+            { name: "小红帽", keywords: ["森林", "狼", "奶奶", "猎人", "危险", "勇敢"] },
+            { name: "三只小猪", keywords: ["房子", "狼", "智慧", "勤劳", "安全", "兄弟"] },
+            { name: "丑小鸭", keywords: ["天鹅", "成长", "自信", "美丽", "蜕变", "坚持"] },
+            { name: "小美人鱼", keywords: ["海洋", "王子", "声音", "爱情", "牺牲", "勇敢"] },
+            { name: "长发公主", keywords: ["塔楼", "长发", "王子", "巫婆", "自由", "爱情"] },
+            { name: "青蛙王子", keywords: ["青蛙", "公主", "诺言", "变身", "诚信", "爱情"] },
+            { name: "拇指姑娘", keywords: ["花朵", "小人", "旅行", "坚强", "善良", "成长"] },
+            { name: "卖火柴的小女孩", keywords: ["寒冷", "火柴", "幻想", "温暖", "同情", "希望"] },
+            { name: "皇帝的新装", keywords: ["皇帝", "骗子", "虚荣", "真相", "勇敢", "诚实"] },
+            { name: "豌豆公主", keywords: ["豌豆", "床垫", "敏感", "真实", "考验", "高贵"] },
+            { name: "糖果屋", keywords: ["森林", "巫婆", "糖果", "兄妹", "智慧", "勇敢"] },
+            { name: "阿拉丁", keywords: ["神灯", "精灵", "愿望", "公主", "冒险", "爱情"] },
+            { name: "美女与野兽", keywords: ["野兽", "美女", "诅咒", "内在美", "爱情", "宽容"] },
+            { name: "小王子", keywords: ["星球", "玫瑰", "狐狸", "友谊", "纯真", "成长"] },
+            { name: "匹诺曹", keywords: ["木偶", "说谎", "鼻子", "诚实", "成长", "父爱"] },
+            { name: "杰克与豌豆", keywords: ["豌豆", "巨人", "城堡", "勇敢", "冒险", "智慧"] },
+            { name: "金发女孩", keywords: ["三只熊", "房子", "好奇", "教训", "尊重", "礼貌"] },
+            { name: "静夜思", keywords: ["月光", "思乡", "孤独", "温暖", "希望"] },
+            { name: "春晓", keywords: ["春天", "美丽", "自然", "温暖", "希望"] },
+            { name: "登鹳雀楼", keywords: ["高远", "智慧", "成长", "美丽", "希望"] },
+            { name: "相思", keywords: ["爱情", "思念", "美丽", "温暖"] },
+            { name: "咏鹅", keywords: ["自然", "美丽", "纯真", "温暖"] },
+            { name: "悯农", keywords: ["勤劳", "善良", "温暖", "希望"] },
+            { name: "古朗月行", keywords: ["月光", "纯真", "美丽", "希望"] },
+            { name: "望庐山瀑布", keywords: ["自然", "美丽", "壮观", "希望"] },
+            { name: "早发白帝城", keywords: ["自由", "快乐", "希望", "美丽"] },
+            { name: "黄鹤楼送孟浩然之广陵", keywords: ["友谊", "离别", "温暖", "希望"] },
+            { name: "回乡偶书", keywords: ["思乡", "成长", "温暖", "希望"] },
+            { name: "咏柳", keywords: ["春天", "美丽", "自然", "希望"] },
+            { name: "凉州词", keywords: ["边塞", "勇敢", "壮志", "希望"] },
+            { name: "出塞", keywords: ["边塞", "勇敢", "保卫", "希望"] },
+            { name: "芙蓉楼送辛渐", keywords: ["友谊", "离别", "诚实", "温暖"] },
+            { name: "鹿柴", keywords: ["自然", "宁静", "美丽", "希望"] },
+            { name: "送元二使安西", keywords: ["友谊", "离别", "温暖", "希望"] },
+            { name: "九月九日忆山东兄弟", keywords: ["思乡", "亲情", "温暖", "希望"] },
+            { name: "望天门山", keywords: ["自然", "壮观", "美丽", "希望"] },
+            { name: "别董大", keywords: ["友谊", "离别", "勇敢", "希望"] },
+            { name: "绝句", keywords: ["春天", "自然", "美丽", "希望"] },
+            { name: "春夜喜雨", keywords: ["春天", "自然", "温暖", "希望"] },
+            { name: "绝句二首", keywords: ["自然", "美丽", "宁静", "希望"] },
+            { name: "江畔独步寻花", keywords: ["春天", "美丽", "自然", "希望"] },
+            { name: "游子吟", keywords: ["母爱", "亲情", "温暖", "善良"] },
+            { name: "登乐游原", keywords: ["夕阳", "美丽", "感慨", "希望"] },
+            { name: "寻隐者不遇", keywords: ["自然", "宁静", "寻找", "希望"] },
+            { name: "枫桥夜泊", keywords: ["夜晚", "思乡", "宁静", "温暖"] },
+            { name: "渔歌子", keywords: ["自然", "自由", "宁静", "希望"] },
+            { name: "塞下曲", keywords: ["边塞", "勇敢", "战斗", "希望"] },
+            { name: "望洞庭", keywords: ["自然", "美丽", "宁静", "希望"] },
+            { name: "浪淘沙", keywords: ["自然", "壮观", "美丽", "希望"] },
+            { name: "赋得古原草送别", keywords: ["自然", "离别", "友谊", "希望"] },
+            { name: "池上", keywords: ["童趣", "纯真", "自然", "温暖"] },
+            { name: "忆江南", keywords: ["江南", "美丽", "思念", "温暖"] },
+            { name: "小儿垂钓", keywords: ["童趣", "纯真", "自然", "温暖"] },
+            { name: "悯农二首", keywords: ["勤劳", "善良", "珍惜", "温暖"] },
+            { name: "山行", keywords: ["秋天", "自然", "美丽", "希望"] },
+            { name: "清明", keywords: ["春天", "思念", "温暖", "希望"] },
+            { name: "江南春", keywords: ["江南", "春天", "美丽", "温暖"] },
+            { name: "乐游原", keywords: ["夕阳", "美丽", "感慨", "希望"] },
+            { name: "题西林壁", keywords: ["山水", "智慧", "哲理", "希望"] },
+            { name: "夏日绝句", keywords: ["英雄", "勇敢", "气节", "希望"] },
+            { name: "示儿", keywords: ["爱国", "希望", "温暖", "勇敢"] },
+            { name: "秋夜将晓出篱门迎凉有感", keywords: ["爱国", "忧虑", "希望", "温暖"] },
+            { name: "四时田园杂兴", keywords: ["田园", "自然", "勤劳", "温暖"] },
+            { name: "小池", keywords: ["夏天", "自然", "美丽", "纯真"] },
+            { name: "晓出净慈寺送林子方", keywords: ["夏天", "美丽", "友谊", "温暖"] },
+            { name: "春日", keywords: ["春天", "美丽", "智慧", "希望"] },
+            { name: "题临安邸", keywords: ["忧国", "讽刺", "希望", "勇敢"] },
+            { name: "游园不值", keywords: ["春天", "美丽", "希望", "自然"] },
+            { name: "乡村四月", keywords: ["田园", "勤劳", "自然", "温暖"] }
+        ];
+
+        let canvas, ctx, animationId;
+        let storyNodes = [];
+        let queryNode = null;
+        let matchedStories = [];
+        let canvasOffset = { x: 0, y: 0 };
+        let canvasScale = 1;
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let isTableDragging = false;
+        let tableDragStart = { x: 0, y: 0 };
+        let tablePosition = { x: 390, y: 20 };
+
+        function init() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            generateStoryNodes();
+            updateVectorTable();
+            animate();
+            window.addEventListener('resize', resizeCanvas);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseout', handleMouseOut);
+            canvas.addEventListener('mousedown', handleCanvasMouseDown);
+            canvas.addEventListener('mouseup', handleCanvasMouseUp);
+            canvas.addEventListener('wheel', handleCanvasWheel);
+            
+            const vectorTable = document.querySelector('.vector-table');
+            vectorTable.addEventListener('mousedown', handleTableMouseDown);
+            document.addEventListener('mousemove', handleDocumentMouseMove);
+            document.addEventListener('mouseup', handleDocumentMouseUp);
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        // BGE模拟向量生成
+        function generateBGEVector(text) {
+            // 模拟BGE embedding的768维向量
+            const vector = [];
+            const textHash = text.split('').reduce((hash, char) => {
+                return ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff;
+            }, 0);
+            
+            for (let i = 0; i < 32; i++) {
+                const seed = textHash + i * 1000;
+                vector.push(Math.sin(seed) * 0.5 + 0.5);
+            }
+            return vector;
+        }
+        
+        // K-means聚类
+        function kMeansCluster(nodes, k = 5) {
+            const vectors = nodes.map(node => node.vector);
+            let centroids = [];
+            
+            // 初始化聚类中心
+            for (let i = 0; i < k; i++) {
+                centroids.push(vectors[Math.floor(Math.random() * vectors.length)].slice());
+            }
+            
+            for (let iter = 0; iter < 10; iter++) {
+                const clusters = Array(k).fill().map(() => []);
+                
+                // 分配节点到最近的聚类中心
+                nodes.forEach((node, idx) => {
+                    let minDist = Infinity;
+                    let clusterIdx = 0;
+                    
+                    centroids.forEach((centroid, i) => {
+                        const dist = euclideanDistance(node.vector, centroid);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            clusterIdx = i;
+                        }
+                    });
+                    
+                    clusters[clusterIdx].push(idx);
+                    node.cluster = clusterIdx;
+                });
+                
+                // 更新聚类中心
+                clusters.forEach((cluster, i) => {
+                    if (cluster.length > 0) {
+                        const newCentroid = Array(vectors[0].length).fill(0);
+                        cluster.forEach(nodeIdx => {
+                            vectors[nodeIdx].forEach((val, j) => {
+                                newCentroid[j] += val;
+                            });
+                        });
+                        newCentroid.forEach((val, j) => {
+                            centroids[i][j] = val / cluster.length;
+                        });
+                    }
+                });
+            }
+            
+            return nodes;
+        }
+        
+        function euclideanDistance(vec1, vec2) {
+            return Math.sqrt(vec1.reduce((sum, val, i) => sum + Math.pow(val - vec2[i], 2), 0));
+        }
+        
+        const clusterColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD'];
+
+        function cosineSimilarity(vec1, vec2) {
+            const dotProduct = vec1.reduce((sum, a, i) => sum + a * vec2[i], 0);
+            const magnitude1 = Math.sqrt(vec1.reduce((sum, a) => sum + a * a, 0));
+            const magnitude2 = Math.sqrt(vec2.reduce((sum, a) => sum + a * a, 0));
+            return dotProduct / (magnitude1 * magnitude2);
+        }
+
+        function generateStoryNodes() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+
+            storyNodes = stories.map((story, index) => {
+                const text = story.name + ' ' + story.keywords.join(' ');
+                const vector = generateBGEVector(text);
+                
+                return {
+                    ...story,
+                    vector,
+                    baseX: 0,
+                    baseY: 0,
+                    x: 0,
+                    y: 0,
+                    isMatched: false,
+                    similarity: 0,
+                    cluster: 0
+                };
+            });
+            
+            // 执行聚类
+            kMeansCluster(storyNodes, 6);
+            
+            // 使用t-SNE降维布局
+            layoutNodesByTSNE();
+        }
+        
+        function layoutNodesByTSNE() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 简化的t-SNE布局
+            storyNodes.forEach((node, i) => {
+                const clusterAngle = (node.cluster * 2 * Math.PI) / 6;
+                const clusterRadius = 200;
+                const nodeAngle = (i * 2 * Math.PI) / storyNodes.length;
+                const nodeRadius = 50 + Math.random() * 100;
+                
+                node.baseX = centerX + Math.cos(clusterAngle) * clusterRadius + Math.cos(nodeAngle) * nodeRadius;
+                node.baseY = centerY + Math.sin(clusterAngle) * clusterRadius + Math.sin(nodeAngle) * nodeRadius;
+                node.x = node.baseX;
+                node.y = node.baseY;
+            });
+        }
+
+        function searchStories() {
+            const query = document.getElementById('searchInput').value.trim();
+            const topN = parseInt(document.getElementById('topN').value);
+            
+            if (!query) {
+                matchedStories = [];
+                queryNode = null;
+                storyNodes.forEach(node => node.isMatched = false);
+                updateResults([]);
+                return;
+            }
+
+            const queryVector = generateBGEVector(query);
+            
+            // 计算相似度
+            storyNodes.forEach(node => {
+                node.similarity = cosineSimilarity(queryVector, node.vector);
+                node.isMatched = false;
+            });
+
+            // 排序并选择TOP N
+            const sortedStories = [...storyNodes].sort((a, b) => b.similarity - a.similarity);
+            matchedStories = sortedStories.slice(0, topN);
+            matchedStories.forEach(story => story.isMatched = true);
+
+            // 创建查询节点
+            queryNode = {
+                name: `查询: ${query}`,
+                vector: queryVector,
+                baseX: canvas.width / 2,
+                baseY: canvas.height / 2,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                cluster: -1
+            };
+
+            updateResults(matchedStories);
+            updateVectorTable();
+        }
+
+        function updateResults(results) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = results.map((story, index) => 
+                `<div class="result-item">${index + 1}. ${story.name} (相似度: ${(story.similarity * 100).toFixed(1)}%)</div>`
+            ).join('');
+        }
+        
+        function updateVectorTable() {
+            const tableDiv = document.getElementById('vectorTable');
+            let html = '<table><thead><tr><th class="story-name">名称</th><th>类别</th>';
+            for (let i = 0; i < 16; i++) {
+                html += `<th>V${i}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            if (queryNode) {
+                html += '<tr class="query-row"><td class="story-name">' + queryNode.name + '</td><td>查询</td>';
+                queryNode.vector.slice(0, 16).forEach(value => {
+                    html += `<td>${value.toFixed(3)}</td>`;
+                });
+                html += '</tr>';
+            }
+            
+            storyNodes.forEach(node => {
+                const rowClass = node.isMatched ? 'matched' : '';
+                html += `<tr class="${rowClass}"><td class="story-name">${node.name}</td><td style="color: ${clusterColors[node.cluster]}">类${node.cluster + 1}</td>`;
+                node.vector.slice(0, 16).forEach(value => {
+                    html += `<td>${value.toFixed(3)}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            tableDiv.innerHTML = html;
+        }
+
+        function drawNode(node, color, size = 8) {
+            const scaledSize = size * canvasScale;
+            const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, scaledSize);
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, color + '80');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, scaledSize, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 15 * canvasScale;
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, scaledSize * 0.6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawConnection(from, to, opacity = 0.3) {
+            ctx.strokeStyle = `rgba(33, 150, 243, ${opacity})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(from.x, from.y);
+            ctx.lineTo(to.x, to.y);
+            ctx.stroke();
+        }
+
+        function drawLabel(node, color = '#333') {
+            ctx.fillStyle = color;
+            ctx.font = `${12 * canvasScale}px Microsoft YaHei`;
+            ctx.textAlign = 'center';
+            ctx.fillText(node.name, node.x, node.y - 15 * canvasScale);
+        }
+        
+        let hoveredNode = null;
+        let tooltip = null;
+        
+        function handleMouseMove(event) {
+            if (isDragging) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            hoveredNode = null;
+            for (let node of storyNodes) {
+                const distance = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                if (distance <= 15 * canvasScale) {
+                    hoveredNode = node;
+                    showTooltip(event.clientX, event.clientY, node);
+                    return;
+                }
+            }
+            
+            if (queryNode) {
+                const distance = Math.sqrt((mouseX - queryNode.x) ** 2 + (mouseY - queryNode.y) ** 2);
+                if (distance <= 15 * canvasScale) {
+                    hoveredNode = queryNode;
+                    showTooltip(event.clientX, event.clientY, queryNode);
+                    return;
+                }
+            }
+            
+            hideTooltip();
+        }
+        
+        function handleMouseOut() {
+            hoveredNode = null;
+            hideTooltip();
+        }
+        
+        function showTooltip(x, y, node) {
+            hideTooltip();
+            tooltip = document.createElement('div');
+            tooltip.style.cssText = `
+                position: fixed;
+                left: ${x + 10}px;
+                top: ${y - 10}px;
+                background: rgba(255,255,255,0.95);
+                border: 2px solid #2196F3;
+                border-radius: 8px;
+                padding: 12px;
+                font-size: 12px;
+                color: #333;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                max-width: 300px;
+            `;
+            
+            const vectorStr = node.vector.slice(0, 8).map((v, i) => `V${i}: ${v.toFixed(3)}`).join('<br>');
+            tooltip.innerHTML = `
+                <strong>${node.name}</strong><br>
+                <hr style="margin: 8px 0; border: 1px solid #eee;">
+                <strong>向量值:</strong><br>
+                ${vectorStr}
+            `;
+            
+            document.body.appendChild(tooltip);
+        }
+        
+        function hideTooltip() {
+            if (tooltip) {
+                document.body.removeChild(tooltip);
+                tooltip = null;
+            }
+        }
+        
+        function toggleTable() {
+            const table = document.querySelector('.vector-table');
+            table.classList.toggle('collapsed');
+        }
+        
+        function handleCanvasMouseDown(event) {
+            isDragging = true;
+            dragStart.x = event.clientX - canvasOffset.x;
+            dragStart.y = event.clientY - canvasOffset.y;
+            canvas.style.cursor = 'grabbing';
+        }
+        
+        function handleCanvasMouseUp() {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+        
+        function handleCanvasWheel(event) {
+            event.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            const zoom = event.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.max(0.1, Math.min(3, canvasScale * zoom));
+            
+            canvasOffset.x = mouseX - (mouseX - canvasOffset.x) * (newScale / canvasScale);
+            canvasOffset.y = mouseY - (mouseY - canvasOffset.y) * (newScale / canvasScale);
+            canvasScale = newScale;
+            
+            updateNodePositions();
+        }
+        
+        function handleTableMouseDown(event) {
+            if (event.target.closest('.collapse-btn')) return;
+            isTableDragging = true;
+            tableDragStart.x = event.clientX - tablePosition.x;
+            tableDragStart.y = event.clientY - tablePosition.y;
+            event.preventDefault();
+        }
+        
+        function handleDocumentMouseMove(event) {
+            if (isDragging) {
+                canvasOffset.x = event.clientX - dragStart.x;
+                canvasOffset.y = event.clientY - dragStart.y;
+                updateNodePositions();
+            }
+            
+            if (isTableDragging) {
+                tablePosition.x = event.clientX - tableDragStart.x;
+                tablePosition.y = event.clientY - tableDragStart.y;
+                const table = document.querySelector('.vector-table');
+                table.style.left = tablePosition.x + 'px';
+                table.style.top = tablePosition.y + 'px';
+            }
+        }
+        
+        function handleDocumentMouseUp() {
+            isDragging = false;
+            isTableDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+        
+        function updateNodePositions() {
+            storyNodes.forEach(node => {
+                node.x = (node.baseX + canvasOffset.x) * canvasScale;
+                node.y = (node.baseY + canvasOffset.y) * canvasScale;
+            });
+            
+            if (queryNode) {
+                queryNode.x = (queryNode.baseX + canvasOffset.x) * canvasScale;
+                queryNode.y = (queryNode.baseY + canvasOffset.y) * canvasScale;
+            }
+        }
+        
+        function drawClusterConnections() {
+            const clusters = {};
+            storyNodes.forEach(node => {
+                if (!clusters[node.cluster]) clusters[node.cluster] = [];
+                clusters[node.cluster].push(node);
+            });
+            
+            Object.values(clusters).forEach(clusterNodes => {
+                if (clusterNodes.length > 1) {
+                    for (let i = 0; i < clusterNodes.length; i++) {
+                        for (let j = i + 1; j < clusterNodes.length; j++) {
+                            const similarity = cosineSimilarity(clusterNodes[i].vector, clusterNodes[j].vector);
+                            if (similarity > 0.7) {
+                                ctx.strokeStyle = `rgba(200, 200, 200, ${similarity * 0.3})`;
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(clusterNodes[i].x, clusterNodes[i].y);
+                                ctx.lineTo(clusterNodes[j].x, clusterNodes[j].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制连接线（如果有查询节点）
+            if (queryNode) {
+                matchedStories.forEach(story => {
+                    drawConnection(queryNode, story, story.similarity * 0.8);
+                });
+            }
+            
+            // 绘制聚类连接线
+            drawClusterConnections();
+            
+            // 绘制故事节点
+            storyNodes.forEach(node => {
+                let color = clusterColors[node.cluster] || '#2196F3';
+                if (node.isMatched) {
+                    color = '#4CAF50';
+                }
+                const size = hoveredNode === node ? 12 : 8;
+                drawNode(node, color, size);
+                drawLabel(node, '#333');
+            });
+            
+            // 绘制查询节点
+            if (queryNode) {
+                const size = hoveredNode === queryNode ? 16 : 12;
+                drawNode(queryNode, '#FF5722', size);
+                drawLabel(queryNode, '#333');
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
