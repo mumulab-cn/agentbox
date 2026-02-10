@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise AI Coding Well-Architected Framework</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* 页面头部 */
+        .page-header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .page-header .subtitle {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-aliyun { background: #00b96b; color: #fff; }
+        .badge-qoder { background: #333; color: #ff6b35; border: 1px solid #ff6b35; }
+
+        /* 导航标签 */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            background: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover {
+            background: #e0e0e0;
+        }
+
+        .nav-tab.active {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* 内容区块 */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* 概览卡片 */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .overview-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .overview-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overview-card .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .overview-card p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 六大支柱 */
+        .pillars-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 25px;
+        }
+
+        .pillar-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .pillar-header {
+            padding: 25px;
+            color: #fff;
+            position: relative;
+        }
+
+        .pillar-header h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pillar-header .pillar-num {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .pillar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .pillar-body {
+            padding: 25px;
+        }
+
+        .pillar-section {
+            margin-bottom: 20px;
+        }
+
+        .pillar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .pillar-section h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pillar-section h4::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .dimension-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dimension-tag {
+            padding: 6px 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-item {
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 3px solid #ddd;
+        }
+
+        .metric-item .metric-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .metric-item .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .pattern-refs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pattern-ref {
+            padding: 4px 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .smell-refs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .smell-ref {
+            padding: 4px 10px;
+            background: #fff5f5;
+            border: 1px solid #ffcccc;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #cc0000;
+        }
+
+        /* 支柱颜色 */
+        .pillar-1 .pillar-header { background: #dc3545; }
+        .pillar-1 .pillar-section h4::before { background: #dc3545; }
+        .pillar-1 .metric-item { border-left-color: #dc3545; }
+
+        .pillar-2 .pillar-header { background: #fd7e14; }
+        .pillar-2 .pillar-section h4::before { background: #fd7e14; }
+        .pillar-2 .metric-item { border-left-color: #fd7e14; }
+
+        .pillar-3 .pillar-header { background: #20c997; }
+        .pillar-3 .pillar-section h4::before { background: #20c997; }
+        .pillar-3 .metric-item { border-left-color: #20c997; }
+
+        .pillar-4 .pillar-header { background: #17a2b8; }
+        .pillar-4 .pillar-section h4::before { background: #17a2b8; }
+        .pillar-4 .metric-item { border-left-color: #17a2b8; }
+
+        .pillar-5 .pillar-header { background: #333; }
+        .pillar-5 .pillar-section h4::before { background: #333; }
+        .pillar-5 .metric-item { border-left-color: #333; }
+
+        .pillar-6 .pillar-header { background: #28a745; }
+        .pillar-6 .pillar-section h4::before { background: #28a745; }
+        .pillar-6 .metric-item { border-left-color: #28a745; }
+
+        /* 成熟度模型 */
+        .maturity-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1000px) {
+            .maturity-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .radar-container {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            min-height: 500px;
+        }
+
+        .radar-container h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #radarChart {
+            max-width: 100%;
+            max-height: 420px;
+        }
+
+        .maturity-levels {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .maturity-levels h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .level-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .level-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .level-item.active {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+        }
+
+        .level-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .level-1 .level-badge { background: #9e9e9e; }
+        .level-2 .level-badge { background: #ff9800; }
+        .level-3 .level-badge { background: #2196f3; }
+        .level-4 .level-badge { background: #4caf50; }
+        .level-5 .level-badge { background: #ff6b35; }
+
+        .level-content h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .level-content p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 评估表格 */
+        .assessment-container {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .assessment-container h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .assessment-pillar {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .assessment-pillar-header {
+            padding: 15px 20px;
+            color: #fff;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assessment-pillar-header .score {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .assessment-questions {
+            padding: 20px;
+        }
+
+        .question-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+
+        .question-text {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .question-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            border-color: #999;
+        }
+
+        .option-btn.selected {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* 评估结果 */
+        .result-panel {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 30px;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-header h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 64px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .result-level {
+            display: inline-block;
+            padding: 8px 24px;
+            background: #ff6b35;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .result-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .breakdown-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .breakdown-item .pillar-name {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-item .pillar-score {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* 行动计划 */
+        .action-plan {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .action-plan h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .action-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .action-priority {
+            width: 36px;
+            height: 36px;
+            background: #ff6b35;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-content h4 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .action-content p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .action-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .action-tag {
+            padding: 4px 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* 打印按钮 */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            transform: scale(1.1);
+            background: #ff6b35;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .pillars-container {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .nav-tabs, .print-btn { display: none; }
+            .content-section { display: block !important; page-break-after: always; }
+            body { background: #fff; }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Enterprise AI Coding Well-Architected Framework</h1>
+        <p class="subtitle">企业级 AI Coding 卓越架构框架 - 六大支柱 x 能力成熟度模型</p>
+        <div class="header-badges">
+            <span class="header-badge badge-aliyun">Well-Architected</span>
+            <span class="header-badge badge-qoder">Enterprise AI Coding</span>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="overview">框架概览</button>
+        <button class="nav-tab" data-tab="pillars">六大支柱</button>
+        <button class="nav-tab" data-tab="maturity">成熟度模型</button>
+        <button class="nav-tab" data-tab="assessment">自评问卷</button>
+        <button class="nav-tab" data-tab="roadmap">演进路线</button>
+    </nav>
+
+    <main class="main-content">
+        <!-- 框架概览 -->
+        <section id="overview" class="content-section active">
+            <div class="overview-cards">
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#dc3545;color:#fff;">1</span> 人机协作卓越</h3>
+                    <p>Human-AI Collaboration Excellence - 建立清晰的人机职责边界，确保 AI 辅助而非替代人类决策，培养批判性思维和持续学习能力。</p>
+                </div>
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#fd7e14;color:#fff;">2</span> 上下文与规范</h3>
+                    <p>Context & Governance - 通过 Rules、Memory 和 MCP 建立 AI 工作的约束环境，确保 AI 输出符合企业规范和技术栈要求。</p>
+                </div>
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#20c997;color:#fff;">3</span> 质量与安全</h3>
+                    <p>Quality & Security - 建立 AI 代码的质量保障体系，包括测试护栏、安全扫描、Code Review 和持续验证机制。</p>
+                </div>
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#17a2b8;color:#fff;">4</span> 效率与成本</h3>
+                    <p>Efficiency & Cost - 优化 AI 使用效率，控制 Token 成本，建立任务拆分和并行处理机制，最大化投入产出比。</p>
+                </div>
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#333;color:#fff;">5</span> 可追溯与可审计</h3>
+                    <p>Traceability & Auditability - 建立完整的变更追踪体系，支持从需求到代码到测试的双向追溯，满足合规审计要求。</p>
+                </div>
+                <div class="overview-card">
+                    <h3><span class="icon" style="background:#28a745;color:#fff;">6</span> 组织能力演进</h3>
+                    <p>Organizational Evolution - 从个人实践走向团队资产化沉淀，建立培训体系和持续改进机制，推动组织级 AI Coding 能力提升。</p>
+                </div>
+            </div>
+
+            <div style="background:#fff;border-radius:16px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="margin-bottom:20px;">框架设计原则</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #dc3545;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">AI 不背锅，人类负责最终决策</h4>
+                        <p style="font-size:13px;color:#666;">关键决策必须有责任人签字确认，AI 只提供备选方案和分析</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #fd7e14;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">Spec 先行，代码后行</h4>
+                        <p style="font-size:13px;color:#666;">规格文档是开发起点，编程语言代码是生成产物；先定义清晰的 Spec，再让 AI 生成代码</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #20c997;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">小步快跑 + 强制 diff + 强制测试</h4>
+                        <p style="font-size:13px;color:#666;">可控的增量交付，单次改动不超过 300 行</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #17a2b8;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">从个人玩法走向团队资产</h4>
+                        <p style="font-size:13px;color:#666;">Skill/Memory 资产化沉淀，避免个人私有 Prompt 王国</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #333;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">核心域谨慎，边缘域放手</h4>
+                        <p style="font-size:13px;color:#666;">分层级的 AI 授权策略，核心模块人工精细化</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #28a745;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">度量驱动持续改进</h4>
+                        <p style="font-size:13px;color:#666;">建立反馈闭环，用数据而非感觉驱动改进</p>
+                    </div>
+                    <div style="padding:20px;background:#f9f9f9;border-radius:12px;border-left:4px solid #6f42c1;">
+                        <h4 style="font-size:15px;margin-bottom:8px;">代码可解释性优先于代码生成效率</h4>
+                        <p style="font-size:13px;color:#666;">团队必须能理解和掌握 AI 生成的代码，避免积累"能跑但无人理解"的技术债</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 六大支柱详情 -->
+        <section id="pillars" class="content-section">
+            <div class="pillars-container">
+                <!-- 支柱 1: 人机协作卓越 -->
+                <div class="pillar-card pillar-1">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">1</span> 人机协作卓越</h2>
+                        <p>Human-AI Collaboration Excellence</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">职责边界清晰度</span>
+                                <span class="dimension-tag">决策归属明确性</span>
+                                <span class="dimension-tag">批判性思维能力</span>
+                                <span class="dimension-tag">AI 依赖健康度</span>
+                                <span class="dimension-tag">人员技能成长</span>
+                                <span class="dimension-tag">代码理解与掌控度</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">决策责任签字率</div>
+                                    <div class="metric-value">>95%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 建议采纳前验证率</div>
+                                    <div class="metric-value">>80%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">独立编码能力保持</div>
+                                    <div class="metric-value">定期评估</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 使用场景分级覆盖</div>
+                                    <div class="metric-value">100%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 生成代码可解释性评估</div>
+                                    <div class="metric-value">定期抽查</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">代码掌控度失控事件</div>
+                                    <div class="metric-value">0次/季度</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式6 反思循环</span>
+                                <span class="pattern-ref">模式18 试点规模化</span>
+                                <span class="pattern-ref">模式12 AI-DLC三阶段</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#1 决策替代品</span>
+                                <span class="smell-ref">#2 责任甩锅</span>
+                                <span class="smell-ref">#3 过度依赖</span>
+                                <span class="smell-ref">#5 批判思维缺失</span>
+                                <span class="smell-ref">#15 复杂度膨胀</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section" style="background:#fff8e1;padding:20px;border-radius:8px;margin-top:15px;">
+                            <h4 style="color:#f57c00;margin-bottom:12px;">💡 核心概念解读：代码可控度与可解释性</h4>
+                            <div style="font-size:13px;line-height:1.8;color:#333;">
+                                <p style="margin-bottom:12px;"><strong>代码可控度 (Code Controllability)</strong><br>
+                                指团队对代码库的主动掌控能力：变更可控、依赖可控、演化可控、风险可控。</p>
+                                <p style="margin-bottom:12px;"><strong>代码可解释性 (Code Explainability)</strong><br>
+                                指开发者能够自主理解、推理、复现并修正代码逻辑的能力。</p>
+                                <p style="background:#ffe0b2;padding:10px;border-radius:6px;margin-bottom:12px;"><strong>核心原则：</strong>未被开发者真正理解、吸收、能自主解释的代码，不构成有效知识资产。这类代码积累过多会导致项目失控。</p>
+                                <p style="font-size:12px;color:#666;"><strong>实践要求：</strong>关键代码必须可解释；定期进行代码解释性审查；发现不可解释代码立即处理；避免过度复杂的AI生成代码。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱 2: 上下文与规范 -->
+                <div class="pillar-card pillar-2">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">2</span> 上下文与规范</h2>
+                        <p>Context & Governance</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">Rules 覆盖完整度</span>
+                                <span class="dimension-tag">Memory 分层合理性</span>
+                                <span class="dimension-tag">技术栈约束明确度</span>
+                                <span class="dimension-tag">MCP 集成成熟度</span>
+                                <span class="dimension-tag">环境隔离严格度</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">项目 Rules 配置率</div>
+                                    <div class="metric-value">100%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">Memory 更新及时率</div>
+                                    <div class="metric-value">>90%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">技术栈漂移发生率</div>
+                                    <div class="metric-value"><5%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">生产环境误操作次数</div>
+                                    <div class="metric-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式20 多层记忆</span>
+                                <span class="pattern-ref">模式24 规则护栏</span>
+                                <span class="pattern-ref">模式25 Vibe Coding</span>
+                                <span class="pattern-ref">模式30 MCP扩展</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#6 裸用模型</span>
+                                <span class="smell-ref">#7 技术栈漂移</span>
+                                <span class="smell-ref">#8 上下文断裂</span>
+                                <span class="smell-ref">#9 环境边界模糊</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱 3: 质量与安全 -->
+                <div class="pillar-card pillar-3">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">3</span> 质量与安全</h2>
+                        <p>Quality & Security</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">测试覆盖率</span>
+                                <span class="dimension-tag">安全扫描覆盖</span>
+                                <span class="dimension-tag">Code Review 覆盖</span>
+                                <span class="dimension-tag">幻觉检测机制</span>
+                                <span class="dimension-tag">依赖审计严格度</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 代码测试覆盖率</div>
+                                    <div class="metric-value">>80%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">安全漏洞逃逸率</div>
+                                    <div class="metric-value">0</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 代码 CR 覆盖率</div>
+                                    <div class="metric-value">100%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">幻觉导致故障次数</div>
+                                    <div class="metric-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式15 测试护栏</span>
+                                <span class="pattern-ref">模式28 PR共驾评审</span>
+                                <span class="pattern-ref">模式6 反思循环</span>
+                                <span class="pattern-ref">模式16 E2E实验</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#16 无测试护航</span>
+                                <span class="smell-ref">#17 不看diff提交</span>
+                                <span class="smell-ref">#18 幻觉容忍</span>
+                                <span class="smell-ref">#20 安全盲区</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱 4: 效率与成本 -->
+                <div class="pillar-card pillar-4">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">4</span> 效率与成本</h2>
+                        <p>Efficiency & Cost</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">任务拆分合理性</span>
+                                <span class="dimension-tag">Prompt 结构化程度</span>
+                                <span class="dimension-tag">Token 使用效率</span>
+                                <span class="dimension-tag">并行处理能力</span>
+                                <span class="dimension-tag">复用资产比例</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">单次改动行数控制</div>
+                                    <div class="metric-value"><300行</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">Skill/模板复用率</div>
+                                    <div class="metric-value">>60%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">无效对话占比</div>
+                                    <div class="metric-value"><10%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 参与任务效率提升</div>
+                                    <div class="metric-value">>30%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式2 规格驱动</span>
+                                <span class="pattern-ref">模式4 Skill分解</span>
+                                <span class="pattern-ref">模式13 Quest委托</span>
+                                <span class="pattern-ref">模式14 多任务并行</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#11 巨型Prompt</span>
+                                <span class="smell-ref">#12 单轮期望症</span>
+                                <span class="smell-ref">#13 Prompt模糊</span>
+                                <span class="smell-ref">#31 成本盲视</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱 5: 可追溯与可审计 -->
+                <div class="pillar-card pillar-5">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">5</span> 可追溯与可审计</h2>
+                        <p>Traceability & Auditability</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">需求-代码追溯链</span>
+                                <span class="dimension-tag">版本控制规范性</span>
+                                <span class="dimension-tag">变更日志完整度</span>
+                                <span class="dimension-tag">AI 交互日志记录</span>
+                                <span class="dimension-tag">审计合规满足度</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">需求编号标记率</div>
+                                    <div class="metric-value">100%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">Commit Message 规范率</div>
+                                    <div class="metric-value">>95%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">AI 交互日志保留</div>
+                                    <div class="metric-value">90天+</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">回溯查询响应时间</div>
+                                    <div class="metric-value"><5分钟</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式27 变更追踪</span>
+                                <span class="pattern-ref">模式26 代码注释对齐</span>
+                                <span class="pattern-ref">模式22 复盘沉淀</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#21 版本失控</span>
+                                <span class="smell-ref">#22 回归盲视</span>
+                                <span class="smell-ref">#32 交互日志缺失</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱 6: 组织能力演进 -->
+                <div class="pillar-card pillar-6">
+                    <div class="pillar-header">
+                        <h2><span class="pillar-num">6</span> 组织能力演进</h2>
+                        <p>Organizational Evolution</p>
+                    </div>
+                    <div class="pillar-body">
+                        <div class="pillar-section">
+                            <h4>核心维度</h4>
+                            <div class="dimension-list">
+                                <span class="dimension-tag">知识资产沉淀度</span>
+                                <span class="dimension-tag">培训体系完善度</span>
+                                <span class="dimension-tag">跨团队协作机制</span>
+                                <span class="dimension-tag">持续改进闭环</span>
+                                <span class="dimension-tag">度量体系成熟度</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关键指标</h4>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <div class="metric-name">Skill/Prompt 库资产数</div>
+                                    <div class="metric-value">>50</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">培训覆盖率</div>
+                                    <div class="metric-value">100%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">经验分享频率</div>
+                                    <div class="metric-value">月度</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-name">Rules 更新周期</div>
+                                    <div class="metric-value">季度</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>关联设计模式</h4>
+                            <div class="pattern-refs">
+                                <span class="pattern-ref">模式1 老项目扫描</span>
+                                <span class="pattern-ref">模式21 知识地图</span>
+                                <span class="pattern-ref">模式22 复盘沉淀</span>
+                                <span class="pattern-ref">模式18 试点规模化</span>
+                            </div>
+                        </div>
+                        <div class="pillar-section">
+                            <h4>对抗坏味道</h4>
+                            <div class="smell-refs">
+                                <span class="smell-ref">#25 聊天室工程</span>
+                                <span class="smell-ref">#26 私有Prompt王国</span>
+                                <span class="smell-ref">#28 忽视组织沉淀</span>
+                                <span class="smell-ref">#33 学习曲线忽视</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成熟度模型 -->
+        <section id="maturity" class="content-section">
+            <div class="maturity-container">
+                <div class="radar-container">
+                    <h3>AI Coding 能力成熟度雷达图</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="maturity-levels">
+                    <h3>五级成熟度模型</h3>
+                    <div class="level-item level-1" data-level="1">
+                        <div class="level-badge">L1</div>
+                        <div class="level-content">
+                            <h4>初始级 Initial</h4>
+                            <p>个人零散使用 AI，无统一规范，依赖个人经验，结果不可预测</p>
+                        </div>
+                    </div>
+                    <div class="level-item level-2" data-level="2">
+                        <div class="level-badge">L2</div>
+                        <div class="level-content">
+                            <h4>可重复级 Repeatable</h4>
+                            <p>建立基础规范和 Rules，关键流程可重复，但依赖人工监督</p>
+                        </div>
+                    </div>
+                    <div class="level-item level-3" data-level="3">
+                        <div class="level-badge">L3</div>
+                        <div class="level-content">
+                            <h4>已定义级 Defined</h4>
+                            <p>标准化流程和工具链，Memory/Rules 体系完善，团队级资产沉淀</p>
+                        </div>
+                    </div>
+                    <div class="level-item level-4" data-level="4">
+                        <div class="level-badge">L4</div>
+                        <div class="level-content">
+                            <h4>已管理级 Managed</h4>
+                            <p>量化度量体系，数据驱动改进，跨团队最佳实践共享，持续优化</p>
+                        </div>
+                    </div>
+                    <div class="level-item level-5 active" data-level="5">
+                        <div class="level-badge">L5</div>
+                        <div class="level-content">
+                            <h4>优化级 Optimizing</h4>
+                            <p>持续创新，引领行业实践，AI Coding 深度融入研发文化和组织能力</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 各级别详细描述 -->
+            <div style="background:#fff;border-radius:16px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="margin-bottom:25px;">成熟度级别详细特征</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="background:#f5f5f5;">
+                                <th style="padding:12px;text-align:left;border-bottom:2px solid #e0e0e0;width:15%;">支柱 / 级别</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;width:17%;">L1 初始</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;width:17%;">L2 可重复</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;width:17%;">L3 已定义</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;width:17%;">L4 已管理</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;width:17%;">L5 优化</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;font-weight:600;color:#dc3545;">人机协作</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">AI当决策替代品</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">有责任归属意识</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">决策签字制度化</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">批判性思维常态化</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">人机协作最优化</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;font-weight:600;color:#fd7e14;">上下文规范</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">裸用模型</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">基础Rules配置</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">多层Memory体系</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">MCP全面集成</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">智能上下文管理</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;font-weight:600;color:#20c997;">质量安全</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">无测试无Review</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">人工Review为主</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">AI辅助Review</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">自动化质量门禁</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">零缺陷交付</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;font-weight:600;color:#17a2b8;">效率成本</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">无成本意识</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">基础任务拆分</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">Skill资产复用</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">成本效益度量</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">ROI最大化</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;font-weight:600;color:#333;">可追溯性</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">版本失控</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">基础版本管理</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">需求-代码追溯</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">全链路审计</td>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;text-align:center;">智能影响分析</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;font-weight:600;color:#28a745;">组织演进</td>
+                                <td style="padding:12px;text-align:center;">个人零散使用</td>
+                                <td style="padding:12px;text-align:center;">团队试点</td>
+                                <td style="padding:12px;text-align:center;">标准化推广</td>
+                                <td style="padding:12px;text-align:center;">组织级能力</td>
+                                <td style="padding:12px;text-align:center;">持续创新引领</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 自评问卷 -->
+        <section id="assessment" class="content-section">
+            <div class="result-panel" id="resultPanel" style="display:none;">
+                <div class="result-header">
+                    <h3>您的 AI Coding 成熟度评估结果</h3>
+                    <div class="result-score" id="totalScore">0</div>
+                    <div class="result-level" id="levelBadge">L1 初始级</div>
+                </div>
+                <div class="result-breakdown" id="resultBreakdown">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <div class="assessment-container">
+                <h3>AI Coding 能力成熟度自评问卷</h3>
+                <p style="color:#666;margin-bottom:25px;font-size:14px;">请根据团队实际情况选择最符合的选项，完成后将自动计算成熟度等级</p>
+
+                <!-- 支柱1评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#dc3545;">
+                        <span>支柱1：人机协作卓越</span>
+                        <span class="score" id="pillar1Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q1.1 团队对 AI 生成代码的责任归属是否有明确规定？</div>
+                            <div class="question-options" data-pillar="1" data-question="1">
+                                <button class="option-btn" data-score="1">无规定</button>
+                                <button class="option-btn" data-score="2">口头约定</button>
+                                <button class="option-btn" data-score="3">有书面规范</button>
+                                <button class="option-btn" data-score="4">制度化执行</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q1.2 关键技术决策采纳 AI 建议前是否有验证流程？</div>
+                            <div class="question-options" data-pillar="1" data-question="2">
+                                <button class="option-btn" data-score="1">直接采纳</button>
+                                <button class="option-btn" data-score="2">偶尔验证</button>
+                                <button class="option-btn" data-score="3">必须验证</button>
+                                <button class="option-btn" data-score="4">多方案对比</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q1.3 团队成员的独立编码能力是否有定期评估？</div>
+                            <div class="question-options" data-pillar="1" data-question="3">
+                                <button class="option-btn" data-score="1">从不评估</button>
+                                <button class="option-btn" data-score="2">年度评估</button>
+                                <button class="option-btn" data-score="3">季度评估</button>
+                                <button class="option-btn" data-score="4">持续跟踪</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q1.4 AI 使用场景是否有分级管理（简单/复杂/核心域）？</div>
+                            <div class="question-options" data-pillar="1" data-question="4">
+                                <button class="option-btn" data-score="1">无分级</button>
+                                <button class="option-btn" data-score="2">粗略分级</button>
+                                <button class="option-btn" data-score="3">明确分级</button>
+                                <button class="option-btn" data-score="4">动态调整</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q1.5 团队成员是否能够解释 AI 生成的关键代码逻辑？</div>
+                            <div class="question-options" data-pillar="1" data-question="5">
+                                <button class="option-btn" data-score="1">无法解释</button>
+                                <button class="option-btn" data-score="2">部分解释</button>
+                                <button class="option-btn" data-score="3">能够解释</button>
+                                <button class="option-btn" data-score="4">深入掌握</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱2评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#fd7e14;">
+                        <span>支柱2：上下文与规范</span>
+                        <span class="score" id="pillar2Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q2.1 项目是否配置了 Qoder Rules（编码规范、架构约束、安全规范）？</div>
+                            <div class="question-options" data-pillar="2" data-question="1">
+                                <button class="option-btn" data-score="1">无配置</button>
+                                <button class="option-btn" data-score="2">基础配置</button>
+                                <button class="option-btn" data-score="3">完整配置</button>
+                                <button class="option-btn" data-score="4">持续更新</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q2.2 是否建立了多层 Memory 体系（组织/团队/项目/会话）？</div>
+                            <div class="question-options" data-pillar="2" data-question="2">
+                                <button class="option-btn" data-score="1">无Memory</button>
+                                <button class="option-btn" data-score="2">单层Memory</button>
+                                <button class="option-btn" data-score="3">多层分离</button>
+                                <button class="option-btn" data-score="4">智能管理</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q2.3 技术栈版本约束是否在 Rules 中明确定义？</div>
+                            <div class="question-options" data-pillar="2" data-question="3">
+                                <button class="option-btn" data-score="1">无约束</button>
+                                <button class="option-btn" data-score="2">部分约束</button>
+                                <button class="option-btn" data-score="3">完整约束</button>
+                                <button class="option-btn" data-score="4">自动检测</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q2.4 MCP 集成覆盖程度（Git、CI/CD、数据库、知识库等）？</div>
+                            <div class="question-options" data-pillar="2" data-question="4">
+                                <button class="option-btn" data-score="1">无集成</button>
+                                <button class="option-btn" data-score="2">1-2个</button>
+                                <button class="option-btn" data-score="3">3-5个</button>
+                                <button class="option-btn" data-score="4">全面集成</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q2.5 生产环境与非生产环境的 AI 操作权限是否严格隔离？</div>
+                            <div class="question-options" data-pillar="2" data-question="5">
+                                <button class="option-btn" data-score="1">无隔离</button>
+                                <button class="option-btn" data-score="2">人工控制</button>
+                                <button class="option-btn" data-score="3">系统隔离</button>
+                                <button class="option-btn" data-score="4">多重校验</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱3评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#20c997;">
+                        <span>支柱3：质量与安全</span>
+                        <span class="score" id="pillar3Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q3.1 AI 生成代码的测试覆盖率要求是多少？</div>
+                            <div class="question-options" data-pillar="3" data-question="1">
+                                <button class="option-btn" data-score="1">无要求</button>
+                                <button class="option-btn" data-score="2"><60%</button>
+                                <button class="option-btn" data-score="3">60-80%</button>
+                                <button class="option-btn" data-score="4">>80%</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q3.2 AI 生成代码是否必须经过 Code Review？</div>
+                            <div class="question-options" data-pillar="3" data-question="2">
+                                <button class="option-btn" data-score="1">不需要</button>
+                                <button class="option-btn" data-score="2">选择性</button>
+                                <button class="option-btn" data-score="3">强制人工</button>
+                                <button class="option-btn" data-score="4">AI+人工</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q3.3 是否有机制检测和防范 AI 幻觉（虚构API、不存在的库）？</div>
+                            <div class="question-options" data-pillar="3" data-question="3">
+                                <button class="option-btn" data-score="1">无机制</button>
+                                <button class="option-btn" data-score="2">人工检查</button>
+                                <button class="option-btn" data-score="3">编译验证</button>
+                                <button class="option-btn" data-score="4">自动检测</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q3.4 AI 生成代码是否进行安全扫描（SAST/DAST）？</div>
+                            <div class="question-options" data-pillar="3" data-question="4">
+                                <button class="option-btn" data-score="1">不扫描</button>
+                                <button class="option-btn" data-score="2">手动触发</button>
+                                <button class="option-btn" data-score="3">CI集成</button>
+                                <button class="option-btn" data-score="4">实时扫描</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q3.5 AI 引入的新依赖是否有版本和安全性审查流程？</div>
+                            <div class="question-options" data-pillar="3" data-question="5">
+                                <button class="option-btn" data-score="1">无审查</button>
+                                <button class="option-btn" data-score="2">偶尔审查</button>
+                                <button class="option-btn" data-score="3">必须审查</button>
+                                <button class="option-btn" data-score="4">自动化审查</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱4评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#17a2b8;">
+                        <span>支柱4：效率与成本</span>
+                        <span class="score" id="pillar4Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q4.1 复杂任务是否有标准化的拆分和 Prompt 模板？</div>
+                            <div class="question-options" data-pillar="4" data-question="1">
+                                <button class="option-btn" data-score="1">无模板</button>
+                                <button class="option-btn" data-score="2">个人模板</button>
+                                <button class="option-btn" data-score="3">团队模板</button>
+                                <button class="option-btn" data-score="4">模板库</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q4.2 团队是否有可复用的 Skill/Prompt 资产库？</div>
+                            <div class="question-options" data-pillar="4" data-question="2">
+                                <button class="option-btn" data-score="1">无资产库</button>
+                                <button class="option-btn" data-score="2"><20个</button>
+                                <button class="option-btn" data-score="3">20-50个</button>
+                                <button class="option-btn" data-score="4">>50个</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q4.3 单次 AI 改动的代码行数是否有控制？</div>
+                            <div class="question-options" data-pillar="4" data-question="3">
+                                <button class="option-btn" data-score="1">无控制</button>
+                                <button class="option-btn" data-score="2">口头建议</button>
+                                <button class="option-btn" data-score="3"><500行</button>
+                                <button class="option-btn" data-score="4"><300行</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q4.4 是否有 AI 使用成本监控和预算管理？</div>
+                            <div class="question-options" data-pillar="4" data-question="4">
+                                <button class="option-btn" data-score="1">无监控</button>
+                                <button class="option-btn" data-score="2">总量监控</button>
+                                <button class="option-btn" data-score="3">分项监控</button>
+                                <button class="option-btn" data-score="4">预算管理</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q4.5 AI 辅助任务相比传统方式的效率提升是否有度量？</div>
+                            <div class="question-options" data-pillar="4" data-question="5">
+                                <button class="option-btn" data-score="1">无度量</button>
+                                <button class="option-btn" data-score="2">主观感受</button>
+                                <button class="option-btn" data-score="3">定期统计</button>
+                                <button class="option-btn" data-score="4">实时度量</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱5评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#333;">
+                        <span>支柱5：可追溯与可审计</span>
+                        <span class="score" id="pillar5Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q5.1 Commit Message 是否必须包含需求/变更编号？</div>
+                            <div class="question-options" data-pillar="5" data-question="1">
+                                <button class="option-btn" data-score="1">无要求</button>
+                                <button class="option-btn" data-score="2">建议</button>
+                                <button class="option-btn" data-score="3">强制</button>
+                                <button class="option-btn" data-score="4">自动检查</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q5.2 能否从需求快速追溯到相关代码和测试？</div>
+                            <div class="question-options" data-pillar="5" data-question="2">
+                                <button class="option-btn" data-score="1">不能</button>
+                                <button class="option-btn" data-score="2">手动查找</button>
+                                <button class="option-btn" data-score="3">工具辅助</button>
+                                <button class="option-btn" data-score="4">一键查询</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q5.3 AI 交互日志是否有记录和归档？</div>
+                            <div class="question-options" data-pillar="5" data-question="3">
+                                <button class="option-btn" data-score="1">不记录</button>
+                                <button class="option-btn" data-score="2">部分记录</button>
+                                <button class="option-btn" data-score="3">全量记录</button>
+                                <button class="option-btn" data-score="4">长期归档</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q5.4 代码变更的回归影响是否有分析机制？</div>
+                            <div class="question-options" data-pillar="5" data-question="4">
+                                <button class="option-btn" data-score="1">无分析</button>
+                                <button class="option-btn" data-score="2">人工判断</button>
+                                <button class="option-btn" data-score="3">AI辅助</button>
+                                <button class="option-btn" data-score="4">自动分析</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q5.5 是否满足合规审计对 AI 代码的追溯要求？</div>
+                            <div class="question-options" data-pillar="5" data-question="5">
+                                <button class="option-btn" data-score="1">不满足</button>
+                                <button class="option-btn" data-score="2">部分满足</button>
+                                <button class="option-btn" data-score="3">基本满足</button>
+                                <button class="option-btn" data-score="4">完全满足</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支柱6评估 -->
+                <div class="assessment-pillar">
+                    <div class="assessment-pillar-header" style="background:#28a745;">
+                        <span>支柱6：组织能力演进</span>
+                        <span class="score" id="pillar6Score">0/20</span>
+                    </div>
+                    <div class="assessment-questions">
+                        <div class="question-item">
+                            <div class="question-text">Q6.1 团队是否有系统化的 AI Coding 培训体系？</div>
+                            <div class="question-options" data-pillar="6" data-question="1">
+                                <button class="option-btn" data-score="1">无培训</button>
+                                <button class="option-btn" data-score="2">零散培训</button>
+                                <button class="option-btn" data-score="3">系统培训</button>
+                                <button class="option-btn" data-score="4">持续培训</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q6.2 AI Coding 的最佳实践是否有跨团队分享机制？</div>
+                            <div class="question-options" data-pillar="6" data-question="2">
+                                <button class="option-btn" data-score="1">无分享</button>
+                                <button class="option-btn" data-score="2">偶尔分享</button>
+                                <button class="option-btn" data-score="3">定期分享</button>
+                                <button class="option-btn" data-score="4">知识库化</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q6.3 事故/问题是否有复盘并沉淀到 Rules/Memory？</div>
+                            <div class="question-options" data-pillar="6" data-question="3">
+                                <button class="option-btn" data-score="1">无复盘</button>
+                                <button class="option-btn" data-score="2">偶尔复盘</button>
+                                <button class="option-btn" data-score="3">必须复盘</button>
+                                <button class="option-btn" data-score="4">闭环改进</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q6.4 AI Coding 是否有量化的度量指标体系？</div>
+                            <div class="question-options" data-pillar="6" data-question="4">
+                                <button class="option-btn" data-score="1">无度量</button>
+                                <button class="option-btn" data-score="2">基础度量</button>
+                                <button class="option-btn" data-score="3">多维度量</button>
+                                <button class="option-btn" data-score="4">数据驱动</button>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <div class="question-text">Q6.5 组织是否有明确的 AI Coding 能力演进路线图？</div>
+                            <div class="question-options" data-pillar="6" data-question="5">
+                                <button class="option-btn" data-score="1">无规划</button>
+                                <button class="option-btn" data-score="2">短期计划</button>
+                                <button class="option-btn" data-score="3">年度规划</button>
+                                <button class="option-btn" data-score="4">战略规划</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align:center;margin-top:30px;">
+                    <button onclick="calculateResult()" style="padding:15px 50px;background:#ff6b35;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;">计算成熟度等级</button>
+                </div>
+            </div>
+
+            <div class="action-plan" id="actionPlan" style="display:none;">
+                <h3>改进行动计划</h3>
+                <div id="actionItems">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 演进路线 -->
+        <section id="roadmap" class="content-section">
+            <div style="background:#fff;border-radius:16px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:30px;">
+                <h3 style="margin-bottom:25px;">AI Coding 能力演进路线图</h3>
+                <div style="position:relative;padding:20px 0;">
+                    <!-- 阶段线 -->
+                    <div style="position:absolute;top:50%;left:0;right:0;height:4px;background:#e0e0e0;transform:translateY(-50%);"></div>
+                    
+                    <div style="display:flex;justify-content:space-between;position:relative;">
+                        <div style="text-align:center;flex:1;">
+                            <div style="width:60px;height:60px;background:#9e9e9e;border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;position:relative;z-index:1;">L1</div>
+                            <h4 style="font-size:14px;margin-bottom:8px;">初始级</h4>
+                            <p style="font-size:12px;color:#666;">个人探索<br>零散使用</p>
+                        </div>
+                        <div style="text-align:center;flex:1;">
+                            <div style="width:60px;height:60px;background:#ff9800;border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;position:relative;z-index:1;">L2</div>
+                            <h4 style="font-size:14px;margin-bottom:8px;">可重复级</h4>
+                            <p style="font-size:12px;color:#666;">团队试点<br>基础规范</p>
+                        </div>
+                        <div style="text-align:center;flex:1;">
+                            <div style="width:60px;height:60px;background:#2196f3;border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;position:relative;z-index:1;">L3</div>
+                            <h4 style="font-size:14px;margin-bottom:8px;">已定义级</h4>
+                            <p style="font-size:12px;color:#666;">标准化<br>资产沉淀</p>
+                        </div>
+                        <div style="text-align:center;flex:1;">
+                            <div style="width:60px;height:60px;background:#4caf50;border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;position:relative;z-index:1;">L4</div>
+                            <h4 style="font-size:14px;margin-bottom:8px;">已管理级</h4>
+                            <p style="font-size:12px;color:#666;">度量驱动<br>持续优化</p>
+                        </div>
+                        <div style="text-align:center;flex:1;">
+                            <div style="width:60px;height:60px;background:#ff6b35;border-radius:50%;margin:0 auto 15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;position:relative;z-index:1;">L5</div>
+                            <h4 style="font-size:14px;margin-bottom:8px;">优化级</h4>
+                            <p style="font-size:12px;color:#666;">持续创新<br>行业引领</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 各阶段关键行动 -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:20px;">
+                <div style="background:#fff;border-radius:16px;padding:25px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border-top:4px solid #9e9e9e;">
+                    <h4 style="font-size:16px;margin-bottom:15px;display:flex;align-items:center;gap:10px;"><span style="background:#9e9e9e;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">L1→L2</span> 建立基础</h4>
+                    <ul style="font-size:13px;color:#666;padding-left:20px;">
+                        <li>选定 1-2 个非核心项目作为试点</li>
+                        <li>配置基础 Qoder Rules（编码规范）</li>
+                        <li>建立 AI 代码责任归属规范</li>
+                        <li>要求 AI 代码必须经过 Code Review</li>
+                        <li>建立基础的版本控制规范</li>
+                    </ul>
+                </div>
+
+                <div style="background:#fff;border-radius:16px;padding:25px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border-top:4px solid #ff9800;">
+                    <h4 style="font-size:16px;margin-bottom:15px;display:flex;align-items:center;gap:10px;"><span style="background:#ff9800;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">L2→L3</span> 标准化</h4>
+                    <ul style="font-size:13px;color:#666;padding-left:20px;">
+                        <li>完善多层 Memory 体系</li>
+                        <li>建立团队级 Skill/Prompt 资产库</li>
+                        <li>集成 MCP（Git、CI/CD、知识库）</li>
+                        <li>配置自动化测试覆盖率门禁</li>
+                        <li>建立系统化 AI Coding 培训体系</li>
+                    </ul>
+                </div>
+
+                <div style="background:#fff;border-radius:16px;padding:25px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border-top:4px solid #2196f3;">
+                    <h4 style="font-size:16px;margin-bottom:15px;display:flex;align-items:center;gap:10px;"><span style="background:#2196f3;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">L3→L4</span> 度量驱动</h4>
+                    <ul style="font-size:13px;color:#666;padding-left:20px;">
+                        <li>建立 AI Coding 度量指标体系</li>
+                        <li>配置 AI 使用成本监控和预算管理</li>
+                        <li>实现需求-代码-测试全链路追溯</li>
+                        <li>建立跨团队最佳实践分享机制</li>
+                        <li>引入 AI 辅助 Code Review</li>
+                    </ul>
+                </div>
+
+                <div style="background:#fff;border-radius:16px;padding:25px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border-top:4px solid #4caf50;">
+                    <h4 style="font-size:16px;margin-bottom:15px;display:flex;align-items:center;gap:10px;"><span style="background:#4caf50;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">L4→L5</span> 持续创新</h4>
+                    <ul style="font-size:13px;color:#666;padding-left:20px;">
+                        <li>AI Coding 深度融入研发文化</li>
+                        <li>建立行业领先的实践体系</li>
+                        <li>持续探索新的 AI 能力应用场景</li>
+                        <li>输出行业最佳实践和案例</li>
+                        <li>建立 AI Coding 能力认证体系</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 关键里程碑 -->
+            <div style="background:#fff;border-radius:16px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-top:30px;">
+                <h3 style="margin-bottom:20px;">关键里程碑检查清单</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="background:#f5f5f5;">
+                                <th style="padding:12px;text-align:left;border-bottom:2px solid #e0e0e0;">里程碑</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;">L2 准入</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;">L3 准入</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;">L4 准入</th>
+                                <th style="padding:12px;text-align:center;border-bottom:2px solid #e0e0e0;">L5 准入</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;">Rules 配置</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">基础配置</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">完整配置</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">持续更新</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">智能优化</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;">测试覆盖率</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>50%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>70%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>80%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>90%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;">CR 覆盖率</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>80%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">100%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">AI+人工</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">智能审查</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;">资产复用率</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>20%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>40%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>60%</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">>80%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;border-bottom:1px solid #f0f0f0;">培训覆盖</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">试点团队</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">全员基础</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">分级认证</td>
+                                <td style="padding:12px;text-align:center;border-bottom:1px solid #f0f0f0;">持续提升</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px;">度量体系</td>
+                                <td style="padding:12px;text-align:center;">基础统计</td>
+                                <td style="padding:12px;text-align:center;">多维度量</td>
+                                <td style="padding:12px;text-align:center;">数据驱动</td>
+                                <td style="padding:12px;text-align:center;">预测优化</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <button class="print-btn" onclick="window.print()" title="打印">&#128424;</button>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 标签切换
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+
+                if (tab.dataset.tab === 'maturity') {
+                    initRadarChart();
+                }
+            });
+        });
+
+        // 雷达图
+        let radarChart = null;
+        function initRadarChart() {
+            const ctx = document.getElementById('radarChart');
+            if (!ctx) return;
+
+            if (radarChart) {
+                radarChart.destroy();
+            }
+
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['人机协作卓越', '上下文与规范', '质量与安全', '效率与成本', '可追溯可审计', '组织能力演进'],
+                    datasets: [
+                        {
+                            label: '当前水平',
+                            data: [3, 2.5, 3.5, 2, 2.5, 2],
+                            fill: true,
+                            backgroundColor: 'rgba(255, 107, 53, 0.2)',
+                            borderColor: '#ff6b35',
+                            pointBackgroundColor: '#ff6b35',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#ff6b35'
+                        },
+                        {
+                            label: '目标水平 (L4)',
+                            data: [4, 4, 4, 4, 4, 4],
+                            fill: true,
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderColor: '#4caf50',
+                            borderDash: [5, 5],
+                            pointBackgroundColor: '#4caf50',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4caf50'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return 'L' + value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 评估分数存储
+        const scores = {
+            1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}
+        };
+
+        // 选项点击
+        document.querySelectorAll('.question-options').forEach(optionsContainer => {
+            optionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pillar = optionsContainer.dataset.pillar;
+                    const question = optionsContainer.dataset.question;
+                    const score = parseInt(btn.dataset.score);
+
+                    optionsContainer.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+
+                    scores[pillar][question] = score;
+                    updatePillarScore(pillar);
+                });
+            });
+        });
+
+        function updatePillarScore(pillar) {
+            const pillarScores = Object.values(scores[pillar]);
+            const total = pillarScores.reduce((a, b) => a + b, 0);
+            document.getElementById(`pillar${pillar}Score`).textContent = `${total}/20`;
+        }
+
+        function calculateResult() {
+            let totalScore = 0;
+            const pillarTotals = [];
+            const pillarNames = ['人机协作', '上下文规范', '质量安全', '效率成本', '可追溯性', '组织演进'];
+            const pillarColors = ['#dc3545', '#fd7e14', '#20c997', '#17a2b8', '#333', '#28a745'];
+
+            for (let i = 1; i <= 6; i++) {
+                const pillarScores = Object.values(scores[i]);
+                const pillarTotal = pillarScores.reduce((a, b) => a + b, 0);
+                pillarTotals.push(pillarTotal);
+                totalScore += pillarTotal;
+            }
+
+            // 显示结果面板
+            document.getElementById('resultPanel').style.display = 'block';
+            document.getElementById('totalScore').textContent = totalScore;
+
+            // 计算等级
+            let level, levelText;
+            if (totalScore < 36) {
+                level = 1; levelText = 'L1 初始级';
+            } else if (totalScore < 60) {
+                level = 2; levelText = 'L2 可重复级';
+            } else if (totalScore < 84) {
+                level = 3; levelText = 'L3 已定义级';
+            } else if (totalScore < 108) {
+                level = 4; levelText = 'L4 已管理级';
+            } else {
+                level = 5; levelText = 'L5 优化级';
+            }
+            document.getElementById('levelBadge').textContent = levelText;
+
+            // 生成分项结果
+            let breakdownHTML = '';
+            pillarTotals.forEach((score, idx) => {
+                const percentage = (score / 20) * 100;
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <div class="pillar-name">${pillarNames[idx]}</div>
+                        <div class="pillar-score" style="color:${pillarColors[idx]}">${score}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:${percentage}%;background:${pillarColors[idx]}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('resultBreakdown').innerHTML = breakdownHTML;
+
+            // 更新雷达图
+            if (radarChart) {
+                radarChart.data.datasets[0].data = pillarTotals.map(s => s / 4);
+                radarChart.update();
+            }
+
+            // 生成行动计划
+            generateActionPlan(pillarTotals, pillarNames);
+
+            // 滚动到结果
+            document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateActionPlan(pillarTotals, pillarNames) {
+            const improvements = [];
+            pillarTotals.forEach((score, idx) => {
+                if (score < 12) {
+                    improvements.push({
+                        priority: improvements.length + 1,
+                        pillar: pillarNames[idx],
+                        score: score,
+                        action: getActionByPillar(idx + 1)
+                    });
+                }
+            });
+
+            if (improvements.length > 0) {
+                document.getElementById('actionPlan').style.display = 'block';
+                let actionsHTML = '';
+                improvements.forEach(item => {
+                    actionsHTML += `
+                        <div class="action-item">
+                            <div class="action-priority">${item.priority}</div>
+                            <div class="action-content">
+                                <h4>${item.pillar} (当前得分: ${item.score}/20)</h4>
+                                <p>${item.action.desc}</p>
+                                <div class="action-tags">
+                                    ${item.action.tags.map(t => `<span class="action-tag">${t}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('actionItems').innerHTML = actionsHTML;
+            }
+        }
+
+        function getActionByPillar(pillar) {
+            const actions = {
+                1: { desc: '建立明确的 AI 代码责任归属制度，要求关键决策必须有责任人签字确认，定期进行独立编码能力评估', tags: ['责任归属', '决策签字', '技能保持'] },
+                2: { desc: '配置完整的 Qoder Rules，建立多层 Memory 体系，集成关键 MCP 工具，确保生产环境隔离', tags: ['Rules配置', 'Memory体系', 'MCP集成'] },
+                3: { desc: '建立测试覆盖率门禁（>80%），强制 AI 代码 Code Review，配置安全扫描和依赖审查流程', tags: ['测试护栏', 'Code Review', '安全扫描'] },
+                4: { desc: '建立标准化任务拆分流程，构建团队 Skill/Prompt 资产库，配置成本监控和效率度量', tags: ['任务拆分', '资产库', '成本监控'] },
+                5: { desc: '强制 Commit Message 包含需求编号，建立需求-代码追溯链，配置 AI 交互日志记录', tags: ['变更追踪', '追溯链', '日志记录'] },
+                6: { desc: '建立系统化培训体系，配置跨团队分享机制，建立事故复盘和持续改进闭环', tags: ['培训体系', '经验分享', '持续改进'] }
+            };
+            return actions[pillar];
+        }
+
+        // 成熟度级别点击
+        document.querySelectorAll('.level-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.level-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const level = parseInt(item.dataset.level);
+                if (radarChart) {
+                    radarChart.data.datasets[1].data = [level, level, level, level, level, level];
+                    radarChart.data.datasets[1].label = `目标水平 (L${level})`;
+                    radarChart.update();
+                }
+            });
+        });
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 默认显示概览
+        });
+    </script>
+</body>
+</html>
